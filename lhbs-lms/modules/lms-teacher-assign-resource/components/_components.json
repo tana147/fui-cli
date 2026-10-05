@@ -1,0 +1,30 @@
+[
+  {
+    "comID": 5697,
+    "comName": "uc-card-dashboard"
+  },
+  {
+    "comID": 5562,
+    "comName": "uc-layout-ban-giam-hieu"
+  },
+  {
+    "comID": 5561,
+    "comName": "uc-layout-to-truong"
+  },
+  {
+    "comID": 5560,
+    "comName": "uc-main-layout"
+  },
+  {
+    "comID": 5655,
+    "comName": "uc-modal-chi-tiet-class"
+  },
+  {
+    "comID": 5654,
+    "comName": "uc-modal-chi-tiet-theo-cap"
+  },
+  {
+    "comID": 5617,
+    "comName": "uc-modal-chi-tiet-theo-khoi"
+  }
+]

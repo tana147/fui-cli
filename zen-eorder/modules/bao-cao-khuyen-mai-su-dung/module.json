@@ -1,0 +1,147 @@
+{
+  "data": [
+    {
+      "ChuongTrinhID": 0
+    },
+    {
+      "API": "/eorder/ChuongTrinh_Select",
+      "OUT": "DSChuongTrinh"
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_KhuyenMai_KhachHang_SuDung",
+        "IN": {
+          "ChuongTrinhID": "ChuongTrinhID"
+        },
+        "OUT": "DSChiTietKhuyenMai"
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 5,
+              "attr": {
+                "v-model": "ChuongTrinhID",
+                "label": "Chương trình khuyến mãi",
+                ":items": "vueData.DSChuongTrinh",
+                "item-value": "ChuongTrinhID",
+                "item-text": "MaTenChuongTrinh"
+              }
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getBaoCao"
+                }
+              },
+              "w": 3
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo khách hàng đổi voucher",
+                ":items": "DSChiTietKhuyenMai",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":headers": [
+                  {
+                    "text": "SĐT khách hàng",
+                    "value": "DienThoai",
+                    "width": 100
+                  },
+                  {
+                    "text": "Tên khách hàng",
+                    "value": "HoTen",
+                    "width": 250
+                  },
+                  {
+                    "text": "Mã chương trình",
+                    "value": "MaChuongTrinh",
+                    "width": 200
+                  },
+                  {
+                    "text": "Tên chương trình",
+                    "value": "TenChuongTrinh",
+                    "width": 500
+                  },
+                  {
+                    "text": "Thời gian từ",
+                    "value": "TuNgay_Display",
+                    "width": 100
+                  },
+                  {
+                    "text": "Thời gian tới",
+                    "value": "DenNgay_Display",
+                    "width": 100
+                  },
+                  {
+                    "text": "Loại chương trình",
+                    "value": "TenLoaiChuongTrinh",
+                    "width": 250
+                  },
+                  {
+                    "text": "Điều kiện",
+                    "value": "DieuKien",
+                    "el": "span",
+                    "width": 400,
+                    "innerHTML": "{{renderDieuKien(item)}}"
+                  },
+                  {
+                    "text": "Giảm giá",
+                    "value": "KhuyenMai",
+                    "el": "span",
+                    "width": 600,
+                    "innerHTML": "{{renderKhuyenMai(item)}}"
+                  },
+                  {
+                    "text": "Trạng thái sử dụng",
+                    "value": "TenTrangThai",
+                    "align": "center",
+                    "width": 150
+                  },
+                  {
+                    "text": "Ngày nhận",
+                    "value": "NgayNhan",
+                    "align": "center",
+                    "width": 100
+                  },
+                  {
+                    "text": "Ngày hết hạn",
+                    "value": "NgayHetHan",
+                    "align": "center",
+                    "width": 100
+                  },
+                  {
+                    "text": "Ngày sử dụng",
+                    "value": "NgaySuDung",
+                    "align": "center",
+                    "width": 100
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

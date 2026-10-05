@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms_tc_list_grade_asm",
+  "url": "//lms.lhbs.vn/lms_tc_list_grade_asm",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms_tc_list_grade_asm",
+  "ModuleName": "Danh sách các lớp chấm bài",
+  "UpdateTime": "2026-09-29 11:43:58",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-08-12",
+  "LoadCount": 68,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

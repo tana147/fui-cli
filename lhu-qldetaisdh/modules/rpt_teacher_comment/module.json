@@ -1,0 +1,43 @@
+{
+  "data": [
+    {
+      "dataPDF": {}
+    },
+    {
+      "EXE": "InNhanXet()"
+    },
+    {
+      "FUN": "printPDF",
+      "IN": {
+        "data": "dataPDF"
+      }
+    },
+    {
+      "CALL": "StartPrint"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row justify-center",
+          "cols": [
+            {
+              "el": "xxf-pdfmake",
+              "attr": {
+                ":data": "pageContent",
+                ":height": "height"
+              },
+              "col": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "data": [
+    {
+      "IsDefineNewClassModal": false
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "manage-container",
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

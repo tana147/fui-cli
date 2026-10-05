@@ -1,0 +1,34 @@
+[
+  {
+    "name": "https://cdn.jsdelivr.net/npm/qalendar@3.9.0/dist/style.min.css",
+    "type": ".css",
+    "contentType": "link",
+    "fileID": "556D7EA28C5846CEA2EA3EA9D1B5B6BA",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/axios@1.8.3/dist/axios.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "BF8EB7D44136462BBB1B0238054BB72C",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/qalendar@3.9.0/dist/qalendar.umd.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "5EE917E46DF24A959CD2B1DEF0C57812",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://unpkg.com/vue-cookies@1.8.3/vue-cookies.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "9D1DFF56DDB648B4AD1BD95AA9833FB7",
+    "scope": "module",
+    "sort": 50
+  }
+]

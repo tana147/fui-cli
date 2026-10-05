@@ -1,0 +1,18 @@
+[
+  {
+    "comID": 4090,
+    "comName": "uc-menu-pos"
+  },
+  {
+    "comID": 4085,
+    "comName": "uc-order-list"
+  },
+  {
+    "comID": 4086,
+    "comName": "uc-product"
+  },
+  {
+    "comID": 4087,
+    "comName": "uc-topping"
+  }
+]

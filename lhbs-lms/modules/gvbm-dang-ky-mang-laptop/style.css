@@ -1,0 +1,55 @@
+.hs-thietbi-table .v-selection-control {
+	min-height: 28px;
+}
+.hs-thietbi-table .v-selection-control__wrapper {
+	height: 28px;
+}
+.hs-thietbi-table td, .hs-thietbi-table th {
+	line-height: 1.2;
+}
+.uc-gvbm-dang-ky-mang-laptop .legend-box { display: inline-block; width: 14px; height: 14px; border: 1px solid rgba(0, 0, 0, 0.2); }
+.uc-gvbm-dang-ky-mang-laptop .schedule-cell { cursor: pointer; font-weight: 600; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-cell-main { display: flex; align-items: center; gap: 3px; min-width: 0; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-cell-main span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-status-badge { display: inline-block; margin-top: 2px; padding: 1px 5px; border-radius: 4px; background: rgba(var(--v-theme-primary), 0.18); color: rgb(var(--v-theme-primary)); font-size: 10px; font-weight: 700; line-height: 1.3; white-space: nowrap; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-cell-primary { background-color: rgba(var(--v-theme-primary), 0.28) !important; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-cell-info { background-color: rgba(var(--v-theme-info), 0.25) !important; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-cell-success { background-color: rgba(var(--v-theme-success), 0.16) !important; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-cell-gvcn { background-color: rgba(var(--v-theme-warning), 0.10) !important; box-shadow: inset 0 0 0 1px rgba(var(--v-theme-warning), 0.42); }
+.uc-gvbm-dang-ky-mang-laptop .schedule-cell-gvcn:hover { background-color: rgba(var(--v-theme-warning), 0.22) !important; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-cell-error { background-color: rgba(var(--v-theme-error), 0.25) !important; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-period-primary { background-color: rgba(var(--v-theme-primary), 0.16) !important; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-period-warning { background-color: rgba(var(--v-theme-warning), 0.20) !important; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-period-tertiary { background-color: rgba(var(--v-theme-tertiary), 0.16) !important; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-scroll { overflow-x: auto; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-table { width: 100%; min-width: 1000px; table-layout: fixed; border-collapse: collapse; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-table table { border-collapse: collapse; border-spacing: 0; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-table th:nth-child(1), .uc-gvbm-dang-ky-mang-laptop .schedule-table td:nth-child(1) { width: 64px; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-table th:nth-child(2), .uc-gvbm-dang-ky-mang-laptop .schedule-table td:nth-child(2) { width: 60px; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-table th:nth-child(n + 3), .uc-gvbm-dang-ky-mang-laptop .schedule-table td:nth-child(n + 3) { width: calc((100% - 124px) / 7); }
+.uc-gvbm-dang-ky-mang-laptop .schedule-table th, .uc-gvbm-dang-ky-mang-laptop .schedule-table td { padding: 8px; border: 1px solid rgba(0, 0, 0, 0.12); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-table thead th { text-align: center; vertical-align: middle; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-table thead th > div { text-align: center; }
+.uc-gvbm-dang-ky-mang-laptop .schedule-header-date { margin-top: 2px; color: rgba(0, 0, 0, 0.55); font-size: 11px; font-weight: 400; }
+.uc-gvbm-dang-ky-mang-laptop .mobile-week-days { display: flex; width: 100%; overflow-x: auto; border-bottom: 1px solid rgba(0, 0, 0, 0.12); }
+.uc-gvbm-dang-ky-mang-laptop .mobile-week-day { flex: 1 1 0; min-width: 0; min-height: 56px; padding: 4px; display: flex; flex-direction: column; text-transform: none; }
+.uc-gvbm-dang-ky-mang-laptop .mobile-week-day .v-btn__content { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; line-height: 1.1; white-space: normal; }
+.uc-gvbm-dang-ky-mang-laptop .mobile-week-day-active { color: white !important; background: rgb(var(--v-theme-primary)); border-radius: 10px; }
+.uc-gvbm-dang-ky-mang-laptop .mobile-week-day-active .text-medium-emphasis { color: rgba(255, 255, 255, 0.8) !important; }
+.uc-gvbm-dang-ky-mang-laptop .mobile-period-header { padding: 7px 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; }
+.uc-gvbm-dang-ky-mang-laptop .mobile-period-dot { margin-right: 6px; }
+.uc-gvbm-dang-ky-mang-laptop .mobile-schedule-row { min-height: 54px; display: flex; align-items: center; gap: 10px; padding: 7px 12px; border-bottom: 1px solid rgba(0, 0, 0, 0.10); cursor: pointer; }
+.uc-gvbm-dang-ky-mang-laptop .mobile-period-number { width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 7px; background: rgba(var(--v-theme-primary), 0.12); color: rgb(var(--v-theme-primary)); font-weight: 700; }
+.uc-gvbm-dang-ky-mang-laptop .student-picker-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.uc-gvbm-dang-ky-mang-laptop .student-picker-controls { display: flex; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; }
+.uc-gvbm-dang-ky-mang-laptop .student-picker-search { width: 220px; max-width: 220px; }
+.uc-gvbm-dang-ky-mang-laptop .mobile-student-list-header { display: flex; align-items: center; min-height: 42px; padding: 4px 10px; margin-bottom: 8px; border: 1px solid rgba(0, 0, 0, 0.12); background: rgba(var(--v-theme-surface-variant), 0.28); }
+@media (max-width: 900px) {
+	.uc-gvbm-dang-ky-mang-laptop .schedule-table { min-width: 1000px; }
+	.uc-gvbm-dang-ky-mang-laptop .schedule-scroll { overflow-x: auto; }
+}
+@media (max-width: 600px) {
+	.uc-gvbm-dang-ky-mang-laptop .student-picker-toolbar { display: block; }
+	.uc-gvbm-dang-ky-mang-laptop .student-picker-controls { display: flex; flex-direction: column; align-items: stretch; gap: 2px; margin-top: 6px; }
+	.uc-gvbm-dang-ky-mang-laptop .student-picker-search { width: 100%; max-width: none; }
+}

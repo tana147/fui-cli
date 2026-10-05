@@ -1,0 +1,34 @@
+{
+  "data": [
+    {
+      "HoaDonID": "id",
+      "QrCode": "window.location.href",
+      "CTSanPham": null
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "uc-invoice",
+              "attr": {
+                ":hdid": "vueData.HoaDonID"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false,
+    "login": false,
+    "userInfo": ""
+  }
+}

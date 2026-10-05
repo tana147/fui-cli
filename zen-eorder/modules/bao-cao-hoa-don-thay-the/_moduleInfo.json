@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-hoa-don-thay-the",
+  "url": "/zen-eorder/bao-cao-hoa-don-thay-the",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-hoa-don-thay-the",
+  "ModuleName": "Báo Cáo / Hóa Đơn / Hóa Đơn Thay Thế",
+  "UpdateTime": "2026-03-31 13:44:34",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 206,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

@@ -1,0 +1,117 @@
+{
+  "data": [
+    {
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')"
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_QuaTang_SoLuong",
+        "IN": {
+          "TuNgay": "TuNgay",
+          "DenNgay": "DenNgay"
+        },
+        "OUT": "DSQuaTangSoLuong"
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "TuNgay",
+                "label": "Từ ngày (Đổi thưởng)",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "DenNgay",
+                "label": "Đến ngày (Đổi thưởng)",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getBaoCao"
+                }
+              },
+              "w": 3
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo quà tặng theo số lượng",
+                ":items": "DSQuaTangSoLuong",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":headers": [
+                  {
+                    "text": "Ngày",
+                    "value": "Ngay"
+                  },
+                  {
+                    "text": "Mã Voucher",
+                    "value": "QrCode_TrungThuong"
+                  },
+                  {
+                    "text": "Tổng voucher",
+                    "value": "Tong_Voucher",
+                    "el": "span",
+                    "innerHTML": "{{item.Tong_Voucher?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Đã quét",
+                    "value": "Tong_DaQuet",
+                    "el": "span",
+                    "innerHTML": "{{item.Tong_DaQuet?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Chưa quét",
+                    "value": "Tong_ChuaQuet",
+                    "el": "span",
+                    "innerHTML": "{{item.Tong_ChuaQuet?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Đã đổi thưởng",
+                    "value": "Tong_DaDoiThuong",
+                    "el": "span",
+                    "innerHTML": "{{item.Tong_DaDoiThuong?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Chưa đổi thưởng",
+                    "value": "Tong_ChuaDoiThuong",
+                    "el": "span",
+                    "innerHTML": "{{item.Tong_ChuaDoiThuong?.toLocaleString('vi-vn')}}"
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

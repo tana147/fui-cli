@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "isInpScoreDialog": false,
+      "isInpCmtDialog": false,
+      "isInpReportDialog": false
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "parent-container",
+              "col": {},
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

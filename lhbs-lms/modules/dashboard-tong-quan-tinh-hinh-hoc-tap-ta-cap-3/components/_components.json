@@ -1,0 +1,58 @@
+[
+  {
+    "comID": 2349,
+    "comName": "uc-tab-chu-de"
+  },
+  {
+    "comID": 2350,
+    "comName": "uc-tab-diem-tong"
+  },
+  {
+    "comID": 2351,
+    "comName": "uc-tab-diem-trung-binh"
+  },
+  {
+    "comID": 6258,
+    "comName": "uc-tab-ki-nang-doc"
+  },
+  {
+    "comID": 6259,
+    "comName": "uc-tab-ki-nang-nghe"
+  },
+  {
+    "comID": 6260,
+    "comName": "uc-tab-ki-nang-noi"
+  },
+  {
+    "comID": 6261,
+    "comName": "uc-tab-ki-nang-viet"
+  },
+  {
+    "comID": 2352,
+    "comName": "uc-tab-ky-nang"
+  },
+  {
+    "comID": 3367,
+    "comName": "uc-tab-ky-nang-cap"
+  },
+  {
+    "comID": 3368,
+    "comName": "uc-tab-ky-nang-khoi"
+  },
+  {
+    "comID": 3369,
+    "comName": "uc-tab-ky-nang-lop"
+  },
+  {
+    "comID": 2353,
+    "comName": "uc-tab-phan-phoi-diem"
+  },
+  {
+    "comID": 6262,
+    "comName": "uc-tab-trung-binh"
+  },
+  {
+    "comID": 2354,
+    "comName": "uc-tab-ty-le-hoc-sinh"
+  }
+]

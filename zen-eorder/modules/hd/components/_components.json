@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 3257,
+    "comName": "uc-invoice"
+  },
+  {
+    "comID": 3258,
+    "comName": "uc-modal-banner"
+  },
+  {
+    "comID": 3270,
+    "comName": "uc-modal-product-content"
+  },
+  {
+    "comID": 3259,
+    "comName": "uc-product"
+  },
+  {
+    "comID": 3260,
+    "comName": "uc-topping"
+  }
+]

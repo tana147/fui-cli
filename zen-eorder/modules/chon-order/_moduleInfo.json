@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/chon-order",
+  "url": "/zen-eorder/chon-order",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "chon-order",
+  "ModuleName": "Chọn mPOS",
+  "UpdateTime": "2025-10-30 17:26:03",
+  "UpdateUser": "DEV000007",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 331904,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

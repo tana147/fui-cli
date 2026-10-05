@@ -1,0 +1,19 @@
+[
+  {
+    "name": "style-page",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "F89254DB8FE5449FA3824538BD754819",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/style-page-F89254DB8FE5449FA3824538BD754819.css"
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/decimal.js/9.0.0/decimal.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "0D730AD8AA5F44F8B57E683031A73C6C",
+    "scope": "module",
+    "sort": 50
+  }
+]

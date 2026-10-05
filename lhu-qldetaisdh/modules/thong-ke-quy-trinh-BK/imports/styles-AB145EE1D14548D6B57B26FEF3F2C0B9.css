@@ -1,0 +1,443 @@
+.card-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.export-panel {
+    width: 100%;
+    border-radius: 0;
+    border-color: rgba(25, 118, 210, 0.2) !important;
+    box-shadow: 0 4px 14px rgba(25, 118, 210, 0.08);
+    overflow: hidden;
+}
+
+.export-panel--compact {
+    max-width: 860px;
+}
+
+.export-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, #1976d2 0%, #1e88e5 60%, #42a5f5 100%);
+}
+
+.export-panel__subtitle {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.export-panel__title {
+    font-size: 16px;
+    line-height: 1.15;
+    font-weight: 700;
+    color: #fff;
+}
+
+.export-input .v-input__slot {
+    border-radius: 0 !important;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.export-input .v-input__slot:hover {
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.08);
+}
+
+.export-btn {
+    border-radius: 0;
+    text-transform: none;
+    font-weight: 600;
+    letter-spacing: 0;
+    font-size: 13px;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    min-height: 38px !important;
+}
+
+.export-btn .v-icon {
+    font-size: 18px !important;
+}
+
+.export-fields {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.export-fields .v-col {
+    max-width: 320px;
+}
+
+.export-actions .v-col {
+    max-width: 250px;
+}
+
+.export-btn--docx {
+    max-width: 250px;
+}
+
+.qdt-dialog {
+    background: linear-gradient(180deg, #fffdf8 0%, #ffffff 22%, #f8fafc 100%);
+}
+
+.qdt-dialog__body {
+    padding: 20px 24px 12px;
+}
+
+.qdt-hero {
+    border: 1px solid rgba(201, 169, 97, 0.18);
+    background: radial-gradient(circle at top right, rgba(225, 198, 132, 0.24), transparent 28%), linear-gradient(135deg, rgba(255, 248, 235, 0.95), rgba(255, 255, 255, 0.98));
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
+}
+
+.qdt-hero__header {
+    gap: 16px;
+}
+
+.qdt-hero__eyebrow {
+    display: inline-flex;
+    margin-bottom: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(181, 129, 16, 0.1);
+    color: #9a6700;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.qdt-hero__title {
+    color: #1f2937;
+    font-size: 24px;
+    line-height: 1.25;
+}
+
+.qdt-hero__desc {
+    max-width: 720px;
+    color: #5b6472;
+    font-size: 14px;
+}
+
+.qdt-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(110px, 1fr));
+    gap: 12px;
+    width: 100%;
+    max-width: 480px;
+}
+
+.qdt-summary__item {
+    padding: 14px 16px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(6px);
+}
+
+.qdt-summary__label {
+    display: block;
+    margin-bottom: 6px;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.qdt-summary__value {
+    display: block;
+    color: #111827;
+    font-size: 16px;
+    line-height: 1.35;
+}
+
+.qdt-input,
+.qdt-search {
+    background: rgba(255, 255, 255, 0.92);
+}
+
+.qdt-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.qdt-chip {
+    backdrop-filter: blur(6px);
+}
+
+.qdt-search {
+    width: 100%;
+    max-width: 360px;
+}
+
+.qdt-filter-actions {
+    justify-content: flex-start;
+}
+
+.qdt-filter-btn {
+    min-width: 120px;
+    text-transform: none;
+    font-weight: 700;
+}
+
+.qdt-table-wrap {
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.05);
+}
+
+.qdt-dialog__actions {
+    border-top: 1px solid rgba(226, 232, 240, 0.9);
+    gap: 16px;
+}
+
+.qdt-dialog__actions-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.qdt-dialog__actions-title {
+    color: #111827;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.qdt-dialog__actions-subtitle {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.qdt-dialog__actions-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.qdt-dialog__btn-secondary {
+    text-transform: none;
+    font-weight: 600;
+}
+
+.qdt-dialog__btn-primary {
+    min-width: 190px;
+    border-radius: 14px;
+    text-transform: none;
+    font-weight: 700;
+    box-shadow: 0 12px 24px rgba(46, 125, 50, 0.18);
+}
+
+@media (max-width: 960px) {
+    .export-panel__title {
+        font-size: 15px;
+    }
+
+    .export-panel--compact {
+        max-width: 100%;
+    }
+
+    .export-actions .v-col,
+    .export-btn--docx,
+    .export-fields .v-col {
+
+        .qdt-action-trigger {
+            min-width: 180px;
+            height: 40px;
+            padding: 0 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(0, 0, 0, 0.38);
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .qdt-action-trigger:hover {
+            border-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .qdt-action-trigger:focus,
+        .qdt-action-trigger:focus-within {
+            border-color: #1976d2;
+            box-shadow: 0 0 0 1px #1976d2;
+        }
+
+        .qdt-action-trigger--disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .qdt-action-trigger__main {
+            display: inline-flex;
+            align-items: center;
+            min-width: 0;
+        }
+
+        .qdt-action-trigger__label {
+            font-size: 0.875rem;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .qdt-action-menu {
+            min-width: 180px !important;
+        }
+
+        .qdt-action-menu .v-list-item {
+            min-height: 36px;
+        }
+
+        .qdt-action-menu .v-list-item__icon {
+            margin: 8px 10px 8px 0;
+        }
+
+        max-width: 100%;
+    }
+
+    .qdt-dialog__body {
+        padding: 16px 16px 10px;
+    }
+
+    .qdt-summary {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+    }
+
+    .qdt-search {
+        max-width: 100%;
+    }
+
+    .qdt-filter-actions {
+        justify-content: flex-end;
+    }
+
+    .qdt-dialog__actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .qdt-dialog__actions-group {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .qdt-dialog__btn-primary {
+        min-width: 0;
+    }
+}
+
+/* ==========================================================================
+   CLASS FROZEN COLUMNS KHÔNG CHECKBOX
+   ========================================================================== */
+
+.table-frozen-2-col .v-data-table__wrapper {
+    overflow-x: auto;
+}
+
+/* Cột 1 */
+.table-frozen-2-col th:nth-child(1),
+.table-frozen-2-col td:nth-child(1) {
+    position: sticky !important;
+    left: 0;
+    z-index: 3;
+    background-color: #ffffff;
+    min-width: 60px;
+    /* Đặt width cố định để cột 2 biết vị trí left */
+    max-width: 60px;
+}
+
+/* Cột 2 (Thường là STT) */
+.table-frozen-2-col th:nth-child(2),
+.table-frozen-2-col td:nth-child(2) {
+    position: sticky !important;
+    left: 60px;
+    /* Bằng width của cột 1 */
+    z-index: 3;
+    background-color: #ffffff;
+    min-width: 50px;
+    /* Đặt width cố định để cột 3 biết vị trí left */
+    max-width: 50px;
+    /* Đổ bóng để tạo cảm giác phân cách với các cột bị cuộn ở dưới */
+    box-shadow: 4px 0 6px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Đảm bảo z-index của header lớn hơn cell data để không bị đè khi cuộn dọc */
+.table-frozen-2-col th:nth-child(1),
+.table-frozen-2-col th:nth-child(2) {
+    z-index: 4 !important;
+}
+
+/* Xử lý background màu xám khi hover dòng trong Vuetify (tránh mất màu nền của cột đóng băng) */
+.theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper)>td:nth-child(1),
+.theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper)>td:nth-child(2) {
+    background-color: #eeeeee !important;
+}
+
+/*========================================================================== */
+
+/* ==========================================================================
+   CLASS FROZEN COLUMNS CÓ CHECKBOX
+   ========================================================================== */
+
+.table-frozen-cols .v-data-table__wrapper {
+    overflow-x: auto;
+}
+
+/* Cột 1 (Thường là Checkbox khi dùng show-select) */
+.table-frozen-cols th:nth-child(1),
+.table-frozen-cols td:nth-child(1) {
+    position: sticky !important;
+    left: 0;
+    z-index: 3;
+    background-color: #ffffff;
+    min-width: 60px;
+    /* Đặt width cố định để cột 2 biết vị trí left */
+    max-width: 60px;
+}
+
+/* Cột 2 (Thường là STT) */
+.table-frozen-cols th:nth-child(2),
+.table-frozen-cols td:nth-child(2) {
+    position: sticky !important;
+    left: 60px;
+    /* Bằng width của cột 1 */
+    z-index: 3;
+    background-color: #ffffff;
+    min-width: 50px;
+    /* Đặt width cố định để cột 3 biết vị trí left */
+    max-width: 50px;
+}
+
+/* Cột 3 (Thường là Cột thông tin chính, ví dụ Học viên) */
+.table-frozen-cols th:nth-child(3),
+.table-frozen-cols td:nth-child(3) {
+    position: sticky !important;
+    left: 110px;
+    /* Bằng tổng width của cột 1 + cột 2 (60 + 50) */
+    z-index: 3;
+    background-color: #ffffff;
+    /* Đổ bóng để tạo cảm giác phân cách với các cột bị cuộn ở dưới */
+    box-shadow: 4px 0 6px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Đảm bảo z-index của header lớn hơn cell data để không bị đè khi cuộn dọc */
+.table-frozen-cols th:nth-child(1),
+.table-frozen-cols th:nth-child(2),
+.table-frozen-cols th:nth-child(3) {
+    z-index: 4 !important;
+}
+
+/* Xử lý background màu xám khi hover dòng trong Vuetify (tránh mất màu nền của cột đóng băng) */
+.theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper)>td:nth-child(1),
+.theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper)>td:nth-child(2),
+.theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper)>td:nth-child(3) {
+    background-color: #eeeeee !important;
+}
+
+/*========================================================================== */

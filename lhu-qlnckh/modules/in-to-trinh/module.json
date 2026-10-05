@@ -1,0 +1,54 @@
+{
+  "data": [
+    {
+      "StartPrint": {
+        "API": "/ToTrinh_Get_ByToTrinhID",
+        "IN": {
+          "ToTrinhID": "ToTrinhID"
+        },
+        "OUT": "data",
+        "CALLBACK": [
+          {
+            "FUN": "InToTrinh",
+            "IN": {
+              "data": "data"
+            }
+          },
+          {
+            "FUN": "printPDF",
+            "IN": {
+              "data": "dataPDF"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "StartPrint"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row justify-center",
+          "cols": [
+            {
+              "el": "xxf-pdfmake",
+              "attr": {
+                ":data": "pageContent",
+                ":height": "height"
+              },
+              "col": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false
+  }
+}

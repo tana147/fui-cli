@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/bc-nhan-xet-c1",
+  "url": "//lms.lhbs.vn/bc-nhan-xet-c1",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "bc-nhan-xet-c1",
+  "ModuleName": "Báo cáo nhận xét cấp 1",
+  "UpdateTime": "2026-09-22 19:38:30",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-09-22",
+  "LoadCount": 15,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

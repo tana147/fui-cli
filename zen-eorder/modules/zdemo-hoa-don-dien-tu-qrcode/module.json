@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "HoaDonID": "hdid"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-invoice"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "login": false,
+    "menuLeft": false,
+    "userInfo": ""
+  }
+}

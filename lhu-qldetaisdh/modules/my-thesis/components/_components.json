@@ -1,0 +1,54 @@
+[
+  {
+    "comID": 11499,
+    "comName": "file-comp"
+  },
+  {
+    "comID": 11501,
+    "comName": "file-view-comp"
+  },
+  {
+    "comID": 11493,
+    "comName": "graduate-route"
+  },
+  {
+    "comID": 11494,
+    "comName": "master-route"
+  },
+  {
+    "comID": 11498,
+    "comName": "my-topic"
+  },
+  {
+    "comID": 11502,
+    "comName": "score-comp"
+  },
+  {
+    "comID": 11491,
+    "comName": "similiar-topic-list"
+  },
+  {
+    "comID": 11492,
+    "comName": "student-container"
+  },
+  {
+    "comID": 11490,
+    "comName": "table-chung"
+  },
+  {
+    "comID": 11500,
+    "comName": "table-view"
+  },
+  {
+    "comID": 11495,
+    "comName": "text-comp"
+  },
+  {
+    "comID": 11497,
+    "comName": "textarea-button-comp"
+  },
+  {
+    "comID": 11496,
+    "comName": "textarea-comp"
+  }
+]

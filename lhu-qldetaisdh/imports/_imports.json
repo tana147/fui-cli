@@ -1,0 +1,53 @@
+[
+  {
+    "name": "globalStyle",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "37CF275D830B47918008D0F98EE29091",
+    "scope": "project",
+    "sort": 20,
+    "filePath": "imports/globalStyle-37CF275D830B47918008D0F98EE29091.css"
+  },
+  {
+    "name": "utility.js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "E202EDD9366D4989BFCC051F5E14EE29",
+    "scope": "project",
+    "sort": 20,
+    "filePath": "imports/utility.js-E202EDD9366D4989BFCC051F5E14EE29.js"
+  },
+  {
+    "name": "htmlToPdfmake.js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "0B15B80B9A2A4F72B1E98E3F80D754C8",
+    "scope": "project",
+    "sort": 50,
+    "filePath": "imports/htmlToPdfmake.js-0B15B80B9A2A4F72B1E98E3F80D754C8.js"
+  },
+  {
+    "name": "/include/pdfmake/pdfmake.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "4C71423F1B494BE38F575CDD42ECB6B4",
+    "scope": "project",
+    "sort": 51
+  },
+  {
+    "name": "/include/pdfmake/print.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "AEFA2B7DC1A14374B73E568BCB0CCE2F",
+    "scope": "project",
+    "sort": 52
+  },
+  {
+    "name": "/include/pdfmake/vfs_fonts.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "599F1138888D43F4B558D14D388BD63C",
+    "scope": "project",
+    "sort": 53
+  }
+]

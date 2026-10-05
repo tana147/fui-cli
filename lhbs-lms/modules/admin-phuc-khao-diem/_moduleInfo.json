@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/admin-phuc-khao-diem",
+  "url": "//lms.lhbs.vn/admin-phuc-khao-diem",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "admin-phuc-khao-diem",
+  "ModuleName": "admin-phuc-khao-diem",
+  "UpdateTime": "2025-10-23 15:48:35",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-01-16",
+  "LoadCount": 249,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

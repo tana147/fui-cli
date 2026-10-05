@@ -1,0 +1,63 @@
+{
+  "data": [
+    {
+      "dynamicHeaders": [],
+      "TableHeader": [],
+      "DataReport": [],
+      "FilterObject": {},
+      "DataRaw": [],
+      "DataExpanded": [],
+      "isReportDoanhThu": 0
+    },
+    {
+      "API": "/eorder/PhanHieu_Select",
+      "OUT": "DSPhanHieu",
+      "CALLBACK": [
+        {
+          "EXE": "vueData.DSPhanHieu = vueData.DSPhanHieu.filter(e => e.PhanHieuID == 2)"
+        },
+        {
+          "EXE": "vueData.DSPhanHieu.unshift({PhanHieuID: 0, TenPhanHieu: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "EXE": "vueData.DSCuaHang = vueData.DSCuaHang.filter(e => e.PhanHieuID == 2)"
+        },
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/KhuVuc_Select",
+      "OUT": "DSKhuVuc",
+      "CALLBACK": [
+        {
+          "EXE": "vueData.DSKhuVuc.unshift({KhuVucID: 0, TenKhuVuc: 'Tất cả'})"
+        }
+      ]
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

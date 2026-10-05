@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/zdemo-hoa-don-dien-tu-qrcode",
+  "url": "/zen-eorder/zdemo-hoa-don-dien-tu-qrcode",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "zdemo-hoa-don-dien-tu-qrcode",
+  "ModuleName": "[DEMO] Thông Tin Hóa Đơn Điện Tử (Khách)",
+  "UpdateTime": "2026-03-31 10:37:17",
+  "UpdateUser": "DEV000066",
+  "LastLoad": "2026-05-15",
+  "LoadCount": 1375,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

@@ -1,0 +1,154 @@
+{
+  "data": [
+    {
+      "BBKHID": null,
+      "DialogFile_Open": false,
+      "FileID_List": "",
+      "DS_TapTinDinhKem": []
+    },
+    {
+      "API": "/BBKH_Get",
+      "OUT": "DS_BaiBaoKhoaHoc"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "col": {},
+              "w": 12,
+              "attr": {
+                ":excel": true,
+                ":label": "`Danh sách bài báo khoa học`",
+                ":fixed-header": true,
+                ":show-select": false,
+                ":fixed-cols": 2,
+                ":mobile-breakpoint": 600,
+                "v-model": "DS_BaiBaoKhoaHoc_List",
+                ":items": "DS_BaiBaoKhoaHoc",
+                "item-key": "BBKHID",
+                ":headers": [
+                  {
+                    "text": "STT",
+                    "align": "center",
+                    "value": "SoThuTu"
+                  },
+                  {
+                    "text": "Tên tác giả",
+                    "value": "TenTacGia"
+                  },
+                  {
+                    "text": "Tên đơn vị",
+                    "value": "TenDonVi"
+                  },
+                  {
+                    "text": "Tên bài báo",
+                    "value": "TenBaiBao"
+                  },
+                  {
+                    "text": "Tên tạp chí/ hội thảo",
+                    "value": "TenTapChiHoiThao",
+                    "width": "300"
+                  },
+                  {
+                    "text": "Năm đăng ",
+                    "value": "NamDang",
+                    "align": "center"
+                  },
+                  {
+                    "text": "Nơi đăng",
+                    "value": "NoiDang"
+                  },
+                  {
+                    "text": "Điểm IF, HĐGSNN",
+                    "value": "IFDiemHDGSNN"
+                  },
+                  {
+                    "text": "Thể loại",
+                    "value": "TheLoai"
+                  },
+                  {
+                    "text": "File",
+                    "value": "FileData",
+                    "align": "center",
+                    "el": "t-button",
+                    "attr": {
+                      "color": "green",
+                      "label": "File minh chứng",
+                      ":action": {
+                        "DialogFile_Open": true,
+                        "DS_TapTinDinhKem": "item.FileID_List.split(', ')"
+                      }
+                    }
+                  },
+                  {
+                    "text": "Ghi chú ",
+                    "value": "GhiChu"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-dialog",
+              "col": {},
+              "attr": {
+                "v-model": "DialogFile_Open",
+                "title": "Các file minh chứng bài báo khoa học",
+                ":controls": [
+                  {
+                    "el": "div",
+                    "attr": {
+                      "class": "text-left"
+                    },
+                    "innerHTML": "<span class='text--primary'>Danh sách tập tin đính kèm</span>",
+                    "w": 12
+                  },
+                  {
+                    "el": "f-table",
+                    "w": 12,
+                    "col": {},
+                    "attr": {
+                      ":excel": false,
+                      ":show-search": false,
+                      ":fixed-header": true,
+                      ":show-select": false,
+                      ":fixed-cols": 2,
+                      ":mobile-breakpoint": 600,
+                      ":items": "vueData.DS_TapTinDinhKem",
+                      ":headers": [
+                        {
+                          "text": "FileID",
+                          "el": "span",
+                          "value": "FileID",
+                          "innerHTML": "{{item}}"
+                        },
+                        {
+                          "text": "Tập tin",
+                          "el": "span",
+                          "value": "FileName",
+                          "innerHTML": "<a :href='`${vueData.v_Set.urlReturnFile}/FileData/${item}`' target='_blank'>Truy cập</a>"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

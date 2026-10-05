@@ -1,0 +1,966 @@
+/* Fix wiggling drag and drop issue */
+.lh-draggable-item.sortable-chosen,
+.lh-draggable-item.sortable-drag,
+.lh-draggable-item.sortable-ghost,
+.lh-draggable-item.lh-sortable-chosen,
+.lh-draggable-item.lh-sortable-drag,
+.lh-draggable-item.lh-sortable-ghost,
+.sortable-chosen,
+.sortable-drag,
+.sortable-ghost {
+  transition: none !important;
+  transform: none !important;
+}
+/* ==========================================================
+   💎 PREMIUM FROSTED GLASS (GLASSMORPHISM) COLOR SCHEME
+   ========================================================== */
+.lh-header-premium {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-radius: 20px !important;
+  padding: 10px 14px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+.lh-header-content {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+/* Row 1 Left: Back Button + Logo (White Frosted Glass) */
+.lh-brand-section {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  order: 1 !important;
+}
+.lh-back-btn {
+  order: 1 !important;
+  margin: 0 !important;
+  background: rgba(255, 255, 255, 0.35) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 14px !important;
+  color: #ffffff !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.2s ease !important;
+}
+.lh-back-btn:hover {
+  background: rgba(255, 255, 255, 0.5) !important;
+  transform: translateY(-1px) !important;
+}
+.lh-back-icon,
+.lh-back-btn i,
+.lh-back-btn .v-icon {
+  color: #ffffff !important;
+  font-size: 22px !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+.lh-logo-container {
+  order: 2 !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: rgba(255, 255, 255, 0.35) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 14px !important;
+  padding: 5px 12px !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+.lh-logo-main {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1rem !important;
+  line-height: 1.1 !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
+}
+.lh-logo-sub {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+  line-height: 1.1 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+}
+/* Row 1 Right: Stars Score Card (Frosted Glass) */
+.lh-progress-section {
+  order: 2 !important;
+  margin-left: auto !important;
+}
+.lh-progress-container {
+  background: rgba(255, 255, 255, 0.3) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+  border-radius: 14px !important;
+  padding: 5px 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+.lh-progress-stars {
+  display: flex !important;
+  gap: 2px !important;
+  font-size: 0.95rem !important;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15)) !important;
+}
+.lh-progress-text {
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  margin-top: 1px !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
+}
+/* Row 2 Bottom: Breadcrumb Bar (Frosted Glass Horizontal Bar) */
+.lh-breadcrumb-section {
+  order: 3 !important;
+  width: 100% !important;
+  flex-basis: 100% !important;
+  margin-top: 2px !important;
+}
+.lh-breadcrumb-container {
+  background: rgba(255, 255, 255, 0.35) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 12px !important;
+  padding: 6px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 6px !important;
+  overflow-x: auto !important;
+  white-space: nowrap !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+.lh-breadcrumb-subject .lh-breadcrumb-text {
+  color: #ff7800 !important;
+  font-weight: 800 !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+}
+.lh-breadcrumb-text {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  max-width: none !important;
+  width: auto !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+.lh-breadcrumb-separator {
+  color: #334155 !important;
+  font-weight: 800 !important;
+}
+/* Smooth Fade-In Animation for Slide Transition */
+.lh-fade-in {
+  animation: lhFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes lhFadeIn {
+  from { opacity: 0.3; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Premium Glassmorphism Sticky Quiz Header Bar */
+.lh-quiz-header,
+.lh-question-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 99 !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  padding: 8px 16px !important;
+  margin-top: 0 !important;
+  margin-bottom: 12px !important;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.15) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+.lh-quiz-type-badge {
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+  border: 1px solid #a7f3d0 !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+.lh-header-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+/* Premium Action Buttons (Pill Style) */
+.lh-header-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 6px 14px !important;
+  border-radius: 20px !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+}
+.lh-btn-hint {
+  background: #e0f2fe !important;
+  color: #0284c7 !important;
+}
+.lh-btn-solution {
+  background: #fef3c7 !important;
+  color: #d97706 !important;
+}
+.lh-btn-check {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 8px rgba(16, 185, 129, 0.3) !important;
+}
+.lh-btn-check:hover {
+  filter: brightness(1.08) !important;
+  transform: translateY(-1px) !important;
+}
+/* ==========================================================
+   🚫 PREVENT TEXT SELECTION ("BÔI ĐEN") DURING DRAG & DROP
+   ========================================================== */
+.lh-matching,
+.lh-matching-container,
+.lh-matching-column,
+.lh-matching-pair-row,
+.lh-matching-item-a,
+.lh-matching-item-b,
+.lh-matching-dropzone,
+.lh-slide-container,
+.lh-drag-icon {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+/* ==========================================================
+   🎯 MATCHING QUIZ LAYOUT (DESKTOP & MOBILE FULL WIDTH)
+   ========================================================== */
+.lh-matching {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+.lh-matching-container {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  gap: 20px !important;
+  box-sizing: border-box !important;
+}
+.lh-matching-column {
+  flex: 1 1 50% !important;
+  width: 50% !important;
+  max-width: 50% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+.lh-column-title {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  padding: 8px 12px !important;
+  margin-bottom: 12px !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  color: #1e293b !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02) !important;
+}
+/* Gom Cột A & Dropzone thành 1 Cụm Ghép Đôi Rõ Ràng */
+.lh-matching-pair-row {
+  background: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 14px !important;
+  padding: 10px !important;
+  margin-bottom: 14px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+.lh-matching-pair-row .lh-matching-item-a {
+  background-color: #fff8f0 !important;
+  border: 1px solid #fde68a !important;
+  color: #d97706 !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  padding: 10px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+/* Thẻ Cột B */
+.lh-matching-item-b {
+  background: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 12px !important;
+  padding: 10px 14px !important;
+  margin-bottom: 12px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: grab !important;
+  touch-action: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+.lh-matching-item-b:active {
+  cursor: grabbing !important;
+}
+/* Dropzone Slot Cột A */
+.lh-matching-dropzone {
+  width: 100% !important;
+  min-height: 48px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 2px dashed #10b981 !important;
+  border-radius: 10px !important;
+  background-color: #f0fdf4 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+}
+.lh-matching-dropzone:has(.lh-matching-item-b),
+.lh-matching-dropzone:has(> .lh-matching-item-b) {
+  border: 2px solid #2563eb !important;
+  background-color: #eff6ff !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15) !important;
+}
+.lh-matching-dropzone:has(.lh-matching-item-b) .lh-dropzone-placeholder,
+.lh-matching-dropzone:has(> .lh-matching-item-b) .lh-dropzone-placeholder {
+  display: none !important;
+}
+.lh-matching-dropzone .lh-matching-item-b {
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  min-height: 48px !important;
+  margin: 0 !important;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  border: none !important;
+  background-color: #dbeafe !important;
+  color: #1e40af !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex: 1 1 100% !important;
+}
+.lh-dropzone-placeholder {
+  color: #059669 !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  font-style: italic !important;
+}
+/* Co gọn nút chuyển câu bottom nav */
+.lh-nav-btn {
+  max-width: 90px !important;
+  width: auto !important;
+  flex: 0 1 auto !important;
+  min-width: 44px !important;
+  border-radius: 20px !important;
+}
+/* Align Footer at bottom */
+.lh-navigation-footer,
+footer.lh-navigation-footer {
+  margin-top: auto !important;
+  position: relative !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  padding: 8px 12px !important;
+}
+/* Đẩy Toast Notification lên trên thanh Chuyển bài ở đáy */
+.v-toast,
+.v-toast--bottom,
+div[class*="v-toast"] {
+  bottom: 65px !important;
+  z-index: 99999 !important;
+}
+/* Clean Empty State Badge (Chỉ hiện khi đã ghép hết Cột B) */
+.lh-column-b-empty {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 14px 12px !important;
+  background: #ecfdf5 !important;
+  border: 1.5px dashed #a7f3d0 !important;
+  color: #047857 !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  text-align: center !important;
+  margin-top: 8px !important;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.08) !important;
+}
+/* ==========================================================
+   📱 COMPACT MOBILE RESPONSIVE OPTIMIZATION (< 768px)
+   ========================================================== */
+@media (max-width: 768px) {
+  /* Reduce Top Header height on mobile */
+  .lh-header-premium {
+    padding: 6px 10px !important;
+    border-radius: 14px !important;
+    margin-bottom: 8px !important;
+  }
+  .lh-header-content {
+    gap: 6px !important;
+  }
+  .lh-back-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    border-radius: 10px !important;
+  }
+  .lh-back-icon,
+  .lh-back-btn i,
+  .lh-back-btn .v-icon {
+    font-size: 18px !important;
+  }
+  .lh-logo-container {
+    padding: 3px 8px !important;
+    border-radius: 10px !important;
+    gap: 6px !important;
+  }
+  .lh-logo-icon img,
+  .lh-logo-image {
+    max-height: 22px !important;
+    width: auto !important;
+  }
+  .lh-logo-main {
+    font-size: 0.85rem !important;
+  }
+  .lh-logo-sub {
+    font-size: 0.65rem !important;
+  }
+  .lh-progress-container {
+    padding: 3px 8px !important;
+    border-radius: 10px !important;
+  }
+  .lh-progress-stars {
+    font-size: 0.8rem !important;
+  }
+  .lh-progress-text {
+    font-size: 0.68rem !important;
+  }
+  .lh-breadcrumb-container {
+    padding: 4px 8px !important;
+    border-radius: 8px !important;
+    font-size: 0.78rem !important;
+  }
+  /* Compact Quiz Action Header Bar */
+  .lh-quiz-header,
+  .lh-question-header {
+    padding: 6px 10px !important;
+    margin-bottom: 8px !important;
+    border-radius: 10px !important;
+  }
+  .lh-quiz-type-badge {
+    padding: 3px 8px !important;
+    font-size: 0.72rem !important;
+  }
+  .lh-header-actions {
+    gap: 4px !important;
+  }
+  .lh-header-btn {
+    padding: 4px 8px !important;
+    font-size: 0.75rem !important;
+  }
+  /* Compact Question Prompt */
+  .lh-question-prompt {
+    padding: 8px 12px !important;
+    margin-bottom: 10px !important;
+    font-size: 0.88rem !important;
+    border-radius: 10px !important;
+  }
+  /* Compact Matching Layout for Mobile */
+  .lh-matching-container {
+    gap: 10px !important;
+  }
+  .lh-column-title {
+    padding: 4px 8px !important;
+    margin-bottom: 8px !important;
+    font-size: 0.82rem !important;
+  }
+  .lh-matching-pair-row {
+    padding: 6px !important;
+    margin-bottom: 8px !important;
+    border-radius: 10px !important;
+    gap: 6px !important;
+  }
+  .lh-matching-pair-row .lh-matching-item-a {
+    padding: 6px 8px !important;
+    font-size: 0.82rem !important;
+    border-radius: 8px !important;
+  }
+  .lh-matching-item-b {
+    padding: 6px 8px !important;
+    margin-bottom: 8px !important;
+    font-size: 0.82rem !important;
+    border-radius: 8px !important;
+  }
+  .lh-matching-dropzone {
+    min-height: 38px !important;
+    border-radius: 8px !important;
+  }
+  .lh-matching-dropzone .lh-matching-item-b {
+    min-height: 38px !important;
+    padding: 6px 8px !important;
+    font-size: 0.82rem !important;
+  }
+  .lh-dropzone-placeholder {
+    font-size: 0.75rem !important;
+    padding: 8px !important;
+  }
+  /* Mobile Toast Alert - Positioned cleanly right above bottom bar */
+  .v-toast,
+  .v-toast--bottom,
+  .toastr-container {
+    bottom: 60px !important;
+    top: auto !important;
+    max-width: 90% !important;
+    margin: 0 auto !important;
+  }
+  /* ==========================================================
+     📱 MOBILE LAYOUT RESPONSIVE FIX FOR COMPOSITE QUIZ
+     ========================================================== */
+  .lh-quiz-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
+    padding: 4px !important;
+    gap: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  /* 1. Sidebar (Tiến độ & Danh sách câu hỏi) ON TOP */
+  .lh-quiz-sidebar {
+    order: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    position: static !important;
+    margin: 0 0 10px 0 !important;
+    padding: 12px !important;
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 14px !important;
+    box-sizing: border-box !important;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2) !important;
+  }
+  .lh-sidebar-content {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+  .lh-quiz-sidebar *,
+  .lh-progress-title,
+  .lh-progress-stats,
+  .lh-progress-number,
+  .lh-progress-text,
+  .lh-grid-title,
+  .lh-timer-label,
+  .lh-timer-time {
+    color: #ffffff !important;
+  }
+  .lh-timer-card,
+  .lh-progress-card,
+  .lh-questions-grid {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    background: rgba(255, 255, 255, 0.18) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: 10px !important;
+    padding: 8px 10px !important;
+  }
+  .lh-questions-grid .lh-grid-container {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(36px, 1fr)) !important;
+    gap: 6px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .lh-question-btn {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    border-radius: 10px !important;
+  }
+  .lh-question-btn.lh-current {
+    background: #fbbf24 !important;
+    color: #0f172a !important;
+    border: 2px solid #ffffff !important;
+  }
+  .lh-question-btn.lh-completed {
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border: 2px solid #059669 !important;
+  }
+  .lh-nav-controls,
+  .lh-submit-section {
+    width: 100% !important;
+    min-width: 100% !important;
+    margin-top: 4px !important;
+    box-sizing: border-box !important;
+  }
+  /* 2. Question Content BELOW Sidebar */
+  .lh-quiz-content {
+    order: 2 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    flex: 1 1 auto !important;
+    box-sizing: border-box !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow-x: hidden !important;
+  }
+  .lh-question-container,
+  .lh-question-block {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow-x: hidden !important;
+  }
+  .lh-question-prompt {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+  .lh-options-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
+  }
+  .lh-option-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+  }
+  .lh-option-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+    word-break: break-word !important;
+  }
+  .lh-matching-container {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .lh-matching-column {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .lh-matching-pair-row {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 4px !important;
+    margin-bottom: 6px !important;
+    gap: 4px !important;
+  }
+  .lh-matching-item-a {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 6px 8px !important;
+    font-size: 0.8rem !important;
+  }
+  .lh-matching-dropzone {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    min-height: 36px !important;
+  }
+  .lh-matching-item-b {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 6px !important;
+    padding: 6px 8px !important;
+    font-size: 0.8rem !important;
+    overflow: hidden !important;
+  }
+  .lh-matching-item-b.lh-matched-item {
+    position: relative !important;
+    cursor: pointer !important;
+  }
+  .lh-remove-icon {
+    margin-left: auto !important;
+    font-size: 13px !important;
+    color: #ef4444 !important;
+    font-weight: 800 !important;
+    padding: 2px 6px !important;
+    border-radius: 50% !important;
+    background: rgba(239, 68, 68, 0.1) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+  }
+  .lh-remove-icon:hover {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+  }
+  .lh-fullscreen-btn {
+    top: 4px !important;
+    right: 4px !important;
+    width: 28px !important;
+    height: 28px !important;
+  }
+  /* Dialog window overlay mobile height adjustments */
+  .v-dialog > .v-overlay__content {
+    max-height: calc(100vh - 70px) !important;
+    margin-bottom: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+  .v-dialog > .v-overlay__content > .v-card {
+    max-height: calc(100vh - 70px) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .uc-quiz-composite,
+  .v-dialog .v-card-text,
+  .uc-quiz-composite .v-card-text,
+  div.v-card-text.pa-4.pt-4,
+  div.v-card-text {
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+}
+.lh-bottom-nav-controls {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 6px 10px !important;
+  margin-top: 8px !important;
+  display: flex !important;
+  gap: 8px !important;
+}
+.lh-bottom-nav-controls .lh-btn {
+  height: 38px !important;
+  min-height: 38px !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  font-size: 0.82rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  flex: 1 1 0px !important;
+  min-width: 0 !important;
+  box-shadow: none !important;
+}
+/* Ensure bottom video action buttons in dialog are 100% responsive and match height/style */
+.v-dialog .v-card-actions,
+.lh-dialog-actions {
+  padding: 6px 10px 10px 10px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  background-color: #f8fafc !important;
+}
+/* Custom Native Dialog Buttons for 100% Reliable Visibility */
+.lh-custom-btn {
+  height: 38px !important;
+  min-height: 38px !important;
+  border-radius: 10px !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 12px !important;
+  cursor: pointer !important;
+  border: none !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+}
+.lh-custom-btn.lh-btn-rewind {
+  background-color: #ea580c !important;
+  color: #ffffff !important;
+  border: 1px solid #c2410c !important;
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.25) !important;
+}
+.lh-custom-btn.lh-btn-rewind *,
+.lh-custom-btn.lh-btn-rewind i,
+.lh-custom-btn.lh-btn-rewind span {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+.lh-custom-btn.lh-btn-continue {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid #047857 !important;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25) !important;
+}
+.lh-custom-btn.lh-btn-continue *,
+.lh-custom-btn.lh-btn-continue i,
+.lh-custom-btn.lh-btn-continue span {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+.lh-custom-btn.lh-btn-continue:disabled {
+  background: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  border: 1px solid #cbd5e1 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  opacity: 0.7 !important;
+}
+.lh-custom-btn.lh-btn-continue:disabled * {
+  color: #94a3b8 !important;
+}
+.v-dialog,
+.v-dialog .v-card,
+.media-player-container,
+.media-player-container .v-row,
+.media-player-container .v-col,
+.media-player-container .v-card,
+.lh-slide-container,
+.lh-slide-wrapper,
+.lh-slide-viewer,
+.lh-content-display,
+.v-window-item,
+.v-window {
+  overflow: visible !important;
+  overflow-y: visible !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.media-player-container .video-events-list {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.media-player-container .video-events-list::-webkit-scrollbar,
+.lh-slide-container::-webkit-scrollbar,
+.lh-slide-wrapper::-webkit-scrollbar,
+.lh-slide-viewer::-webkit-scrollbar,
+.lh-content-display::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+/* Smooth & Stable Connection lines */
+.lh-connection-item,
+.lh-connection-group,
+.lh-connection-item-target {
+  transform: none !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+.lh-connection-group.lh-active {
+  transform: none !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25) !important;
+}
+.lh-connection-line {
+  stroke-linecap: round !important;
+  pointer-events: none !important;
+}
+.lh-drag-avatar-clone {
+  pointer-events: none !important;
+  max-width: 240px !important;
+  width: auto !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3) !important;
+  transform: scale(1.05) rotate(2deg) !important;
+  opacity: 0.92 !important;
+  border: 2px solid #10b981 !important;
+  background: #ffffff !important;
+  border-radius: 10px !important;
+  padding: 6px 12px !important;
+  z-index: 9999999 !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+.lh-question-btn.lh-completed {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  border: 2px solid #059669 !important;
+}
+.lh-question-btn.lh-completed.lh-current {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  border: 3px solid #fbbf24 !important;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.6) !important;
+}

@@ -1,0 +1,122 @@
+{
+  "data": [
+    {
+      "webSocket": "{bep: null, order: null}",
+      "QrCode": "p_routers[1]",
+      "DSSanPham": [],
+      "DSSanPhamFilter": [],
+      "DSNhomSanPham": [],
+      "DSChiTietLienKet": [],
+      "IsShowDialogDetailProduct": false,
+      "IsShowDialogOrder": false,
+      "IsShowDialogHistory": false,
+      "DSOrder": [],
+      "SanPhamGuid_Active": null,
+      "HoaDonID": null,
+      "CTBan": "`${[][]}",
+      "TabNhomSanPham": 0,
+      "SearchKeyword": ""
+    },
+    {
+      "getBanById": {
+        "API": "/eorder/auth/Ban_Select_ByQrCode",
+        "IN": {
+          "QrCode": "QrCode"
+        },
+        "OUT": "CTBan",
+        "CALLBACK": [
+          {
+            "DSChiTietLienKet": "vueData.CTBan[2]",
+            "DSNhomSanPham": "vueData.CTBan[3]",
+            "HoaDonID": "vueData.CTBan[0][0]?.HoaDonID",
+            "webSocket_Hub_Bep": "`bep_{{vueData.CTBan[0][0]?.CuaHangID}}",
+            "webSocket_Hub_Order": "`order_{{vueData.CTBan[0][0]?.CuaHangID}}"
+          },
+          {
+            "DSSanPham": "mergeTabNhomSanPhamToSanPham(vueData.CTBan[3], vueData.CTBan[1])"
+          },
+          {
+            "DSSanPhamFilter": "vueData.DSSanPham"
+          },
+          {
+            "IF": "vueData.CTBan[0][0]?.HoaDonID > 0",
+            "THEN": {
+              "IsShowDialogHistory": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "getBanById"
+    }
+  ],
+  "watch": {
+    "TabNhomSanPham": {
+      "IF": "vueData.TabNhomSanPham === 0",
+      "THEN": {
+        "DSSanPhamFilter": "vueData.DSSanPham"
+      },
+      "ELSE": {
+        "DSSanPhamFilter": "vueData.DSSanPham.filter(item => item.TabIndex === vueData.TabNhomSanPham)"
+      }
+    }
+  },
+  "controls": [
+    {
+      "prop": "grid-list-md mobile-view",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "uc-navigation",
+              "w": 12,
+              "attr": {
+                ":info": "CTBan[0][0]",
+                "class": "uc-no-padding"
+              }
+            },
+            {
+              "el": "uc-product-list",
+              "w": 12,
+              "attr": {
+                "class": "div-product-list uc-no-padding",
+                "v-if": "CTBan[0].length > 0"
+              }
+            },
+            {
+              "el": "uc-modal-product",
+              "attr": {
+                "class": "div-product-list",
+                "v-if": "CTBan[0].length > 0"
+              }
+            },
+            {
+              "el": "uc-modal-order",
+              "attr": {
+                "class": "div-product-list",
+                "v-if": "CTBan[0].length > 0"
+              }
+            },
+            {
+              "el": "uc-modal-history",
+              "attr": {
+                "class": "div-product-list",
+                "v-if": "CTBan[0].length > 0",
+                ":is_show_dialog": "IsShowDialogHistory",
+                ":loaddata": "webSocket.order"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false,
+    "login": false,
+    "userInfo": ""
+  }
+}

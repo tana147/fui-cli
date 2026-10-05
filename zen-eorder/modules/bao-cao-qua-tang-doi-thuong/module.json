@@ -1,0 +1,114 @@
+{
+  "data": [
+    {
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')",
+      "DataSummary": {
+        "TongLanDoi": 0
+      }
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_QuaTang_NhanVien",
+        "IN": {
+          "TuNgay": "TuNgay",
+          "DenNgay": "DenNgay"
+        },
+        "OUT": "DSQuaTangNhanVien",
+        "CALLBACK": {
+          "EXE": "sumFooterTable()"
+        }
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "TuNgay",
+                "label": "Từ ngày",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "DenNgay",
+                "label": "Đến ngày",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getBaoCao"
+                }
+              },
+              "w": 3
+            }
+          ]
+        },
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-summary",
+              "attr": {
+                ":data": "vueData.DataSummary"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo cửa hàng đổi thưởng",
+                ":items": "DSQuaTangNhanVien",
+                ":excel": true,
+                "height": "calc(100vh - 243px)",
+                ":headers": [
+                  {
+                    "text": "Nhân viên đổi",
+                    "value": "TenDangNhap"
+                  },
+                  {
+                    "text": "Cửa hàng",
+                    "value": "TenCuaHang"
+                  },
+                  {
+                    "text": "Ngày đổi thưởng",
+                    "value": "DoiThuong_Ngay"
+                  },
+                  {
+                    "text": "Số lần đổi",
+                    "value": "TongLanDoi",
+                    "el": "span",
+                    "innerHTML": "{{item.TongLanDoi?.toLocaleString('vi-vn')}}"
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

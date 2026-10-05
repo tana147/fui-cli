@@ -1,0 +1,174 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')"
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        },
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_QuaTang_SoLanQuet",
+        "IN": {
+          "CuaHangID": "CuaHangID",
+          "TuNgay": "TuNgay",
+          "DenNgay": "DenNgay"
+        },
+        "OUT": "DSQuaTang"
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);",
+        "CALL": "getBaoCao"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "TuNgay",
+                "label": "Từ ngày (Quét)",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "DenNgay",
+                "label": "Đến ngày (Quét)",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getBaoCao"
+                }
+              },
+              "w": 3
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo số lần quét mã",
+                ":items": "DSQuaTang",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Cửa hàng",
+                    "value": "TenCuaHang"
+                  },
+                  {
+                    "text": "Mã hóa đơn",
+                    "value": "MaHoaDon"
+                  },
+                  {
+                    "text": "Ngày quét",
+                    "value": "Ngay_Quet",
+                    "align": "center"
+                  },
+                  {
+                    "text": "Giờ quét",
+                    "value": "Gio_Quet",
+                    "align": "center"
+                  },
+                  {
+                    "text": "Khách hàng quét",
+                    "value": "KhachHang_Quet"
+                  },
+                  {
+                    "text": "Số lần quét",
+                    "value": "SoLanQuet"
+                  },
+                  {
+                    "text": "QR Code sản phẩm",
+                    "value": "QrCode_SanPham"
+                  },
+                  {
+                    "text": "Mã trúng thưởng",
+                    "value": "QrCode_TrungThuong"
+                  },
+                  {
+                    "text": "Xác nhận",
+                    "value": "Is_XacNhan",
+                    "align": "center",
+                    "el": "span",
+                    "innerHTML": "{{item.Is_XacNhan === 1 ? 'Đã xác nhận' : 'Chưa xác nhận'}}"
+                  },
+                  {
+                    "text": "Khách hàng xác nhận",
+                    "value": "KhachHang_XacNhan"
+                  },
+                  {
+                    "text": "Đổi thưởng",
+                    "value": "Is_DoiThuong",
+                    "align": "center",
+                    "el": "span",
+                    "innerHTML": "{{item.Is_DoiThuong === 1 ? 'Đã đổi thưởng' : 'Chưa đổi thưởng'}}"
+                  },
+                  {
+                    "text": "Ngày đổi",
+                    "value": "DoiThuong_Ngay",
+                    "align": "center"
+                  },
+                  {
+                    "text": "Giờ đổi",
+                    "value": "DoiThuong_Gio",
+                    "align": "center"
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

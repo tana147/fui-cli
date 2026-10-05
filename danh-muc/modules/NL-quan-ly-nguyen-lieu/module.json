@@ -1,0 +1,27 @@
+{
+  "data": [
+    {
+      "isShowModalAddNguyenLieu": false,
+      "stage": "1"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-nl-page"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false
+  }
+}

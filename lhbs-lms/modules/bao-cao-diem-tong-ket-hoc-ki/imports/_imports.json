@@ -1,0 +1,10 @@
+[
+  {
+    "name": "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "486B5F45BA004CFAA3081C0E1DF619D6",
+    "scope": "module",
+    "sort": 50
+  }
+]

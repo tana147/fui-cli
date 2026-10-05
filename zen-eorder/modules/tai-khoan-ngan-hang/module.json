@@ -1,0 +1,43 @@
+{
+  "data": [
+    {
+      "DS_NganHangChietKhau": [],
+      "DS_NganHang": []
+    },
+    {
+      "getNganHang": {
+        "API": "/eorder/NganHang_Select",
+        "OUT": "DS_NganHang"
+      }
+    },
+    {
+      "getNganHangChietKhau": {
+        "API": "/eorder/NganHangChietKhau_Select",
+        "OUT": "DS_NganHangChietKhau"
+      }
+    },
+    {
+      "CALL": "getNganHangChietKhau"
+    },
+    {
+      "CALL": "getNganHang"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

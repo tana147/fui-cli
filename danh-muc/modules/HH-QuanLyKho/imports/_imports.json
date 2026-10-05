@@ -1,0 +1,19 @@
+[
+  {
+    "name": "style",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "8D067D4AFC80425198A21A406CA5746F",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/style-8D067D4AFC80425198A21A406CA5746F.css"
+  },
+  {
+    "name": "https://unpkg.com/html5-qrcode",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "5294197F9CE04EA2B241277A16678A10",
+    "scope": "module",
+    "sort": 50
+  }
+]

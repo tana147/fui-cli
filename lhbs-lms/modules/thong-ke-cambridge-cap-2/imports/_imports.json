@@ -1,0 +1,19 @@
+[
+  {
+    "name": "stylePage.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "75635E5D03F4460EB82F37AC14E072A4",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/stylePage.css-75635E5D03F4460EB82F37AC14E072A4.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/apexcharts",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "7392B8739DC94998AEB7504B561378A9",
+    "scope": "module",
+    "sort": 50
+  }
+]

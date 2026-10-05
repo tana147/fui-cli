@@ -1,0 +1,440 @@
+{
+  "data": [
+    {
+      "CALL": "initFile()"
+    },
+    {
+      "CT_ChuyenGiaoCongNghe": null,
+      "CGCNID": null,
+      "CGCNID_Remove": null,
+      "FileID_Remove": null,
+      "DS_FileHopDongUpload": null,
+      "DS_TapTinDinhKem": [],
+      "FileData": [],
+      "SoHopDong": "",
+      "DialogFile_Open": false
+    },
+    {
+      "API": "/ChuyenGiaoCongNghe_Get",
+      "OUT": "DS_ChuyenGiaoCongNghe"
+    },
+    {
+      "addFileHopDongTable": {
+        "IF": "DS_FileHopDongUpload.Files.length > 0",
+        "THEN": [
+          {
+            "EXE": "vueData.DS_TapTinDinhKem.push(vueData.DS_FileHopDongUpload.Files[0])"
+          },
+          {
+            "DS_FileHopDongUpload": null
+          }
+        ],
+        "ELSE": {
+          "MESS": "Tập tin không hợp lệ"
+        }
+      }
+    },
+    {
+      "removeFileHopDongTable": {
+        "IF": "vueData.FileID_Remove",
+        "THEN": [
+          {
+            "DS_TapTinDinhKem": "vueData.FileData.filter(item => item.FILE_ID !== vueData.FileID_Remove)",
+            "FileID_Remove": null
+          }
+        ]
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "col": {},
+              "w": 12,
+              "attr": {
+                ":excel": true,
+                ":label": "`Danh sách dự án/hợp đồng chuyển giao công nghệ`",
+                ":fixed-header": true,
+                ":show-select": false,
+                ":fixed-cols": 2,
+                ":mobile-breakpoint": 600,
+                "v-model": "DS_ChuyenGiaoCongNghe_List",
+                ":items": "DS_ChuyenGiaoCongNghe",
+                "item-key": "CGCNID",
+                ":headers": [
+                  {
+                    "text": "STT",
+                    "align": "center",
+                    "value": "SoThuTu"
+                  },
+                  {
+                    "text": "Tên Dự án/Hợp đồng",
+                    "value": "TenDuAn",
+                    "width": "350px"
+                  },
+                  {
+                    "text": "Chủ nhiệm",
+                    "value": "ChuNhiemDeTai"
+                  },
+                  {
+                    "text": "Thành viên thực hiện",
+                    "value": "ThanhVienDeTai"
+                  },
+                  {
+                    "text": "Đơn vị chủ nhiệm",
+                    "value": "DonViChuNhiem"
+                  },
+                  {
+                    "text": "Đơn vị tiếp nhận",
+                    "value": "DonViTiepNhan"
+                  },
+                  {
+                    "text": "Giá trị HĐ",
+                    "value": "GiaTriHopDong",
+                    "el": "span",
+                    "align": "right",
+                    "innerHTML": "{{item.GiaTriHopDong.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Năm học",
+                    "value": "NamHoc",
+                    "align": "right",
+                    "width": "100px"
+                  },
+                  {
+                    "text": "Năm thực hiện",
+                    "value": "NamThucHien",
+                    "align": "right"
+                  },
+                  {
+                    "text": "Số/No. HĐ",
+                    "value": "SoHopDong",
+                    "align": "center",
+                    "el": "t-button",
+                    "attr": {
+                      "v-if": "item.SoHopDong !== ''",
+                      "color": "green",
+                      ":label": "item.SoHopDong",
+                      ":action": {
+                        "DialogFile_Open": true,
+                        "DS_TapTinDinhKem": "JSON.parse(item.FileData)"
+                      }
+                    }
+                  },
+                  {
+                    "text": "Minh chứng",
+                    "value": "",
+                    "align": "center",
+                    "el": "v-icon",
+                    "attr": {
+                      "v-if": "item.FileData && item.FileData.length > 0"
+                    },
+                    "innerHTML": "mdi-attachment"
+                  },
+                  {
+                    "text": "Chức năng",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-textarea",
+                    "attr": {
+                      "v-model": "TenDuAn",
+                      "label": "Tên Dự án",
+                      "rows": 2,
+                      "hide-details": true
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-textarea",
+                    "attr": {
+                      "v-model": "ChuNhiemDeTai",
+                      "label": "Chủ nhiệm",
+                      "rows": 2,
+                      "hide-details": true
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-textarea",
+                    "attr": {
+                      "v-model": "ThanhVienDeTai",
+                      "label": "Thành viên thực hiện",
+                      "rows": 2,
+                      "hide-details": true
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "DonViChuNhiem",
+                      "label": "Đơn vị Chủ nhiệm"
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "DonViTiepNhan",
+                      "label": "Đơn vị Tiếp nhận"
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "GiaTriHopDong",
+                      "label": "Giá trị Hợp đồng",
+                      "type": "number"
+                    },
+                    "w": 6
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "SoHopDong",
+                      "label": "Số Hợp đồng"
+                    },
+                    "w": 6
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "NamHoc",
+                      "label": "Năm học"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "NamThucHien",
+                      "label": "Năm Thực hiện",
+                      "type": "number"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "div",
+                    "w": 6
+                  },
+                  {
+                    "el": "div",
+                    "attr": {
+                      "class": "text-left"
+                    },
+                    "innerHTML": "<span class='title black--text'>Danh sách tập tin đính kèm</span>",
+                    "w": 9
+                  },
+                  {
+                    "el": "f-file-upload",
+                    "w": 3,
+                    "attr": {
+                      "v-model": "vueData.DS_FileHopDongUpload",
+                      "label": "Tải lên tập tin",
+                      ":filters": "vueData.fileEX",
+                      ":url": "vueData.v_Set.apiFile",
+                      ":onclose": {
+                        "CALL": "addFileHopDongTable"
+                      }
+                    }
+                  },
+                  {
+                    "el": "f-table",
+                    "w": 12,
+                    "col": {},
+                    "attr": {
+                      ":excel": false,
+                      ":show-search": false,
+                      ":fixed-header": true,
+                      ":show-select": false,
+                      ":fixed-cols": 2,
+                      ":mobile-breakpoint": 600,
+                      "v-model": "vueData.DS_TapTinDinhKem_List",
+                      ":items": "vueData.DS_TapTinDinhKem",
+                      "item-key": "FILE_ID",
+                      ":headers": [
+                        {
+                          "text": "Tập tin",
+                          "el": "span",
+                          "value": "FILE_NAME",
+                          "innerHTML": "<a :href='`${vueData.v_Set.urlReturnFile}/FileData/${item.FILE_ID}`' target='_blank'>{{item.FILE_NAME}}</a> ({{item.FILE_SIZE}}kb)"
+                        },
+                        {
+                          "text": "",
+                          "el": "t-button",
+                          "value": "Huy",
+                          "align": "right",
+                          "attr": {
+                            "color": "red",
+                            "label": "Xóa",
+                            ":action": [
+                              {
+                                "FileID_Remove": "item.FILE_ID"
+                              },
+                              {
+                                "EXE": "removeFileHopDong()"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "CGCNID": "vueData.CGCNID",
+                    "SoThuTu": 0,
+                    "DonViChuNhiem": "Trường Đại học Lạc Hồng",
+                    "SoHopDong": ""
+                  },
+                  "new-action": {
+                    "DS_TapTinDinhKem": "[]"
+                  },
+                  "edit-action": {
+                    "DS_TapTinDinhKem": "item.FileData ?? []"
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới dự án/hợp đồng chuyển giao công nghệ",
+                    "API": "/ChuyenGiaoCongNghe_Ins",
+                    "IN": {
+                      "SoThuTu": "item.SoThuTu",
+                      "TenDuAn": "item.TenDuAn",
+                      "NamHoc": "item.NamHoc",
+                      "ChuNhiemDeTai": "item.ChuNhiemDeTai",
+                      "ThanhVienDeTai": "item.ThanhVienDeTai",
+                      "DonViChuNhiem": "item.DonViChuNhiem",
+                      "DonViTiepNhan": "item.DonViTiepNhan",
+                      "GiaTriHopDong": "item.GiaTriHopDong",
+                      "NamThucHien": "item.NamThucHien",
+                      "SoHopDong": "item.SoHopDong",
+                      "DS_FileID": "vueData.DS_TapTinDinhKem.map(item => item.FILE_ID).join(',')"
+                    },
+                    "MESS": "Thêm mới dự án/hợp đồng chuyển giao công nghệ thành công",
+                    "CALLBACK": [
+                      {
+                        "DialogDecision_Open": false,
+                        "DS_DeTaiQuyetDinh": [],
+                        "DS_TapTinDinhKem": [],
+                        "SoQuyetDinh": "",
+                        "GiaiThuongID": null,
+                        "GiaiThuongID_Remove": null,
+                        "FileID_Remove": null
+                      },
+                      {
+                        "CALL": "getChuyenGiaoCongNghe"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật dự án/hợp đồng chuyển giao công nghệ <b><i> {{item.TenDuAn}} </i></b>?",
+                    "API": "/ChuyenGiaoCongNghe_Upd",
+                    "IN": {
+                      "CGCNID": "item.CGCNID",
+                      "SoThuTu": "item.SoThuTu",
+                      "TenDuAn": "item.TenDuAn",
+                      "NamHoc": "item.NamHoc",
+                      "ChuNhiemDeTai": "item.ChuNhiemDeTai",
+                      "ThanhVienDeTai": "item.ThanhVienDeTai",
+                      "DonViChuNhiem": "item.DonViChuNhiem",
+                      "DonViTiepNhan": "item.DonViTiepNhan",
+                      "GiaTriHopDong": "item.GiaTriHopDong",
+                      "NamThucHien": "item.NamThucHien",
+                      "SoHopDong": "item.SoHopDong",
+                      "DS_FileID": "vueData.DS_TapTinDinhKem.map(item => item.FILE_ID).join(',')"
+                    },
+                    "MESS": "Cập nhật dự án/hợp đồng chuyển giao công nghệ thành công",
+                    "CALLBACK": [
+                      {
+                        "DialogDecision_Open": false,
+                        "DS_DeTaiQuyetDinh": [],
+                        "DS_TapTinDinhKem": [],
+                        "SoQuyetDinh": "",
+                        "GiaiThuongID": null,
+                        "GiaiThuongID_Remove": null,
+                        "FileID_Remove": null
+                      },
+                      {
+                        "CALL": "getChuyenGiaoCongNghe"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn dự án/hợp đồng chuyển giao công nghệ <b><i> {{item.TenDuAn}} </i></b>?",
+                    "API": "/ChuyenGiaoCongNghe_Del",
+                    "IN": {
+                      "CGCNID": "item.CGCNID"
+                    },
+                    "OUT": "ERRMSG",
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": {
+                      "CALL": "getChuyenGiaoCongNghe"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-dialog",
+              "col": {},
+              "attr": {
+                "v-model": "DialogFile_Open",
+                "title": "Các file minh chứng Dự án / Hợp đồng",
+                ":controls": [
+                  {
+                    "el": "div",
+                    "attr": {
+                      "class": "text-left"
+                    },
+                    "innerHTML": "<span class='title black--text'>Danh sách tập tin đính kèm</span>",
+                    "w": 12
+                  },
+                  {
+                    "el": "f-table",
+                    "w": 12,
+                    "col": {},
+                    "attr": {
+                      ":excel": false,
+                      ":show-search": false,
+                      ":fixed-header": true,
+                      ":show-select": false,
+                      ":fixed-cols": 2,
+                      ":mobile-breakpoint": 600,
+                      ":items": "vueData.DS_TapTinDinhKem",
+                      ":headers": [
+                        {
+                          "text": "Tập tin",
+                          "el": "span",
+                          "value": "FileName",
+                          "innerHTML": "<a :href='`${vueData.v_Set.urlReturnFile}/FileData/${item.FILE_ID}`' target='_blank'>{{item.FILE_NAME}}</a> ({{item.FILE_SIZE}}kb)"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

@@ -1,0 +1,54 @@
+{
+  "data": [
+    {
+      "reloadXuLyHocVu": null,
+      "nienKhoaData": "",
+      "DsStudentInfo": [],
+      "DSStudentFilter": [],
+      "DsExistStudent": [],
+      "reloadStuNienKhoa": null,
+      "isUpdTask": false,
+      "isOldData": false,
+      "isOpenReset": false,
+      "isOpenViewOld": false,
+      "StudentDetail": null,
+      "hocVienObj": {},
+      "Panel": null,
+      "similiarTopic": [],
+      "similiarList": [],
+      "isAdvaneDialog": false,
+      "isOpenImport": false,
+      "isOpenDongBo": false
+    },
+    {
+      "getHeDaoTao": {
+        "API": "/hedaotao_get",
+        "OUT": "DSHeDaoTao"
+      }
+    },
+    {
+      "CALL": "getHeDaoTao"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "student-container",
+              "col": {},
+              "attr": {
+                ":dshedaotao": "vueData.DSHeDaoTao"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

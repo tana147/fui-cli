@@ -1,0 +1,36 @@
+/* ==========================================================================
+   lms-tc-asm-preview: Styles cho video tương tác
+   ========================================================================== */
+/* Lớp phủ trong suốt che lên player YouTube để chặn tương tác chuột trực tiếp vào iframe */
+.player-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: transparent;
+	z-index: 5;
+	cursor: pointer;
+}
+/* Các chấm marker mốc câu hỏi đặt chuẩn xác trên thanh slider timeline ngoài */
+.interaction-marker-dot {
+	position: absolute;
+	top: 50%;
+	width: 12px;
+	height: 12px;
+	background-color: #ff5722;
+	border: 2px solid #ffffff;
+	border-radius: 50%;
+	cursor: pointer;
+	z-index: 5;
+	transform: translate(-50%, -50%);
+	transition: transform 0.15s ease, background-color 0.15s ease;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+.interaction-marker-dot:hover {
+	transform: translate(-50%, -50%) scale(1.4);
+	background-color: #e64a19;
+}
+.interaction-marker-dot.is-completed {
+	background-color: #4caf50 !important;
+}

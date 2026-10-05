@@ -1,0 +1,50 @@
+{
+  "data": [
+    {
+      "KhoaNCKH": []
+    },
+    {
+      "fetchDSDot": {
+        "API": "/NCKH_Dot_Get",
+        "OUT": "DSDot"
+      }
+    },
+    {
+      "CALL": "fetchDSDot"
+    },
+    {
+      "API": "/NCKH_LoaiHoiDong_Get",
+      "OUT": "DSLoaiHoiDong"
+    },
+    {
+      "EXE": "getKhoaNCKH()"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-table-de-tai-khen-thuong",
+              "cols": {},
+              "attr": {
+                ":dsdot": "vueData.DSDot",
+                ":dsloaihoidong": "vueData.DSLoaiHoiDong",
+                ":dsdetai": "vueData.DSDeTai",
+                ":dskhoanckh": "vueData.KhoaNCKH",
+                "v-on:on-dot-changed": "CALL(vueData.fetchDSDot)"
+              },
+              "w": 12
+            }
+          ],
+          "w": 12
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

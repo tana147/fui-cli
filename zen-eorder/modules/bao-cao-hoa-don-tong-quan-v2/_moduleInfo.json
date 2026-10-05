@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-hoa-don-tong-quan-v2",
+  "url": "/zen-eorder/bao-cao-hoa-don-tong-quan-v2",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-hoa-don-tong-quan-v2",
+  "ModuleName": "Báo Cáo / Hóa Đơn / Tổng Quan Đơn Hàng",
+  "UpdateTime": "2026-03-20 16:20:50",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-05-25",
+  "LoadCount": 111,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

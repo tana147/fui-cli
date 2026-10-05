@@ -1,0 +1,87 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')"
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        }
+      ]
+    },
+    {
+      "getKhuCheBien": {
+        "API": "/eorder/KhuCheBien_Select_ByCuaHangId",
+        "IN": {
+          "CuaHangID": "CuaHangID"
+        },
+        "OUT": "DSKhuCheBien",
+        "CALLBACK": [
+          {
+            "KhuCheBienID": "DSKhuCheBien[0].KhuCheBienID"
+          }
+        ]
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "CALL": "getKhuCheBien"
+      },
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "page-container grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "bg-green py-1 px-2",
+          "cols": [
+            {
+              "el": "uc-navigation"
+            }
+          ]
+        },
+        {
+          "prop": "page-navigation justify-center",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 5,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "justify-center",
+          "cols": [
+            {
+              "el": "uc-area-list",
+              "attr": {
+                ":list": "DSKhuCheBien"
+              },
+              "w": 8
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false
+  }
+}

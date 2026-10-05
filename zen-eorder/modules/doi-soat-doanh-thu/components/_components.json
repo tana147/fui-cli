@@ -1,0 +1,54 @@
+[
+  {
+    "comID": 6301,
+    "comName": "uc-danh-sach-hoa-don"
+  },
+  {
+    "comID": 6302,
+    "comName": "uc-danh-sach-hoa-don-theo-hinh-thuc"
+  },
+  {
+    "comID": 6284,
+    "comName": "uc-danh-sach-phieu-ket-ca"
+  },
+  {
+    "comID": 6279,
+    "comName": "uc-dialog-cap-nhat-chiet-khau"
+  },
+  {
+    "comID": 7077,
+    "comName": "uc-dialog-chiet-khau-tien-mat"
+  },
+  {
+    "comID": 6704,
+    "comName": "uc-dialog-chuyen-khoan-thuc-te"
+  },
+  {
+    "comID": 7479,
+    "comName": "uc-dialog-dong-bo-multi"
+  },
+  {
+    "comID": 6276,
+    "comName": "uc-dialog-du-lieu-doi-soat"
+  },
+  {
+    "comID": 6442,
+    "comName": "uc-dialog-export"
+  },
+  {
+    "comID": 6296,
+    "comName": "uc-dong-bo-du-lieu"
+  },
+  {
+    "comID": 6247,
+    "comName": "uc-filter"
+  },
+  {
+    "comID": 6246,
+    "comName": "uc-main"
+  },
+  {
+    "comID": 6317,
+    "comName": "uc-table"
+  }
+]

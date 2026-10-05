@@ -1,0 +1,116 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.back-link-hover:hover {
+    text-decoration: underline;
+}
+
+.filter-block {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.filter-title {
+    font-weight: 450;
+    margin-bottom: 6px;
+}
+
+.drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.text-right-input input {
+    text-align: right;
+}
+
+.inpFile-container {
+    width: 30%;
+}
+
+.errorBg{
+    background-color: #ffe5e5;
+}
+
+.search-bar {
+    width: 25%;
+    margin-left: auto;
+}
+
+.tiny-field .v-field__input {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    min-height: 24px !important; /* chỉnh nhỏ theo ý bạn */
+}
+
+.tiny-field .v-field__outline {
+    --v-field-border-width: 1px;
+}
+
+.filter-title {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.filter-icon {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.filter-title:hover .filter-icon {
+  opacity: 1;
+}
+
+.tabulator-select {
+  width: 100%;
+  height: 26px;
+  padding: 2px 6px;
+
+  font-size: 12px;
+  font-family: inherit;
+
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+
+  cursor: pointer;
+  outline: none;
+
+  /* bỏ arrow mặc định */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-image: none;
+}
+
+.tabulator-select:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 1px rgba(25, 118, 210, 0.2);
+}
+
+.tabulator-select:hover {
+  border-color: #999;
+}
+
+.drag-row-handle {
+    cursor: ns-resize; /* mũi tên lên xuống */
+    color: #217d46; /* primary */
+}
+
+.drag-row-handle:hover {
+    opacity: 0.8;
+}
+
+.drag-row-handle:active {
+    cursor: grabbing;
+}

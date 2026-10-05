@@ -1,0 +1,38 @@
+.highlight-total{
+    /* background-color: #00000021; */
+    color: #4CAF50;
+    font-weight: 500;
+}
+
+.freezy-header thead tr th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 7 !important;
+    top:0;
+}
+
+.freezy-column tbody tr td:first-child {
+    position: sticky;
+    left: 0;
+    top: 0;
+    z-index: 6 !important;
+    background-color: #fff;
+    color: black;
+}
+
+.freezy-header thead tr th:nth-child(2) {
+    position: sticky;
+    left: 250px; 
+    z-index: 6 !important;
+    top: 0;
+    background-color: #fff;
+    color: black;
+}
+
+.freezy-column tbody tr td:nth-child(2) {
+    position: sticky;
+    left: 250px;
+    z-index: 5 !important;
+    background-color: #fff;
+    color: black;
+}

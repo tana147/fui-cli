@@ -1,0 +1,11 @@
+[
+  {
+    "name": "pageStyle",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "816B4120F7474C658374F1FA63ED820F",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/pageStyle-816B4120F7474C658374F1FA63ED820F.css"
+  }
+]

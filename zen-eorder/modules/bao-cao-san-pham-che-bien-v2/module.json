@@ -1,0 +1,222 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "PhanHieuID": 0,
+      "KhuVucID": 0,
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')",
+      "Ngay": "moment().format('YYYY-MM-DD')",
+      "HinhThucThoiGian": 2,
+      "Nam": null,
+      "Thang": null,
+      "TuNam": null,
+      "DenNam": null,
+      "DSHinhThucThoiGian": [
+        {
+          "value": 1,
+          "text": "Theo giờ"
+        },
+        {
+          "value": 2,
+          "text": "Theo ngày"
+        },
+        {
+          "value": 3,
+          "text": "Theo tuần"
+        },
+        {
+          "value": 4,
+          "text": "Theo quý"
+        },
+        {
+          "value": 5,
+          "text": "Theo tháng"
+        },
+        {
+          "value": 6,
+          "text": "Theo năm"
+        }
+      ],
+      "DSThang": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "DSNam": "GetDSNam()",
+      "headers": [
+        {
+          "text": "",
+          "value": "HinhThucThoiGian",
+          "align": "end"
+        },
+        {
+          "text": "Mã đơn hàng",
+          "value": "MaDonHang"
+        },
+        {
+          "text": "Loại đơn hàng",
+          "value": "LoaiDonHang",
+          "width": 150
+        },
+        {
+          "text": "Số lượng",
+          "value": "SoLuong",
+          "el": "span",
+          "innerHTML": "{{item.SoLuong?.toLocaleString('vi-vn')}} {{item.TenDonViTinh}}"
+        },
+        {
+          "text": "Tên món",
+          "value": "TenMon",
+          "width": 250
+        },
+        {
+          "text": "Thêm mới",
+          "value": "NhanVienThemMoi"
+        },
+        {
+          "text": "Thanh toán",
+          "value": "NhanVienThanhToan"
+        },
+        {
+          "text": "Thời gian từ",
+          "value": "ThoiGian",
+          "el": "span",
+          "innerHTML": "Từ: {{item.ThoiGianThemMoi}}",
+          "width": 170
+        },
+        {
+          "text": "Thời gian đến",
+          "value": "ThoiGian",
+          "el": "span",
+          "innerHTML": "{{item.ThoiGianHoanThanh}}",
+          "width": 170
+        },
+        {
+          "text": "Hoàn thành",
+          "value": "ThoiGianHoanThanh_Gio"
+        },
+        {
+          "text": "TT Bếp",
+          "value": "TrangThai_Bep",
+          "width": 150
+        },
+        {
+          "text": "Cửa hàng",
+          "value": "TenCuaHang",
+          "width": 300
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        },
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/KhuVuc_Select",
+      "OUT": "DSKhuVuc",
+      "CALLBACK": [
+        {
+          "EXE": "DSKhuVuc.unshift({'KhuVucID': 0, 'TenKhuVuc': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/PhanHieu_Select",
+      "OUT": "DSPhanHieu",
+      "CALLBACK": [
+        {
+          "EXE": "DSPhanHieu.unshift({'PhanHieuID': 0, 'TenPhanHieu': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_SanPham_ThoiGianCheBien_v2",
+        "IN": {
+          "CuaHangID": "CuaHangID",
+          "Ngay": "Ngay ?? -1",
+          "TuNgay": "TuNgay ?? -1",
+          "DenNgay": "DenNgay ?? -1",
+          "Nam": "Nam ?? -1",
+          "TuNam": "TuNam ?? -1",
+          "DenNam": "DenNam ?? -1",
+          "Thang": "Thang ?? -1",
+          "HinhThucThoiGian": "HinhThucThoiGian"
+        },
+        "OUT": "DSChiTietHoaDon",
+        "CALLBACK": [
+          {
+            "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+          }
+        ]
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);",
+        "CALL": "getBaoCao"
+      }
+    ],
+    "HinhThucThoiGian": [
+      {
+        "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+      },
+      {
+        "EXE": "vueData.DSChiTietHoaDon = []"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo thời gian chế biến",
+                ":items": "DSChiTietHoaDon",
+                ":excel": true,
+                "height": "calc(100vh - 226px)",
+                ":hide-default-footer": false,
+                ":headers": "headers"
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

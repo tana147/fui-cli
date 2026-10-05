@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-Lesson-Class-Detail",
+  "url": "//lms.lhbs.vn/lms-Lesson-Class-Detail",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-Lesson-Class-Detail",
+  "ModuleName": "Báo Cáo Bài Học Theo Lớp",
+  "UpdateTime": "2025-10-31 08:22:07",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 508,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

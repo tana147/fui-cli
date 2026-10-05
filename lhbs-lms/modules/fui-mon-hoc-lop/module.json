@@ -1,0 +1,127 @@
+{
+  "data": [
+    {
+      "EXE": "IsCheck_NotRoleParent(vueData.user)"
+    },
+    {
+      "items": [],
+      "headers": [],
+      "TitlePage": "getTitlePageByURL(window.location.pathname + window.location.search)",
+      "DSMonHoc": [],
+      "MonHocItem": null,
+      "DSMonHocLop": [],
+      "DSCap": [],
+      "CapItem": null,
+      "DSLop": [],
+      "LopID": null,
+      "DSTemplate": [],
+      "TemplateBangDiemID": null,
+      "DSKhoi": [],
+      "DSKhoi_Init": [],
+      "KhoiID": null,
+      "keyComp": 0,
+      "uniqueDSLop": [],
+      "ShowNhom": false,
+      "DSNhom": [],
+      "DSMonHocLopRaw": [],
+      "_isLoadingDSNhom": false,
+      "_hasLoadedDSNhom": false,
+      "IsShowDialogChonNhanh": false
+    },
+    {
+      "loadLop": {
+        "EXE": "loadLop()"
+      },
+      "loadTemplateBangDiem": {
+        "EXE": "loadTemplateBangDiem()"
+      },
+      "loadMonHoc": {
+        "EXE": "loadMonHoc()"
+      },
+      "loadCap": {
+        "EXE": "loadCapAndInit()"
+      },
+      "getMonHocLop": {
+        "EXE": "reloadMonHocLop()"
+      }
+    },
+    {
+      "EXE": "loadCapAndInit()"
+    }
+  ],
+  "watch": {
+    "NienKhoa": {
+      "CALL": [
+        {
+          "KhoiItem": null,
+          "MonHocItem": null,
+          "items": []
+        },
+        {
+          "EXE": "loadLop()"
+        },
+        {
+          "EXE": "loadTemplateBangDiem()"
+        }
+      ]
+    },
+    "CapItem": {
+      "IF": "vueData.CapItem?.CapID > 0",
+      "THEN": [
+        {
+          "MonHocItem": null,
+          "items": [],
+          "KhoiID": null
+        },
+        {
+          "EXE": "vueData.DSKhoi = vueData.DSKhoi_Init.filter(x=> x.CapID === vueData.CapItem?.CapID)"
+        },
+        {
+          "EXE": "initSelectAllKhoi()"
+        }
+      ]
+    },
+    "KhoiID": {
+      "IF": "vueData.KhoiID >= 0",
+      "THEN": [
+        {
+          "items": [],
+          "MonHocItem": null
+        },
+        {
+          "EXE": "loadTemplateBangDiem()"
+        },
+        {
+          "EXE": "loadMonHoc()"
+        }
+      ]
+    },
+    "MonHocItem": {
+      "CALL": [
+        {
+          "IF": "vueData.MonHocItem?.MonHocID >= 0",
+          "THEN": {
+            "CALL": "getMonHocLop"
+          }
+        }
+      ]
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid pa-0",
+      "rows": [
+        {
+          "prop": ":no-gutters='true'",
+          "cols": [
+            {
+              "el": "uc-main-layout",
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

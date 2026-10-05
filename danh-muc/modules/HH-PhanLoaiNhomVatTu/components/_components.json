@@ -1,0 +1,18 @@
+[
+  {
+    "comID": 6484,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 6485,
+    "comName": "uc-modal-add"
+  },
+  {
+    "comID": 6486,
+    "comName": "uc-modal-edit"
+  },
+  {
+    "comID": 6489,
+    "comName": "uc-modal-move"
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/customer-login",
+  "url": "//customer.zenfoodcourt.vn",
+  "mDomain": "customer.zenfoodcourt.vn",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "customer-login",
+  "ModuleName": "Khách Hàng Đăng Nhập",
+  "UpdateTime": "2026-03-29 13:56:31",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2025-07-03",
+  "LoadCount": 1697,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "comID": 8089,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 8092,
+    "comName": "uc-modal-detail"
+  },
+  {
+    "comID": 8090,
+    "comName": "uc-table-bao-tri"
+  },
+  {
+    "comID": 8091,
+    "comName": "uc-top-bar"
+  }
+]

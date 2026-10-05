@@ -1,0 +1,138 @@
+html {
+  overflow-y: hidden;
+  overflow-x: hidden;
+  font-family: system-ui;
+  letter-spacing: 1px;
+  font-size: 14px;
+}
+
+.container {
+  padding: 0;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.full-screen {
+  width: 100%;
+  min-height: 100vh;
+  max-height: 100dvh;
+  background-image: url(/_cdn/zen-eorder/30042025/bg.jpg?v=30042025);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+  text-align: center;
+}
+
+.coming-soon {
+  width: 100%;
+  min-height: 100vh;
+  max-height: 100dvh;
+  background-image: url(/_cdn/zen-eorder/08032025/bg-soon.jpg);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+  text-align: center;
+}
+
+.bg-wheel {
+  width: 100%;
+  min-height: 100vh;
+  max-height: 100dvh;
+  background-image: url(/_cdn/zen-eorder/30042025/bg-wheel.jpg?v=30042025);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+  text-align: center;
+}
+
+.card-white {
+  background-image: url(/_cdn/zen-eorder/30042025/bg-md.png?v=30042025);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+  color: #eb3939;
+  padding: 20px;
+  margin: 0px 20px;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.card-white-trans {
+  background-color: transparent;
+  color: #ffffff;
+  width: 100%;
+  padding: 20px;
+  padding-top: 5px;
+  font-size: 12px;
+}
+
+.text-title {
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: initial;
+}
+
+.text-desc {
+  font-size: 12px;
+  letter-spacing: initial;
+}
+
+.button-start {
+  background-image: url(/_cdn/zen-eorder/30042025/bg-sm.png);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+  padding: 15px;
+  text-align: center;
+  font-size: 25px;
+  font-weight: bold;
+  margin: 0 50px;
+  color: #ee363b;
+}
+
+.container-wheel {
+  width: 100%;
+  min-height: 100vh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+.lucky-wheel {
+  width: 100%;
+  height: 300px;
+  z-index: 1;
+}
+
+.img-voucher {
+  width: 70px;
+  height: 70px;
+  background-position: center;
+  background-size: cover;
+  margin: 0 10px;
+}
+
+.img-logo {
+  margin-top: 60px;
+  width: 120px;
+  height: auto;
+  background-position: center;
+  background-size: cover;
+}
+
+.div-banner-carousel .v-btn__content {
+  font-size: 22px;
+}
+
+.h-100dvh {
+  min-height: 100vh !important;
+  max-height: 100dvh !important;
+}
+
+.mt-80px {
+  margin-top: 80px;
+}

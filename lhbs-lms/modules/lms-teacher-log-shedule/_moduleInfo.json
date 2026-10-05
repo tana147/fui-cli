@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-teacher-log-shedule",
+  "url": "//lms.lhbs.vn/lms-teacher-log-shedule",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-teacher-log-shedule",
+  "ModuleName": "lms-teacher-log-shedule",
+  "UpdateTime": "2026-06-02 17:31:32",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-10-01",
+  "LoadCount": 113,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

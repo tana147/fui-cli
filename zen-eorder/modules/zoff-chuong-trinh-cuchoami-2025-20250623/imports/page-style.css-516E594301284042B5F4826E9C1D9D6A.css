@@ -1,0 +1,202 @@
+html {
+    overflow-y: hidden;
+    overflow-x: hidden;
+    font-family: system-ui;
+    letter-spacing: 1px;
+    font-size: 14px;
+}
+
+.container {
+    padding: 0;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.full-screen {
+    width: 100%;
+    min-height: 100vh;
+    max-height: 100dvh;
+    background-image: url(/_cdn/zen-eorder/cuc-hoa-mi-2025/bg.jpg?v=250610);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    text-align: center;
+}
+
+.bg-tree {
+    width: 100%;
+    min-height: 100vh;
+    max-height: 100dvh;
+    background-image: url(/_cdn/zen-eorder/cuc-hoa-mi-2025/bg-tree.jpg?v=250610);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    text-align: center;
+}
+
+.card-white {
+    background-color: orange;
+    color: #000000;
+    font-weight: bolder;
+    border-radius: 15px;
+    width: 90%;
+    padding: 10px 20px;
+}
+
+.card-white-trans {
+    background-color: transparent;
+    color: #000000;
+    font-weight: 900;
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 12px;
+}
+
+.card-warning {
+    background-color: orange;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 20px;
+    line-height: 1.1;
+    margin: 0 10px;
+}
+
+.text-title {
+    font-size: 20px;
+}
+
+.text-title-name {
+    font-size: 40px;
+    font-weight: bolder;
+    text-decoration: line-through;
+    text-decoration-color: white;
+    text-decoration-thickness: from-font;
+    line-height: 1.2;
+}
+
+.text-pin {
+    font-size: 28px;
+    letter-spacing: 0px;
+    line-height: 1.2;
+    font-weight: 900;
+}
+
+.text-lucky {
+    font-weight: 900;
+    font-size: 14px;
+    color: orange;
+    text-shadow: 2px 0 #fff, -2px 0 #fff, 0 2px #fff, 0 -2px #fff, 1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
+    position: absolute;
+    bottom: 15px;
+    width: 100%;
+}
+
+.text-note {
+    font-weight: 500;
+    font-size: 11px;
+    color: #000000;
+    width: 100%;
+    line-height: 1.1;
+}
+
+.button-whell {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 900;
+    padding: 10px 20px;
+    margin: 20px 70px;
+    background-color: #ffffff;
+    border-radius: 25px;
+    border: 2px solid #000000;
+    color: orange;
+}
+
+.button-start {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 900;
+    padding: 10px 20px;
+    margin: 20px 50px;
+    background-color: orange;
+    border-radius: 25px;
+    border: 2px solid #000000;
+    color: #ffffff;
+}
+
+.card-input {
+    margin: 20px;
+    border-bottom: 3px dashed orange;
+}
+
+.v-input__slot {
+    padding: 0 !important;
+    height: 50px;
+    background-color: transparent !important;
+}
+
+.pin-input input {
+    font-size: 36px;
+    padding-left: 10px;
+    font-weight: 900 !important;
+    text-align: center;
+    letter-spacing: 10px;
+    max-height: 70px;
+    padding-top: 0;
+    padding-bottom: 0;
+    color: orange !important;
+}
+
+.container-wheel {
+    width: 100%;
+    min-height: 100vh;
+    max-height: 100dvh;
+    overflow: hidden;
+}
+
+.lucky-wheel {
+    width: 100%;
+    height: 350px;
+    z-index: 1;
+}
+
+.img-voucher {
+    width: 70px;
+    height: 70px;
+    background-position: center;
+    background-size: cover;
+    margin: 0 20px;
+}
+
+.div-banner-carousel .v-btn__content {
+    font-size: 22px;
+}
+
+.h-100dvh {
+    min-height: 100vh !important;
+    max-height: 100dvh !important;
+}
+
+.mt-80px {
+    margin-top: 80px;
+}
+
+.mb-80px {
+    margin-bottom: 80px;
+}
+
+.pt-140px {
+    padding-top: 140px;
+}
+
+.div-result-whell {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

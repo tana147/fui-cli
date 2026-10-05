@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/san-pham-cho-chi-tiet",
+  "url": "/zen-eorder/san-pham-cho-chi-tiet",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "san-pham-cho-chi-tiet",
+  "ModuleName": "Sản Phẩm Chờ / Chi Tiết Sản Phẩm",
+  "UpdateTime": "2026-03-29 13:56:29",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2025-04-29",
+  "LoadCount": 102,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

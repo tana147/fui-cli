@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/default",
+  "url": "//lms.lhbs.vn/default",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "default",
+  "ModuleName": "Hệ thống LMS",
+  "UpdateTime": "2026-08-31 23:13:27",
+  "UpdateUser": "DEV000007",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 260691,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

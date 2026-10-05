@@ -1,0 +1,18 @@
+[
+  {
+    "comID": 535,
+    "comName": "input-comment-dialog"
+  },
+  {
+    "comID": 536,
+    "comName": "input-report-dialog"
+  },
+  {
+    "comID": 530,
+    "comName": "input-score-dialog"
+  },
+  {
+    "comID": 529,
+    "comName": "parent-container"
+  }
+]

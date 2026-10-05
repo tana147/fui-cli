@@ -1,0 +1,50 @@
+[
+  {
+    "comID": 9993,
+    "comName": "uc-lecturer-row"
+  },
+  {
+    "comID": 9994,
+    "comName": "uc-ly-lich-cong-tac"
+  },
+  {
+    "comID": 9995,
+    "comName": "uc-ly-lich-cong-trinh"
+  },
+  {
+    "comID": 9996,
+    "comName": "uc-ly-lich-dao-tao"
+  },
+  {
+    "comID": 9992,
+    "comName": "uc-ly-lich-de-tai"
+  },
+  {
+    "comID": 9991,
+    "comName": "uc-ly-lich-main"
+  },
+  {
+    "comID": 9990,
+    "comName": "uc-ly-lich-so-yeu"
+  },
+  {
+    "comID": 9997,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 10018,
+    "comName": "uc-modal-detail"
+  },
+  {
+    "comID": 9998,
+    "comName": "uc-modal-ke-khai-dong"
+  },
+  {
+    "comID": 10017,
+    "comName": "uc-modal-reject"
+  },
+  {
+    "comID": 9999,
+    "comName": "uc-stats"
+  }
+]

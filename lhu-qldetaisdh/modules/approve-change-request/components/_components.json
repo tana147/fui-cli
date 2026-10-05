@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 11341,
+    "comName": "uc-detail-flow"
+  },
+  {
+    "comID": 11345,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 11343,
+    "comName": "uc-main-view"
+  },
+  {
+    "comID": 11344,
+    "comName": "uc-modal-confirm"
+  },
+  {
+    "comID": 11342,
+    "comName": "uc-modal-print-qd"
+  }
+]

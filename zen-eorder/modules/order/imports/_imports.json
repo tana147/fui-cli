@@ -1,0 +1,27 @@
+[
+  {
+    "name": "page-style.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "1AE177CF4F6243D58A147635D934D1CB",
+    "scope": "module",
+    "sort": 24,
+    "filePath": "imports/page-style.css-1AE177CF4F6243D58A147635D934D1CB.css"
+  },
+  {
+    "name": "https://ws.fui.vn/Scripts/jquery.signalR-2.4.1.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "EAE79D051F5E4CECB6D8F91224E7EF58",
+    "scope": "module",
+    "sort": 25
+  },
+  {
+    "name": "https://ws.fui.vn/signalr/hubs",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "8A329C4DC6C74D9BA04AAA14A3BB85D2",
+    "scope": "module",
+    "sort": 26
+  }
+]

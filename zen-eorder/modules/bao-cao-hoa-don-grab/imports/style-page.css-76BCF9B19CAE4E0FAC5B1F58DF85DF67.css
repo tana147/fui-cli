@@ -1,0 +1,50 @@
+.highlight-total{
+    /* background-color: #00000021; */
+    color: #4CAF50;
+    font-weight: 500;
+}
+
+.freezy-header thead tr th:first-child{
+    position: sticky;
+    left: 0;
+    z-index: 7 !important;
+    top:0;
+}
+
+.freezy-column tbody tr td:first-child {
+    position: sticky;
+    left: 0;
+    top: 0;
+    z-index: 6 !important;
+    background-color: #fff;
+    color: black;
+}
+
+.small {
+  font-size: 12px;
+}
+
+
+.percent-indicator {
+    display: block;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.row-report-summary .v-col {
+    text-align: center;
+}
+
+.row-report-summary b {
+    display: block;
+    font-size: 16px;
+    margin: 4px 0;
+}
+
+.percent-up {
+    color: #4CAF50;
+}
+
+.percent-down {
+    color: #f44336;
+}

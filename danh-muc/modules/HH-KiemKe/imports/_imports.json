@@ -1,0 +1,27 @@
+[
+  {
+    "name": "style",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "87C4BFC559F54638A254AA5FA4459A2B",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/style-87C4BFC559F54638A254AA5FA4459A2B.css"
+  },
+  {
+    "name": "https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "BBD0A08BB0164E0AADD18534B4087ADC",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://unpkg.com/html5-qrcode",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "790BADD4A1AC448DA9FDD41A9AC2CE52",
+    "scope": "module",
+    "sort": 50
+  }
+]

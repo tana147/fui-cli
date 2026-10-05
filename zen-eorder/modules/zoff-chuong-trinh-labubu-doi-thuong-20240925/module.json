@@ -1,0 +1,81 @@
+{
+  "data": [
+    {
+      "API": "/eorder/QuaTang_Select",
+      "OUT": "DSDoiThuong"
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "CALL": "getKhuCheBien"
+      },
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "div",
+              "w": 4
+            },
+            {
+              "el": "uc-check-qr",
+              "w": 4
+            }
+          ]
+        },
+        {
+          "prop": "mt-10",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Danh sách đổi thưởng",
+                ":fixed-header": true,
+                ":show-select": false,
+                ":fixed-cols": 2,
+                ":mobile-breakpoint": 600,
+                "v-model": "DSDoiThuong_List",
+                ":items": "DSDoiThuong",
+                "item-key": "QuaTangSoTrungID",
+                ":headers": [
+                  {
+                    "text": "QR Code trúng thưởng",
+                    "value": "QrCode_TrungThuong"
+                  },
+                  {
+                    "text": "Nhân viên đổi thưởng",
+                    "value": "TenDangNhap"
+                  },
+                  {
+                    "text": "Giờ đổi",
+                    "value": "DoiThuong_Gio"
+                  },
+                  {
+                    "text": "Ngày đổi",
+                    "value": "DoiThuong_Ngay"
+                  },
+                  {
+                    "text": "Trạng thái",
+                    "value": "TrangThai"
+                  }
+                ],
+                ":update-form": [],
+                ":update-api": {}
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

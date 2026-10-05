@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/lich-su-otp",
+  "url": "/zen-eorder/lich-su-otp",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "lich-su-otp",
+  "ModuleName": "Lịch Sử / Gửi OTP",
+  "UpdateTime": "2026-03-29 13:56:31",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2026-05-17",
+  "LoadCount": 56,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

@@ -1,0 +1,31 @@
+theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:not(:last-child)>td:last-child,
+.theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:not(:last-child)>td:not(.v-data-table__mobile-row),
+.theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:not(:last-child)>th:last-child,
+.theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:not(:last-child)>th:not(.v-data-table__mobile-row),
+.theme--light.v-data-table>.v-data-table__wrapper>table>thead>tr:last-child>th {
+    border-bottom: unset
+}
+
+.v-data-table__wrapper td,
+.v-data-table__wrapper th {
+    border-top: thin solid #9e9e9e;
+    border-left: thin solid #9e9e9e;
+}
+
+.v-data-table__wrapper th {
+    border-bottom: thin solid #9e9e9e !important;
+    background-color: #f9f9f9;
+}
+
+.v-data-table__wrapper td:last-child,
+.v-data-table__wrapper th:last-child {
+    border-right: thin solid #9e9e9e;
+}
+
+.v-data-table__wrapper tr:last-child td {
+    border-bottom: thin solid #9e9e9e !important;
+}
+
+.v-data-table__wrapper tr:first-child td {
+    border-top: unset !important;
+}

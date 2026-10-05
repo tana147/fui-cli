@@ -1,0 +1,9 @@
+.uc-bgh-thong-ke-dang-ky .v-data-table__td,
+.uc-bgh-thong-ke-dang-ky .v-data-table__th {
+  font-size: 13px;
+}
+@media (max-width: 600px) {
+  .uc-bgh-thong-ke-dang-ky .v-card-title {
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,19 @@
+[
+  {
+    "name": "styles",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "C791685B93024CDB882BB7A1E4AAFA78",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/styles-C791685B93024CDB882BB7A1E4AAFA78.css"
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "495ED5B442D44CDD8537563C2AB96685",
+    "scope": "module",
+    "sort": 51
+  }
+]

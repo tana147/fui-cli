@@ -1,0 +1,32 @@
+{
+  "data": [
+    {
+      "isUpdDialog": false,
+      "isEditDialog": false,
+      "isAddRootDialog": false,
+      "isEditRootDialog": false,
+      "isAddFlowDialog": false,
+      "isAddWorkTreeDialog": false,
+      "panel": 1
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "workflow-container",
+              "col": {},
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

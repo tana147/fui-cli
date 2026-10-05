@@ -1,0 +1,18 @@
+[
+  {
+    "comID": 900,
+    "comName": "dialog-add-single-teacher"
+  },
+  {
+    "comID": 777,
+    "comName": "dialog-add-teacher-by-excel"
+  },
+  {
+    "comID": 901,
+    "comName": "dialog-update-teacher"
+  },
+  {
+    "comID": 501,
+    "comName": "teacher-container"
+  }
+]

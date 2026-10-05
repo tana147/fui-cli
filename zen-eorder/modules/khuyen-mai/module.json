@@ -1,0 +1,534 @@
+{
+  "data": [
+    {
+      "DSKhuyenMai_SanPham": [],
+      "KhuyenMai_CuaHangID": 0,
+      "IsEdit": false,
+      "IsShowDialogStore": false,
+      "IsShowDialogNoti": false
+    },
+    {
+      "DSTrangThai": [
+        {
+          "value": 1,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 2,
+          "text": "Tạm ngưng"
+        }
+      ]
+    },
+    {
+      "DSCoKhong": [
+        {
+          "value": 0,
+          "text": "Không"
+        },
+        {
+          "value": 1,
+          "text": "Có"
+        }
+      ]
+    },
+    {
+      "DSLoaiChuongTrinh": [
+        {
+          "value": 1,
+          "text": "[HD_SP] Chương trình tặng voucher món theo giá trị hóa đơn"
+        },
+        {
+          "value": 2,
+          "text": "[SP_QR] Chương trình quay số"
+        },
+        {
+          "value": 3,
+          "text": "[LA_TRA] Chương trình đổi lá trà ZEN"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang"
+    },
+    {
+      "getChuongTrinh": {
+        "API": "/eorder/ChuongTrinh_Select",
+        "OUT": "DSChuongTrinh"
+      }
+    },
+    {
+      "getSanPhamKhuyenMaiByCuaHang": {
+        "API": "/eorder/SanPham_Select_Dropdown_ByCuaHangId",
+        "IN": {
+          "CuaHangID": "KhuyenMai_CuaHangID"
+        },
+        "OUT": "DSKhuyenMai_SanPham"
+      }
+    },
+    {
+      "CALL": "getChuongTrinh"
+    }
+  ],
+  "watch": {
+    "KhuyenMai_CuaHangID": {
+      "CALL": "getSanPhamKhuyenMaiByCuaHang"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Chương trình khuyến mãi",
+                ":excel": true,
+                ":items": "DSChuongTrinh",
+                "height": "calc(100vh - 121px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Mã chương trình",
+                    "el": "t-button",
+                    "value": "detail-button",
+                    "width": 150,
+                    "attr": {
+                      "color": "primary",
+                      ":label": "item.MaChuongTrinh",
+                      ":action": {
+                        "EXE": "window.location.href = `/khuyen-mai-chi-tiet?kmid=${item.ChuongTrinhID}`"
+                      }
+                    }
+                  },
+                  {
+                    "text": "Tên chương trình",
+                    "value": "TenChuongTrinh",
+                    "el": "span",
+                    "width": 350,
+                    "innerHTML": "<b>{{item.TenChuongTrinh}}</b> <br/> {{item.TuNgay_Display}} → {{item.DenNgay_Display}}"
+                  },
+                  {
+                    "text": "Trị giá (VNĐ)",
+                    "value": "TriGia",
+                    "align": "right",
+                    "el": "span",
+                    "width": 150,
+                    "innerHTML": "<b>{{item.TriGia.toLocaleString('vi-vn')}}</b>"
+                  },
+                  {
+                    "text": "Cửa hàng",
+                    "align": "center",
+                    "value": "SoLuongCuaHang",
+                    "el": "v-chip",
+                    "width": 80,
+                    "attr": {
+                      ":color": "item.SoLuongCuaHang > 0 ? 'success': 'error'",
+                      ":small": true
+                    },
+                    "innerHTML": "{{item.SoLuongCuaHang}}"
+                  },
+                  {
+                    "text": "Chương trình",
+                    "value": "KhuyenMai",
+                    "el": "span",
+                    "width": 600,
+                    "innerHTML": "<b>{{renderDieuKien(item)}}</b> <br/> {{renderKhuyenMai(item)}}"
+                  },
+                  {
+                    "text": "Trạng thái",
+                    "align": "center",
+                    "value": "TrangThai",
+                    "el": "v-chip",
+                    "width": 80,
+                    "attr": {
+                      ":color": "item.TrangThai === 1 ? 'success': 'error'",
+                      ":small": true
+                    },
+                    "innerHTML": "{{item.TrangThai === 1 ? 'Đang diễn ra' : 'Đã kết thúc'}}"
+                  },
+                  {
+                    "text": "Thiết lập",
+                    "value": "noti-button",
+                    "el": "t-button",
+                    "align": "center",
+                    "width": 100,
+                    "attr": {
+                      "color": "primary",
+                      "label": "Thông báo",
+                      ":action": {
+                        "CTKhuyenMai": "item",
+                        "IsShowDialogNoti": true
+                      }
+                    }
+                  },
+                  {
+                    "text": "Chọn",
+                    "value": "store-button",
+                    "el": "t-button",
+                    "align": "center",
+                    "width": 100,
+                    "attr": {
+                      "color": "primary",
+                      "label": "Cửa hàng",
+                      ":action": {
+                        "CTKhuyenMai": "item",
+                        "IsShowDialogStore": true
+                      }
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center",
+                    "width": 80
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "b",
+                    "col": {
+                      "text-start": true
+                    },
+                    "attr": {
+                      "class": "primary--text"
+                    },
+                    "innerHTML": "Thông tin chương trình",
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "MaChuongTrinh",
+                      "label": "Mã chương trình"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenChuongTrinh",
+                      "label": "Tên chương trình"
+                    },
+                    "w": 8
+                  },
+                  {
+                    "el": "f-date",
+                    "attr": {
+                      "v-model": "TuNgay",
+                      "label": "Từ ngày",
+                      "date-add": 0
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "f-date",
+                    "attr": {
+                      "v-model": "DenNgay",
+                      "label": "Đến ngày",
+                      "date-add": 0
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "HanSuDung_Ngay",
+                      "label": "HSD (Ngày)",
+                      "type": "number"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TriGia",
+                      "type": "number",
+                      "label": "Trị giá (VNĐ)"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TrangThai",
+                      "label": "Trạng thái",
+                      ":items": "vueData.DSTrangThai"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "b",
+                    "col": {
+                      "text-start": true
+                    },
+                    "attr": {
+                      "class": "primary--text"
+                    },
+                    "innerHTML": "Loại chương trình",
+                    "w": 12
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      ":disabled": "vueData.IsEdit",
+                      "v-model": "LoaiChuongTrinh",
+                      "label": "Loại chương trình",
+                      ":items": "vueData.DSLoaiChuongTrinh"
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":disabled": "LoaiChuongTrinh !== 1",
+                      "v-model": "DieuKien_HoaDonTu",
+                      "label": "Giá trị hóa đơn từ (VNĐ)",
+                      "type": "number"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":disabled": "LoaiChuongTrinh !== 1",
+                      "v-model": "DieuKien_HoaDonDen",
+                      "label": "Giá trị hóa đơn đến (VNĐ)",
+                      "type": "number"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":disabled": "LoaiChuongTrinh !== 3",
+                      "v-model": "DiemLaTra",
+                      "label": "Điểm lá trà ZEN",
+                      "type": "number"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-textarea",
+                    "attr": {
+                      "v-model": "MoTa",
+                      "label": "Mô tả",
+                      "rows": 2,
+                      ":hide-details": true
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "b",
+                    "col": {
+                      "text-start": true
+                    },
+                    "attr": {
+                      "class": "primary--text"
+                    },
+                    "innerHTML": "Voucher sản phẩm khuyến mãi",
+                    "w": 12
+                  },
+                  {
+                    "el": "v-select",
+                    "w": 12,
+                    "attr": {
+                      ":disabled": "vueData.IsEdit",
+                      "v-model": "vueData.KhuyenMai_CuaHangID",
+                      "label": "Sản phẩm thuộc cửa hàng",
+                      ":items": "vueData.DSCuaHang",
+                      "item-value": "CuaHangID",
+                      "item-text": "TenCuaHang"
+                    }
+                  },
+                  {
+                    "el": "v-autocomplete",
+                    "w": 12,
+                    "attr": {
+                      ":disabled": "vueData.IsEdit || !(vueData.KhuyenMai_CuaHangID > 0)",
+                      "v-model": "KhuyenMai_SanPhamID",
+                      "label": "Sản phẩm khuyến mãi",
+                      ":items": "vueData.DSKhuyenMai_SanPham"
+                    }
+                  },
+                  {
+                    "el": "b",
+                    "col": {
+                      "text-start": true
+                    },
+                    "attr": {
+                      "class": "primary--text"
+                    },
+                    "innerHTML": "Thiết lập thông báo",
+                    "w": 12
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "Is_ThongBao_Nhan",
+                      "label": "Thông báo nhận KM",
+                      ":items": "vueData.DSCoKhong"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "Is_ThongBao_SuDung",
+                      "label": "Thông báo sử dụng KM",
+                      ":items": "vueData.DSCoKhong"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "Is_ThongBao_HetHan",
+                      "label": "Thông báo sắp hết hạn KM",
+                      ":items": "vueData.DSCoKhong"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "ThongBao_HetHan_Ngay",
+                      "label": "Thông báo hết hạn (Số ngày)",
+                      "type": "number"
+                    },
+                    "w": 3
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "TuNgay": "moment().format('YYYY-MM-DD')",
+                    "DenNgay": "moment().format('YYYY-MM-DD')",
+                    "HanSuDung_Ngay": 30,
+                    "TrangThai": 1,
+                    "LoaiChuongTrinh": 1,
+                    "DieuKien_HoaDonTu": 0,
+                    "DieuKien_HoaDonDen": 0,
+                    "Is_ThongBao_Nhan": 0,
+                    "Is_ThongBao_SuDung": 0,
+                    "Is_ThongBao_HetHan": 0,
+                    "ThongBao_HetHan_Ngay": 0,
+                    "DiemLaTra": 0,
+                    "MoTa": "",
+                    "TriGia": 0
+                  },
+                  "new-action": {
+                    "DSKhuyenMai_SanPham": [],
+                    "KhuyenMai_CuaHangID": 0,
+                    "IsEdit": false
+                  },
+                  "edit-action": {
+                    "KhuyenMai_CuaHangID": "item.KhuyenMai_SanPhamCuaHangID",
+                    "IsEdit": true
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới chương trình",
+                    "API": "/eorder/ChuongTrinh_Insert",
+                    "IN": {
+                      "MaChuongTrinh": "item.MaChuongTrinh",
+                      "TenChuongTrinh": "item.TenChuongTrinh",
+                      "TuNgay": "item.TuNgay",
+                      "DenNgay": "item.DenNgay",
+                      "HanSuDung_Ngay": "item.HanSuDung_Ngay",
+                      "TrangThai": "item.TrangThai",
+                      "LoaiChuongTrinh": "item.LoaiChuongTrinh",
+                      "DieuKien_HoaDonTu": "item.DieuKien_HoaDonTu",
+                      "DieuKien_HoaDonDen": "item.DieuKien_HoaDonDen",
+                      "KhuyenMai_SanPhamCuaHangID": "vueData.KhuyenMai_CuaHangID ?? 0",
+                      "KhuyenMai_SanPhamID": "item.KhuyenMai_SanPhamID ?? 0",
+                      "Is_ThongBao_Nhan": "item.Is_ThongBao_Nhan",
+                      "Is_ThongBao_SuDung": "item.Is_ThongBao_SuDung",
+                      "Is_ThongBao_HetHan": "item.Is_ThongBao_HetHan",
+                      "ThongBao_HetHan_Ngay": "item.ThongBao_HetHan_Ngay",
+                      "DiemLaTra": "item.DiemLaTra",
+                      "MoTa": "item.MoTa",
+                      "TriGia": "item.TriGia"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": {
+                      "CALL": "getChuongTrinh"
+                    }
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật chương trình <br/><b>{{item.MaChuongTrinh}} - {{item.TenChuongTrinh}}</b>",
+                    "API": "/eorder/ChuongTrinh_Update",
+                    "IN": {
+                      "ChuongTrinhID": "item.ChuongTrinhID",
+                      "MaChuongTrinh": "item.MaChuongTrinh",
+                      "TenChuongTrinh": "item.TenChuongTrinh",
+                      "TuNgay": "item.TuNgay",
+                      "DenNgay": "item.DenNgay",
+                      "HanSuDung_Ngay": "item.HanSuDung_Ngay",
+                      "TrangThai": "item.TrangThai",
+                      "LoaiChuongTrinh": "item.LoaiChuongTrinh",
+                      "DieuKien_HoaDonTu": "item.DieuKien_HoaDonTu",
+                      "DieuKien_HoaDonDen": "item.DieuKien_HoaDonDen",
+                      "Is_ThongBao_Nhan": "item.Is_ThongBao_Nhan",
+                      "Is_ThongBao_SuDung": "item.Is_ThongBao_SuDung",
+                      "Is_ThongBao_HetHan": "item.Is_ThongBao_HetHan",
+                      "ThongBao_HetHan_Ngay": "item.ThongBao_HetHan_Ngay",
+                      "DiemLaTra": "item.DiemLaTra",
+                      "MoTa": "item.MoTa",
+                      "TriGia": "item.TriGia"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getChuongTrinh"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa chương trình <br/><b>{{item.MaChuongTrinh}} - {{item.TenChuongTrinh}}</b>",
+                    "API": "/eorder/ChuongTrinh_Delete",
+                    "IN": {
+                      "ChuongTrinhID": "item.ChuongTrinhID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getChuongTrinh"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "uc-modal-store",
+              "attr": {
+                "v-if": "vueData.IsShowDialogStore && vueData.CTKhuyenMai?.ChuongTrinhID > 0",
+                ":ct_khuyenmai": "vueData.CTKhuyenMai"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "uc-modal-notification",
+              "attr": {
+                "v-if": "vueData.IsShowDialogNoti && vueData.CTKhuyenMai?.ChuongTrinhID > 0",
+                ":ct_khuyenmai": "vueData.CTKhuyenMai"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

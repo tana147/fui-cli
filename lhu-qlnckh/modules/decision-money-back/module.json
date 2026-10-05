@@ -1,0 +1,60 @@
+{
+  "data": [
+    {
+      "isLoading_KHCN_Get": false,
+      "isLoading_getQuyetDinh": false
+    },
+    {
+      "KHCN_Get": {
+        "API": "/KHCN_Get",
+        "OUT": "DS_KHCN",
+        "CALLBACK": {
+          "isLoading_KHCN_Get": true
+        }
+      }
+    },
+    {
+      "getQuyetDinh": {
+        "API": "/GiaiThuong_QuyetDinh_Get_All",
+        "IN": {
+          "LoaiQD": 2
+        },
+        "OUT": "DS_QuyetDinh",
+        "CALLBACK": {
+          "isLoading_getQuyetDinh": true
+        }
+      }
+    },
+    {
+      "CALL": "getQuyetDinh"
+    },
+    {
+      "CALL": "KHCN_Get"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "danh-sach-quyet-dinh",
+              "col": {},
+              "attr": {
+                "v-if": "vueData.isLoading_KHCN_Get && vueData.isLoading_getQuyetDinh",
+                ":dsquyetdinh": "vueData.DS_QuyetDinh",
+                ":dsdetai": "vueData.DS_KHCN"
+              },
+              "w": 12
+            }
+          ],
+          "w": 12
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

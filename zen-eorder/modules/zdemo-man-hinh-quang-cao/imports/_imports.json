@@ -1,0 +1,51 @@
+[
+  {
+    "name": "page-style.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "17D7210CB3BB4DB389B56F6C1D10D6BA",
+    "scope": "module",
+    "sort": 24,
+    "filePath": "imports/page-style.css-17D7210CB3BB4DB389B56F6C1D10D6BA.css"
+  },
+  {
+    "name": "https://ws.fui.vn/Scripts/jquery.signalR-2.4.1.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "2639D4A28440416C98FA75137F68584A",
+    "scope": "module",
+    "sort": 25
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "4B12C49983324D828E32447E8C42F07C",
+    "scope": "module",
+    "sort": 26
+  },
+  {
+    "name": "https://ws.fui.vn/signalr/hubs",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "6E6BB359FBE643A9A7EE9C7FD1D867F4",
+    "scope": "module",
+    "sort": 27
+  },
+  {
+    "name": "\t/include/qrcode/qrcode.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "D66A2DAD650D42D4A548199753094FB2",
+    "scope": "module",
+    "sort": 28
+  },
+  {
+    "name": "/include/qrcode/qrcode-reader.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "5E1F7312D2A8434CB8EBD1F739AF8E00",
+    "scope": "module",
+    "sort": 29
+  }
+]

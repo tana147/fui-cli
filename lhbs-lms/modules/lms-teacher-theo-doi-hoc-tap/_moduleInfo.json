@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-teacher-theo-doi-hoc-tap",
+  "url": "//lms.lhbs.vn/lms-teacher-theo-doi-hoc-tap",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-teacher-theo-doi-hoc-tap",
+  "ModuleName": "Giáo viên theo dõi học tập",
+  "UpdateTime": "2026-09-11 09:37:46",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 720,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

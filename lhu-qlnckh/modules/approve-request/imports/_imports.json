@@ -1,0 +1,19 @@
+[
+  {
+    "name": "customCss",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "C8B1BF166A0246A69F99D12097637E41",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/customCss-C8B1BF166A0246A69F99D12097637E41.css"
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "24D6A228E23046D285A865967C4FBC8F",
+    "scope": "module",
+    "sort": 51
+  }
+]

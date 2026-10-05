@@ -1,0 +1,67 @@
+[
+  {
+    "name": "stylePage",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "A9E146B4FBB144ADA21DF13BACFE17C0",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/stylePage-A9E146B4FBB144ADA21DF13BACFE17C0.css"
+  },
+  {
+    "name": "/include/ckeditor5/build/ckeditor.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "2A89FBD66C524B3DBA586ABE819527F5",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "189CE68157534126BA3EE72134B03ED0",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/@calvinckho/mic-recorder-to-mp3@2.2.3/dist/index.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "33ABB714C998479F9F4C974AD337E27B",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "1D2855F099414A00A5AE808FE452A197",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "C11A403B40754EC092848E466805FE2D",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://fui.vn/include/audio/lamejs1.2.1.all.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "ECE4A918EFE749D9A8BF0FB13DA49E2B",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://fui.vn/include/audio/vueaudio.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "7B36391E7A514575B2A2921FEDC0999B",
+    "scope": "module",
+    "sort": 51
+  }
+]

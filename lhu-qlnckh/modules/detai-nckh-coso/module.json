@@ -1,0 +1,42 @@
+{
+  "data": [
+    {
+      "API": "/NhomDM_KHCN_Get",
+      "OUT": "dsdmkhcn"
+    },
+    {
+      "LoadKHCNGet": {
+        "API": "/KHCN_Get",
+        "OUT": "dsdetai"
+      }
+    },
+    {
+      "CALL": "LoadKHCNGet"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-table-de-tai-khcn",
+              "cols": {},
+              "attr": {
+                ":dsdanhmuckhoahoccongnghe": "vueData.dsdmkhcn",
+                ":dsdetai": "vueData.dsdetai",
+                ":dsnganhang": "vueData.DSNganHang"
+              },
+              "w": 12
+            }
+          ],
+          "w": 12
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

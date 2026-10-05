@@ -1,0 +1,86 @@
+[
+  {
+    "comID": 10796,
+    "comName": "so-gvcn-c1-tab-cong-tac-chu-nhiem"
+  },
+  {
+    "comID": 10710,
+    "comName": "so-gvcn-c1-tab-hs-can-quan-tam"
+  },
+  {
+    "comID": 10797,
+    "comName": "so-gvcn-c1-tab-ke-hoach-nam-hoc"
+  },
+  {
+    "comID": 10712,
+    "comName": "so-gvcn-c1-tab-nhan-xet-thang-lms"
+  },
+  {
+    "comID": 10812,
+    "comName": "so-gvcn-c1-tab-noi-dung-hop-ph"
+  },
+  {
+    "comID": 10713,
+    "comName": "so-gvcn-c1-tab-so-ket-tong-ket"
+  },
+  {
+    "comID": 10813,
+    "comName": "so-gvcn-c1-tab-theo-doi-bhyt-bhtn"
+  },
+  {
+    "comID": 10811,
+    "comName": "so-gvcn-c1-tab-theo-doi-ph-hop"
+  },
+  {
+    "comID": 10808,
+    "comName": "so-gvcn-c1-tab-theo-doi-si-so"
+  },
+  {
+    "comID": 10810,
+    "comName": "so-gvcn-c1-tab-theo-doi-thanh-tich"
+  },
+  {
+    "comID": 10809,
+    "comName": "so-gvcn-c1-tab-thong-ke-do-tuoi"
+  },
+  {
+    "comID": 10714,
+    "comName": "so-gvcn-c1-tab-thong-tin-to-chuc"
+  },
+  {
+    "comID": 10720,
+    "comName": "so-gvcn-c1-tab-to-chuc-lop"
+  },
+  {
+    "comID": 10807,
+    "comName": "so-gvcn-c1-tab-tong-ket-nam-hoc"
+  },
+  {
+    "comID": 10626,
+    "comName": "so-gvcn-tab-chi-tieu"
+  },
+  {
+    "comID": 10632,
+    "comName": "so-gvcn-tab-du-lieu-hs"
+  },
+  {
+    "comID": 10630,
+    "comName": "so-gvcn-tab-huong-nghiep"
+  },
+  {
+    "comID": 10627,
+    "comName": "so-gvcn-tab-ke-hoach"
+  },
+  {
+    "comID": 10628,
+    "comName": "so-gvcn-tab-ren-luyen"
+  },
+  {
+    "comID": 10629,
+    "comName": "so-gvcn-tab-so-lien-lac"
+  },
+  {
+    "comID": 10631,
+    "comName": "uc-main-layout"
+  }
+]

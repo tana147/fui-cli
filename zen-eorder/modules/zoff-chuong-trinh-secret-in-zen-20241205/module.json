@@ -1,0 +1,51 @@
+{
+  "data": [
+    {
+      "QRCode_Full": "code",
+      "QR": "qr",
+      "QRCode_Array": "QR ? QR.split('|') : QRCode_Full.split('|')",
+      "QRCode": "QRCode_Array[QRCode_Array.length - 1]",
+      "KhachHangID": "khid",
+      "CTQuaTang": null
+    },
+    {
+      "API": "/eorder/auth/QuaTang_Check_QrCode",
+      "IN": {
+        "QRCode": "QRCode",
+        "KhachHangID": "KhachHangID"
+      },
+      "OUT": "CTQuaTang"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-secret",
+              "attr": {
+                "v-if": "vueData.KhachHangID && vueData.QRCode && vueData.CTQuaTang"
+              }
+            },
+            {
+              "el": "uc-secret-info",
+              "attr": {
+                "v-if": "!vueData.KhachHangID || !vueData.QRCode"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false,
+    "login": false,
+    "userInfo": ""
+  }
+}

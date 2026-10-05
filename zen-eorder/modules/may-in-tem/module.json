@@ -1,0 +1,156 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')"
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": {
+        "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+      }
+    },
+    {
+      "getMayInTem": {
+        "API": "/eorder/MayInTem_Select_ByCuaHangId",
+        "IN": {
+          "CuaHangID": "CuaHangID"
+        },
+        "OUT": "DSMayInTem"
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "CALL": "getMayInTem"
+      },
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "w": 12,
+              "attr": {
+                "label": "Máy in tem",
+                ":items": "DSMayInTem",
+                ":excel": true,
+                "height": "calc(100vh - 118px)",
+                ":headers": [
+                  {
+                    "text": "Cửa hàng",
+                    "value": "TenCuaHang"
+                  },
+                  {
+                    "text": "Tên máy in",
+                    "value": "TenMayIn",
+                    "el": "span",
+                    "innerHTML": "<b class='primary--text'>{{item.TenMayIn}}</b>"
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-select",
+                    "w": 7,
+                    "attr": {
+                      "v-model": "CuaHangID",
+                      "label": "Cửa hàng",
+                      ":items": "vueData.DSCuaHang",
+                      "item-value": "CuaHangID",
+                      "item-text": "TenCuaHang"
+                    }
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "TenMayIn",
+                      "label": "Tên máy in"
+                    },
+                    "w": 5
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "CuaHangID": "vueData.CuaHangID"
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới máy in tem",
+                    "API": "/eorder/MayInTem_Insert",
+                    "IN": {
+                      "CuaHangID": "item.CuaHangID",
+                      "TenMayIn": "item.TenMayIn"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": {
+                      "CALL": "getMayInTem"
+                    }
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật máy in tem <br/><b>{{item.TenMayIn}}</b>",
+                    "API": "/eorder/MayInTem_Update",
+                    "IN": {
+                      "CuaHangID": "item.CuaHangID",
+                      "MayInTemID": "item.MayInTemID",
+                      "TenMayIn": "item.TenMayIn"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getMayInTem"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa máy in tem <br/><b>{{item.TenMayIn}}</b>",
+                    "API": "/eorder/MayInTem_Delete",
+                    "IN": {
+                      "MayInTemID": "item.MayInTemID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getMayInTem"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

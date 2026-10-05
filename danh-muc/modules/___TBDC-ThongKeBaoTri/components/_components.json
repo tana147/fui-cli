@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 6561,
+    "comName": "uc-chart-danh-muc"
+  },
+  {
+    "comID": 6560,
+    "comName": "uc-chart-loai"
+  },
+  {
+    "comID": 6563,
+    "comName": "uc-chart-nhan-vien"
+  },
+  {
+    "comID": 6562,
+    "comName": "uc-chart-tien-do"
+  },
+  {
+    "comID": 6559,
+    "comName": "uc-home"
+  }
+]

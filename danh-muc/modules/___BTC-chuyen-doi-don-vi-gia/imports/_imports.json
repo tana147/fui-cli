@@ -1,0 +1,19 @@
+[
+  {
+    "name": "page-style.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "814215A9B2BF481CB1CB43AA79A541F4",
+    "scope": "module",
+    "sort": 51,
+    "filePath": "imports/page-style.css-814215A9B2BF481CB1CB43AA79A541F4.css"
+  },
+  {
+    "name": "https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "971A31DE8DBB4F0A94C1CCF1419771BF",
+    "scope": "module",
+    "sort": 52
+  }
+]

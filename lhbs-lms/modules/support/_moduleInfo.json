@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/support",
+  "url": "//lms.lhbs.vn/support",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "support",
+  "ModuleName": "Hỗ trợ sự cố",
+  "UpdateTime": "2026-06-02 17:30:58",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 656,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

@@ -1,0 +1,1 @@
+// hoc-lieu-view-v2: iframe isolated scripts live

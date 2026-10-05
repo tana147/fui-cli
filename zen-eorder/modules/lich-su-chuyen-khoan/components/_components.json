@@ -1,0 +1,18 @@
+[
+  {
+    "comID": 7297,
+    "comName": "uc-filter"
+  },
+  {
+    "comID": 7296,
+    "comName": "uc-main"
+  },
+  {
+    "comID": 7299,
+    "comName": "uc-mapping"
+  },
+  {
+    "comID": 7298,
+    "comName": "uc-table"
+  }
+]

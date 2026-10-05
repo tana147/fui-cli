@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/admin-ticket",
+  "url": "//lms.lhbs.vn/admin-ticket",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "admin-ticket",
+  "ModuleName": "admin-ticket",
+  "UpdateTime": "2026-06-02 17:31:40",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-10-03",
+  "LoadCount": 274,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "name": "https://cdn.jsdelivr.net/npm/apexcharts",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "AA56C5C51DE343338E86F194D38EF2DE",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "5823693160D644AD927ABD035051A21C",
+    "scope": "module",
+    "sort": 50
+  }
+]

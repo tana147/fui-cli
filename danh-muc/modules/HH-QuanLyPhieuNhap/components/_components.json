@@ -1,0 +1,42 @@
+[
+  {
+    "comID": 7865,
+    "comName": "uc-drawer-view-detail"
+  },
+  {
+    "comID": 8227,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 8230,
+    "comName": "uc-modal-add"
+  },
+  {
+    "comID": 8255,
+    "comName": "uc-modal-edit"
+  },
+  {
+    "comID": 8284,
+    "comName": "uc-modal-hoan-thanh-phieu-dat-hang"
+  },
+  {
+    "comID": 8260,
+    "comName": "uc-modal-import-excel"
+  },
+  {
+    "comID": 8228,
+    "comName": "uc-modal-view-danh-sach"
+  },
+  {
+    "comID": 8285,
+    "comName": "uc-stepper-dat-hang"
+  },
+  {
+    "comID": 7866,
+    "comName": "uc-stepper-phieu-nhap"
+  },
+  {
+    "comID": 7868,
+    "comName": "uc-table-phieu-nhap"
+  }
+]

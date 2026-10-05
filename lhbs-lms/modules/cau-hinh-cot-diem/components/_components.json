@@ -1,0 +1,14 @@
+[
+  {
+    "comID": 1664,
+    "comName": "uc-main-layout"
+  },
+  {
+    "comID": 1665,
+    "comName": "uc-modal-add-cau-hinh-cot-diem"
+  },
+  {
+    "comID": 1666,
+    "comName": "uc-modal-edit-cau-hinh-cot-diem"
+  }
+]

@@ -1,0 +1,35 @@
+[
+  {
+    "name": "/include/vue-advanced-cropper/style.css",
+    "type": ".css",
+    "contentType": "comp-link",
+    "fileID": "24D3BEBA9E824AE3A51B980C24488B19",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "331B549904FC4077923DA047A4E2A9C0",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/vue-advanced-cropper/index.umd.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "30F214B300784C019ADB698B513FAB9E",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "jquery-qrcode-v0.18.0.js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "F379EB34DF254BD6BDB0C2C1D9DF597C",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/jquery-qrcode-v0.18.0.js-F379EB34DF254BD6BDB0C2C1D9DF597C.js"
+  }
+]

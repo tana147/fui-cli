@@ -1,0 +1,34 @@
+[
+  {
+    "comID": 2410,
+    "comName": "uc-action"
+  },
+  {
+    "comID": 1643,
+    "comName": "uc-main-layout"
+  },
+  {
+    "comID": 1686,
+    "comName": "uc-modal-add-cau-hinh-cot-diem"
+  },
+  {
+    "comID": 1654,
+    "comName": "uc-modal-add-mau-bang-diem"
+  },
+  {
+    "comID": 1685,
+    "comName": "uc-modal-cau-hinh-cot-diem"
+  },
+  {
+    "comID": 1699,
+    "comName": "uc-modal-copy-cot-diem"
+  },
+  {
+    "comID": 1687,
+    "comName": "uc-modal-edit-cau-hinh-cot-diem"
+  },
+  {
+    "comID": 1655,
+    "comName": "uc-modal-edit-mau-bang-diem"
+  }
+]

@@ -1,0 +1,152 @@
+/* .v-main {
+    background-color: #dff6e0;
+} */
+
+.nav-header {
+    font-size: 40px;
+    background-color: #4caf50;
+    color: #fff;
+    padding: 20px 15px 17px 15px;
+    text-align: center;
+}
+
+.container {
+    padding: 0;
+    margin: 0;
+}
+
+.container-box {
+    border-right: 5px solid #fff;
+    height: 100vh;
+    padding: 0;
+}
+
+.item-bill {
+    padding: 12px;
+    font-size: 50px;
+    font-weight: 1000;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    margin: 5px;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.item-bill-1 {
+    max-width: 45%;
+    width: 45%;
+    background-color: #fff;
+    color: #1072cd;
+    border: #1072cd solid 1px;
+}
+
+.item-bill-2 {
+    max-width: 45%;
+    width: 45%;
+    background-color: #fff;
+    color: #FBA518;
+    border: #FBA518 solid 1px;
+}
+
+.item-bill-3 {
+    max-width: 45%;
+    width: 45%;
+    background-color: #fff;
+    color: #4caf50;
+    border: #4caf50 solid 1px;
+}
+
+.scroll-page {
+    max-height: 100vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* icon-custom*/
+.mdi-timer-sand::before {
+    color: #1072cd;
+}
+
+.mdi-chef-hat::before {
+    color: #FBA518;
+}
+
+.mdi-room-service::before {
+    color: #4caf50;
+}
+
+.icon-bounce {
+    animation: bounce 1.5s infinite ease-in-out;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* End */
+/* custom-bg */
+.bg-custom-1 {
+    background-color: #b0d2f1;
+}
+
+.bg-custom-2 {
+    background-color: #f9efb9;
+}
+
+.bg-custom-3 {
+    background-color: #dff6e0;
+}
+
+.title-header-custom-1 {
+    color: #1072cd;
+}
+
+.title-header-custom-2 {
+    color: #FBA518;
+}
+
+.title-header-custom-3 {
+    color: #4caf50;
+}
+
+.border-custom-1 {
+    border: #1072cd solid 2px;
+}
+
+.border-custom-2 {
+    border: #FBA518 solid 2px;
+}
+
+.border-custom-3 {
+    border: #4caf50 solid 2px;
+}
+
+/* End */
+
+/* Note custom */
+.note-custom {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    height: 50px;
+    background-color: #1072cd;
+    left: 0;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+}
+
+/* End */
+
+/* Responsive */
+
+/* End */

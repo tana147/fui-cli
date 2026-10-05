@@ -1,0 +1,202 @@
+{
+  "data": [
+    {
+      "DSCheBienCauHinh": [
+        {
+          "TenCheBien": "Chân châu tươi",
+          "SoLuong": "30",
+          "ThoiGianCheBien": "11p20s",
+          "ThoiGianSuDung": "3 tiếng",
+          "TrangThaiCheBien": "Đã nấu",
+          "TenCuaHang": "Cửa hàng Test",
+          "TenNhanVien": "NV00001",
+          "ThoiGianCanhBao": "trước 60 phút"
+        },
+        {
+          "TenCheBien": "Chân châu đường đen",
+          "SoLuong": "50",
+          "ThoiGianCheBien": "15p",
+          "ThoiGianSuDung": "2 tiếng",
+          "TrangThaiCheBien": "Đã nấu",
+          "TenCuaHang": "Cửa hàng Test",
+          "TenNhanVien": "NV00001",
+          "ThoiGianCanhBao": "trước 60 phút"
+        }
+      ]
+    },
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')",
+      "TenSanPham": "",
+      "NhomLienKetChiTietID": 0,
+      "CheBienID": 0,
+      "DSCheBien": []
+    },
+    {
+      "API": "/eordertest/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        },
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "getBaoCao": {
+        "API": "/eordertest/BaoCao_CheBien_CauHinh",
+        "IN": {
+          "CuaHangID": "CuaHangID",
+          "TuNgay": "TuNgay",
+          "DenNgay": "DenNgay",
+          "TenSanPham": "TenSanPham",
+          "NhomLienKetChiTietID": "NhomLienKetChiTietID",
+          "CheBienID": "CheBienID"
+        },
+        "OUT": "DTCheBienBan",
+        "CALLBACK": {
+          "DSCheBienBan": "DTCheBienBan[0] ?? []",
+          "DSNhomLienKetChiTiet": "DTCheBienBan[1] ?? []",
+          "DSCheBien": "DTCheBienBan[2] ?? []"
+        }
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            },
+            {
+              "el": "v-select",
+              "w": 3,
+              "attr": {
+                "v-model": "NhanVienID",
+                "label": "Chọn nhân viên",
+                ":items": "vueData.DSNhanVien",
+                "item-value": "NhanVienID",
+                "item-text": "TenNhanVien",
+                ":rules": false
+              }
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "TuNgay",
+                "label": "Từ ngày",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "DenNgay",
+                "label": "Đến ngày",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getBaoCao"
+                }
+              },
+              "w": 1
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Lịch sử chế biến",
+                ":items": "DSCheBienCauHinh",
+                ":excel": true,
+                "height": "calc(100vh - 231px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Tên chế biến",
+                    "value": "TenCheBien",
+                    "width": 250
+                  },
+                  {
+                    "text": "Số lượng",
+                    "align": "center",
+                    "value": "SoLuong"
+                  },
+                  {
+                    "text": "Thời gian chế biến",
+                    "align": "center",
+                    "value": "ThoiGianCheBien",
+                    "width": 250
+                  },
+                  {
+                    "text": "Thời gian sử dụng",
+                    "align": "center",
+                    "value": "ThoiGianSuDung"
+                  },
+                  {
+                    "text": "Cảnh báo hết hạn",
+                    "align": "center",
+                    "value": "ThoiGianCanhBao"
+                  },
+                  {
+                    "text": "Trạng thái",
+                    "value": "TrangThaiCheBien",
+                    "align": "center",
+                    "width": 150
+                  },
+                  {
+                    "text": "Nhân viên",
+                    "align": "center",
+                    "value": "TenNhanVien",
+                    "width": 300
+                  },
+                  {
+                    "text": "Cửa hàng",
+                    "value": "TenCuaHang",
+                    "width": 300
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

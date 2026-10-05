@@ -1,0 +1,139 @@
+{
+  "data": [
+    {
+      "formData": {}
+    },
+    {
+      "DSDanhMucNgonNgu": []
+    },
+    {
+      "Get_DSDanhMucNgonNgu": {
+        "API": "/HDKH_DM_GetNgonNgu",
+        "IN": {},
+        "OUT": "DSDanhMucNgonNgu"
+      }
+    },
+    {
+      "CALL": "Get_DSDanhMucNgonNgu"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "QUẢN LÝ DANH MỤC NGÔN NGỮ",
+                ":items": "DSDanhMucNgonNgu",
+                ":headers": [
+                  {
+                    "title": "ID",
+                    "key": "value"
+                  },
+                  {
+                    "title": "Tên ngôn ngữ",
+                    "key": "title"
+                  },
+                  {
+                    "title": "Hệ số nhân",
+                    "key": "HeSoNhan"
+                  },
+                  {
+                    "title": "Thao tác",
+                    "key": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.formData.title",
+                      "label": "Tên ngôn ngữ"
+                    },
+                    "w": 8
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.formData.HeSoNhan",
+                      "label": "Hệ số nhân",
+                      "type": "number"
+                    },
+                    "w": 4
+                  }
+                ],
+                ":update-api": {
+                  "new-action": {
+                    "formData": {
+                      "title": "",
+                      "value": 0,
+                      "HeSoNhan": null
+                    }
+                  },
+                  "edit-action": {
+                    "formData": "{...item}"
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới ngôn ngữ <br/><b>{{vueData.formData.title}}</b>",
+                    "API": "/HDKH_DM_NgonNgu_Save",
+                    "IN": {
+                      "ID": 0,
+                      "TenNgonNgu": "vueData.formData.title",
+                      "HeSoNhan": "parseFloat(vueData.formData.HeSoNhan)",
+                      "IsActive": true
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "Get_DSDanhMucNgonNgu"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật ngôn ngữ <br/><b>{{formData.title}}</b>",
+                    "API": "/HDKH_DM_NgonNgu_Save",
+                    "IN": {
+                      "ID": "item.value",
+                      "TenNgonNgu": "vueData.formData.title",
+                      "HeSoNhan": "parseFloat(vueData.formData.HeSoNhan)",
+                      "IsActive": true
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "Get_DSDanhMucNgonNgu"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa ngôn ngữ <br/><b>{{item.title}}</b>",
+                    "API": "/HDKH_DM_NgonNgu_Save",
+                    "IN": {
+                      "ID": "item.value",
+                      "TenNgonNgu": "item.title",
+                      "HeSoNhan": "parseFloat(item.HeSoNhan)",
+                      "IsActive": false
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "Get_DSDanhMucNgonNgu"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

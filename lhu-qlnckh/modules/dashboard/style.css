@@ -1,0 +1,80 @@
+/* Module-scoped styles for dashboard */
+.dashboard-main-page {
+    background-color: #f8fafc;
+}
+.dashboard-stat-card {
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.dashboard-stat-card:hover {
+    border-color: var(--v-primary-base) !important;
+}
+.dashboard-stat-card--active {
+    border-color: var(--v-primary-base) !important;
+    background-color: #f0f7ff !important;
+}
+.dashboard-stat-avatar--primary {
+    background-color: #e3f2fd !important;
+}
+.dashboard-stat-avatar--success {
+    background-color: #e8f5e9 !important;
+}
+.dashboard-stat-avatar--warning {
+    background-color: #fff8e1 !important;
+}
+.dashboard-stat-avatar--info {
+    background-color: #e0f7fa !important;
+}
+.dashboard-stat-avatar--purple {
+    background-color: #f3e5f5 !important;
+}
+.dashboard-stat-avatar--error {
+    background-color: #ffebee !important;
+}
+.dashboard-select-year {
+    max-width: 140px;
+}
+.dashboard-select-loai {
+    max-width: 300px;
+}
+.dashboard-select-400 {
+    max-width: 400px;
+}
+.dashboard-search-field {
+    max-width: 280px;
+}
+.dashboard-chart-pie {
+    width: 100%;
+    max-width: 360px;
+    height: 320px;
+    margin: 0 auto;
+    position: relative;
+}
+.dashboard-chart-container {
+    width: 100%;
+    height: 340px;
+    position: relative;
+}
+.dashboard-chart-350 {
+    height: 350px;
+    position: relative;
+}
+.dashboard-border-bottom {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+.dashboard-word-break {
+    word-break: break-word;
+}
+.dashboard-cursor-default {
+    cursor: default;
+}
+.dashboard-scroll-top-btn {
+    position: fixed !important;
+    bottom: 24px;
+    right: 24px;
+    z-index: 99;
+}
+.v-data-table > .v-data-table__wrapper > table > thead > tr > th,
+.v-data-table > .v-data-table__wrapper > table > tbody > tr > td {
+    font-size: 14px !important;
+}

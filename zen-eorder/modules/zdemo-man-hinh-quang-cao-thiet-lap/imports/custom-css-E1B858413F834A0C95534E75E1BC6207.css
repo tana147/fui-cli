@@ -1,0 +1,17 @@
+.container {
+    max-width: 100%;
+}
+
+.media-container {
+	position: relative;
+	display: inline-block;
+}
+.custom-button-close {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	color: white;
+	border-radius: 50%;
+	padding: 5px;
+	cursor: pointer;
+}

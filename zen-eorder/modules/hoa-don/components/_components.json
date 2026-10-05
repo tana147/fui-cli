@@ -1,0 +1,38 @@
+[
+  {
+    "comID": 4174,
+    "comName": "uc-cancel"
+  },
+  {
+    "comID": 4175,
+    "comName": "uc-input-search"
+  },
+  {
+    "comID": 7295,
+    "comName": "uc-modal-bank-transfer"
+  },
+  {
+    "comID": 4176,
+    "comName": "uc-modal-invoice"
+  },
+  {
+    "comID": 4178,
+    "comName": "uc-tab-invoice"
+  },
+  {
+    "comID": 4177,
+    "comName": "uc-tab-invoice-item"
+  },
+  {
+    "comID": 4179,
+    "comName": "uc-table-einvoice"
+  },
+  {
+    "comID": 4601,
+    "comName": "uc-table-einvoice-replace"
+  },
+  {
+    "comID": 4180,
+    "comName": "uc-table-invoice"
+  }
+]

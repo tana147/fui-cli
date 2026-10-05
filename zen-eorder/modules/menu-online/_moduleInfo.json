@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/menu-online",
+  "url": "/zen-eorder/menu-online",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "menu-online",
+  "ModuleName": "Menu ZEN F&B",
+  "UpdateTime": "2025-10-31 08:06:36",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 59453,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

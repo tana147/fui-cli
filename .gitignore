@@ -1,0 +1,35 @@
+# ============================================
+# Security & Credentials (CRITICAL)
+# ============================================
+_connections.json
+**/_connections.json
+*_connections*.json
+_publishState.json
+**/_publishState.json
+*.env
+*.env.*
+*.secret
+
+# Modules containing hardcoded 3rd party API keys
+lhbs-lms/modules/dashboard-phat-trien-nang-luc*
+
+# ============================================
+# Logs, Cache & FUI Tool artifacts
+# ============================================
+_logs/
+**/_logs/
+_cache/
+**/_cache/
+_history/
+**/_history/
+*.log
+
+# ============================================
+# OS & Editor
+# ============================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo

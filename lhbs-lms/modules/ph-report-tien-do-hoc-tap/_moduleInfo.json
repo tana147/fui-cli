@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/ph-report-tien-do-hoc-tap",
+  "url": "//lms.lhbs.vn/ph-report-tien-do-hoc-tap",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "ph-report-tien-do-hoc-tap",
+  "ModuleName": "Phụ huynh theo dõi tiến độ học tập",
+  "UpdateTime": "2025-12-09 09:48:00",
+  "UpdateUser": "DEV000050",
+  "LastLoad": "2026-02-26",
+  "LoadCount": 2,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

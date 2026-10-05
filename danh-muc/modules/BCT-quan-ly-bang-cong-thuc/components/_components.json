@@ -1,0 +1,26 @@
+[
+  {
+    "comID": 6751,
+    "comName": "uc-chi-tiet-cong-thuc"
+  },
+  {
+    "comID": 5721,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 6752,
+    "comName": "uc-modal-edit-ghi-chu"
+  },
+  {
+    "comID": 6831,
+    "comName": "uc-modal-import-excel"
+  },
+  {
+    "comID": 6753,
+    "comName": "uc-modal-them-dinh-luong"
+  },
+  {
+    "comID": 6834,
+    "comName": "uc-row-nguyen-lieu"
+  }
+]

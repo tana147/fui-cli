@@ -1,0 +1,39 @@
+{
+  "data": [
+    {
+      "nganhID": 0,
+      "processAction": 1,
+      "flowStatus": "`P",
+      "thesisesProf1": null,
+      "thesisesProf2": null,
+      "isDialog": false,
+      "taskRegistData": []
+    }
+  ],
+  "watch": {
+    "nganhID": {
+      "CALL": "getTaskRegister"
+    },
+    "flowStatus": {
+      "CALL": "getTaskRegister"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "topic-container",
+              "col": {},
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

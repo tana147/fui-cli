@@ -1,0 +1,42 @@
+[
+  {
+    "comID": 8705,
+    "comName": "uc-kho-desktop"
+  },
+  {
+    "comID": 8706,
+    "comName": "uc-kho-mobile"
+  },
+  {
+    "comID": 8232,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 8382,
+    "comName": "uc-modal-cho-xac-nhan"
+  },
+  {
+    "comID": 8231,
+    "comName": "uc-modal-luan-chuyen"
+  },
+  {
+    "comID": 8235,
+    "comName": "uc-modal-update-ca-biet"
+  },
+  {
+    "comID": 8383,
+    "comName": "uc-modal-xem-chi-tiet-yeu-cau"
+  },
+  {
+    "comID": 8233,
+    "comName": "uc-modal-xuat-hang-hoa"
+  },
+  {
+    "comID": 7374,
+    "comName": "uc-table-hang-hoa"
+  },
+  {
+    "comID": 8647,
+    "comName": "uc-top-bar"
+  }
+]

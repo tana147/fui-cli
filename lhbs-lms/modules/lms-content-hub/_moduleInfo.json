@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-content-hub",
+  "url": "//lms.lhbs.vn/lms-content-hub",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-content-hub",
+  "ModuleName": "Kho soạn nội dung",
+  "UpdateTime": "2026-10-02 20:15:02",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 1173,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

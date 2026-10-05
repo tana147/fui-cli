@@ -1,0 +1,14 @@
+.my-field {
+    width: 100%
+}
+
+.my-field input {
+    padding: 10px;
+    text-align: center;
+}
+
+.main-view-scroll {
+    max-height: calc(100vh - 234px);
+    overflow-y: auto;
+    padding-right: 4px;
+}

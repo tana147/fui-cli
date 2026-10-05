@@ -1,0 +1,26 @@
+{
+  "data": [
+    {}
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "grid-list-md fluid pa-0",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page",
+              "col": {},
+              "attr": {},
+              "w": 12
+            }
+          ],
+          "w": 12
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

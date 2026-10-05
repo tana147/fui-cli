@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/dashboard",
+  "url": "//lms.lhbs.vn/dashboard",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "dashboard",
+  "ModuleName": "dashboard",
+  "UpdateTime": "2025-10-20 17:31:06",
+  "UpdateUser": "DEV000018",
+  "LastLoad": "2026-10-01",
+  "LoadCount": 19,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

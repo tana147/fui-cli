@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-qua-tang-doi-thuong",
+  "url": "/zen-eorder/bao-cao-qua-tang-doi-thuong",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-qua-tang-doi-thuong",
+  "ModuleName": "Báo Cáo / Quà Tặng / Cửa Hàng Đổi Thưởng",
+  "UpdateTime": "2026-03-20 16:22:39",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-05-04",
+  "LoadCount": 138,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

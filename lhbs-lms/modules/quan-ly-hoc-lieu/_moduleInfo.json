@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/quan-ly-hoc-lieu",
+  "url": "//lms.lhbs.vn/quan-ly-hoc-lieu",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "quan-ly-hoc-lieu",
+  "ModuleName": "Quản lý Học Liệu Số",
+  "UpdateTime": "2026-06-02 17:12:31",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-10-02",
+  "LoadCount": 308,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

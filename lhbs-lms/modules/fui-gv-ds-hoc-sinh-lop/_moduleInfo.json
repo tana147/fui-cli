@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/fui-gv-ds-hoc-sinh-lop",
+  "url": "//lms.lhbs.vn/fui-gv-ds-hoc-sinh-lop",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "fui-gv-ds-hoc-sinh-lop",
+  "ModuleName": "Danh sách học sinh lớp",
+  "UpdateTime": "2026-09-03 10:16:05",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 5034,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

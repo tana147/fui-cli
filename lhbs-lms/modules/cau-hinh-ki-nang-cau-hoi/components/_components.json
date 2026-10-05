@@ -1,0 +1,26 @@
+[
+  {
+    "comID": 6130,
+    "comName": "uc-btn-guide"
+  },
+  {
+    "comID": 6131,
+    "comName": "uc-detail-create-modal"
+  },
+  {
+    "comID": 6132,
+    "comName": "uc-detail-edit-modal"
+  },
+  {
+    "comID": 6133,
+    "comName": "uc-group-create-modal"
+  },
+  {
+    "comID": 6134,
+    "comName": "uc-group-edit-modal"
+  },
+  {
+    "comID": 6129,
+    "comName": "uc-main-layout"
+  }
+]

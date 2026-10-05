@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-khach-hang-su-dung-diem",
+  "url": "/zen-eorder/bao-cao-khach-hang-su-dung-diem",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-khach-hang-su-dung-diem",
+  "ModuleName": "Báo Cáo / Khách Hàng / Tần Suất Sử Dụng ZEN",
+  "UpdateTime": "2026-03-29 13:56:26",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2026-01-29",
+  "LoadCount": 212,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

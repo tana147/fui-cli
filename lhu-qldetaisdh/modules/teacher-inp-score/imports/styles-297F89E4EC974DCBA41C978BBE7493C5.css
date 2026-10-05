@@ -1,0 +1,103 @@
+.txtSize {
+  font-size: large;
+  /* margin-top: 1%; */
+  color: black;
+}
+
+.bold-right-align {
+  font-weight: bold;
+  text-align: right;
+}
+
+.maxScoreRight {
+  font-weight: bold;
+  text-align: center;
+}
+
+.resultCol {
+  font-weight: bold;
+  text-align: end;
+}
+
+.inpField {
+  margin-bottom: 7px;
+  width: 90%;
+  padding-left: 9%;
+}
+
+.table-bordered {
+  border-collapse: collapse;
+  /* width: 100%; */
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid black;
+}
+
+.tableTxt {
+  font-size: 16px;
+}
+
+.tieuChi {
+  width: 320px;
+}
+
+.diemToiDa {
+  width: 100px;
+  /* display: flex;
+    align-items: center;
+    justify-content: center; */
+}
+
+.danhGia {
+  width: 120px;
+}
+
+.infoTxt {
+  font-size: 16px;
+}
+
+.inpNumber {
+  margin-bottom: 5%;
+  margin-left: 5%;
+  width: 30%;
+}
+
+.dateTimeInp {
+  width: 2%;
+  margin-left: 1%;
+  margin-right: 1%;
+}
+
+.yearInp {
+  width: 4%;
+  margin-left: 1%;
+  margin-right: 1%;
+}
+
+.tableWidth {
+  width: 55%;
+}
+
+.infoWrap {
+  margin-left: 5%;
+  margin-right: 5%;
+  width: 90%;
+}
+
+.centered-input input {
+  text-align: center;
+}
+
+.selectData{
+  width: 17%;
+}
+
+.councilMemInp{
+  width: 28%;
+}
+
+.dateOfMeeting{
+  width: 18%;
+}

@@ -1,0 +1,57 @@
+.card-order {
+    border: 1px solid green !important;
+    min-width: 320px;
+    max-width: 320px;
+}
+
+.card-order .col {
+    padding-bottom: 0px !important;
+    padding-top: 0px !important;
+}
+
+.container {
+    max-width: 100% !important;
+}
+
+.v-application--is-ltr .v-list-item__action:first-child,
+.v-application--is-ltr .v-list-item__icon:first-child {
+    margin-right: 15px;
+}
+
+.container.grid-list-md .layout .flex {
+    padding: 0 !important;
+}
+
+.page-navigation {
+    padding: 10px 2px;
+}
+
+.v-expansion-panel-header:before{
+    background-color: #4caf50 !important;
+}
+
+.v-alert {
+    padding: 10px !important;
+}
+
+.blinking {
+    animation: blinkingAnimation 1s infinite;
+}
+
+@keyframes blinkingAnimation {
+    0% {
+        background-color: #ffebee;
+    }
+
+    50% {
+        background-color: #e3f2fd;
+    }
+
+    100% {
+        background-color: #ffebee;
+    }
+}
+
+.v-image__image--cover{
+    background-size: contain;
+}

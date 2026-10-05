@@ -1,0 +1,131 @@
+{
+  "data": [
+    {
+      "DS_ThietLap": [],
+      "DS_LoaiLy": [],
+      "DS_NhomLoaiLy": [],
+      "DSCuaHang": [],
+      "DSSanPham": [],
+      "SanPham_Selected": null,
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "NhomLoaiLy_Selected": {
+        "MoTa": "",
+        "NhomLoaiLyID": 0,
+        "TenNhomLoaiLy": ""
+      },
+      "NhomLoaiLy_Clone": {
+        "NhomLoaiLyID": 0,
+        "TenNhomLoaiLy": ""
+      },
+      "IsEdit": false,
+      "OptionHienThi": [
+        {
+          "value": 0,
+          "text": "Không hiển thị"
+        },
+        {
+          "value": 1,
+          "text": "Có hiển thị"
+        }
+      ]
+    },
+    {
+      "getLoaiLy": {
+        "API": "/eorder/LoaiLy_Select",
+        "IN": {
+          "CuaHangID": "CuaHangID"
+        },
+        "OUT": "DS_LoaiLy"
+      }
+    },
+    {
+      "getNhomLoaiLy": {
+        "API": "/eorder/NhomLoaiLy_Select",
+        "OUT": "DS_NhomLoaiLy"
+      }
+    },
+    {
+      "getNhomLoaiLyDiem": {
+        "API": "/eorder/NhomLoaiLyDiem_Select_ByNhomLoaiLyId",
+        "IN": {
+          "NhomLoaiLyID": "item.NhomLoaiLyID"
+        },
+        "OUT": "DS_ThietLap"
+      }
+    },
+    {
+      "getSanPhamByCuaHang": {
+        "API": "/eorder/SanPham_Select_Dropdown_ByCuaHangId",
+        "IN": {
+          "CuaHangID": "CuaHangID"
+        },
+        "OUT": "DSSanPham"
+      }
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": {
+        "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+      }
+    },
+    {
+      "CALL": "getNhomLoaiLy"
+    },
+    {
+      "FUN": "setSanPhamSelected",
+      "IN": "SanPham",
+      "CALLBACK": {
+        "vueData.SanPham_Selected": {
+          "text": "123",
+          "value": 1111
+        }
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "CALL": "getLoaiLy"
+      },
+      {
+        "CALL": "getSanPhamByCuaHang"
+      },
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

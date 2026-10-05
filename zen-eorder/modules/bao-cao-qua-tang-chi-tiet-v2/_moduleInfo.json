@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-qua-tang-chi-tiet-v2",
+  "url": "/zen-eorder/bao-cao-qua-tang-chi-tiet-v2",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-qua-tang-chi-tiet-v2",
+  "ModuleName": "Báo Cáo / Quà Tặng / Chi Tiết Quà Tặng",
+  "UpdateTime": "2026-03-20 16:22:31",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-04-14",
+  "LoadCount": 81,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

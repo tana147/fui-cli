@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/menu-zen",
+  "url": "//zentea.vn",
+  "mDomain": "[\"zentea.vn\",\"zenfoodcourt.vn\"]",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "menu-zen",
+  "ModuleName": "Menu ZEN F&B",
+  "UpdateTime": "2026-03-29 13:56:32",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 332397,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

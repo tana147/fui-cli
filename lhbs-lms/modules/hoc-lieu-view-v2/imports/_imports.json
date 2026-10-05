@@ -1,0 +1,138 @@
+[
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css",
+    "type": ".css",
+    "contentType": "link",
+    "fileID": "E506B80C24374A69B6709DD627845105",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "lhbs-animations",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "3CF6D0FFF1D646F3A095FC21CE039F1B",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/lhbs-animations-3CF6D0FFF1D646F3A095FC21CE039F1B.css"
+  },
+  {
+    "name": "lhbs-components",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "0FDDF7F6677A4C869B8ABE444BD0580C",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/lhbs-components-0FDDF7F6677A4C869B8ABE444BD0580C.css"
+  },
+  {
+    "name": "lhbs-core",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "2A4BC9CFD4F843F9B7F253D94BDDA393",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/lhbs-core-2A4BC9CFD4F843F9B7F253D94BDDA393.css"
+  },
+  {
+    "name": "lhbs-quiz",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "FC1B13466113439B8C88FB571511F3D4",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/lhbs-quiz-FC1B13466113439B8C88FB571511F3D4.css"
+  },
+  {
+    "name": "slide",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "4F56704D4A9D413CA96706DEF3C57E12",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/slide-4F56704D4A9D413CA96706DEF3C57E12.css"
+  },
+  {
+    "name": "stylePage",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "F82BA6875B024E5685A7A05E5EFD1B71",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/stylePage-F82BA6875B024E5685A7A05E5EFD1B71.css"
+  },
+  {
+    "name": "hoc-lieu-bundle-loader",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "8035979979D34AA7864BE7F610E10774",
+    "scope": "module",
+    "sort": 0,
+    "filePath": "imports/hoc-lieu-bundle-loader-8035979979D34AA7864BE7F610E10774.js"
+  },
+  {
+    "name": "lhbs-lesson-service",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "17BDAD04C11541B6A3F33EA9F56B98BD",
+    "scope": "module",
+    "sort": 45,
+    "filePath": "imports/lhbs-lesson-service-17BDAD04C11541B6A3F33EA9F56B98BD.js"
+  },
+  {
+    "name": "https://unpkg.com/jszip/dist/jszip.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "F812C1A918624F929336316CF40569B8",
+    "scope": "module",
+    "sort": 49
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/docx-preview@0.3.5/dist/docx-preview.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "7B49C0785DEA4C5EBE29F204E5127F77",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/docx-preview@0.3.5/dist/docx-preview.min.js.map",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "9028483549B64E0C912DD157BD19CECA",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "FDB9D56DF09C4C74A7E597E5917385FF",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "F93A6DF0F8E4404E9A78D220C451ABFF",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "5C73075984A845A897BD32DC7E82371C",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "F36846E0C37247BFAAEB5109BBD03902",
+    "scope": "module",
+    "sort": 50
+  }
+]

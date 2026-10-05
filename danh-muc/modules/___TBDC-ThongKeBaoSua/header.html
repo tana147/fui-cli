@@ -1,0 +1,17 @@
+<style>
+.chart-box canvas {
+  display: block;         /* tránh inline-block dư khoảng trắng */
+  width: 100% !important; /* bắt canvas theo chiều ngang parent */
+  height: 100% !important;/* cao = height của .chart-box */
+}
+.striped-table tbody tr:nth-child(odd) {
+  background-color: #f5f5f5; /* màu dòng lẻ */
+}
+.striped-table tbody tr:nth-child(even) {
+  background-color: #ffffff; /* màu dòng chẵn */
+}
+/* tuỳ chọn: đổi màu khi hover */
+.striped-table tbody tr:hover {
+  background-color: #e0f7fa;
+}
+</style>

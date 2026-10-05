@@ -1,0 +1,27 @@
+[
+  {
+    "name": "student-dashboard",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "A5F4757C804E41B8A38AED0A44F609FB",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/student-dashboard-A5F4757C804E41B8A38AED0A44F609FB.css"
+  },
+  {
+    "name": "https://fui.vn/include/audio/lamejs1.2.1.all.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "05A386FF848D43C79CF3BE19931A04E1",
+    "scope": "module",
+    "sort": 40
+  },
+  {
+    "name": "https://fui.vn/include/audio/vueaudio.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "E8B7E55C52834E41AC12A6217296B401",
+    "scope": "module",
+    "sort": 50
+  }
+]

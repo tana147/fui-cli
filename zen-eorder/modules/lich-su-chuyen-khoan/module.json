@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "DSCuaHang": []
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md pa-0",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-main",
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

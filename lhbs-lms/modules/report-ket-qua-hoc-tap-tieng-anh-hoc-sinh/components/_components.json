@@ -1,0 +1,34 @@
+[
+  {
+    "comID": 2264,
+    "comName": "ItemCotDiem"
+  },
+  {
+    "comID": 2628,
+    "comName": "LoadingCotDiem"
+  },
+  {
+    "comID": 2698,
+    "comName": "uc-chart-ky-nang"
+  },
+  {
+    "comID": 2700,
+    "comName": "uc-chart-theme"
+  },
+  {
+    "comID": 3321,
+    "comName": "uc-chartTA2-HocSinh"
+  },
+  {
+    "comID": 2681,
+    "comName": "uc-giao-dien-tieng-anh"
+  },
+  {
+    "comID": 2695,
+    "comName": "uc-run-language"
+  },
+  {
+    "comID": 2680,
+    "comName": "uc-tienganh-table"
+  }
+]

@@ -1,0 +1,268 @@
+.my-thesis-module .v-expansion-panel-content__wrap {
+    padding: 16px 24px 16px;
+}
+
+.my-thesis-module .workflow-panels .v-expansion-panel-content__wrap {
+    padding: 16px 20px 16px;
+}
+
+.my-thesis-module .v-text-field.v-text-field--enclosed .v-text-field__details {
+    margin-bottom: 4px;
+}
+
+.my-thesis-module .v-data-table>.v-data-table__wrapper>table>tbody>tr>td,
+.my-thesis-module .v-data-table>.v-data-table__wrapper>table>tfoot>tr>td,
+.my-thesis-module .v-data-table>.v-data-table__wrapper>table>thead>tr>td {
+    height: 38px;
+}
+
+/* Student Info Card styling */
+.student-info-card {
+    border: 1px solid #d7e3ea !important;
+    border-radius: 2px !important;
+    overflow: hidden;
+    background: linear-gradient(140deg, #f8fcff 0%, #ffffff 40%, #f7faf6 100%);
+    box-shadow: 0 10px 30px rgba(24, 52, 77, 0.08);
+}
+
+.student-info-panels {
+    border-radius: 2px;
+}
+
+.student-info-panels .v-expansion-panel::before {
+    box-shadow: none !important;
+}
+
+.student-info-panels .v-expansion-panel {
+    background: transparent;
+}
+
+.student-info-collapse-header {
+    border: 1px solid #d7e3ea;
+    border-radius: 2px;
+    background: linear-gradient(90deg,
+            rgba(19, 100, 148, 0.08) 0%,
+            rgba(74, 160, 84, 0.1) 100%);
+}
+
+.student-info-panels .v-expansion-panel-header {
+    min-height: 72px;
+}
+
+.student-info-panels .v-expansion-panel-content__wrap {
+    padding: 12px 0 0;
+}
+
+.student-info-card__header {
+    padding: 16px 20px 10px;
+    border-bottom: 1px solid #e6edf2;
+    background: linear-gradient(90deg,
+            rgba(19, 100, 148, 0.06) 0%,
+            rgba(74, 160, 84, 0.08) 100%);
+}
+
+.student-info-card__title {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.3;
+    color: #17445e;
+    font-weight: 700;
+}
+
+.student-info-card__subtitle {
+    margin: 4px 0 0;
+    color: #537180;
+    font-size: 13px;
+}
+
+.student-info-text {
+    min-height: 40px;
+    border: 1px solid #dbe7ee !important;
+    border-radius: 2px !important;
+    color: #173b4d !important;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.student-info-text:hover {
+    border-color: #bfd4e0 !important;
+    box-shadow: 0 3px 12px rgba(21, 73, 104, 0.08) !important;
+}
+
+@media (max-width: 600px) {
+    .workflow-panels .v-expansion-panel-content__wrap {
+        padding: 12px 12px 14px;
+    }
+
+    .student-info-panels .v-expansion-panel-header {
+        min-height: 66px;
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .student-info-card__title {
+        font-size: 18px;
+    }
+
+    .student-info-text {
+        min-height: 38px;
+        font-size: 14px;
+    }
+}
+
+/* Timeline styling for PhD route */
+.phd-timeline .v-timeline-item__dot {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+.phd-timeline .v-timeline-item__inner {
+    padding: 4px 0;
+}
+
+.border-info {
+    border: 1px solid #90caf9 !important;
+}
+
+.border-top {
+    border-top: 1px solid #e6edf2 !important;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e6edf2 !important;
+}
+
+/* Custom utilities and components added for inline-style removal */
+.banner-container {
+    background: linear-gradient(135deg, #14425a 0%, #1d5b7a 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 24px rgba(20, 66, 90, 0.12) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.banner-circle-top {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+}
+
+.banner-circle-bottom {
+    position: absolute;
+    bottom: -30px;
+    right: 50px;
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 50%;
+}
+
+.banner-content {
+    z-index: 1;
+}
+
+.banner-icon-bg {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.banner-title {
+    color: white !important;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+}
+
+.banner-subtitle {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 13.5px !important;
+    line-height: 1.2;
+    display: block;
+}
+
+.main-view-card {
+    border: 1px solid #d7e3ea !important;
+    background-color: #fafbfc;
+    height: calc(100vh - 230px);
+    min-height: 400px;
+}
+
+.main-view-inner-card {
+    border: 1px solid #d7e3ea !important;
+    height: calc(100vh - 230px);
+    min-height: 400px;
+}
+
+.main-view-title {
+    color: #17445e;
+}
+
+.topic-status-badge {
+    min-height: 34px;
+    padding: 0 12px;
+    background: rgba(46, 125, 50, 0.08);
+    letter-spacing: 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.border-dashed-card {
+    border: 1px dashed #d7e3ea !important;
+    background-color: #fafbfc;
+}
+
+.gap-4 {
+    gap: 4px;
+}
+
+.gap-8 {
+    gap: 8px;
+}
+
+.gap-15 {
+    gap: 15px;
+}
+
+.line-height-1-2 {
+    line-height: 1.2;
+}
+
+.line-height-1-4 {
+    line-height: 1.4;
+}
+
+.line-height-1-5 {
+    line-height: 1.5;
+}
+
+.min-h-40 {
+    min-height: 40px !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.scale-1-1 {
+    transform: scale(1.1);
+}
+
+.w-165 {
+    width: 165px;
+}
+
+.w-12-min-100 {
+    width: 12%;
+    min-width: 100px;
+}
+
+.letter-spacing-0-4 {
+    letter-spacing: 0.4px;
+}
+
+.white-space-nowrap {
+    white-space: nowrap;
+}

@@ -1,0 +1,287 @@
+html {
+    overflow-y: hidden;
+    overflow-x: hidden;
+    font-family: system-ui;
+    letter-spacing: 1px;
+}
+
+.container {
+    padding: 0;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.full-screen {
+    width: 100%;
+    height: 100vh;
+    background-image: url(/_cdn/zen-eorder/valentine-2025/bg.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    color: #ffffff;
+    text-align: center;
+}
+
+.bg-paper {
+    padding: 10px 15px;
+    font-size: 12px;
+    text-align: center;
+    width: 100%;
+    z-index: 2;
+}
+
+.btn-style {
+    padding: 10px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 900;
+    margin: 0 50px;
+    background-color: #ffffff;
+    border-radius: 25px;
+    color: #b60a0a;
+}
+
+.btn-wheel {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translate(-50%);
+    width: 250px;
+    z-index: 2;
+    margin: 0;
+}
+
+.text-banner {
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: 5px;
+}
+
+.text-subbanner {
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1.4;
+    font-style: italic;
+}
+
+.text-pin {
+    font-size: 24px;
+    letter-spacing: 5px;
+    font-weight: 1000;
+}
+
+.text-content {
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1.2;
+}
+
+.arrow {
+    width: 0;
+    height: 0;
+    border-left: 25px solid transparent;
+    border-right: 25px solid transparent;
+    border-top: 25px solid #ffffff;
+    position: absolute;
+    bottom: -16px;
+    left: 35px;
+}
+
+.arrow-right {
+    width: 0;
+    height: 0;
+    border-left: 25px solid transparent;
+    border-right: 25px solid transparent;
+    border-top: 25px solid #ffffff;
+    position: absolute;
+    bottom: -16px;
+    right: 35px;
+}
+
+.card-white {
+    font-size: 14px;
+    background-color: #ffffff;
+    border-radius: 25px;
+    color: #b60a0a;
+    padding: 10px;
+    font-weight: bold;
+    position: relative;
+}
+
+.img-voucher {
+    width: 70px;
+    height: 70px;
+    background-position: center;
+    background-size: cover;
+    margin: 0 20px;
+}
+
+.text-input {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.text-voucher {
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+.pin-input input {
+    font-size: 36px;
+    padding-left: 10px;
+    font-weight: bold !important;
+    text-align: center;
+    letter-spacing: 10px;
+    max-height: 70px;
+    padding-top: 0;
+    padding-bottom: 0;
+    color: #b60a0a !important;
+}
+
+.text-gift {
+    padding-top: 20px;
+    padding-left: 40px;
+    padding-right: 60px;
+    padding-bottom: 100px;
+    text-align: center;
+}
+
+.text-desc {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 2;
+    padding-bottom: 30px;
+    z-index: 2;
+}
+
+.div-result {
+    position: relative;
+    height: 210px;
+    text-align: center;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.fw-100 {
+    font-weight: 1000;
+}
+
+.fs-20 {
+    font-size: 20px;
+}
+
+.fs-18 {
+    font-size: 18px;
+}
+
+.fs-30 {
+    font-size: 30px;
+}
+
+.fs-14 {
+    font-size: 14px;
+}
+
+.mt-30px {
+    margin-top: 30px !important;
+}
+
+.card-input {
+    margin: 0 20px;
+    border-bottom: 3px dashed #b60a0a;
+}
+
+.v-text-field.v-text-field--enclosed .v-text-field__details,
+.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded) > .v-input__control > .v-input__slot {
+    padding: 0;
+    height: 60px;
+}
+
+.div-banner-carousel .v-btn__content {
+    font-size: 22px;
+}
+
+.img-wheel {
+    width: 100%;
+    z-index: 2;
+}
+
+.img-heart-1 {
+    position: absolute;
+    right: 5px;
+    top: 15px;
+    width: 70px;
+    z-index: 1;
+}
+
+.img-heart-2 {
+    position: absolute;
+    left: 5px;
+    top: 30px;
+    width: 80px;
+    z-index: 1;
+}
+
+.img-heart-3 {
+    position: absolute;
+    left: -25px;
+    bottom: 5px;
+    width: 200px;
+    z-index: 1;
+}
+
+.img-heart-3-center {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translate(-50%);
+    width: 250px;
+    z-index: 1;
+}
+
+.img-heart-3-wheel {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translate(-50%);
+    width: 150px;
+    z-index: 1;
+}
+
+.bg-wheel-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 99%;
+    height: auto;
+    z-index: 1;
+}
+
+.container-wheel {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    overflow: hidden;
+}
+
+.lucky-wheel {
+    width: 100%;
+    height: 400px;
+    flex: 1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}

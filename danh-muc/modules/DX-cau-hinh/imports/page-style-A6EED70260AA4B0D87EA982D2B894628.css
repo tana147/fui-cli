@@ -1,0 +1,32 @@
+:deep(.uc-switch-small) {
+	display: flex;
+	justify-content: center;
+}
+
+:deep(.uc-switch-small .v-selection-control) {
+	min-height: unset !important;
+	--v-selection-control-size: 24px !important;
+}
+
+:deep(.uc-switch-small .v-selection-control__wrapper) {
+	width: 32px !important;
+	height: 16px !important;
+}
+
+:deep(.uc-switch-small .v-switch__track) {
+	height: 16px !important;
+	width: 32px !important;
+	min-width: 32px !important;
+	border-radius: 8px !important;
+}
+
+:deep(.uc-switch-small .v-switch__thumb) {
+	height: 10px !important;
+	width: 10px !important;
+	top: calc(50% - 5px) !important;
+	left: 3px !important;
+}
+
+:deep(.uc-switch-small.v-switch--inset .v-selection-control--checked .v-switch__thumb) {
+	transform: translateX(16px) !important;
+}

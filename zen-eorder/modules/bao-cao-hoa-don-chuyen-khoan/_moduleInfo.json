@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-hoa-don-chuyen-khoan",
+  "url": "/zen-eorder/bao-cao-hoa-don-chuyen-khoan",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-hoa-don-chuyen-khoan",
+  "ModuleName": "Báo Cáo / Hóa Đơn / Chuyển Khoản",
+  "UpdateTime": "2026-03-20 16:20:05",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-05-23",
+  "LoadCount": 311,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

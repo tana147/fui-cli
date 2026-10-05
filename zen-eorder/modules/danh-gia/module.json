@@ -1,0 +1,41 @@
+{
+  "data": [
+    {
+      "HoaDonID": "hdid"
+    },
+    {
+      "getDanhGia": {
+        "API": "/eorder/auth/DanhGia_Select",
+        "OUT": "DSDanhGia"
+      }
+    },
+    {
+      "CALL": "getDanhGia"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-rating",
+              "attr": {
+                ":ds_danhgia": "DSDanhGia"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "login": false,
+    "menuLeft": false,
+    "userInfo": ""
+  }
+}

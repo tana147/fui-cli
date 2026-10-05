@@ -1,0 +1,83 @@
+.hs-thietbi-table .v-selection-control {
+	min-height: 28px;
+}
+.hs-thietbi-table .v-selection-control__wrapper {
+	height: 28px;
+}
+.hs-thietbi-table td, .hs-thietbi-table th {
+	line-height: 1.2;
+}
+.module-laptop-filter,
+.module-laptop-registration,
+.module-laptop-notifications {
+	width: 100%;
+}
+.module-laptop-filter .v-card-title,
+.module-laptop-registration .v-card-title,
+.module-laptop-notifications .v-card-title {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+.module-laptop-filter .v-card-title {
+	border-bottom: 1px solid rgba(0, 0, 0, .12);
+	padding-bottom: 12px !important;
+}
+.module-laptop-filter > div:not(.v-card-title) {
+	padding-top: 12px;
+}
+.module-laptop-registration > .v-card-title {
+	margin-bottom: 12px;
+}
+.module-laptop-registration > .v-card:not(:last-child) {
+	margin-bottom: 12px !important;
+}
+.module-laptop-registration > .v-card {
+	border-color: rgba(0, 0, 0, .82) !important;
+}
+.module-laptop-registration table {
+	border-collapse: collapse;
+}
+.module-laptop-registration th {
+	font-weight: 600;
+	white-space: nowrap;
+}
+.module-laptop-notifications > .v-card-title {
+	border-bottom: 1px solid rgba(0, 0, 0, .12);
+	padding-bottom: 10px !important;
+}
+.uc-main-layout .registration-table {
+	width: 100%;
+}
+.uc-main-layout .registration-table th,
+.uc-main-layout .registration-table td {
+	white-space: nowrap;
+}
+.uc-main-layout .registration-table th {
+	font-weight: 600;
+}
+@media (max-width: 760px) {
+	.uc-main-layout .registration-table {
+		min-width: 760px;
+	}
+	.uc-main-layout .v-card-text {
+		overflow-x: auto;
+	}
+}
+@media (max-width: 760px) {
+	.module-laptop-registration {
+		overflow-x: auto;
+	}
+	.module-laptop-registration > .v-card {
+		min-width: 760px;
+	}
+}
+.uc-main-layout .registration-list .v-list-item { border-bottom: 1px solid rgba(0, 0, 0, .08); }
+.uc-main-layout .registration-list .v-list-item:last-child { border-bottom: 0; }
+.mobile-registration { display: none !important; }
+@media (max-width: 760px) {
+  .uc-main-layout { padding: 12px !important; }
+  .uc-main-layout .v-card-title { font-size: 1rem; line-height: 1.4; }
+  .uc-main-layout .v-card-title .text-caption { width: 100%; margin: 4px 0 0 !important; }
+  .desktop-registration { display: none !important; }
+  .mobile-registration { display: block !important; }
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "comID": 6220,
+    "comName": "uc-baosua"
+  },
+  {
+    "comID": 6217,
+    "comName": "uc-bs"
+  },
+  {
+    "comID": 6221,
+    "comName": "uc-chi-tiet-sua-chua-x"
+  },
+  {
+    "comID": 6218,
+    "comName": "uc-home"
+  },
+  {
+    "comID": 6219,
+    "comName": "uc-list-bs"
+  },
+  {
+    "comID": 6215,
+    "comName": "uc-money-x"
+  },
+  {
+    "comID": 6216,
+    "comName": "uc-ticket-detail"
+  }
+]

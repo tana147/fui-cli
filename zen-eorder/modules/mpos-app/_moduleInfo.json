@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/mpos-app",
+  "url": "/zen-eorder/mpos-app",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "mpos-app",
+  "ModuleName": "ZEN F&B - Order",
+  "UpdateTime": "2024-12-03 10:41:19",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-06-08",
+  "LoadCount": 2677,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

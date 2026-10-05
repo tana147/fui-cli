@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-khuyen-mai-chi-tiet",
+  "url": "/zen-eorder/bao-cao-khuyen-mai-chi-tiet",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-khuyen-mai-chi-tiet",
+  "ModuleName": "Báo Cáo / Khuyến Mãi / Chi Tiết Khuyến Mãi",
+  "UpdateTime": "2026-03-20 16:21:03",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-02-28",
+  "LoadCount": 258,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

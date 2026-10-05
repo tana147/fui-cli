@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/doi-soat-doanh-thu",
+  "url": "/zen-eorder/doi-soat-doanh-thu",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "doi-soat-doanh-thu",
+  "ModuleName": "Đối Soát Doanh Thu",
+  "UpdateTime": "2026-03-20 16:25:45",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 4620,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

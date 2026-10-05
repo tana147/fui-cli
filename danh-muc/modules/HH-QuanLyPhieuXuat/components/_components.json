@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 6803,
+    "comName": "uc-drawer-view-detail"
+  },
+  {
+    "comID": 8229,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 8256,
+    "comName": "uc-modal-add"
+  },
+  {
+    "comID": 6827,
+    "comName": "uc-stepper-phieu-xuat"
+  },
+  {
+    "comID": 6801,
+    "comName": "uc-table-phieu-xuat"
+  }
+]

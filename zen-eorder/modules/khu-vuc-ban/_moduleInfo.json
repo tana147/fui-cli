@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/khu-vuc-ban",
+  "url": "/zen-eorder/khu-vuc-ban",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "khu-vuc-ban",
+  "ModuleName": "Khu Vực Bàn",
+  "UpdateTime": "2026-03-29 13:56:26",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2026-04-22",
+  "LoadCount": 1089,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

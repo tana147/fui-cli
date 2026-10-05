@@ -1,0 +1,34 @@
+[
+  {
+    "comID": 10844,
+    "comName": "uc-dotduyet-manage"
+  },
+  {
+    "comID": 9933,
+    "comName": "uc-form-an-pham"
+  },
+  {
+    "comID": 9935,
+    "comName": "uc-format-price-tac-gia"
+  },
+  {
+    "comID": 11027,
+    "comName": "uc-lichsu-modal"
+  },
+  {
+    "comID": 9936,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 9937,
+    "comName": "uc-main-view"
+  },
+  {
+    "comID": 9938,
+    "comName": "uc-modal-edit"
+  },
+  {
+    "comID": 9934,
+    "comName": "uc-table-tac-gia"
+  }
+]

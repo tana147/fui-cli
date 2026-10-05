@@ -1,0 +1,27 @@
+[
+  {
+    "name": "page-style.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "04DB79311A7D4E44A1701BCEB3DBBD94",
+    "scope": "module",
+    "sort": 24,
+    "filePath": "imports/page-style.css-04DB79311A7D4E44A1701BCEB3DBBD94.css"
+  },
+  {
+    "name": "https://fui.vn/include/client.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "5F8D6D9A6C5843628FFD8DC8DD6A23A5",
+    "scope": "module",
+    "sort": 25
+  },
+  {
+    "name": "/include/qrcode/qrcode.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "2CC28A417F514309A992B7F6EE9CEE5E",
+    "scope": "module",
+    "sort": 26
+  }
+]

@@ -1,0 +1,503 @@
+{
+  "data": [
+    {
+      "Keyword": "",
+      "DialogZenPointOpen": false,
+      "CTCheckKhachHang": null,
+      "TichDiem_DienThoai": "",
+      "Zen_SuDung": 0,
+      "Zen_TichDiem": 0,
+      "Is_SuDung": 0,
+      "TichDiem_CuaHangID": null,
+      "TichDiem_MaHoaDon": "",
+      "TichDiem_IsPushThongBao": true,
+      "TichDiem_TieuDe": "",
+      "TichDiem_NoiDung": ""
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": {
+        "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+      }
+    },
+    {
+      "getKhachHang": {
+        "API": "/eorder/KhachHang_Select",
+        "IN": {
+          "Search": "Keyword"
+        },
+        "OUT": "DSKhachHang"
+      }
+    },
+    {
+      "checkKhachHang": {
+        "API": "/eorder/KhachHang_Select_ByPhone",
+        "IN": {
+          "DienThoai": "TichDiem_DienThoai"
+        },
+        "OUT": "CTCheckKhachHang"
+      }
+    },
+    {
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 1,
+          "text": "Tạm khóa"
+        },
+        {
+          "value": 2,
+          "text": "Đã xóa"
+        }
+      ]
+    },
+    {
+      "DSGioiTinh": [
+        {
+          "value": 1,
+          "text": "Nam"
+        },
+        {
+          "value": 0,
+          "text": "Nữ"
+        }
+      ]
+    }
+  ],
+  "watch": {
+    "Is_SuDung": {
+      "IF": "vueData.Is_SuDung === 0",
+      "THEN": {
+        "EXE": "vueData.Zen_TichDiem = 0"
+      },
+      "ELSE": {
+        "EXE": "vueData.Zen_SuDung = 0"
+      }
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-text-field",
+              "w": 4,
+              "attr": {
+                "v-model": "Keyword",
+                "label": "Tìm theo số điện thoại, mã khách hàng",
+                ":rules": false
+              }
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                ":text": false,
+                "label": "Tìm",
+                ":block": true,
+                ":action": {
+                  "CALL": "getKhachHang"
+                }
+              },
+              "w": 1
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "error",
+                "icon-text": "mdi-star-plus",
+                ":text": false,
+                "label": "Tích điểm khách hàng",
+                ":action": {
+                  "DialogZenPointOpen": true
+                }
+              },
+              "w": 2
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Danh sách Khách Hàng",
+                ":excel": true,
+                ":items": "DSKhachHang",
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Mã khách hàng",
+                    "value": "KhachHangID"
+                  },
+                  {
+                    "text": "Tên khách hàng",
+                    "value": "Ten",
+                    "el": "span",
+                    "innerHTML": "{{item.HoTen}}"
+                  },
+                  {
+                    "text": "Điện thoại",
+                    "value": "DienThoai"
+                  },
+                  {
+                    "text": "Điểm ZEN",
+                    "value": "Diem",
+                    "el": "b",
+                    "align": "right",
+                    "attr": {
+                      "class": "success--text"
+                    },
+                    "innerHTML": "{{(item.Diem).toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Điểm lá trà",
+                    "value": "DiemLaTra",
+                    "el": "b",
+                    "align": "right",
+                    "attr": {
+                      "class": "success--text"
+                    },
+                    "innerHTML": "{{(item.DiemLaTra).toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Tình trạng",
+                    "value": "TrangThai",
+                    "el": "v-chip",
+                    "align": "center",
+                    "attr": {
+                      ":color": "item.TinhTrang === 0 ? 'success' : (item.TinhTrang === 1 ? 'error' : '')",
+                      ":small": true
+                    },
+                    "innerHTML": "{{item.TenTinhTrang}}"
+                  },
+                  {
+                    "text": "Cập nhật lần cuối",
+                    "el": "span",
+                    "value": "NhanVienCapNhat",
+                    "innerHTML": "{{item.ThoiGianCapNhat}}"
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "KhachHangID",
+                      "label": "Mã khách hàng",
+                      "disabled": true
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "HoTen",
+                      "label": "Họ tên"
+                    },
+                    "w": 8
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "DienThoai",
+                      "label": "Điện thoại",
+                      "disabled": true
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "GioiTinh",
+                      "label": "Giới tính",
+                      ":items": "vueData.DSGioiTinh"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "f-date",
+                    "attr": {
+                      ":required": false,
+                      "v-model": "NgaySinh",
+                      "label": "Sinh nhật"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "DiaChi",
+                      "label": "Địa chỉ"
+                    },
+                    "w": 8
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "TinhTrang": 0,
+                    "NgaySinh": "new Date()"
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật khách hàng <br/><b>{{item.KhachHangID}} - {{item.HoTen}}</b>",
+                    "API": "/eorder/KhachHang_Update",
+                    "IN": {
+                      "KhachHangID": "item.KhachHangID",
+                      "HoTen": "item.HoTen",
+                      "NgaySinh": "item.NgaySinh",
+                      "GioiTinh": "item.GioiTinh",
+                      "DiaChi": "item.DiaChi",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getKhachHang"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa khách hàng <br/><b>{{item.KhachHangID}} - {{item.HoTen}}</b>",
+                    "API": "/eorder/KhachHang_Delete",
+                    "IN": {
+                      "KhachHangID": "item.KhachHangID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getKhachHang"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "f-dialog",
+              "attr": {
+                "v-model": "DialogZenPointOpen",
+                "title": "Tích điểm khách hàng",
+                ":controls": [
+                  {
+                    "el": "b",
+                    "col": {
+                      "text-start": true
+                    },
+                    "attr": {
+                      "class": "primary--text"
+                    },
+                    "innerHTML": "Thông tin khách hàng",
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "class": "mb-5",
+                      "v-model": "vueData.TichDiem_DienThoai",
+                      "label": "Điện thoại khách hàng"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "f-button",
+                    "w": 3,
+                    "attr": {
+                      "color": "primary",
+                      ":block": true,
+                      "icon-text": "mdi-account-check",
+                      "label": "KIỂM TRA",
+                      ":text": false,
+                      ":action": {
+                        "CALL": "checkKhachHang"
+                      }
+                    }
+                  },
+                  {
+                    "el": "div",
+                    "w": 5,
+                    "attr": {
+                      "style": "line-height: 1.3;",
+                      "class": "black--text text-left",
+                      "v-if": "vueData.CTCheckKhachHang !== null"
+                    },
+                    "innerHTML": "Khách hàng: <br/><b>{{vueData.CTCheckKhachHang[0]?.HoTen}}</b> <b class='primary--text'>({{vueData.CTCheckKhachHang[0]?.Diem?.toLocaleString('vi-vn')}} ZEN)</b>"
+                  },
+                  {
+                    "el": "b",
+                    "col": {
+                      "text-start": true
+                    },
+                    "attr": {
+                      "class": "primary--text"
+                    },
+                    "innerHTML": "Thiết lập tích điểm",
+                    "w": 12
+                  },
+                  {
+                    "el": "v-radio-group",
+                    "attr": {
+                      "v-model": "vueData.Is_SuDung",
+                      "row": true,
+                      "class": "mt-0"
+                    },
+                    "innerHTML": "<v-radio label='Tích điểm' :value='0'></v-radio><v-radio label='Sử dụng' :value='1'></v-radio>",
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":disabled": "vueData.Is_SuDung === 1",
+                      "v-model": "vueData.Zen_TichDiem",
+                      "label": "ZEN tích điểm",
+                      "type": "number"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":disabled": "vueData.Is_SuDung === 0",
+                      "v-model": "vueData.Zen_SuDung",
+                      "label": "ZEN sử dụng",
+                      "type": "number"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "w": 8,
+                    "attr": {
+                      "v-model": "vueData.TichDiem_CuaHangID",
+                      "label": "Cửa hàng",
+                      ":items": "vueData.DSCuaHang",
+                      "item-value": "CuaHangID",
+                      "item-text": "TenCuaHang",
+                      ":rules": false
+                    }
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.TichDiem_MaHoaDon",
+                      "label": "Mã hóa đơn",
+                      ":rules": false
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "b",
+                    "col": {
+                      "text-start": true
+                    },
+                    "attr": {
+                      "class": "primary--text"
+                    },
+                    "innerHTML": "Thông báo",
+                    "w": 12
+                  },
+                  {
+                    "el": "v-checkbox",
+                    "attr": {
+                      "v-model": "vueData.TichDiem_IsPushThongBao",
+                      "label": "Gửi thông báo tích điểm"
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-if": "vueData.TichDiem_IsPushThongBao",
+                      "v-model": "vueData.TichDiem_TieuDe",
+                      "label": "Tiêu đề",
+                      ":rules": false
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-textarea",
+                    "attr": {
+                      "v-if": "vueData.TichDiem_IsPushThongBao",
+                      "v-model": "vueData.TichDiem_NoiDung",
+                      "label": "Nội dung",
+                      "rows": 2,
+                      ":rules": false
+                    },
+                    "w": 12
+                  }
+                ],
+                ":button": [
+                  {
+                    "label": "Thực hiện tích điểm",
+                    "color": "primary",
+                    "action": {
+                      "CONFIRM": "Bạn có chắc muốn tích điểm ZEN cho khách <br/><b>{{vueData.CTCheckKhachHang[0]?.HoTen}} ({{vueData.TichDiem_DienThoai}})</b>",
+                      "API": "/eorder/KhachHang_Update_Diem",
+                      "IN": {
+                        "DienThoai": "vueData.TichDiem_DienThoai",
+                        "Zen_SuDung": "vueData.Zen_SuDung ?? 0",
+                        "Zen_TichDiem": "vueData.Zen_TichDiem ?? 0",
+                        "CuaHangID": "vueData.TichDiem_CuaHangID ?? 0",
+                        "MaHoaDon": "vueData.TichDiem_MaHoaDon",
+                        "Is_PushThongBao": "vueData.TichDiem_IsPushThongBao",
+                        "TieuDe": "vueData.TichDiem_TieuDe",
+                        "NoiDung": "vueData.TichDiem_NoiDung",
+                        "Is_SuDung": "vueData.Is_SuDung"
+                      },
+                      "MESS": "Tích điểm thành công",
+                      "CALLBACK": [
+                        {
+                          "DialogZenPointOpen": false,
+                          "CTCheckKhachHang": null,
+                          "TichDiem_DienThoai": "",
+                          "Zen_SuDung": 0,
+                          "Zen_TichDiem": 0,
+                          "TichDiem_CuaHangID": null,
+                          "TichDiem_MaHoaDon": "",
+                          "TichDiem_IsPushThongBao": true
+                        },
+                        {
+                          "CALL": "getKhachHang"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

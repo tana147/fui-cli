@@ -1,0 +1,9 @@
+.custom-lich-dinh-ki-table .v-data-table-footer {
+    padding: 0px !important;
+}
+
+.table-disabled {
+    pointer-events: none;
+    opacity: 0.6;
+    user-select: none;
+}

@@ -1,0 +1,302 @@
+html,
+body {
+    overflow-y: hidden;
+    overflow-x: hidden;
+    font-size: 14px;
+    touch-action: none;
+}
+
+p {
+    margin-bottom: 0 !important;
+}
+
+.container {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100%;
+}
+
+.v-input__slot {
+    box-shadow: unset !important;
+}
+
+.v-input--selection-controls {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.v-sheet.v-card {
+    border-radius: 0 !important;
+}
+
+.btn-plus {
+    box-shadow: unset !important;
+    border: 1px solid #ddd !important;
+}
+
+.div-product-list {
+    border-top: 1px solid #e5e5e5;
+    height: calc(100dvh - 90px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 100px;
+}
+
+.div-item-product {
+    padding: 13px 5px;
+    border-bottom: 1px solid #d5d5d5;
+}
+
+.item-product {
+    position: relative;
+    background-color: #397744;
+    border-radius: 50%;
+    padding: 6px;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    color: #fff;
+    box-shadow: 2px 2px 1px #707070;
+}
+
+.flex-product-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.flex {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.item-product-out {
+    position: absolute;
+}
+
+.product-item {
+    display: flex;
+    border-top: 1px solid #333;
+}
+
+.order-total {
+    display: inline-block;
+    margin-top: 6px;
+}
+
+.order-total-text {
+    padding: 15px 10px;
+    font-size: 16px;
+}
+
+.td-product-name {
+    width: 45%;
+    padding: 10px 0px 10px 10px;
+    line-height: 1;
+}
+
+.td-product-name-send {
+    width: 49%;
+    padding: 10px 0px 10px 10px;
+    line-height: 1;
+}
+
+.td-product-name-his {
+    width: 40%;
+    padding: 5px;
+    line-height: 1;
+}
+
+.tr-product {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.td-product-qty {
+    width: 10%;
+    padding: 10px 0px;
+    text-align: center;
+}
+
+.td-product-qty-his {
+    width: 25%;
+    padding: 10px 0px;
+    text-align: center;
+}
+
+.td-product-qty-order {
+    width: 35%;
+    padding: 10px 0px;
+    text-align: center;
+}
+
+.td-product-price {
+    width: 20%;
+    padding: 10px 0px;
+    text-align: right;
+}
+
+.td-product-action {
+    width: 14%;
+    text-align: center;
+    padding: 5px 0px;
+}
+
+.break-detail {
+    width: 100%;
+    border-top: 1px dashed rgb(57 119 68);
+}
+
+.order-detail-body {
+    height: calc(100dvh - 150px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.order-footer {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    border-top: 1px solid #e3e3e3;
+    background-color: #ffffff !important;
+}
+
+.order-send-body {
+    height: 35%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 50px;
+}
+
+.order-send-product {
+    border-top: 1px solid #e5e5e5;
+    height: calc(65% - 120px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 150px;
+}
+
+.btn-product {
+    height: 50px !important;
+    width: 50px !important;
+    color: #fff !important;
+    font-size: 22px !important;
+    box-shadow: unset !important;
+}
+
+.cancel-text .td-product-name-his {
+    text-decoration: line-through !important;
+}
+
+.muted-text {
+    color: rgb(189, 189, 189);
+}
+
+.gray-text {
+    color: rgb(136 136 136);
+}
+
+.centered-input input {
+    text-align: center;
+}
+
+/* Customize the label (the container) */
+.checkbox-group {
+    display: block;
+    position: relative;
+    padding-left: 25px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.checkbox-group input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 2px;
+    height: 18px;
+    width: 18px;
+    background-color: #eee0;
+    border: 2px solid #397744;
+}
+
+/* On mouse-over, add a grey background color */
+.checkbox-group:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.checkbox-group input:checked ~ .checkmark {
+    background-color: #397744;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the checkmark when checked */
+.checkbox-group input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+.checkbox-group .checkmark:after {
+    left: 4px;
+    top: -2px;
+    width: 7px;
+    height: 13px;
+    border: solid #e4eae2;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.card-order {
+    width: 100%;
+}
+
+.card-order .col {
+    padding-bottom: 5px !important;
+    padding-top: 5px !important;
+}
+
+.toast {
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+.intro-div {
+    width: 100%;
+}
+
+.product-history {
+    height: calc(100dvh - 366px);
+    padding-bottom: 100px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.v-dialog--fullscreen:has(> .dialog-no-scoll) {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}

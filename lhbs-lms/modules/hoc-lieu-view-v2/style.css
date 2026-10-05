@@ -1,0 +1,1620 @@
+/* ==========================================================
+   LHBS LMS — HỌC LIỆU VIEW (MULTI-DEVICE, TV & TREEVIEW DRAWER)
+   Tối ưu hóa hiển thị: Smart TV lớp học, Máy chiếu, Laptop,
+   PC cá nhân, Tablet, Điện thoại & Mục lục cây học liệu.
+   ========================================================== */
+/* 1. Reset Drag & Drop helpers */
+.lh-draggable-item.sortable-chosen,
+.lh-draggable-item.sortable-drag,
+.lh-draggable-item.sortable-ghost,
+.lh-draggable-item.lh-sortable-chosen,
+.lh-draggable-item.lh-sortable-drag,
+.lh-draggable-item.lh-sortable-ghost,
+.sortable-chosen,
+.sortable-drag,
+.sortable-ghost {
+  transition: none !important;
+  transform: none !important;
+}
+/* 2. Global Viewport & Container Optimization (100% Full Width & Height) */
+html, body, .v-application {
+  height: 100% !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background-color: #f8fafc !important;
+}
+.v-application__wrap {
+  min-height: 100vh !important;
+  height: 100vh !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+.v-container,
+.v-container.v-container--fluid,
+.v-container.lh-app-container,
+.lh-app-container {
+  min-height: 100vh !important;
+  height: 100vh !important;
+  background: #f8fafc !important;
+  position: relative !important;
+  overflow: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+.v-container > .v-row {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+.lh-app-container::before {
+  display: none !important;
+}
+.lh-main-layout {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.lh-lesson-layout {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100vh !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 8px 12px !important;
+  gap: 8px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  background: #f8fafc !important;
+}
+/* 3. Clean Flat Header */
+.lh-app-header {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 6px 14px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  flex-shrink: 0 !important;
+  min-height: 48px !important;
+}
+.lh-header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+.lh-btn-back {
+  color: #334155 !important;
+  border-radius: 6px !important;
+  flex-shrink: 0 !important;
+}
+.lh-btn-back:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+.lh-brand-tag {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 2px 4px !important;
+  border-radius: 6px !important;
+  user-select: none !important;
+  pointer-events: none !important;
+  cursor: default !important;
+  flex-shrink: 0 !important;
+}
+.lh-brand-logo {
+  height: 26px !important;
+  width: auto !important;
+  border-radius: 4px !important;
+  object-fit: contain !important;
+}
+.lh-brand-title {
+  color: #0f172a !important;
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+}
+.lh-breadcrumbs-flow {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  overflow-x: auto !important;
+  white-space: nowrap !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  font-size: 0.85rem !important;
+  scrollbar-width: none !important;
+}
+.lh-breadcrumbs-flow::-webkit-scrollbar {
+  display: none !important;
+}
+.lh-bc-item {
+  color: #475569 !important;
+  font-weight: 500 !important;
+  max-width: 170px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.lh-bc-item.lh-bc-current {
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+  max-width: 240px !important;
+}
+.lh-bc-text {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  min-width: 0 !important;
+  display: inline-block !important;
+}
+.lh-bc-root {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+.lh-bc-active {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+.lh-bc-sep {
+  flex-shrink: 0 !important;
+  opacity: 0.6 !important;
+}
+.lh-header-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-shrink: 0 !important;
+  min-width: max-content !important;
+}
+.lh-btn-fullscreen {
+  border-radius: 6px !important;
+}
+/* 4. Treeview Drawer & Sidebar (Mục lục cây học liệu trượt gọn gàng & Phân cấp Treeview) */
+.lh-tree-drawer {
+  background: #ffffff !important;
+  border-right: 1px solid #e2e8f0 !important;
+  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.08) !important;
+  z-index: 99999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.lh-tree-drawer-header {
+  min-height: 48px !important;
+  background: #f8fafc !important;
+}
+.lh-tree-drawer-content {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  background: #ffffff !important;
+  scrollbar-width: thin !important;
+}
+.lh-tree-item {
+  border-left: 2px solid transparent !important;
+  background: transparent !important;
+  transition: all 0.15s ease !important;
+  user-select: none !important;
+  position: relative !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  border-radius: 6px !important;
+  box-sizing: border-box !important;
+  min-height: 32px !important;
+}
+/* Node gốc: giữ vai trò header nhóm, không phụ thuộc tên hay số cấp của dữ liệu. */
+.lh-tree-root-node {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 6px !important;
+  margin-top: 6px !important;
+  margin-bottom: 3px !important;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+.lh-tree-root-node:first-child {
+  margin-top: 0 !important;
+}
+.lh-tree-root-node:hover {
+  background: #e2e8f0 !important;
+}
+/* CHƯƠNG ở bất kỳ depth nào: phân biệt nhóm trung gian với bài và hoạt động. */
+.lh-tree-section-node:not(.lh-tree-root-node) {
+  background: #ffffff !important;
+  border-left: 0 !important;
+  border-radius: 6px !important;
+  margin-top: 2px !important;
+  margin-bottom: 2px !important;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+  font-weight: 600 !important;
+  color: #334155 !important;
+}
+.lh-tree-section-node:not(.lh-tree-root-node):hover {
+  background: #f8fafc !important;
+}
+/* BÀI ở bất kỳ depth nào: các bài cùng cấp sẽ thẳng hàng nhờ cùng số slot indent. */
+.lh-tree-lesson-node:not(.lh-tree-root-node) {
+  background: #f8fafc !important;
+  border-left: 0 !important;
+  border-radius: 6px !important;
+  margin-top: 2px !important;
+  margin-bottom: 2px !important;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+  font-weight: 600 !important;
+  color: #334155 !important;
+}
+.lh-tree-lesson-node:not(.lh-tree-root-node):hover {
+  background: #f1f5f9 !important;
+}
+/* Nhánh chưa có loại riêng: vẫn nổi bật như một node cha mà không cần biết depth cụ thể. */
+.lh-tree-branch-node:not(.lh-tree-root-node):not(.lh-tree-section-node):not(.lh-tree-lesson-node) {
+  background: #f8fafc !important;
+  border-left: 0 !important;
+  border-radius: 6px !important;
+  margin-top: 2px !important;
+  margin-bottom: 2px !important;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+  font-weight: 600 !important;
+  color: #334155 !important;
+}
+.lh-tree-branch-node:not(.lh-tree-root-node):not(.lh-tree-section-node):not(.lh-tree-lesson-node):hover {
+  background: #f1f5f9 !important;
+}
+/* Node lá: hoạt động/file ở bất kỳ depth nào đều có kiểu nhẹ hơn node bài. */
+.lh-tree-leaf-node:not(.lh-tree-lesson-node):not(.lh-tree-root-node) {
+  background: transparent !important;
+  border-left: 0 !important;
+  border-radius: 6px !important;
+  margin-top: 1px !important;
+  margin-bottom: 1px !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+  font-weight: 400 !important;
+  color: #475569 !important;
+}
+.lh-tree-leaf-node:not(.lh-tree-lesson-node):not(.lh-tree-root-node):hover {
+  background: #f1f5f9 !important;
+}
+/* Thụt cấp động chỉ dùng khoảng trống; bỏ rail dọc để cây thoáng và dễ quét mắt hơn. */
+.lh-tree-indent-slot {
+  flex: 0 0 16px !important;
+  width: 16px !important;
+  min-width: 16px !important;
+  height: 24px !important;
+}
+/* Active Highlight Item */
+.lh-tree-item-active {
+  border-left: 3.5px solid #0284c7 !important;
+  background: #e0f2fe !important;
+  color: #0284c7 !important;
+}
+.lh-tree-item-active .lh-tree-latex-content,
+.lh-tree-item-active .lh-tree-item-text {
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+}
+.lh-tree-item-text-wrapper {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  overflow: hidden !important;
+}
+.lh-tree-latex-content {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  font-size: 0.85rem !important;
+  line-height: 1.4 !important;
+}
+.lh-tree-chevron {
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 4px !important;
+  transition: background-color 0.12s ease !important;
+  cursor: pointer !important;
+}
+.lh-tree-chevron:hover {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+.lh-tree-branch-indicator {
+  width: 18px !important;
+  height: 18px !important;
+}
+.lh-tree-chevron-spacer {
+  width: 16px !important;
+  height: 20px !important;
+}
+.lh-tree-teacher-chip,
+.lh-tree-child-count-chip {
+  font-size: 10px !important;
+  height: 18px !important;
+}
+/* Các slot indent đã đảm nhiệm việc thụt cấp; width:auto giúp số slot tăng không tạo overflow ngang. */
+.lh-content-container,
+.lh-toc-sidebar-card,
+.lh-toc-sidebar-body,
+.lh-tree-item-list {
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+.lh-toc-sidebar-body {
+  overflow-x: hidden !important;
+}
+.lh-tree-item-list {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+.lh-tree-item {
+  width: auto !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+.lh-tree-item-text-wrapper,
+.lh-tree-latex-content {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+/* 5. Main Content Area (Tận dụng tối đa không gian & Viewport) */
+.lh-content-main,
+.lh-content-main-row {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  display: flex !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+.lh-content-container {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 10px !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+/* Sidebar Card Mục lục học liệu nằm cùng hàng bên trái */
+.lh-toc-sidebar-card {
+  width: 300px !important;
+  min-width: 280px !important;
+  max-width: 340px !important;
+  height: 100% !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+  animation: lhSlideInLeft 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  z-index: 20 !important;
+}
+@keyframes lhSlideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+/* Keyframe fade-in cho backdrop mobile overlay */
+@keyframes lhFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.lh-toc-sidebar-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  min-height: 44px !important;
+}
+.lh-toc-sidebar-header > div:first-child {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+.lh-toc-close-btn {
+  flex: 0 0 36px !important;
+  width: 36px !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  color: #334155 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.lh-toc-close-btn .v-icon {
+  color: #334155 !important;
+  opacity: 1 !important;
+}
+.lh-toc-sidebar-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+}
+.lh-slide-viewer-col,
+.lh-slide-col {
+  flex: 1 1 auto !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+.lh-slide-container {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+}
+.lh-slide-wrapper,
+.lh-slide-viewer,
+.lh-slide-viewer-core {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+.lh-single-slide {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+/* Video phải co theo toàn bộ vùng viewer; tránh lấy aspect-ratio theo chiều rộng rồi bị cắt phần dưới. */
+.lh-video-slide {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  flex: 1 1 auto !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+.lh-video-slide .media-player-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+.lh-video-slide .media-player-container > .v-row {
+  display: flex !important;
+  flex: 1 1 0 !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  align-items: stretch !important;
+}
+.lh-video-slide .media-player-container > .v-row > .v-col {
+  height: 100% !important;
+  min-height: 0 !important;
+  flex: 0 0 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.lh-video-slide .video-preview-box {
+  /* Các parent đều có chiều cao card; dùng 100% để video không dừng ở tỷ lệ 16:9 mặc định. */
+  flex: 1 1 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  aspect-ratio: auto !important;
+  background: #000000 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+.lh-video-slide .video-preview-box > video {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+.lh-video-slide .lh-youtube-wrapper {
+  top: 0 !important;
+  left: 0 !important;
+}
+.lh-video-slide .lh-youtube-wrapper iframe,
+.lh-video-slide .lh-youtube-wrapper > div {
+  width: 100% !important;
+  height: 100% !important;
+  border: 0 !important;
+}
+.lh-video-slide .lh-video-timeline {
+  flex: 0 0 auto !important;
+}
+.lh-reading-slide,
+.lh-ispring-slide {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+.lh-slide-header {
+  margin-bottom: 4px !important;
+  padding: 4px 8px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  flex-shrink: 0 !important;
+}
+.lh-slide-title {
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+.lh-slide-author,
+.lh-slide-description {
+  font-size: 0.85rem !important;
+  color: #64748b !important;
+  margin: 2px 0 0 0 !important;
+}
+.lh-reading-content,
+.lh-ispring-content,
+.lh-iframe-container {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+}
+/* Rich text container (khi render v-html trực tiếp) */
+div.lh-reading-iframe {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+  box-sizing: border-box !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #cbd5e1 #f8fafc !important;
+  padding: 16px !important;
+  margin: 0 !important;
+  background: #ffffff !important;
+  display: block !important;
+}
+div.lh-reading-iframe img {
+  max-width: 100% !important;
+  max-height: calc(100vh - 40px) !important;
+  height: auto !important;
+  width: auto !important;
+  object-fit: contain !important;
+  display: block !important;
+  margin: auto !important;
+  border-radius: 8px !important;
+}
+div.lh-reading-iframe::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+div.lh-reading-iframe::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+  border-radius: 4px !important;
+}
+div.lh-reading-iframe::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}
+div.lh-reading-iframe::-webkit-scrollbar-track {
+  background: #f8fafc !important;
+}
+/* Iframe view: Chiếm 100% khung nhìn viewport */
+iframe.lh-reading-iframe,
+iframe.lh-ispring-iframe {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  flex: 1 1 auto !important;
+  background: #ffffff !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.lh-image-slide-wrapper {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  background: #ffffff !important;
+}
+.lh-image-slide-content {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 1 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  overflow: auto !important;
+  box-sizing: border-box !important;
+}
+.lh-reading-image {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
+  display: block !important;
+  margin: auto !important;
+  transition: transform 0.2s ease !important;
+}
+/* ==========================================================
+   📽️ SLIDE VIEWER (PPT, GOOGLE SLIDES, PDF, OFFICE DOCX)
+   Chiếm 100% viewport, triệt tiêu khoảng trắng thừa bên dưới
+   ========================================================== */
+.lh-slide-viewer-container,
+.lh-pdf-book-container,
+.office-reader-container,
+.lh-external-document-viewer,
+.lh-lms-file-viewer-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: #000000 !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.lh-lms-file-viewer {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  flex: 1 1 auto !important;
+  display: block !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #000000 !important;
+  box-sizing: border-box !important;
+}
+.office-iframe {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  flex: 1 1 auto !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+  box-sizing: border-box !important;
+	background: #000000 !important;
+}
+/* External iframe dùng chung zoom/fullscreen với HTML; mức zoom được chọn bằng data-zoom để không cần inline style. */
+.office-reader-container {
+	overflow: auto !important;
+}
+.office-reader-container > .office-iframe {
+	width: 100% !important;
+	height: 100% !important;
+	min-height: 100% !important;
+	flex: 0 0 auto !important;
+	transform-origin: top left !important;
+	transition: transform 0.15s ease !important;
+}
+.office-reader-container[data-zoom="50"] > .office-iframe {
+	transform: scale(0.5) !important;
+}
+.office-reader-container[data-zoom="65"] > .office-iframe {
+	transform: scale(0.65) !important;
+}
+.office-reader-container[data-zoom="80"] > .office-iframe {
+	transform: scale(0.8) !important;
+}
+.office-reader-container[data-zoom="90"] > .office-iframe {
+	transform: scale(0.9) !important;
+}
+.office-reader-container[data-zoom="100"] > .office-iframe {
+	transform: none !important;
+}
+.office-reader-container[data-zoom="115"] > .office-iframe {
+	transform: scale(1.15) !important;
+}
+.office-reader-container[data-zoom="130"] > .office-iframe {
+	transform: scale(1.3) !important;
+}
+.office-reader-container[data-zoom="150"] > .office-iframe {
+	transform: scale(1.5) !important;
+}
+.office-reader-container[data-zoom="175"] > .office-iframe {
+	transform: scale(1.75) !important;
+}
+.office-reader-container[data-zoom="200"] > .office-iframe {
+	transform: scale(2) !important;
+}
+.office-reader-container[data-zoom="250"] > .office-iframe {
+	transform: scale(2.5) !important;
+}
+.office-reader-container.office-reader-fullscreen,
+.office-reader-container:fullscreen {
+	position: fixed !important;
+	top: 0 !important;
+	left: 0 !important;
+	width: 100vw !important;
+	height: 100vh !important;
+	min-height: 100vh !important;
+	z-index: 99999 !important;
+	background: #0f172a !important;
+	border-radius: 0 !important;
+}
+.office-reader-container.office-reader-fullscreen > .office-iframe,
+.office-reader-container:fullscreen > .office-iframe {
+	min-height: 100vh !important;
+}
+.loading-overlay,
+.error-overlay {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 20px !important;
+  background: #ffffff !important;
+  z-index: 10 !important;
+}
+/* 5.1 Floating Zoom & Fullscreen Action Bar */
+.lh-floating-controls {
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+  z-index: 20 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  background: rgba(15, 23, 42, 0.82) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 8px !important;
+  padding: 3px 4px !important;
+  gap: 2px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18) !important;
+  transition: all 0.2s ease !important;
+}
+.lh-floating-controls:hover {
+  background: rgba(15, 23, 42, 0.94) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+.lh-controls-fullscreen,
+.lh-iframe-container.lh-fullscreen .lh-floating-controls {
+  position: fixed !important;
+  top: 16px !important;
+  right: 16px !important;
+  z-index: 999999 !important;
+}
+.lh-tool-btn {
+  background: transparent !important;
+  color: #f8fafc !important;
+  border: none !important;
+  border-radius: 6px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  padding: 0 4px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  user-select: none !important;
+}
+.lh-tool-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+.lh-tool-btn:active:not(:disabled) {
+  transform: scale(0.92) !important;
+}
+.lh-tool-btn:disabled {
+  opacity: 0.35 !important;
+  cursor: not-allowed !important;
+}
+.lh-zoom-badge {
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  min-width: 44px !important;
+  padding: 0 6px !important;
+}
+.lh-tool-divider {
+  width: 1px !important;
+  height: 16px !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  margin: 0 2px !important;
+}
+.lh-fullscreen-btn {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  z-index: 10 !important;
+  background: rgba(15, 23, 42, 0.75) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 6px !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+.lh-fullscreen-btn:hover {
+  background: rgba(15, 23, 42, 0.95) !important;
+  transform: scale(1.05) !important;
+}
+/* Fullscreen Container Styles */
+.lh-iframe-container.lh-fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  background: #0f172a !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+.lh-iframe-container.lh-fullscreen iframe,
+.lh-iframe-container.lh-fullscreen .lh-reading-iframe {
+  width: 100vw !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  border-radius: 0 !important;
+  background: #ffffff !important;
+}
+/* 6. Clean Navigation Footer */
+.lh-navigation-footer {
+  padding: 6px 12px !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  flex-shrink: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  min-height: 48px !important;
+}
+.lh-nav-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  width: 100% !important;
+}
+.lh-nav-progress {
+  flex: 1 1 auto !important;
+  max-width: 420px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+.lh-nav-progress-bar {
+  width: 100% !important;
+}
+.lh-nav-btn {
+  min-width: 120px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  border-radius: 6px !important;
+  letter-spacing: normal !important;
+}
+/* 7. Clean Quiz Components */
+.lh-quiz-single {
+  padding: 16px !important;
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+  scrollbar-width: thin !important;
+}
+.lh-quiz-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding-bottom: 12px !important;
+  margin-bottom: 14px !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+.lh-quiz-type-badge {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border: 1px solid #e2e8f0 !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  font-size: 0.8rem !important;
+}
+.lh-header-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.lh-header-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  color: #334155 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+.lh-header-btn:hover {
+  background: #f8fafc !important;
+  border-color: #94a3b8 !important;
+}
+.lh-btn-check {
+  background: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+.lh-btn-check:hover {
+  background: #0369a1 !important;
+  border-color: #0369a1 !important;
+}
+.lh-question-prompt {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: #0f172a !important;
+  line-height: 1.6 !important;
+  margin-bottom: 16px !important;
+  padding: 12px 14px !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+}
+.lh-options-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+.lh-option-card {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  background: #ffffff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 10px 14px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  box-sizing: border-box !important;
+}
+.lh-option-card:hover {
+  border-color: #0284c7 !important;
+  background: #f0f9ff !important;
+}
+.lh-option-card.lh-selected {
+  border-color: #0284c7 !important;
+  background: #e0f2fe !important;
+}
+.lh-option-indicator {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  border: 2px solid #94a3b8 !important;
+  border-radius: 50% !important;
+  position: relative !important;
+  flex-shrink: 0 !important;
+  background: #ffffff !important;
+}
+.lh-option-card.lh-selected .lh-option-indicator {
+  border-color: #0284c7 !important;
+  background: #0284c7 !important;
+}
+.lh-option-card.lh-selected .lh-option-indicator::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 6px !important;
+  height: 6px !important;
+  background: #ffffff !important;
+  border-radius: 50% !important;
+}
+.lh-checkbox-indicator {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  border: 2px solid #94a3b8 !important;
+  border-radius: 4px !important;
+  position: relative !important;
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #ffffff !important;
+}
+.lh-option-card.lh-selected .lh-checkbox-indicator {
+  border-color: #0284c7 !important;
+  background: #0284c7 !important;
+}
+.lh-option-text {
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+  color: #1e293b !important;
+  line-height: 1.5 !important;
+}
+.lh-option-card.lh-correct-answer {
+  border-color: #16a34a !important;
+  background-color: #f0fdf4 !important;
+}
+.lh-option-card.lh-wrong-answer {
+  border-color: #dc2626 !important;
+  background-color: #fef2f2 !important;
+}
+/* 8. Matching Quiz Layout */
+.lh-matching-container {
+  display: flex !important;
+  gap: 16px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+.lh-matching-column {
+  flex: 1 1 50% !important;
+  width: 50% !important;
+  box-sizing: border-box !important;
+}
+.lh-column-title {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 6px !important;
+  padding: 6px 12px !important;
+  margin-bottom: 10px !important;
+  font-weight: 600 !important;
+  font-size: 0.88rem !important;
+  text-align: center !important;
+  color: #1e293b !important;
+}
+.lh-matching-pair-row {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 8px !important;
+  margin-bottom: 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+.lh-matching-pair-row .lh-matching-item-a {
+  background-color: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #1e293b !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  font-size: 0.9rem !important;
+}
+.lh-matching-item-b {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  margin-bottom: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: grab !important;
+  touch-action: none !important;
+  font-size: 0.9rem !important;
+}
+.lh-matching-dropzone {
+  width: 100% !important;
+  min-height: 42px !important;
+  border: 1.5px dashed #94a3b8 !important;
+  border-radius: 6px !important;
+  background-color: #f8fafc !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.lh-matching-dropzone:has(.lh-matching-item-b) {
+  border: 1.5px solid #0284c7 !important;
+  background-color: #f0f9ff !important;
+}
+/* 9. Loading & Empty State */
+.lh-loading-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  min-height: 300px !important;
+  width: 100% !important;
+}
+.lh-loading-content {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+/* 10. Floating Overlay Controls (Mục lục góc trái & Zoom Toolbar góc phải) */
+.lh-floating-left-controls {
+  position: absolute !important;
+  top: 14px !important;
+  left: 14px !important;
+  z-index: 99 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: rgba(15, 23, 42, 0.78) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  padding: 4px 10px !important;
+  border-radius: 30px !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.lh-floating-left-controls:hover {
+  background: rgba(15, 23, 42, 0.92) !important;
+  transform: translateY(-1px) scale(1.02) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.32) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+.lh-btn-floating-toc {
+  background: transparent !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+  padding: 3px 6px !important;
+  border-radius: 20px !important;
+  user-select: none !important;
+  transition: background-color 0.15s ease !important;
+}
+.lh-btn-floating-toc:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+.lh-btn-floating-toc .v-icon {
+  color: #38bdf8 !important;
+}
+.lh-floating-controls {
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  z-index: 99 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  background: rgba(15, 23, 42, 0.78) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  padding: 4px 8px !important;
+  border-radius: 30px !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.lh-floating-controls:hover {
+  background: rgba(15, 23, 42, 0.92) !important;
+  transform: translateY(-1px) scale(1.02) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.32) !important;
+}
+.lh-tool-btn {
+  background: transparent !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-size: 0.85rem !important;
+  cursor: pointer !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.15s ease !important;
+}
+.lh-tool-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #38bdf8 !important;
+}
+.lh-tool-btn:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+}
+.lh-zoom-badge {
+  font-weight: 700 !important;
+  font-size: 0.78rem !important;
+  min-width: 44px !important;
+  text-align: center !important;
+  color: #f1f5f9 !important;
+}
+.lh-tool-divider {
+  width: 1px !important;
+  height: 16px !important;
+  background: rgba(255, 255, 255, 0.25) !important;
+  margin: 0 2px !important;
+}
+/* ==========================================================
+   📺 MÀN HÌNH TRÌNH CHIẾU TV / MÁY CHIẾU (>= 1600px, 4K, 2K)
+   ========================================================== */
+@media (min-width: 1600px) {
+  .lh-lesson-layout {
+    padding: 12px 18px !important;
+    gap: 12px !important;
+  }
+  .lh-app-header {
+    padding: 10px 18px !important;
+    min-height: 56px !important;
+  }
+  .lh-brand-logo {
+    height: 32px !important;
+  }
+  .lh-brand-title {
+    font-size: 1.05rem !important;
+  }
+  .lh-breadcrumbs-flow {
+    font-size: 1rem !important;
+    gap: 8px !important;
+  }
+  .lh-slide-title {
+    font-size: 1.45rem !important;
+  }
+  .lh-slide-author,
+  .lh-slide-description {
+    font-size: 1rem !important;
+  }
+  .lh-question-prompt {
+    font-size: 1.2rem !important;
+    padding: 16px 20px !important;
+  }
+  .lh-option-card {
+    padding: 14px 20px !important;
+    border-radius: 10px !important;
+  }
+  .lh-option-text {
+    font-size: 1.1rem !important;
+  }
+  .lh-navigation-footer {
+    padding: 10px 18px !important;
+    min-height: 56px !important;
+  }
+  .lh-nav-btn {
+    min-width: 150px !important;
+    height: 44px !important;
+    font-size: 1rem !important;
+  }
+  .lh-nav-progress {
+    max-width: 550px !important;
+  }
+  .lh-nav-progress-label {
+    font-size: 0.95rem !important;
+  }
+}
+/* ==========================================================
+   📱 TABLET RESPONSIVE (768px – 959px): Sidebar cũng là overlay
+   ========================================================== */
+@media (max-width: 959px) {
+  /*
+   * Drawer nằm trong content-container còn backdrop là sibling ở ngoài.
+   * backdrop-filter/transform trên container tạo stacking context khiến z-index
+   * của drawer không thể vượt qua backdrop; tắt hai nguồn stacking context này
+   * khi drawer mở để panel luôn nằm trên lớp phủ và vẫn giữ được lớp dim phía sau.
+   */
+  .lh-content-container.has-toc-open {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    animation: none !important;
+    overflow: visible !important;
+  }
+  /* Trên tablet, mục lục cũng hiện dạng Overlay Drawer để không chiếm chỗ nội dung */
+  .lh-toc-sidebar-card {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    height: 100vh !important;
+    width: min(85vw, 340px) !important;
+    max-width: 340px !important;
+    z-index: 100000 !important;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25) !important;
+    border-radius: 0 12px 12px 0 !important;
+    animation: lhSlideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    /* Đảm bảo sidebar nằm trên cùng bất kể stacking context nào */
+    contain: none !important;
+  }
+  /* Backdrop cho tablet (ẩn > 960px) */
+  .lh-mobile-toc-backdrop {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(15, 23, 42, 0.45) !important;
+    backdrop-filter: blur(2px) !important;
+    z-index: 99999 !important;
+    animation: lhFadeIn 0.2s ease-out !important;
+  }
+  .lh-floating-controls {
+    top: 6px !important;
+    right: 6px !important;
+    padding: 2px 4px !important;
+    gap: 2px !important;
+  }
+  .lh-tool-btn {
+    width: 26px !important;
+    height: 26px !important;
+  }
+  .lh-zoom-badge {
+    font-size: 0.7rem !important;
+    padding: 0 4px !important;
+  }
+  .lh-navigation-footer {
+    padding: 4px 8px !important;
+    min-height: 44px !important;
+  }
+  .lh-nav-btn {
+    min-width: 75px !important;
+    font-size: 0.78rem !important;
+    padding: 0 6px !important;
+    height: 32px !important;
+  }
+  .lh-nav-progress {
+    max-width: 140px !important;
+  }
+  .lh-nav-progress-label {
+    font-size: 0.75rem !important;
+  }
+  .lh-empty-state-card {
+    padding: 24px 16px !important;
+    margin: 12px !important;
+  }
+  .lh-empty-state-title {
+    font-size: 1.05rem !important;
+  }
+  .lh-matching-container {
+    flex-direction: column !important;
+  }
+  .lh-matching-column {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+}
+/* Desktop: Ẩn backdrop mục lục (chỉ cần overlay trên mobile/tablet) */
+@media (min-width: 960px) {
+  .lh-mobile-toc-backdrop {
+    display: none !important;
+  }
+}
+/* ==========================================================
+   📱 MOBILE (< 768px): Style nhỏ gọn hơn cho điện thoại
+   ========================================================== */
+@media (max-width: 767px) {
+  .lh-lesson-layout {
+    padding: 4px 6px !important;
+    gap: 4px !important;
+  }
+  .lh-app-header {
+    padding: 4px 8px !important;
+    min-height: 44px !important;
+    gap: 4px !important;
+  }
+  .lh-brand-tag {
+    display: none !important;
+  }
+  .lh-breadcrumbs-flow {
+    font-size: 0.78rem !important;
+    gap: 2px !important;
+  }
+  .lh-bc-item {
+    max-width: 110px !important;
+    font-size: 0.78rem !important;
+  }
+  .lh-bc-item.lh-bc-current {
+    max-width: 140px !important;
+  }
+  .lh-toc-sidebar-card {
+    width: 85vw !important;
+    max-width: 300px !important;
+  }
+  /* Treeview nhỏ gọn hơn trên điện thoại */
+  .lh-tree-latex-content {
+    font-size: 0.82rem !important;
+  }
+  .lh-tree-item {
+    min-height: 36px !important;
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;
+  }
+}
+/* ==========================================================
+   📦 EMPTY STATE (TRẠNG THÁI TRỐNG / ĐANG BIÊN TẬP NỘI DUNG)
+   ========================================================== */
+.lh-empty-state-view {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #ffffff !important;
+  box-sizing: border-box !important;
+}
+.lh-reading-slide {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+}
+.lh-empty-state-card {
+  max-width: 540px !important;
+  width: 100% !important;
+  background: #ffffff !important;
+  border: 1.5px dashed #cbd5e1 !important;
+  border-radius: 12px !important;
+  padding: 36px 28px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+  margin: auto !important;
+  animation: lhFadeInUp 0.3s ease-out !important;
+}
+@keyframes lhFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.lh-empty-state-icon-wrapper {
+  width: 80px !important;
+  height: 80px !important;
+  margin: 0 auto !important;
+  border-radius: 50% !important;
+  background: #e0f2fe !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #0284c7 !important;
+}
+.lh-empty-state-title {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  line-height: 1.4 !important;
+}
+.lh-empty-state-desc {
+  font-size: 0.95rem !important;
+  color: #475569 !important;
+  line-height: 1.6 !important;
+}
+.lh-empty-state-subdesc {
+  font-size: 0.85rem !important;
+  color: #94a3b8 !important;
+  line-height: 1.5 !important;
+}
+.lh-empty-state-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+}
+.lh-empty-btn-toc,
+.lh-empty-btn-next {
+  text-transform: none !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  letter-spacing: normal !important;
+}

@@ -1,0 +1,44 @@
+{
+  "data": [
+    {
+      "TableHeader": [],
+      "DataReport": []
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo doanh thu theo thương hiệu",
+                ":items": "DataReport",
+                ":excel": true,
+                "class": "freezy-header freezy-column",
+                "height": "calc(100vh - 187px)",
+                ":hide-default-footer": false,
+                ":items-per-page": -1,
+                ":headers": "TableHeader",
+                ":item-class": "getRowClass"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

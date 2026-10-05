@@ -1,0 +1,291 @@
+{
+  "data": [
+    {
+      "getLauSelectByCuaHangId": {
+        "API": "/eorder/Lau_Select_ByCuaHangId",
+        "IN": {
+          "CuaHangID": "CuaHangID"
+        },
+        "OUT": "DSLau",
+        "CALLBACK": {
+          "LauID": "DSLau[0]?.LauID",
+          "TenLau": "DSLau[0]?.TenLau ?? ''"
+        }
+      }
+    },
+    {
+      "getKhuSelectByLauId": {
+        "API": "/eorder/Khu_Select_ByLauId",
+        "IN": {
+          "LauID": "LauID"
+        },
+        "OUT": "DSKhu"
+      }
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": {
+        "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+      }
+    },
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "TenCuaHang": "",
+      "TenLau": "",
+      "KhuID": 0
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "CALL": "getLauSelectByCuaHangId"
+      },
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      },
+      {
+        "TenCuaHang": "vueData.DSCuaHang.filter((item) => item.CuaHangID === vueData.CuaHangID)[0]?.TenCuaHang",
+        "TenLau": "",
+        "DSKhu": []
+      }
+    ],
+    "LauID": {
+      "CALL": "getKhuSelectByLauId"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "w": 5,
+              "attr": {
+                "label": "Lầu",
+                ":excel": true,
+                ":items": "DSLau",
+                "height": "calc(100vh - 118px)",
+                ":headers": [
+                  {
+                    "text": "Lầu",
+                    "value": "TenLau"
+                  },
+                  {
+                    "text": "Khu vực",
+                    "align": "center",
+                    "value": "TongSoKhuVuc",
+                    "el": "v-chip",
+                    "attr": {
+                      ":color": "item.TongSoKhuVuc > 0 ? 'success': 'error'",
+                      ":small": true
+                    },
+                    "innerHTML": "{{item.TongSoKhuVuc}}"
+                  },
+                  {
+                    "text": "",
+                    "el": "t-button",
+                    "align": "right",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Xem khu vực",
+                      ":action": {
+                        "LauID": "item.LauID",
+                        "TenLau": "item.TenLau"
+                      }
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center",
+                    "width": 80
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-select",
+                    "w": 12,
+                    "attr": {
+                      "v-model": "CuaHangID",
+                      "label": "Cửa hàng",
+                      ":items": "vueData.DSCuaHang",
+                      "item-value": "CuaHangID",
+                      "item-text": "TenCuaHang"
+                    }
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenLau",
+                      "label": "Tên lầu"
+                    },
+                    "w": 12
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "CuaHangID": "vueData.CuaHangID"
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới lầu",
+                    "API": "/eorder/Lau_Insert",
+                    "IN": {
+                      "CuaHangID": "item.CuaHangID",
+                      "TenLau": "item.TenLau"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": {
+                      "CALL": "getLauSelectByCuaHangId"
+                    }
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật lầu <br/><b>{{item.TenLau}}</b>",
+                    "API": "/eorder/Lau_Update",
+                    "IN": {
+                      "LauID": "item.LauID",
+                      "CuaHangID": "item.CuaHangID",
+                      "TenLau": "item.TenLau"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getLauSelectByCuaHangId"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa lầu <br/><b>{{item.TenLau}}</b>",
+                    "API": "/eorder/Lau_Delete",
+                    "IN": {
+                      "LauID": "item.LauID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getLauSelectByCuaHangId"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "el": "f-table",
+              "w": 7,
+              "attr": {
+                ":label": "`Khu vực bàn - ${TenLau}`",
+                ":items": "DSKhu",
+                ":excel": true,
+                "height": "calc(100vh - 118px)",
+                ":headers": [
+                  {
+                    "text": "Lầu",
+                    "value": "TenLau"
+                  },
+                  {
+                    "text": "Khu",
+                    "value": "TenKhu"
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center",
+                    "width": 80
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "LauID",
+                      "label": "Lầu",
+                      ":items": "vueData.DSLau",
+                      "item-value": "LauID",
+                      "item-text": "TenLau"
+                    },
+                    "w": 6
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenKhu",
+                      "label": "Tên Khu",
+                      "maxlength": "50"
+                    },
+                    "w": 6
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "LauID": "vueData.LauID"
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới khu vực bàn",
+                    "API": "/eorder/Khu_Insert",
+                    "IN": {
+                      "LauID": "item.LauID",
+                      "TenKhu": "item.TenKhu"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": {
+                      "CALL": "getKhuSelectByLauId"
+                    }
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật khu vực bàn <br/><b>{{item.TenLau}} / {{item.TenKhu}}</b>",
+                    "API": "/eorder/Khu_Update",
+                    "IN": {
+                      "KhuID": "item.KhuID",
+                      "TenKhu": "item.TenKhu",
+                      "LauID": "item.LauID"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getKhuSelectByLauId"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa khu vực bàn <br/><b>{{item.TenLau}} / {{item.TenKhu}}</b>",
+                    "API": "/eorder/Khu_Delete",
+                    "IN": {
+                      "KhuID": "item.KhuID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getKhuSelectByLauId"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

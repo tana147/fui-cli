@@ -1,0 +1,56 @@
+{
+  "data": [
+    {
+      "HoaDonID": "id",
+      "QrCode": "window.location.href",
+      "IsShowBanner": true,
+      "IsShowDetail": false,
+      "CTSanPham": null
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "uc-invoice",
+              "attr": {
+                "v-if": "!vueData.IsShowBanner",
+                ":hdid": "vueData.HoaDonID"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "uc-modal-banner",
+              "attr": {
+                "v-if": "vueData.IsShowBanner"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "uc-modal-product-content"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false,
+    "login": false,
+    "userInfo": ""
+  }
+}

@@ -1,0 +1,1171 @@
+{
+  "data": {
+    "ProjectName": "LHBS LMS System",
+    "title": "LMS SYSTEM",
+    "apiDomain": "https://tapi.lhbs.vn/",
+    "login": "https://login.lhbs.vn/",
+    "userInfo": "https://tapi.lhbs.vn/acc/UserInfo/lms",
+    "apiFile": "https://file.lhbs.vn/lms/upload/FileData",
+    "_apiImageAdapter": "https://file.lhbs.vn/lms/upload/ImageAdapter/1000/1000/90",
+    "apiImageAdapter": "https://file.lhbs.vn/lms/upload/ImageAdapter/1000/1000/90",
+    "urlReadFile": "https://file.lhbs.vn/lms/",
+    "urlReturnFile": "https://file.lhbs.vn/lms",
+    "urlAvatarPhuHuynh": "https://file.lhbs.vn/me/avatarOrigin/",
+    "urlAvatarHocSinh": "https://file.lhbs.vn/student/StudentImage/",
+    "menuStyle": {
+      "topmenu": {
+        "bgcolor": "#217D46",
+        "textcolor": "white"
+      },
+      "leftmenu": {
+        "bgcolor": "#217D46",
+        "textcolor": "white"
+      }
+    },
+    "menu": false,
+    "menuLeft": [
+      {
+        "name": "Học liệu số",
+        "icon": "mdi-book-multiple-outline",
+        "submenu": [
+          {
+            "name": "Kho học liệu",
+            "url": "/hoc-lieu-so"
+          },
+          {
+            "name": "Soạn học liệu",
+            "url": "/soan-hoc-lieu-v2"
+          },
+          {
+            "name": "Quản lý học liệu số",
+            "url": "/quan-ly-hoc-lieu",
+            "right": {
+              "SystemRight": [
+                3,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Báo cáo HLS & LMS",
+            "url": "/lms-teacher-summary",
+            "right": {
+              "SystemRight": [
+                3,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "HDSD - Học liệu số",
+            "url": "https://nd-luan.github.io/docs-lms-hls/"
+          }
+        ],
+        "right": {
+          "SystemRight": [
+            1,
+            2,
+            3,
+            5,
+            9
+          ]
+        }
+      },
+      {
+        "name": "Kho soạn nội dung",
+        "icon": "mdi-folder-multiple-outline",
+        "url": "/lms-content-hub",
+        "right": {
+          "SystemRight": [
+            1,
+            2,
+            3,
+            5,
+            9
+          ]
+        }
+      },
+      {
+        "name": "Giao bài",
+        "icon": "mdi-notebook-edit-outline",
+        "submenu": [
+          {
+            "name": "Giao bài",
+            "url": "/lms-teacher-dashboard"
+          },
+          {
+            "name": "Báo cáo HLS & LMS",
+            "url": "/lms-teacher-summary",
+            "right": {
+              "SystemRight": [
+                3,
+                5,
+                9
+              ]
+            }
+          }
+        ],
+        "right": {
+          "SystemRight": [
+            1,
+            2,
+            3,
+            5,
+            9
+          ]
+        }
+      },
+      {
+        "name": "Sổ GVCN",
+        "icon": "mdi-human-male-board",
+        "url": "/so-gvcn",
+        "right": {
+          "SystemRight": [
+            1,
+            3,
+            5,
+            9
+          ]
+        }
+      },
+      {
+        "name": "Sổ điểm",
+        "icon": "mdi-human-male-board",
+        "url": "/gv-xuat-so-theo-doi",
+        "right": {
+          "SystemRight": [
+            1,
+            2,
+            3,
+            5,
+            9
+          ]
+        }
+      },
+      {
+        "name": "Đăng kí mang thiết bị",
+        "icon": "mdi-laptop",
+        "right": {
+          "SystemRight": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "GVBM - Đăng kí mang thiết bị",
+            "url": "/gvbm-dang-ky-mang-laptop",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "GVCN - Theo dõi HS mang TB",
+            "url": "/gvcn-xem-dang-ky-laptop",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "BGH/Quản sinh - Giám sát toàn trường",
+            "url": "/bgh-xem-dang-ky-laptop",
+            "right": {
+              "SystemRight": [
+                3,
+                4,
+                9
+              ]
+            }
+          },
+          {
+            "name": "BGH/Quản sinh - Thống kê đăng kí",
+            "url": "/bgh-thong-ke-dang-ky-laptop",
+            "right": {
+              "SystemRight": [
+                3,
+                4,
+                9
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Cấp 1 - Giáo viên",
+        "icon": "mdi-human-male-board",
+        "right": {
+          "FunctionRight": [
+            "10"
+          ],
+          "SystemRight": [
+            1,
+            2,
+            5,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "Danh sách học sinh",
+            "url": "/fui-gv-ds-hoc-sinh-lop?capid=1",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Nhập nhận xét tháng",
+            "url": "/gv-nhan-xet-thang?capid=1",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Nhập điểm / Đánh giá",
+            "url": "/nhap-diem?capid=1",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "GV Bộ Môn gửi điểm",
+            "url": "/gv-bm-gui-diem?capid=1",
+            "right": {
+              "SystemRight": [
+                2,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Duyệt kết quả định kì",
+            "url": "/gv-duyet-diem-c1",
+            "right": {
+              "SystemRight": [
+                1,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Điểm tổng theo môn",
+            "url": "/fui-tong-qua-trinh-bang-diem?capid=1",
+            "right": {
+              "SystemRight": [
+                1,
+                3,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Xem ý kiến phụ huynh",
+            "url": "/gv-xem-y-kien-phu-huynh?capid=1",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                3,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Khen thưởng",
+            "url": "/gv-khen-thuong?capid=1",
+            "right": {
+              "SystemRight": [
+                1,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Tổng hợp dữ liệu cuộc thi",
+            "url": "/dashboard-tong-hop-du-lieu-cuoc-thi?capid=1",
+            "right": {
+              "SystemRight": [
+                1,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Chữ kí của tôi",
+            "url": "/fui-cap-nhat-chu-ky",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                9
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Cấp 1 - Tổ trưởng",
+        "icon": "mdi-account-supervisor-circle",
+        "right": {
+          "FunctionRight": [
+            "10"
+          ],
+          "SystemRight": [
+            5,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "Duyệt điểm",
+            "url": "/fui-tt-duyet-diem?capid=1"
+          },
+          {
+            "name": "Duyệt nhận xét tháng",
+            "url": "/tt-duyet-nhan-xet-thang?capid=1"
+          },
+          {
+            "name": "TA - Duyệt điểm - Theme",
+            "url": "/tt-duyet-diem-theme"
+          },
+          {
+            "name": "Bảng điểm Theo Khối",
+            "url": "/bang-diem-chi-tiet-mon-hoc?capid=1"
+          },
+          {
+            "name": "Tổng kết Học Kì",
+            "url": "/gv-xem-tong-ket-hoc-ki-c1?capid=1"
+          },
+          {
+            "name": "DS Khen thưởng",
+            "url": "/gv-xem-tong-ket-ds-khen-thuong?capid=1"
+          },
+          {
+            "name": "SL Khen thưởng",
+            "url": "/gv-xem-tong-ket-ty-le-khen-thuong?capid=1"
+          },
+          {
+            "name": "Tổng hợp dữ liệu cuộc thi",
+            "url": "/dashboard-tong-hop-du-lieu-cuoc-thi?capid=1",
+            "right": {
+              "SystemRight": [
+                1,
+                5,
+                9
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Cấp 1 - BGH",
+        "icon": "mdi-account-tie",
+        "right": {
+          "FunctionRight": [
+            "10"
+          ],
+          "SystemRight": [
+            3,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "Duyệt kết quả định kì",
+            "url": "/bgh-duyet-diem?capid=1"
+          },
+          {
+            "name": "Duyệt nhận xét tháng",
+            "url": "/tt-duyet-nhan-xet-thang?capid=1"
+          },
+          {
+            "name": "Bảng điểm Theo Khối",
+            "url": "/bang-diem-chi-tiet-mon-hoc?capid=1"
+          },
+          {
+            "name": "Tổng kết Học Kì",
+            "url": "/gv-xem-tong-ket-hoc-ki-c1?capid=1"
+          },
+          {
+            "name": "DS Khen thưởng",
+            "url": "/gv-xem-tong-ket-ds-khen-thuong?capid=1"
+          },
+          {
+            "name": "SL Khen thưởng",
+            "url": "/gv-xem-tong-ket-ty-le-khen-thuong?capid=1"
+          },
+          {
+            "name": "Tổng hợp dữ liệu cuộc thi",
+            "url": "/dashboard-tong-hop-du-lieu-cuoc-thi?capid=1",
+            "right": {
+              "SystemRight": [
+                1,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Mở/khóa đánh giá",
+            "url": "/gv-khoa-cot-diem?capid=1"
+          }
+        ]
+      },
+      {
+        "name": "Cấp 2 - Giáo viên",
+        "icon": "mdi-human-male-board",
+        "right": {
+          "FunctionRight": [
+            "20"
+          ],
+          "SystemRight": [
+            1,
+            2,
+            3,
+            5,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "Danh sách học sinh",
+            "url": "/fui-gv-ds-hoc-sinh-lop?capid=2",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Nhập nhận xét tháng",
+            "url": "/gv-nhan-xet-thang?capid=2",
+            "right": {
+              "SystemRight": [
+                1,
+                3,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Nhập điểm / Đánh giá",
+            "url": "/nhap-diem?capid=2",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                3,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Xem điểm",
+            "url": "/gv-xem-diem?capid=2",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Bảng điểm Theo Khối",
+            "url": "/bang-diem-chi-tiet-mon-hoc?capid=2"
+          },
+          {
+            "name": "Tổng kết Học Kì",
+            "url": "/gv-xem-tong-ket-hoc-ki?capid=2",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Điểm tổng theo môn",
+            "url": "/fui-tong-qua-trinh-bang-diem?capid=2",
+            "right": {
+              "SystemRight": [
+                1,
+                3,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Xem ý kiến phụ huynh",
+            "url": "/gv-xem-y-kien-phu-huynh?capid=2",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                3,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Tổng hợp dữ liệu cuộc thi",
+            "url": "/dashboard-tong-hop-du-lieu-cuoc-thi?capid=2",
+            "right": {
+              "SystemRight": [
+                1,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Chữ kí của tôi",
+            "url": "/fui-cap-nhat-chu-ky",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                3,
+                9
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Cấp 2-BGH/Tổ trưởng",
+        "icon": "mdi-account-supervisor",
+        "right": {
+          "FunctionRight": [
+            "20"
+          ],
+          "SystemRight": [
+            3,
+            5,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "Duyệt nhận xét tháng",
+            "url": "/tt-duyet-nhan-xet-thang?capid=2"
+          },
+          {
+            "name": "Bảng điểm Theo Khối",
+            "url": "/bang-diem-chi-tiet-mon-hoc?capid=2"
+          },
+          {
+            "name": "Tổng kết Học Kì",
+            "url": "/gv-xem-tong-ket-hoc-ki?capid=2"
+          },
+          {
+            "name": "Tổng hợp dữ liệu cuộc thi",
+            "url": "/dashboard-tong-hop-du-lieu-cuoc-thi?capid=2",
+            "right": {
+              "SystemRight": [
+                1,
+                5,
+                9
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Cấp 3 - Giáo viên",
+        "icon": "mdi-human-male-board",
+        "right": {
+          "FunctionRight": [
+            "30"
+          ],
+          "SystemRight": [
+            1,
+            2,
+            3,
+            5,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "Danh sách học sinh",
+            "url": "/fui-gv-ds-hoc-sinh-lop?capid=3",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Danh sách học sinh nhóm",
+            "url": "/gv-ds-hoc-sinh-lop-av?capid=3",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Nhập Nhận xét Tháng",
+            "url": "/gv-nhan-xet-thang?capid=3",
+            "right": {
+              "SystemRight": [
+                1,
+                3,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Nhập điểm / Đánh giá",
+            "url": "/nhap-diem?capid=3",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                3,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Xem điểm",
+            "url": "/gv-xem-diem?capid=3",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Bảng điểm Theo Khối",
+            "url": "/bang-diem-chi-tiet-mon-hoc?capid=3"
+          },
+          {
+            "name": "Tổng kết Học Kì",
+            "url": "/gv-xem-tong-ket-hoc-ki?capid=3",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Điểm tổng theo môn",
+            "url": "/fui-tong-qua-trinh-bang-diem?capid=3",
+            "right": {
+              "SystemRight": [
+                1,
+                3,
+                2,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Xem ý kiến phụ huynh",
+            "url": "/gv-xem-y-kien-phu-huynh?capid=3",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                3,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Tổng hợp dữ liệu cuộc thi",
+            "url": "/dashboard-tong-hop-du-lieu-cuoc-thi?capid=3",
+            "right": {
+              "SystemRight": [
+                1,
+                5,
+                9
+              ]
+            }
+          },
+          {
+            "name": "Chữ kí của tôi",
+            "url": "/fui-cap-nhat-chu-ky",
+            "right": {
+              "SystemRight": [
+                1,
+                2,
+                3,
+                5,
+                9
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Cấp 3-BGH/Tổ trưởng",
+        "icon": "mdi-account-supervisor",
+        "right": {
+          "FunctionRight": [
+            "30"
+          ],
+          "SystemRight": [
+            3,
+            5,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "Duyệt nhận xét tháng",
+            "url": "/tt-duyet-nhan-xet-thang?capid=3"
+          },
+          {
+            "name": "Bảng điểm Theo Khối",
+            "url": "/bang-diem-chi-tiet-mon-hoc?capid=3"
+          },
+          {
+            "name": "Tổng kết Học Kì",
+            "url": "/gv-xem-tong-ket-hoc-ki?capid=3"
+          },
+          {
+            "name": "Tổng hợp dữ liệu cuộc thi",
+            "url": "/dashboard-tong-hop-du-lieu-cuoc-thi?capid=3",
+            "right": {
+              "SystemRight": [
+                1,
+                5,
+                9
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Báo cáo chung",
+        "icon": "mdi-chart-box-multiple-outline",
+        "right": {
+          "FunctionRight": [
+            "10",
+            "20",
+            "30"
+          ],
+          "SystemRight": [
+            3,
+            5,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "C1-Phân phối điểm",
+            "url": "/dashboard-tong-quan-tinh-hinh-hoc-tap-cap-1"
+          },
+          {
+            "name": "C1-Điểm MH theo Khối",
+            "url": "/thongke-monhoc-theokhoi?capid=1"
+          },
+          {
+            "name": "C2-Phân phối điểm",
+            "url": "/dashboard-tong-quan-tinh-hinh-hoc-tap-cap-2"
+          },
+          {
+            "name": "C2-Điểm MH theo Khối",
+            "url": "/thongke-monhoc-theokhoi?capid=2"
+          },
+          {
+            "name": "C3-Phân phối điểm",
+            "url": "/dashboard-tong-quan-tinh-hinh-hoc-tap-cap-3"
+          },
+          {
+            "name": "C3-Điểm MH theo Khối",
+            "url": "/thongke-monhoc-theokhoi?capid=3"
+          }
+        ]
+      },
+      {
+        "name": "Báo cáo học kì",
+        "icon": "mdi-chart-areaspline",
+        "right": {
+          "FunctionRight": [
+            "20",
+            "30"
+          ],
+          "SystemRight": [
+            5,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "C2-Báo cáo tổng kết HK",
+            "url": "/bao-cao-diem-tong-ket-hoc-ki?capid=2"
+          },
+          {
+            "name": "C3-Báo cáo tổng kết HK",
+            "url": "/bao-cao-diem-tong-ket-hoc-ki?capid=3"
+          }
+        ]
+      },
+      {
+        "name": "Báo cáo Tiếng Anh",
+        "icon": "mdi-translate",
+        "right": {
+          "FunctionRight": [
+            "10",
+            "20",
+            "30"
+          ],
+          "SystemRight": [
+            1,
+            2,
+            3,
+            5,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "Chỉ tiêu tiếng anh 1",
+            "url": "/cau-hinh-chi-tieu-mon-hoc"
+          },
+          {
+            "name": "Chỉ tiêu tiếng anh 2",
+            "url": "/cau-hinh-chi-tieu-tieng-anh-2"
+          },
+          {
+            "name": "C1-Tổng quan",
+            "url": "/dashboard-tong-quan-tinh-hinh-hoc-tap-ta-cap-1",
+            "right": {
+              "FunctionRight": [],
+              "SystemRight": [
+                9
+              ]
+            }
+          },
+          {
+            "name": "C2 - Phân tích kĩ năng",
+            "url": "/dashboard-tong-quan-tinh-hinh-hoc-tap-ta-cap-2"
+          },
+          {
+            "name": "C2 - Thống kê Cambridge",
+            "url": "/thong-ke-cambridge-cap-2"
+          },
+          {
+            "name": "C3 - Phân tích kĩ năng",
+            "url": "/dashboard-tong-quan-tinh-hinh-hoc-tap-ta-cap-3"
+          },
+          {
+            "name": "C3 - IELTS",
+            "url": "/dashboard-tinh-hinh-hoc-tap-ta-cap-3-ielts"
+          },
+          {
+            "name": "C3 - Thống kê TA2",
+            "url": "/thong-ke-bang-diem-AV2"
+          },
+          {
+            "name": "C3-Điểm chi tiết",
+            "url": "/fui-tong-qua-trinh-bang-diem?capid=3"
+          },
+          {
+            "name": "Báo cáo chỉ tiêu TA",
+            "url": "/bao-cao-chi-tieu-tieng-anh"
+          }
+        ]
+      },
+      {
+        "name": "Tổng hợp báo cáo",
+        "icon": "mdi-file-chart-outline",
+        "url": "/bc-tong-hop-bao-cao",
+        "right": {
+          "FunctionRight": [
+            "10",
+            "20",
+            "30"
+          ],
+          "SystemRight": [
+            1,
+            3,
+            5,
+            9
+          ]
+        }
+      },
+      {
+        "name": "Khen thưởng cuối năm",
+        "icon": "mdi-trophy-outline",
+        "right": {
+          "FunctionRight": [
+            "10",
+            "20",
+            "30"
+          ],
+          "SystemRight": [
+            5,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "TH-Tổng kết HK",
+            "url": "/gv-xem-tong-ket-hoc-ki-c1?capid=1",
+            "right": {
+              "FunctionRight": [
+                "10"
+              ]
+            }
+          },
+          {
+            "name": "TH-Danh sách KT",
+            "url": "/gv-xem-tong-ket-ds-khen-thuong?capid=1",
+            "right": {
+              "FunctionRight": [
+                "10"
+              ]
+            }
+          },
+          {
+            "name": "TH-Số lượng KT",
+            "url": "/gv-xem-tong-ket-ty-le-khen-thuong?capid=1",
+            "right": {
+              "FunctionRight": [
+                "10"
+              ]
+            }
+          },
+          {
+            "name": "THCS-Tổng kết HK",
+            "url": "/gv-xem-tong-ket-hoc-ki?capid=2"
+          },
+          {
+            "name": "THPT-Tổng kết HK",
+            "url": "/gv-xem-tong-ket-hoc-ki?capid=3"
+          },
+          {
+            "name": "Cập nhật Danh Hiệu",
+            "url": "/sys-danh-hieu"
+          },
+          {
+            "name": "Cập nhật Số/Ngày QĐ",
+            "url": "/cap-nhat-so-ngay-qd"
+          }
+        ]
+      },
+      {
+        "name": "Thiết lập chỉ tiêu",
+        "icon": "mdi-target",
+        "right": {
+          "SystemRight": [
+            5,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "Chỉ tiêu Tiểu học",
+            "url": "/cau-hinh-chi-tieu-c1"
+          },
+          {
+            "name": "Chỉ tiêu Trung học",
+            "url": "/cau-hinh-chi-tieu-c2"
+          }
+        ]
+      },
+      {
+        "name": "Học bổng",
+        "icon": "mdi-school-outline",
+        "url": "/hoc-bong",
+        "right": {
+          "SystemRight": [
+            5,
+            9
+          ]
+        }
+      },
+      {
+        "name": "Hệ thống",
+        "icon": "mdi-cog-outline",
+        "right": {
+          "FunctionRight": [
+            "10",
+            "20",
+            "30"
+          ],
+          "SystemRight": [
+            5,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "Phân công giáo viên",
+            "url": "/bgh-phan-cong-giao-vien"
+          },
+          {
+            "name": "Danh sách chữ kí giáo viên",
+            "url": "/fui-chu-ky"
+          },
+          {
+            "name": "Danh sách giáo viên",
+            "url": "/ds-giao-vien"
+          },
+          {
+            "name": "Môn học lớp",
+            "url": "/fui-mon-hoc-lop"
+          },
+          {
+            "name": "Sắp xếp HS nhóm",
+            "url": "/xep-hoc-sinh-nhom-av"
+          },
+          {
+            "name": "Đồng bộ điểm - Tiểu học",
+            "url": "/gv-xem-diem-c1"
+          },
+          {
+            "name": "Đồng bộ điểm - THCS",
+            "url": "/gv-xem-diem?capid=2"
+          },
+          {
+            "name": "Đồng bộ điểm - THPT",
+            "url": "/gv-xem-diem?capid=3"
+          },
+          {
+            "name": "Cấu trúc điểm - Tiểu học",
+            "url": "/cau-hinh-mau-bang-diem?capid=1"
+          },
+          {
+            "name": "Cấu trúc điểm - THCS",
+            "url": "/cau-hinh-mau-bang-diem?capid=2"
+          },
+          {
+            "name": "Cấu trúc điểm - THPT",
+            "url": "/cau-hinh-mau-bang-diem?capid=3"
+          },
+          {
+            "name": "Cấu hình thông báo giao bài",
+            "url": "/lms-cau-hinh-thong-bao-giao-bai"
+          },
+          {
+            "name": "Cấu hình nhận xét Tiếng Anh C1",
+            "url": "/cau-hinh-nhan-xet"
+          },
+          {
+            "name": "Cấu hình kĩ năng câu hỏi",
+            "url": "/cau-hinh-ki-nang-cau-hoi"
+          }
+        ]
+      },
+      {
+        "name": "LOG & Thiết lập",
+        "icon": "mdi-tune",
+        "right": {
+          "SystemRight": [
+            5,
+            9
+          ]
+        },
+        "submenu": [
+          {
+            "name": "Thời khóa biểu",
+            "icon": "mdi-calendar-clock",
+            "url": "/lms-teacher-log-shedule"
+          },
+          {
+            "name": "Báo lỗi hệ thống",
+            "icon": "mdi-alert-circle-outline",
+            "url": "/admin-ticket",
+            "right": {
+              "SystemRight": [
+                9
+              ]
+            }
+          },
+          {
+            "name": "Thông báo",
+            "icon": "mdi-bell-ring-outline",
+            "url": "/admin-alert",
+            "right": {
+              "SystemRight": [
+                9
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Hỗ trợ sự cố",
+        "icon": "mdi-lifebuoy",
+        "url": "/support"
+      }
+    ],
+    "menuComponent": [
+      {
+        "el": "uc-nien-khoa"
+      },
+      {
+        "el": "uc-vaitro"
+      }
+    ]
+  }
+}

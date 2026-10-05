@@ -1,0 +1,242 @@
+{
+  "data": [
+    {
+      "ChuongTrinhID": 0,
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')",
+      "DataSummary": null,
+      "PhanHieuID": 0,
+      "KhuVucID": 0,
+      "Ngay": "moment().format('YYYY-MM-DD')",
+      "HinhThucThoiGian": 2,
+      "Nam": null,
+      "Thang": null,
+      "TuNam": null,
+      "DenNam": null,
+      "DSHinhThucThoiGian": [
+        {
+          "value": 1,
+          "text": "Theo giờ"
+        },
+        {
+          "value": 2,
+          "text": "Theo ngày"
+        },
+        {
+          "value": 3,
+          "text": "Theo tuần"
+        },
+        {
+          "value": 4,
+          "text": "Theo quý"
+        },
+        {
+          "value": 5,
+          "text": "Theo tháng"
+        },
+        {
+          "value": 6,
+          "text": "Theo năm"
+        }
+      ],
+      "DSThang": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "DSNam": "GetDSNam()",
+      "headers": [
+        {
+          "text": "",
+          "value": "HinhThucThoiGian",
+          "width": 100
+        },
+        {
+          "text": "SĐT khách hàng",
+          "value": "DienThoai",
+          "width": 100
+        },
+        {
+          "text": "Tên khách hàng",
+          "value": "HoTen",
+          "width": 250
+        },
+        {
+          "text": "Mã chương trình",
+          "value": "MaChuongTrinh",
+          "width": 200
+        },
+        {
+          "text": "Tên chương trình",
+          "value": "TenChuongTrinh",
+          "width": 500
+        },
+        {
+          "text": "Thời gian từ",
+          "value": "TuNgay_Display",
+          "width": 100
+        },
+        {
+          "text": "Thời gian tới",
+          "value": "DenNgay_Display",
+          "width": 100
+        },
+        {
+          "text": "Loại chương trình",
+          "value": "TenLoaiChuongTrinh",
+          "width": 250
+        },
+        {
+          "text": "Điều kiện",
+          "value": "DieuKien",
+          "el": "span",
+          "width": 400,
+          "innerHTML": "{{renderDieuKien(item)}}"
+        },
+        {
+          "text": "Giảm giá",
+          "value": "KhuyenMai",
+          "el": "span",
+          "width": 600,
+          "innerHTML": "{{renderKhuyenMai(item)}}"
+        },
+        {
+          "text": "Trạng thái sử dụng",
+          "value": "TenTrangThai",
+          "align": "center",
+          "width": 150
+        },
+        {
+          "text": "Ngày nhận",
+          "value": "NgayNhan",
+          "align": "center",
+          "width": 100
+        },
+        {
+          "text": "Ngày hết hạn",
+          "value": "NgayHetHan",
+          "align": "center",
+          "width": 100
+        },
+        {
+          "text": "Ngày sử dụng",
+          "value": "NgaySuDung",
+          "align": "center",
+          "width": 100
+        }
+      ]
+    },
+    {
+      "API": "/eorder/ChuongTrinh_Select",
+      "OUT": "DSChuongTrinh"
+    },
+    {
+      "API": "/eorder/KhuVuc_Select",
+      "OUT": "DSKhuVuc",
+      "CALLBACK": [
+        {
+          "EXE": "DSKhuVuc.unshift({'KhuVucID': 0, 'TenKhuVuc': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/PhanHieu_Select",
+      "OUT": "DSPhanHieu",
+      "CALLBACK": [
+        {
+          "EXE": "DSPhanHieu.unshift({'PhanHieuID': 0, 'TenPhanHieu': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        },
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_KhuyenMai_ThuCong_v2",
+        "IN": {
+          "ChuongTrinhID": "ChuongTrinhID",
+          "CuaHangID": "CuaHangID",
+          "HinhThucThoiGian": "HinhThucThoiGian",
+          "Ngay": "Ngay ?? -1",
+          "TuNgay": "TuNgay ?? -1",
+          "DenNgay": "DenNgay ?? -1",
+          "Nam": "Nam ?? -1",
+          "TuNam": "TuNam ?? -1",
+          "DenNam": "DenNam ?? -1",
+          "Thang": "Thang ?? -1"
+        },
+        "OUT": "DSChiTietKhuyenMai",
+        "CALLBACK": [
+          {
+            "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+          }
+        ]
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);",
+        "CALL": "getBaoCao"
+      }
+    ],
+    "HinhThucThoiGian": [
+      {
+        "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo tích voucher thủ công",
+                ":items": "DSChiTietKhuyenMai",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":headers": "headers"
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

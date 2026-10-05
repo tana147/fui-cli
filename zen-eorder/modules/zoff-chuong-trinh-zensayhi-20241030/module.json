@@ -1,0 +1,47 @@
+{
+  "data": [
+    {
+      "QRCode": "code",
+      "KhachHangID": "khid",
+      "CTQuaTang": null
+    },
+    {
+      "API": "/eorder/auth/QuaTang_Check_QrCode",
+      "IN": {
+        "QRCode": "QRCode",
+        "KhachHangID": "KhachHangID"
+      },
+      "OUT": "CTQuaTang"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-zensayhi",
+              "attr": {
+                "v-if": "vueData.KhachHangID && vueData.QRCode && vueData.CTQuaTang"
+              }
+            },
+            {
+              "el": "uc-zensayhi-info",
+              "attr": {
+                "v-if": "!vueData.KhachHangID || !vueData.QRCode"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "login": false,
+    "userInfo": ""
+  }
+}

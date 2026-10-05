@@ -1,0 +1,27 @@
+[
+  {
+    "name": "styles",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "17C9278B276643B78BB02CBFAAC81BE0",
+    "scope": "module",
+    "sort": 0,
+    "filePath": "imports/styles-17C9278B276643B78BB02CBFAAC81BE0.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "77837D9BFC6C413E9F736A4462F220D6",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "C350D12A750646A78D68A08A58358CA1",
+    "scope": "module",
+    "sort": 51
+  }
+]

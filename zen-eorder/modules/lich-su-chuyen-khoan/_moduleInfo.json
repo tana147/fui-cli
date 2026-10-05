@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/lich-su-chuyen-khoan",
+  "url": "/zen-eorder/lich-su-chuyen-khoan",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "lich-su-chuyen-khoan",
+  "ModuleName": "Lịch Sử / Chuyển khoản",
+  "UpdateTime": "2026-03-20 16:27:38",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-04-22",
+  "LoadCount": 308,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-teacher-question-bank",
+  "url": "//lms.lhbs.vn/lms-teacher-question-bank",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-teacher-question-bank",
+  "ModuleName": "lms-teacher-question-bank",
+  "UpdateTime": "2026-08-23 12:12:14",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-09-10",
+  "LoadCount": 242,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

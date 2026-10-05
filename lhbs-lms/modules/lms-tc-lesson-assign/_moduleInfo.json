@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-tc-lesson-assign",
+  "url": "//lms.lhbs.vn/lms-tc-lesson-assign",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-tc-lesson-assign",
+  "ModuleName": "Giáo viên giao bài tập",
+  "UpdateTime": "2025-10-31 08:22:19",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2025-09-12",
+  "LoadCount": 478,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

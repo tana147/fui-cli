@@ -1,0 +1,27 @@
+[
+  {
+    "name": "pageStyle",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "98CBBB566D60428A91AFF997D7F52F72",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/pageStyle-98CBBB566D60428A91AFF997D7F52F72.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/apexcharts",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "F75965151EB8400881BFD8CAA8ABD403",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "A8C96EADA8544E6CB20848971287BD17",
+    "scope": "module",
+    "sort": 50
+  }
+]

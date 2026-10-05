@@ -1,0 +1,749 @@
+{
+  "data": [
+    {
+      "CuaHangID": null,
+      "isOpenDialogCTHoaDon": "false",
+      "rowSelectedObject": {},
+      "isOpenDialogChietKhau": "false"
+    },
+    {
+      "API": "/eorder/Tinh_Select",
+      "OUT": "DSTinh"
+    },
+    {
+      "getHuyenByTinhId": {
+        "API": "/eorder/Huyen_Select_ByTinhId",
+        "IN": {
+          "TinhID": "TinhID"
+        },
+        "OUT": "DSHuyen",
+        "CALLBACK": {
+          "DSXa": "[]",
+          "XaID": null,
+          "HuyenID": "HuyenID_Edit"
+        }
+      }
+    },
+    {
+      "getXaByHuyenId": {
+        "API": "/eorder/Xa_Select_ByHuyenId",
+        "IN": {
+          "HuyenID": "HuyenID"
+        },
+        "OUT": "DSXa",
+        "CALLBACK": {
+          "XaID": "XaID_Edit"
+        }
+      }
+    },
+    {
+      "getPhanHieu": {
+        "API": "/eorder/PhanHieu_Select",
+        "OUT": "DSPhanHieu"
+      }
+    },
+    {
+      "getKhuVuc": {
+        "API": "/eorder/KhuVuc_Select",
+        "OUT": "DSKhuVuc"
+      }
+    },
+    {
+      "getCuaHang": {
+        "API": "/eorder/CuaHang_Select_Table",
+        "OUT": "DSCuaHang"
+      }
+    },
+    {
+      "getNganHang": {
+        "API": "/eorder/NganHang_Select",
+        "OUT": "DSNganHang"
+      }
+    },
+    {
+      "API": "/eorder/LoaiPhanHieu_Select",
+      "OUT": "DSLoaiPhanHieu"
+    },
+    {
+      "API": "/eorder/NganHangChietKhau_Select",
+      "OUT": "DSNganHangChietKhau"
+    },
+    {
+      "CALL": "getPhanHieu"
+    },
+    {
+      "CALL": "getKhuVuc"
+    },
+    {
+      "CALL": "getCuaHang"
+    },
+    {
+      "CALL": "getNganHang"
+    },
+    {
+      "Logo_FileID": null,
+      "Menu_FileID": null,
+      "DSHuyen": [],
+      "DSXa": [],
+      "TinhID": null,
+      "HuyenID": null,
+      "XaID": null,
+      "TinhID_Edit": null,
+      "HuyenID_Edit": null,
+      "XaID_Edit": null,
+      "IsDialogIPAddress": false,
+      "IsDialogActiveTime": false,
+      "TenCuaHang": null,
+      "CuaHangIPItem": {
+        "CuaHangID": null
+      },
+      "CuaHangActiveTime": {
+        "GioHoatDong_Tu": null,
+        "GioHoatDong_Den": null
+      }
+    }
+  ],
+  "watch": {
+    "TinhID": {
+      "IF": "TinhID !== null",
+      "THEN": {
+        "CALL": "getHuyenByTinhId"
+      }
+    },
+    "HuyenID": {
+      "IF": "HuyenID !== null",
+      "THEN": {
+        "CALL": "getXaByHuyenId"
+      }
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "div",
+              "w": 4,
+              "attr": {},
+              "innerHTML": [
+                {
+                  "el": "f-table",
+                  "attr": {
+                    "label": "Phân hiệu",
+                    ":items": "DSPhanHieu",
+                    ":style": "{'max-height': (window.innerHeight/2 - 10).toString() +'px','height': (window.innerHeight/2 - 10).toString() +'px','overflow-x': 'auto'  }",
+                    "class": "mb-2",
+                    ":headers": [
+                      {
+                        "text": "Logo",
+                        "el": "v-img",
+                        "value": "Logo_Url",
+                        "attr": {
+                          "max-height": "40",
+                          "max-width": "40",
+                          ":src": "item.Logo_Url"
+                        }
+                      },
+                      {
+                        "text": "Phân hiệu",
+                        "el": "span",
+                        "value": "TenPhanHieu",
+                        "innerHTML": "<b>{{item.TenPhanHieu}}</b><br/><span>{{item.SoLuongCuaHang}} cửa hàng</span>"
+                      },
+                      {
+                        "text": "",
+                        "value": "ctrl-update",
+                        "align": "center"
+                      }
+                    ],
+                    ":update-form": [
+                      {
+                        "el": "f-image-update",
+                        "attr": {
+                          "v-model": "Logo_Url",
+                          "v-on:update": "vueData.Logo_FileID=$event.returnData.Files[0].FileID;Logo_Url=vueData.v_Set.urlReturnFile + $event.returnData.Files[0].Url",
+                          ":api-upload": "vueData.v_Set.apiFile",
+                          "label": "Logo phân hiệu",
+                          "dialog-width": 500,
+                          "dialog-height": 500,
+                          ":size": {
+                            "width": 500,
+                            "height": 500
+                          },
+                          "quality": 0.5,
+                          ":croper-attr": {
+                            "stencil-props": {
+                              "aspectRatio": 1
+                            },
+                            "default-size": {
+                              "width": 500,
+                              "height": 500
+                            },
+                            "transitions": true,
+                            "image-restriction": "fit-area"
+                          }
+                        },
+                        "w": 12
+                      },
+                      {
+                        "el": "v-select",
+                        "attr": {
+                          "v-model": "LoaiPhanHieuID",
+                          "label": "Loại phân hiệu",
+                          ":items": "vueData.DSLoaiPhanHieu",
+                          "item-value": "LoaiPhanHieuID",
+                          "item-text": "TenLoaiPhanHieu"
+                        },
+                        "w": 12
+                      },
+                      {
+                        "el": "v-text-field",
+                        "attr": {
+                          "v-model": "TenPhanHieu",
+                          "label": "Tên phân hiệu"
+                        },
+                        "w": 12
+                      }
+                    ],
+                    ":update-api": {
+                      "new-action": {
+                        "Logo_FileID": null
+                      },
+                      "edit-action": {
+                        "Logo_FileID": "item.Logo_FileID"
+                      },
+                      "new": {
+                        "CONFIRM": "Bạn có muốn thêm mới phân hiệu",
+                        "API": "/eorder/PhanHieu_Insert",
+                        "IN": {
+                          "TenPhanHieu": "item.TenPhanHieu",
+                          "LoaiPhanHieuID": "item.LoaiPhanHieuID",
+                          "Logo_FileID": "vueData.Logo_FileID"
+                        },
+                        "MESS": "Thêm mới thành công",
+                        "CALLBACK": {
+                          "CALL": "getPhanHieu"
+                        }
+                      },
+                      "edit": {
+                        "CONFIRM": "Bạn có muốn cập nhật phân hiệu <br/><b>{{item.TenPhanHieu}}</b>",
+                        "API": "/eorder/PhanHieu_Update",
+                        "IN": {
+                          "PhanHieuID": "item.PhanHieuID",
+                          "LoaiPhanHieuID": "item.LoaiPhanHieuID",
+                          "Logo_FileID": "vueData.Logo_FileID",
+                          "TenPhanHieu": "item.TenPhanHieu"
+                        },
+                        "MESS": "Cập nhật thành công",
+                        "CALLBACK": {
+                          "CALL": "getPhanHieu"
+                        }
+                      },
+                      "delete": {
+                        "CONFIRM": "Bạn có muốn xóa phân hiệu <br/><b>{{item.TenPhanHieu}}</b>",
+                        "API": "/eorder/PhanHieu_Delete",
+                        "IN": {
+                          "PhanHieuID": "item.PhanHieuID"
+                        },
+                        "MESS": "Xóa thành công",
+                        "CALLBACK": {
+                          "CALL": "getPhanHieu"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "el": "f-table",
+                  "attr": {
+                    "label": "Khu vực",
+                    ":items": "DSKhuVuc",
+                    ":style": "{'max-height': (window.innerHeight/2 - 10).toString() +'px','height': (window.innerHeight/2 - 10).toString() +'px' , 'overflow-x': 'auto' }",
+                    ":headers": [
+                      {
+                        "text": "Tên khu vực",
+                        "value": "TenKhuVuc"
+                      },
+                      {
+                        "text": "",
+                        "value": "ctrl-update",
+                        "align": "center"
+                      }
+                    ],
+                    ":update-form": [
+                      {
+                        "el": "v-text-field",
+                        "attr": {
+                          "v-model": "TenKhuVuc",
+                          "label": "Tên khu vực"
+                        },
+                        "w": 12
+                      }
+                    ],
+                    ":update-api": {
+                      "new": {
+                        "CONFIRM": "Bạn có muốn thêm mới khu vực",
+                        "API": "/eorder/KhuVuc_Insert",
+                        "IN": {
+                          "TenKhuVuc": "item.TenKhuVuc"
+                        },
+                        "MESS": "Thêm mới thành công",
+                        "CALLBACK": {
+                          "CALL": "getKhuVuc"
+                        }
+                      },
+                      "edit": {
+                        "CONFIRM": "Bạn có muốn cập nhật khu vực <br/><b>{{item.TenKhuVuc}}</b>",
+                        "API": "/eorder/KhuVuc_Update",
+                        "IN": {
+                          "KhuVucID": "item.KhuVucID",
+                          "TenKhuVuc": "item.TenKhuVuc"
+                        },
+                        "MESS": "Cập nhật thành công",
+                        "CALLBACK": {
+                          "CALL": "getKhuVuc"
+                        }
+                      },
+                      "delete": {
+                        "CONFIRM": "Bạn có muốn xóa khu vực <br/><b> {{item.TenKhuVuc}}</b>",
+                        "API": "/eorder/KhuVuc_Delete",
+                        "IN": {
+                          "KhuVucID": "item.KhuVucID"
+                        },
+                        "MESS": "Xóa thành công",
+                        "CALLBACK": {
+                          "CALL": "getKhuVuc"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "el": "f-table",
+              "w": 8,
+              "attr": {
+                "label": "Cửa hàng",
+                ":excel": true,
+                ":items": "DSCuaHang",
+                "height": "calc(100vh - 63px)",
+                ":headers": [
+                  {
+                    "text": "Cửa hàng",
+                    "el": "span",
+                    "value": "TenCuaHang",
+                    "innerHTML": "<b>{{item.TenCuaHang}}</b> <br/>{{item.GioHoatDong_Tu}} → {{item.GioHoatDong_Den}} • {{item.TenKhuVuc}}"
+                  },
+                  {
+                    "text": "Ký hiệu",
+                    "el": "v-chip",
+                    "attr": {
+                      "color": "success",
+                      ":small": true
+                    },
+                    "value": "KyHieuHoaDon",
+                    "innerHTML": "{{item.KyHieuHoaDon}}"
+                  },
+                  {
+                    "text": "",
+                    "el": "t-button",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Giờ hoạt động",
+                      ":action": {
+                        "FUN": "openDialogActiveTime",
+                        "IN": {
+                          "data": "{{item}}"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "btn-chiet-khau",
+                    "el": "t-button",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Chiết khấu",
+                      ":action": [
+                        {
+                          "EXE": "vueData.rowSelectedObject = {...item}"
+                        },
+                        {
+                          "EXE": "vueData.isOpenDialogChietKhau=true"
+                        },
+                        {
+                          "EXE": "vueData.CuaHangID = item.CuaHangID"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "btn-ct-hoa-don",
+                    "el": "t-button",
+                    "attr": {
+                      "color": "primary",
+                      "label": "E-INVOICE",
+                      ":action": [
+                        {
+                          "EXE": "vueData.rowSelectedObject = {...item}"
+                        },
+                        {
+                          "EXE": "vueData.isOpenDialogCTHoaDon=true"
+                        },
+                        {
+                          "EXE": "vueData.CuaHangID = item.CuaHangID"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "btn-ip",
+                    "el": "t-button",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Địa chỉ IP",
+                      ":action": {
+                        "FUN": "openDialogIpAddress",
+                        "IN": {
+                          "data": "{{item}}"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "f-image-update",
+                    "attr": {
+                      "v-model": "Menu_Url",
+                      "v-on:update": "vueData.Menu_FileID=$event.returnData.Files[0].FileID;Menu_Url=vueData.v_Set.urlReturnFile + $event.returnData.Files[0].Url",
+                      ":api-upload": "vueData.v_Set.apiFile",
+                      "label": "Ảnh Menu",
+                      "dialog-width": 1000,
+                      "dialog-height": 600,
+                      "image-type": "image/jpeg",
+                      ":size": {
+                        "width": 2880,
+                        "height": 1620
+                      },
+                      "quality": 0.5,
+                      ":image-attr": {
+                        "style": "width: 100%;"
+                      },
+                      ":croper-attr": {
+                        "default-size": {
+                          "width": 99999,
+                          "height": 99999
+                        },
+                        "transitions": true,
+                        "image-restriction": "fit-area"
+                      }
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "PhanHieuID",
+                      "label": "Phân hiệu",
+                      ":items": "vueData.DSPhanHieu",
+                      "item-value": "PhanHieuID",
+                      "item-text": "TenPhanHieu"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "KhuVucID",
+                      "label": "Khu vực",
+                      ":items": "vueData.DSKhuVuc",
+                      "item-value": "KhuVucID",
+                      "item-text": "TenKhuVuc"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "KyHieuHoaDon",
+                      "label": "Ký hiệu hóa đơn",
+                      "maxlength": 3
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenCuaHang",
+                      "label": "Tên cửa hàng"
+                    },
+                    "w": 7
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenCuaHang_Bill",
+                      "label": "Tên cửa hàng (Hiển thị trên hóa đơn)",
+                      ":rules": false
+                    },
+                    "w": 5
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "vueData.TinhID",
+                      "label": "Tỉnh",
+                      ":items": "vueData.DSTinh",
+                      "item-value": "TinhID",
+                      "item-text": "TenTinh"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "vueData.HuyenID",
+                      "label": "Huyện",
+                      ":disabled": "!vueData.TinhID",
+                      ":items": "vueData.DSHuyen",
+                      "item-value": "HuyenID",
+                      "item-text": "TenHuyen"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "vueData.XaID",
+                      "label": "Xã",
+                      ":disabled": "!vueData.HuyenID",
+                      ":items": "vueData.DSXa",
+                      "item-value": "XaID",
+                      "item-text": "TenXa"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "DiaChi",
+                      "label": "Địa chỉ"
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "DienThoai",
+                      "label": "Điện thoại"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "Email",
+                      "label": "Email"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "Zalo",
+                      "label": "Zalo"
+                    },
+                    "w": 5
+                  },
+                  {
+                    "el": "v-autocomplete",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "NganHangID",
+                      "label": "Tài khoản ngân hàng",
+                      ":items": "vueData.DSNganHang",
+                      "item-value": "NganHangID",
+                      "item-text": "TenSoTaiKhoan"
+                    },
+                    "w": 7
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "Facebook",
+                      "label": "Facebook"
+                    },
+                    "w": 5
+                  }
+                ],
+                ":update-api": {
+                  "new-action": {
+                    "TinhID": null,
+                    "HuyenID": null,
+                    "XaID": null,
+                    "HuyenID_Edit": null,
+                    "XaID_Edit": null,
+                    "DSHuyen": [],
+                    "DSXa": [],
+                    "Menu_FileID": null
+                  },
+                  "edit-action": {
+                    "TinhID": "item.TinhID",
+                    "HuyenID_Edit": "item.HuyenID",
+                    "XaID_Edit": "item.XaID",
+                    "Menu_FileID": "item.Menu_FileID"
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới cửa hàng",
+                    "API": "/eorder/CuaHang_Insert",
+                    "IN": {
+                      "Menu_FileID": "vueData.Menu_FileID",
+                      "PhanHieuID": "item.PhanHieuID",
+                      "KhuVucID": "item.KhuVucID",
+                      "TenCuaHang": "item.TenCuaHang",
+                      "TenCuaHang_Bill": "item.TenCuaHang_Bill",
+                      "KyHieuHoaDon": "item.KyHieuHoaDon",
+                      "DiaChi": "item.DiaChi",
+                      "DienThoai": "item.DienThoai",
+                      "Email": "item.Email",
+                      "TinhID": "vueData.TinhID ?? 0",
+                      "HuyenID": "vueData.HuyenID ?? 0",
+                      "XaID": "vueData.XaID ?? 0",
+                      "Zalo": "item.Zalo",
+                      "Facebook": "item.Facebook",
+                      "NganHangID": "item.NganHangID ?? 0"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getCuaHang"
+                      },
+                      {
+                        "CALL": "getPhanHieu"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật cửa hàng <br/><b>{{item.TenCuaHang}}</b>",
+                    "API": "/eorder/CuaHang_Update",
+                    "IN": {
+                      "Menu_FileID": "vueData.Menu_FileID",
+                      "CuaHangID": "item.CuaHangID",
+                      "PhanHieuID": "item.PhanHieuID",
+                      "KhuVucID": "item.KhuVucID",
+                      "TenCuaHang": "item.TenCuaHang",
+                      "TenCuaHang_Bill": "item.TenCuaHang_Bill",
+                      "KyHieuHoaDon": "item.KyHieuHoaDon",
+                      "DiaChi": "item.DiaChi",
+                      "DienThoai": "item.DienThoai",
+                      "Email": "item.Email",
+                      "TinhID": "vueData.TinhID ?? 0",
+                      "HuyenID": "vueData.HuyenID ?? 0",
+                      "XaID": "vueData.XaID ?? 0",
+                      "Zalo": "item.Zalo",
+                      "Facebook": "item.Facebook",
+                      "NganHangID": "item.NganHangID ?? 0"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "API": "/eorder/CuaHang_Update_GioHoatDong",
+                        "IN": {
+                          "CuaHangID": "item.CuaHangID",
+                          "GioHoatDong_Tu": "item.GioHoatDong_Tu",
+                          "GioHoatDong_Den": "item.GioHoatDong_Den"
+                        }
+                      },
+                      {
+                        "CALL": "getCuaHang"
+                      },
+                      {
+                        "CALL": "getPhanHieu"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa cửa hàng <br/><b>{{item.TenCuaHang}}</b>",
+                    "API": "/eorder/CuaHang_Delete",
+                    "IN": {
+                      "CuaHangID": "item.CuaHangID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getCuaHang"
+                      },
+                      {
+                        "CALL": "getPhanHieu"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "uc-dialog-ipaddress",
+              "attr": {
+                ":isshow": "vueData.IsDialogIPAddress"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "uc-dialog-setting-chiet-khau",
+              "attr": {
+                ":isshow": "vueData.IsDialogIPAddress"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "uc-dialog-setting-gio-hoat-dong"
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "uc-dialog-setting-einvoice"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

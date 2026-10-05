@@ -1,0 +1,35 @@
+[
+  {
+    "name": "styles",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "6E5D99111211463591A8851079F4FF29",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/styles-6E5D99111211463591A8851079F4FF29.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "6C7BC58055924381A9E1F7AB01E6019A",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "BA61A9A592AC4ED7806BF43581EE1BE2",
+    "scope": "module",
+    "sort": 51
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "E3259E061F574D098BA3A6110C699A41",
+    "scope": "module",
+    "sort": 51
+  }
+]

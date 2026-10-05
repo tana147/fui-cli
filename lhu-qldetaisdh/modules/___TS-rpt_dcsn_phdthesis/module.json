@@ -1,0 +1,65 @@
+{
+  "data": [
+    {
+      "StartPrint": {
+        "API": "/Decision_Get_ByDecisionID",
+        "IN": {
+          "Decision_ID": "Decision_Id"
+        },
+        "OUT": "data",
+        "CALLBACK": [
+          {
+            "FUN": "InQuyetDinhTienSi",
+            "IN": {
+              "Decision_SoQD": "data[0][0].Decision_SoQD",
+              "Decision_NgayQD": "data[0][0].Decision_NgayQD",
+              "Decision_ThangQD": "data[0][0].Decision_ThangQD",
+              "Decision_NamQD": "data[0][0].Decision_NamQD",
+              "Decision_Nganh": "data[0][0].Decision_Nganh",
+              "Decision_NienKhoa": "data[0][0].Decision_NienKhoa",
+              "Decision_Dot": "data[0][0].Decision_Dot",
+              "Decision_SLHVBangSo": "data[0][0].Decision_SLHVBangSo",
+              "Decision_SLHVBangChu": "data[0][0].Decision_SLHVBangChu",
+              "Decision_MaSo": "data[0][0].Decision_MaSo",
+              "Decision_NguoiTao": "data[0][0].Decision_NguoiTao",
+              "Decision_StudentList": "data[1]"
+            }
+          },
+          {
+            "FUN": "printPDF",
+            "IN": {
+              "data": "dataPDF"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "StartPrint"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row justify-center",
+          "cols": [
+            {
+              "el": "xxf-pdfmake",
+              "attr": {
+                ":data": "pageContent",
+                ":height": "height"
+              },
+              "col": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false
+  }
+}

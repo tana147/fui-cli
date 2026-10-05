@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 8073,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 8074,
+    "comName": "uc-modal-add"
+  },
+  {
+    "comID": 8075,
+    "comName": "uc-modal-edit"
+  },
+  {
+    "comID": 8076,
+    "comName": "uc-table-doi-tac"
+  },
+  {
+    "comID": 8072,
+    "comName": "uc-top-bar"
+  }
+]

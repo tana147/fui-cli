@@ -1,0 +1,277 @@
+{
+  "data": [
+    {
+      "TimeStartLoadHoaDon": null,
+      "hdid": "parseInt(hdid)",
+      "Menu_Hub_Id": "`{{localStorage.getItem('menu-hub') && localStorage.getItem('menu-hub').length === 10 ? localStorage.getItem('menu-hub') : uuidv4()}}",
+      "webSocket_Hub_Menu": "`menu_{{chid}}_{{Menu_Hub_Id}}",
+      "webSocket_Hub_Bep": "`bep_{{chid}}",
+      "webSocket_Hub_Order": "`order_{{chid}}",
+      "webSocket_Hub_HoaDon": "`hoadon_{{hdid}}",
+      "webSocket": "{[webSocket_Hub_Bep]: null, [webSocket_Hub_Order]: null, [webSocket_Hub_Menu]: null}"
+    },
+    {
+      "IF": "vueData.hdid !== undefined",
+      "THEN": [
+        {
+          "EXE": "vueData.webSocket[vueData.webSocket_Hub_HoaDon] = null"
+        }
+      ]
+    },
+    {
+      "HoaDon": {
+        "LauID": 0,
+        "KhuID": 0,
+        "BanID": 0,
+        "TenLau": "",
+        "TenKhu": "",
+        "TenBan": "",
+        "HoaDonID": 0,
+        "LoaiDonHang": 1,
+        "HinhThucThanhToan": "['1']",
+        "TrangThai": 0,
+        "ChiTietHoaDon": []
+      },
+      "CuaHangID": "parseInt(chid)",
+      "TenCuaHang": null,
+      "TabProduct": "",
+      "DSLau": [],
+      "DSBan": [],
+      "DSKhu": [],
+      "DSSanPham": [],
+      "DSNhomSanPham": [],
+      "DSChiTietLienKet": [],
+      "DSNhomLoaiLy": [],
+      "DSCuaHang": [],
+      "DSSanPham_KhuyenMai": [],
+      "CTBan": "`${[][]}",
+      "intervalLoad": "",
+      "IsShowDialogChangeTable": false,
+      "IsShowDialogMergeTable": false,
+      "IsShowDialogCancelMergeTable": false,
+      "IsShowDialogSplitTable": false,
+      "IsShowDialogChooseTable": false,
+      "IsShowDialogKhuyenMai": false
+    },
+    {
+      "IF": "Menu_Hub_Id && Menu_Hub_Id.length === 10",
+      "THEN": {
+        "EXE": "localStorage.setItem('menu-hub', vueData.Menu_Hub_Id)"
+      }
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "ChiTietCuaHang": "vueData.DSCuaHang.find(item => item.CuaHangID === vueData.CuaHangID)"
+        },
+        {
+          "LoaiPhanHieuID": "vueData.ChiTietCuaHang?.LoaiPhanHieuID ?? 0",
+          "TenCuaHang": "vueData.ChiTietCuaHang?.TenCuaHang ?? ''"
+        }
+      ]
+    },
+    {
+      "getSanPhamByCuaHangId": {
+        "API": "/eorder/SanPham_Select_ByCuaHangId",
+        "IN": {
+          "CuaHangID": "parseInt(chid)"
+        },
+        "OUT": "DTSanPhamCuaHang",
+        "CALLBACK": [
+          {
+            "DSNhomSanPham": "vueData.DTSanPhamCuaHang[0]"
+          },
+          {
+            "DSSanPham": "vueData.DTSanPhamCuaHang[1]"
+          },
+          {
+            "DSChiTietLienKet": "vueData.DTSanPhamCuaHang[2]"
+          },
+          {
+            "DSNhomLoaiLy": "vueData.DTSanPhamCuaHang[3]"
+          },
+          {
+            "EXE": "initHoaDon()"
+          }
+        ]
+      }
+    },
+    {
+      "getLauSelectByCuaHangId": {
+        "API": "/eorder/Lau_Select_ByCuaHangId",
+        "IN": {
+          "CuaHangID": "parseInt(chid)"
+        },
+        "OUT": "DSLau",
+        "CALLBACK": {
+          "HoaDon.LauID": "vueData.DSLau[0]?.LauID",
+          "HoaDon.TenLau": "vueData.DSLau[0]?.TenLau"
+        }
+      }
+    },
+    {
+      "getKhuByLauId": {
+        "API": "/eorder/Khu_Select_ByLauId",
+        "IN": {
+          "LauID": "HoaDon.LauID"
+        },
+        "OUT": "DSKhu",
+        "CALLBACK": [
+          {
+            "HoaDon.KhuID": "vueData.DSKhu[0]?.KhuID",
+            "HoaDon.TenKhu": "vueData.DSKhu[0]?.TenKhu"
+          }
+        ]
+      }
+    },
+    {
+      "getBan": {
+        "API": "/eorder/Ban_Select_TrangThai_ByKhuId",
+        "IN": {
+          "KhuID": "HoaDon.KhuID"
+        },
+        "OUT": "DSBan"
+      }
+    },
+    {
+      "CALL": "getSanPhamByCuaHangId"
+    },
+    {
+      "CALL": "getLauSelectByCuaHangId"
+    }
+  ],
+  "watch": {
+    "HoaDon.HoaDonID": {
+      "CALL": "initHoaDon"
+    },
+    "HoaDon.LauID": {
+      "IF": "vueData.HoaDon.LauID > 0",
+      "THEN": {
+        "CALL": "getKhuByLauId"
+      }
+    },
+    "HoaDon.KhuID": {
+      "IF": "vueData.HoaDon.KhuID > 0",
+      "THEN": {
+        "CALL": "getBan"
+      }
+    }
+  },
+  "controls": [
+    {
+      "prop": "",
+      "rows": [
+        {
+          "prop": "justify-left row",
+          "cols": [
+            {
+              "el": "span",
+              "innerHTML": "<v-icon color='white'>mdi-home</v-icon>",
+              "attr": {
+                "style": "position:absolute; left:8px; top:13px; z-index:3; cursor: pointer;padding: 0 12px",
+                "v-on:click": "redirect('/')"
+              }
+            },
+            {
+              "el": "span",
+              "innerHTML": "<v-icon color='white'>mdi-fullscreen</v-icon>",
+              "attr": {
+                "style": "position:absolute; left:50px; top:13px; z-index:3; cursor: pointer;;padding: 0 12px",
+                "v-on:click": "toggleFullScreen()"
+              }
+            },
+            {
+              "el": "v-tabs",
+              "attr": {
+                "v-model": "TabProduct",
+                "color": "white",
+                "background-color": "green"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "v-if": "vueData.LoaiPhanHieuID === 2",
+                    "key": "Tab_SoDoBan"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Sơ đồ bàn"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_Mon"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Món"
+                    }
+                  ]
+                },
+                {
+                  "el": "uc-tab-info"
+                }
+              ]
+            },
+            {
+              "el": "v-tabs-items",
+              "attr": {
+                "v-model": "TabProduct"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "v-if": "vueData.LoaiPhanHieuID === 2",
+                    "key": "Tab_SoDoBan"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-tab-table",
+                      "w": 12,
+                      "attr": {
+                        ":dslau": "vueData.DSLau",
+                        ":dskhu": "vueData.DSKhu",
+                        ":dsban": "vueData.DSBan"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_Mon",
+                    "touchless": true
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-tab-pos",
+                      "attr": {
+                        "v-if": "vueData.DSSanPham.length > 0",
+                        ":order.sync": "vueData.HoaDon.ChiTietHoaDon",
+                        ":hoa_don.sync": "vueData.HoaDon",
+                        ":message_hoa_don": "vueData.webSocket[vueData.webSocket_Hub_HoaDon]"
+                      },
+                      "w": 12
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false
+  }
+}

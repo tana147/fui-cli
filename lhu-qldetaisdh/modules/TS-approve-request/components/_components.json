@@ -1,0 +1,30 @@
+[
+  {
+    "comID": 10331,
+    "comName": "uc-avg-score"
+  },
+  {
+    "comID": 10333,
+    "comName": "uc-detail-flow"
+  },
+  {
+    "comID": 10335,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 10328,
+    "comName": "uc-main-view"
+  },
+  {
+    "comID": 10330,
+    "comName": "uc-score"
+  },
+  {
+    "comID": 10332,
+    "comName": "uc-table-view"
+  },
+  {
+    "comID": 10329,
+    "comName": "uc-text"
+  }
+]

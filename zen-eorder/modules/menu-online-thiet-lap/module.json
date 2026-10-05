@@ -1,0 +1,193 @@
+{
+  "data": [
+    {
+      "PhanHieu_ID": "parseInt(PhanHieu_ID)",
+      "CuaHangApDungID": "parseInt(CuaHangApDungID)",
+      "dsAnh": null,
+      "payloadLoaiAnh": null
+    },
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "description": "API để lấy danh sách sản phẩm",
+      "api_get_products": {
+        "API": "/eorder/SanPham_Select_ByMenuBookId",
+        "IN": {
+          "MenuBookID": "MenuBookID",
+          "CuaHangApDungID": "current_menubook_info?.CuaHangApDungID || CuaHangID_Local"
+        },
+        "OUT": "menu_items"
+      }
+    },
+    {
+      "loadAssetFui": {
+        "API": "/eorder/HinhAnhQuangCao_Select",
+        "IN": {
+          "LoaiAnh": "payloadLoaiAnh"
+        },
+        "OUT": "dsAnh"
+      }
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": {
+        "CuaHangID_Local": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+      }
+    },
+    {
+      "description": "API để load template MenuBook theo ID từ URL",
+      "api_load_menubook": {
+        "API": "/eorder/MenuBook_Select_ById",
+        "IN": {
+          "MenuBookID": "MenuBookID"
+        },
+        "OUT": "menubook_data"
+      }
+    },
+    {
+      "description": "Lệnh auto-load sản phẩm khi vào trang",
+      "CALL": "api_get_products",
+      "call_on_load": true,
+      "onStart": {
+        "SET": {
+          "v_loading": true
+        }
+      },
+      "onFinish": {
+        "SET": {
+          "v_loading": false
+        }
+      }
+    },
+    {
+      "description": "Lệnh auto-load MenuBook khi có ID trong URL",
+      "CALL": "api_load_menubook",
+      "call_on_load": true,
+      "onStart": {
+        "SET": {
+          "v_menubook_loading": true,
+          "loading_message": "Đang tải template MenuBook..."
+        }
+      },
+      "onFinish": {
+        "SET": {
+          "v_menubook_loading": false,
+          "loading_message": ""
+        }
+      }
+    },
+    {
+      "description": "Dữ liệu sản phẩm từ API",
+      "menu_items": []
+    },
+    {
+      "description": "ID MenuBook từ URL parameter - tạm cứng = 14",
+      "url_menubook_id": 14
+    },
+    {
+      "description": "Dữ liệu MenuBook được load từ API",
+      "menubook_data": null
+    },
+    {
+      "description": "Danh sách template có sẵn",
+      "template_list_response": null
+    },
+    {
+      "description": "Trạng thái loading sản phẩm",
+      "v_loading": false
+    },
+    {
+      "description": "Trạng thái loading MenuBook",
+      "v_menubook_loading": false
+    },
+    {
+      "description": "Thông báo loading",
+      "loading_message": ""
+    },
+    {
+      "description": "Thông tin MenuBook hiện tại",
+      "current_menubook_info": {
+        "MenuBookID": null,
+        "TenBook": "",
+        "PhanHieu_ID": null,
+        "Thumbnail_FileID": "",
+        "CuaHangApDungID": null,
+        "Is_TamKhoa": 0
+      }
+    },
+    {
+      "description": "Trạng thái UI",
+      "ui_state": {
+        "show_import_dialog": false,
+        "import_tab": 0,
+        "selected_template_id": null,
+        "selected_device_type": "Desktop",
+        "import_file_content": "",
+        "auto_loaded": false,
+        "show_save_success": false
+      }
+    },
+    {
+      "description": "Trigger flags để xử lý data từ component",
+      "trigger_process_menubook": false,
+      "trigger_process_templates": false
+    }
+  ],
+  "watch": {
+    "menubook_data": [
+      {
+        "IF": "menubook_data !== null",
+        "THEN": [
+          {
+            "SET": {
+              "trigger_process_menubook": true,
+              "current_menubook_info.CuaHangApDungID": "menubook_data.ApDung_CuaHangID || CuaHangID_Local"
+            }
+          },
+          {
+            "CALL": "api_get_products"
+          }
+        ]
+      }
+    ],
+    "CuaHangID_Local": [
+      {
+        "CALL": "api_get_products"
+      },
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID_Local);"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "cols": [
+            {
+              "el": "uc-setting",
+              "w": 12,
+              "attr": {
+                "v-bind:menu-items": "menu_items",
+                "v-bind:loading": "v_loading",
+                "v-bind:menubook-loading": "v_menubook_loading",
+                "v-bind:loading-message": "loading_message",
+                "v-bind:menubook-data": "menubook_data",
+                "v-bind:current-menubook-info": "current_menubook_info",
+                "v-bind:ui-state": "ui_state",
+                "v-bind:template-list": "template_list_response"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "domain": "https://eorder.zenfoodcourt.vn",
+    "app_name": "Menu Designer Pro",
+    "version": "1.0.0"
+  },
+  "ModuleName": "Menu Designer Pro"
+}

@@ -1,0 +1,372 @@
+/* Container */
+.container {
+    padding: 0;
+}
+
+.container-box {
+    border-right: 5px solid #fff;
+    height: 100vh;
+    padding: 0;
+}
+
+/* Header */
+.nav-header {
+    font-size: 40px;
+    color: #fff;
+    padding: 20px 15px 17px 15px;
+    text-align: center;
+}
+
+/* Bill item */
+.item-bill {
+    padding: 12px;
+    font-size: 50px;
+    font-weight: 1000;
+    background-color: #fff;
+    text-align: center;
+    margin: 5px;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px;
+    max-width: 45%;
+    width: 45%;
+}
+
+/* Đang chuẩn bị (gộp 1 + 5) */
+.item-bill-1 {
+    color: #1072cd;
+    border: #1072cd solid 2px;
+}
+
+/* Đã sẵn sàng (2) */
+.item-bill-3 {
+    color: #4caf50;
+    border: #4caf50 solid 2px;
+}
+
+/* Scroll wrapper */
+.scroll-page {
+    max-height: 100vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* Icon màu */
+.mdi-timer-sand::before {
+    color: #1072cd;
+}
+
+.mdi-room-service::before {
+    color: #4caf50;
+}
+
+.icon-bounce {
+    animation: bounce 1.5s infinite ease-in-out;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* Background theo cột */
+.bg-custom-1 {
+    background-color: #b0d2f1;
+}
+
+.bg-custom-3 {
+    background-color: #dff6e0;
+}
+
+.title-header-custom-1 {
+    color: #1072cd;
+}
+
+.title-header-custom-3 {
+    color: #4caf50;
+}
+
+.border-custom-1 {
+    border: #1072cd solid 2px;
+}
+
+.border-custom-3 {
+    border: #4caf50 solid 2px;
+}
+
+/* Note cuối màn hình */
+.note-custom {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 50px;
+    background-color: #1072cd;
+    left: 0;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+    .nav-header {
+        font-size: large;
+    }
+
+    .item-bill {
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 600px) {
+    .nav-header {
+        font-size: medium;
+        border-radius: 10px;
+        padding-bottom: 5px;
+        gap: 4px;
+    }
+
+    .v-main__wrap {
+        /* padding: 20px; */
+        height: 100dvh;
+    }
+
+    .v-application--wrap {
+        min-height: unset;
+    }
+
+    .item-bill {
+        font-size: 12px;
+        width: unset;
+        margin-bottom: 15px;
+    }
+
+    .note-custom {
+        font-size: 12px;
+    }
+
+    .scroll-page {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .col-6 {
+        max-width: 100%;
+    }
+
+    .container-box {
+        border-radius: 10px;
+    }
+}
+
+/* Highlight khi Is_SoCho = 1 */
+.highlight {
+    /* background-color: yellow !important; */
+    color: red !important;
+    font-weight: bold;
+    /* border: 2px solid red; */
+    /* animation: blink 1s infinite alternate; */
+}
+
+@keyframes blink {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0.5;
+    }
+}
+
+.order-tracking {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    min-height: 100dvh;
+}
+
+.banner {
+    width: 100%;
+}
+
+.banner img {
+    width: 100%;
+    max-height: 220px;
+    object-fit: cover;
+}
+
+.header-section {
+    background: #fff;
+    color: #097742;
+    border: 1px solid #097742;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 30px;
+    position: relative;
+    top: -25px;
+}
+
+.btn-bill {
+    background: #fff;
+    color: #097742;
+    padding: 2px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+.warning-section {
+    background: #fff;
+    color: red;
+    border-top: 1px solid red;
+    width: 100%;
+    text-align: center;
+    padding: 2px 10px;
+    position: relative;
+    line-height: 1.2;
+    font-size: 12px;
+}
+
+.title-section {
+    background: #097742;
+    color: #fff;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 30px;
+    position: relative;
+    top: -25px;
+}
+
+.title-section h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.title-section p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.section {
+    margin: 10px 0;
+    width: 85%;
+    border-radius: 20px;
+    padding: 10px;
+    text-align: center;
+}
+
+.order-tracking-wrapper {
+    background-image: url("/_cdn/zen-eorder/icon-waiting/bg.png");
+    /* màu nền */
+    width: 100vw;
+    padding: 0 0 10px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-size: contain;
+    background-position: center;
+    position: relative;
+    top: -15px;
+    flex: 1;
+}
+
+.section-header {
+    background: #097742;
+    color: #fff;
+    padding: 5px;
+    border-radius: 30px;
+    text-align: center;
+
+    /* quan trọng: biến thành flex column */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.section-header .title {
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1.2;
+}
+
+.section-header .subtitle {
+    font-weight: bold;
+    font-size: 12px;
+    opacity: 0.9;
+    margin-top: 2px;
+    /* tạo chút khoảng cách */
+}
+
+.order-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-height: 50px;
+    /* margin-top: 10px; */
+}
+
+.order-item {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 5px;
+    padding: 10px 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    /* border: 2px solid #097742; */
+    color: #097742;
+    /* background: #fff; */
+}
+
+.completed .order-item {
+    border-color: #097742;
+    color: #097742;
+}
+
+/* .processing .order-item {
+    border-color: #f39c12;
+    color: #f39c12;
+} */
+
+.footer {
+    font-weight: bold;
+    display: flex;
+    justify-content: space-around;
+    background: #097742;
+    color: #fff;
+    width: 100%;
+    padding: 10px 0;
+    margin-top: auto;
+    /* position: absolute;
+    bottom: 0; */
+}
+
+.footer-item {
+    /* text-align: center; */
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.footer-item img {
+    width: 30px;
+}
+
+.footer-item small {
+    font-size: 12px;
+}
+
+/* iCON CSS */
+.order-icon {
+    width: 30px;
+}

@@ -1,0 +1,70 @@
+[
+  {
+    "comID": 5123,
+    "comName": "uc-avatar"
+  },
+  {
+    "comID": 6322,
+    "comName": "uc-baihoc"
+  },
+  {
+    "comID": 6321,
+    "comName": "uc-baitap"
+  },
+  {
+    "comID": 6318,
+    "comName": "uc-btn-center-nvg-bottom"
+  },
+  {
+    "comID": 2143,
+    "comName": "uc-cai-dat"
+  },
+  {
+    "comID": 3322,
+    "comName": "uc-chartTA2-HocSinh"
+  },
+  {
+    "comID": 2271,
+    "comName": "uc-chon-hoc-sinh"
+  },
+  {
+    "comID": 2272,
+    "comName": "uc-chon-ngon-ngu"
+  },
+  {
+    "comID": 6319,
+    "comName": "uc-dialog-select-hls-lms"
+  },
+  {
+    "comID": 2672,
+    "comName": "uc-giao-dien-tieng-anh"
+  },
+  {
+    "comID": 2142,
+    "comName": "uc-hoc-ky"
+  },
+  {
+    "comID": 3123,
+    "comName": "uc-hoc-ky-2"
+  },
+  {
+    "comID": 2140,
+    "comName": "uc-thang"
+  },
+  {
+    "comID": 5840,
+    "comName": "uc-thong-bao"
+  },
+  {
+    "comID": 2141,
+    "comName": "uc-tieng-anh"
+  },
+  {
+    "comID": 2665,
+    "comName": "uc-tienganh-table"
+  },
+  {
+    "comID": 2784,
+    "comName": "uc-tong-diem-qua-trinh"
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "comID": 6631,
+    "comName": "uc-btn-dialog-add"
+  },
+  {
+    "comID": 6647,
+    "comName": "uc-btn-dialog-add-multiple"
+  },
+  {
+    "comID": 6644,
+    "comName": "uc-dialog-edit"
+  },
+  {
+    "comID": 6622,
+    "comName": "uc-main-layout"
+  }
+]

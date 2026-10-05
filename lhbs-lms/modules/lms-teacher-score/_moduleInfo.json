@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-teacher-score",
+  "url": "//lms.lhbs.vn/lms-teacher-score",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-teacher-score",
+  "ModuleName": "Tổng hợp điểm theo Bài Tập",
+  "UpdateTime": "2025-10-31 08:22:22",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 687,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

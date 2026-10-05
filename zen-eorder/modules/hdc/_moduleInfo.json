@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/hdc",
+  "url": "/zen-eorder/hdc",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "hdc",
+  "ModuleName": "Hóa Đơn / Màn Hình Chờ (Khách)",
+  "UpdateTime": "2026-03-29 13:56:31",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 21223,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

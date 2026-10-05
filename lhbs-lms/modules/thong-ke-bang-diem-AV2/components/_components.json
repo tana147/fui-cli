@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 5980,
+    "comName": "uc-main-layout"
+  },
+  {
+    "comID": 3311,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 5985,
+    "comName": "uc-tab-grade"
+  },
+  {
+    "comID": 5987,
+    "comName": "uc-tab-theme"
+  },
+  {
+    "comID": 5986,
+    "comName": "uc-tab-thong-ke-TA2"
+  }
+]

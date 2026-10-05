@@ -1,0 +1,209 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')",
+      "TenSanPham": "",
+      "NhomLienKetChiTietID": 0,
+      "NguyenLieuID": 0,
+      "DSNguyenLieu": [],
+      "DSNhomLienKetChiTiet": [],
+      "DSNguyenLieuBan": []
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        },
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_NguyenLieu_SuDung",
+        "IN": {
+          "CuaHangID": "CuaHangID",
+          "TuNgay": "TuNgay",
+          "DenNgay": "DenNgay",
+          "TenSanPham": "TenSanPham",
+          "NhomLienKetChiTietID": "NhomLienKetChiTietID",
+          "NguyenLieuID": "NguyenLieuID"
+        },
+        "OUT": "DTNguyenLieuBan",
+        "CALLBACK": {
+          "DSNguyenLieuBan": "DTNguyenLieuBan[0] ?? []",
+          "DSNhomLienKetChiTiet": "DTNguyenLieuBan[1] ?? []",
+          "DSNguyenLieu": "DTNguyenLieuBan[2] ?? []"
+        }
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "TuNgay",
+                "label": "Từ ngày",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "DenNgay",
+                "label": "Đến ngày",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "v-text-field",
+              "w": 4,
+              "attr": {
+                "v-model": "TenSanPham",
+                "label": "Tên sản phẩm",
+                ":rules": false
+              }
+            }
+          ]
+        },
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "NhomLienKetChiTietID",
+                "label": "Sở thích phục vụ",
+                ":items": "vueData.DSNhomLienKetChiTiet",
+                "item-value": "NhomLienKetChiTietID",
+                "item-text": "TenNoiBo",
+                ":rules": false
+              }
+            },
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "NguyenLieuID",
+                "label": "Nguyên liệu",
+                ":items": "vueData.DSNguyenLieu",
+                "item-value": "NguyenLieuID",
+                "item-text": "TenNguyenLieu",
+                ":rules": false
+              }
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getBaoCao"
+                }
+              },
+              "w": 3
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo nguyên liệu bán",
+                ":items": "DSNguyenLieuBan",
+                ":excel": true,
+                "height": "calc(100vh - 231px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Sản phẩm",
+                    "value": "TenNoiBo",
+                    "width": 250
+                  },
+                  {
+                    "text": "Số lượng",
+                    "value": "SoLuong"
+                  },
+                  {
+                    "text": "Trạng thái",
+                    "value": "TrangThaiMon",
+                    "width": 150
+                  },
+                  {
+                    "text": "Mã nguyên liệu",
+                    "value": "MaNguyenLieu"
+                  },
+                  {
+                    "text": "Tên nguyên liệu",
+                    "value": "TenNguyenLieu",
+                    "width": 250
+                  },
+                  {
+                    "text": "Đơn vị nhập",
+                    "value": "TenDonViNhap"
+                  },
+                  {
+                    "text": "Tổng sử dụng (Gram)",
+                    "value": "TongGramSuDung",
+                    "align": "right",
+                    "el": "span",
+                    "innerHTML": "{{item.TongGramSuDung?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Tổng chi phí (VNĐ)",
+                    "value": "TongGiaSuDung",
+                    "align": "right",
+                    "el": "span",
+                    "innerHTML": "{{item.TongGiaSuDung?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Cửa hàng",
+                    "value": "TenCuaHang",
+                    "width": 300
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

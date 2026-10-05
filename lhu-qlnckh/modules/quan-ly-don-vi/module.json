@@ -1,0 +1,32 @@
+{
+  "data": [
+    {
+      "DonVi_Get": {
+        "API": "/DonVi_Get",
+        "OUT": "DSDonVi"
+      }
+    },
+    {
+      "CALL": "DonVi_Get"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page",
+              "attr": {},
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

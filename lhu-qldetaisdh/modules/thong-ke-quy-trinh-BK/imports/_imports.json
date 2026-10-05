@@ -1,0 +1,19 @@
+[
+  {
+    "name": "styles",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "AB145EE1D14548D6B57B26FEF3F2C0B9",
+    "scope": "module",
+    "sort": 51,
+    "filePath": "imports/styles-AB145EE1D14548D6B57B26FEF3F2C0B9.css"
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "9D41951DCD104942B24D64AAB4397D10",
+    "scope": "module",
+    "sort": 51
+  }
+]

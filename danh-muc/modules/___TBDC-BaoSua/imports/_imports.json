@@ -1,0 +1,26 @@
+[
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "7C170743E34E470EB2E4EB01505B3126",
+    "scope": "module",
+    "sort": 21
+  },
+  {
+    "name": "https://ws.fui.vn/Scripts/jquery.signalR-2.4.1.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "E27084CB3F114374A4DD51340A7FC184",
+    "scope": "module",
+    "sort": 30
+  },
+  {
+    "name": "https://ws.fui.vn/signalr/hubs",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "C90E3DF49CF74FA0A3B3B53D6BA30936",
+    "scope": "module",
+    "sort": 40
+  }
+]

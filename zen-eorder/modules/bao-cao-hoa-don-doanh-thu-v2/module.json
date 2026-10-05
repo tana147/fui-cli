@@ -1,0 +1,335 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')",
+      "DataSummary": null,
+      "HinhThucThanhToan": 0,
+      "DSHinhThucThanhToan": [
+        {
+          "value": 0,
+          "text": "Tất cả"
+        },
+        {
+          "value": 1,
+          "text": "Tiền mặt"
+        },
+        {
+          "value": 2,
+          "text": "Chuyển khoản"
+        },
+        {
+          "value": 4,
+          "text": "Quẹt thẻ"
+        },
+        {
+          "value": 3,
+          "text": "Shopee Food"
+        },
+        {
+          "value": 6,
+          "text": "Grab"
+        },
+        {
+          "value": 5,
+          "text": "ZEN"
+        }
+      ],
+      "PhanHieuID": 0,
+      "KhuVucID": 0,
+      "Ngay": "moment().format('YYYY-MM-DD')",
+      "HinhThucThoiGian": 2,
+      "Nam": null,
+      "Thang": null,
+      "TuNam": null,
+      "DenNam": null,
+      "DSHinhThucThoiGian": [
+        {
+          "value": 1,
+          "text": "Theo giờ"
+        },
+        {
+          "value": 2,
+          "text": "Theo ngày"
+        },
+        {
+          "value": 3,
+          "text": "Theo tuần"
+        },
+        {
+          "value": 4,
+          "text": "Theo quý"
+        },
+        {
+          "value": 5,
+          "text": "Theo tháng"
+        },
+        {
+          "value": 6,
+          "text": "Theo năm"
+        }
+      ],
+      "DSThang": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "DSNam": "GetDSNam()",
+      "headers": [
+        {
+          "text": "",
+          "value": "HinhThucThoiGian",
+          "align": "end"
+        },
+        {
+          "text": "Ngày đặt hàng",
+          "value": "NgayDatHang"
+        },
+        {
+          "text": "Tiền hàng",
+          "value": "TienHang",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.TienHang?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Tiền VAT",
+          "value": "TongVAT",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.TongVAT?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Tạm tính",
+          "value": "TamTinh",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.TamTinh?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Chờ thanh toán",
+          "value": "TienChoThanhToan",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.TienChoThanhToan?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Tổng ZEN sử dụng",
+          "value": "TongDiemSuDung",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.TongDiemSuDung?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Tiền thanh toán",
+          "value": "TongTienThanhToan",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.TongTienThanhToan?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Tiền mặt",
+          "value": "TienMat",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.TienMat?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Chuyển khoản",
+          "value": "ChuyenKhoan",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.ChuyenKhoan?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "ShopeeFood",
+          "value": "KhachTra_SPF",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_SPF?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Grab",
+          "value": "KhachTra_GRAB",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_GRAB?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "XSM",
+          "value": "KhachTra_XSM",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_XSM?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Quẹt thẻ",
+          "value": "KhachTra_QuetThe",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_QuetThe?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "HT1",
+          "value": "KhachTra_HT1",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_HT1?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "HT2",
+          "value": "KhachTra_HT2",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_HT2?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "HT3",
+          "value": "KhachTra_HT3",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_HT3?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Khuyến mãi",
+          "value": "KhuyenMai"
+        },
+        {
+          "text": "Tổng tiền hủy",
+          "value": "TongTienHuy",
+          "align": "right",
+          "el": "span",
+          "innerHTML": "{{item.TongTienHuy?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Cửa hàng",
+          "value": "CuaHang",
+          "width": 300
+        }
+      ]
+    },
+    {
+      "API": "/eorder/KhuVuc_Select",
+      "OUT": "DSKhuVuc",
+      "CALLBACK": [
+        {
+          "EXE": "DSKhuVuc.unshift({'KhuVucID': 0, 'TenKhuVuc': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/PhanHieu_Select",
+      "OUT": "DSPhanHieu",
+      "CALLBACK": [
+        {
+          "EXE": "DSPhanHieu.unshift({'PhanHieuID': 0, 'TenPhanHieu': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        },
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        }
+      ]
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_HoaDon_DoanhThu_v2",
+        "IN": {
+          "CuaHangID": "CuaHangID",
+          "HinhThucThanhToan": "HinhThucThanhToan",
+          "HinhThucThoiGian": "HinhThucThoiGian",
+          "Ngay": "Ngay ?? -1",
+          "TuNgay": "TuNgay ?? -1",
+          "DenNgay": "DenNgay ?? -1",
+          "Nam": "Nam ?? -1",
+          "TuNam": "TuNam ?? -1",
+          "DenNam": "DenNam ?? -1",
+          "Thang": "Thang ?? -1"
+        },
+        "OUT": "DSChiTietHoaDon",
+        "CALLBACK": [
+          {
+            "EXE": "sumFooterTable()"
+          },
+          {
+            "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+          }
+        ]
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);",
+        "CALL": "getBaoCao"
+      }
+    ],
+    "HinhThucThoiGian": [
+      {
+        "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-summary",
+              "attr": {
+                ":data": "vueData.DataSummary"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo doanh thu",
+                ":items": "DSChiTietHoaDon",
+                ":excel": true,
+                "height": "calc(100vh - 293)",
+                ":hide-default-footer": false,
+                ":headers": "headers"
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

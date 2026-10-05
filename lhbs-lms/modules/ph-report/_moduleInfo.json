@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/ph-report",
+  "url": "//lms.lhbs.vn/ph-report",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "ph-report",
+  "ModuleName": "LMS System",
+  "UpdateTime": "2026-09-17 12:08:20",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 263875,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

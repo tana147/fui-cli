@@ -1,0 +1,65 @@
+{
+  "data": [
+    {
+      "IsShowBanner": true,
+      "QRCode_Full": "code",
+      "QR": "qr",
+      "QRCode_Array": "QR ? QR.split('|') : QRCode_Full.split('|')",
+      "QRCode": "QRCode_Array[QRCode_Array.length - 1]",
+      "KhachHangID": "khid",
+      "OS_Device": "os",
+      "CTQuaTang": null,
+      "IsShake": false
+    },
+    {
+      "API": "/eorder/auth/QuaTang_Check_QrCode_V2",
+      "IN": {
+        "QRCode": "QRCode",
+        "KhachHangID": "KhachHangID"
+      },
+      "OUT": "CTQuaTang"
+    }
+  ],
+  "watch": {
+    "IsShowBanner": [
+      {
+        "FUN": "playMusic"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-modal-banner",
+              "attr": {
+                "v-if": "vueData.IsShowBanner"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-new-year",
+              "attr": {
+                "v-if": "!vueData.IsShowBanner && vueData.KhachHangID && vueData.QRCode && vueData.CTQuaTang"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false,
+    "login": false,
+    "userInfo": ""
+  }
+}

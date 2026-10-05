@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 6828,
+    "comName": "uc-dialog-khoa-cot-diem"
+  },
+  {
+    "comID": 6785,
+    "comName": "uc-dialog-mau-nhan-xet"
+  },
+  {
+    "comID": 6796,
+    "comName": "uc-filter"
+  },
+  {
+    "comID": 6795,
+    "comName": "uc-main-layout"
+  },
+  {
+    "comID": 6784,
+    "comName": "uc-nhap-diem"
+  }
+]

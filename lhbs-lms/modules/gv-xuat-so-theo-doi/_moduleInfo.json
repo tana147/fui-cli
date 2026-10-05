@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/gv-xuat-so-theo-doi",
+  "url": "//lms.lhbs.vn/gv-xuat-so-theo-doi",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "gv-xuat-so-theo-doi",
+  "ModuleName": "Xuất sổ điểm",
+  "UpdateTime": "2026-09-25 11:38:39",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 271,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

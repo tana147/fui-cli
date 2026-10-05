@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms_tc_asm_list",
+  "url": "//lms.lhbs.vn/lms_tc_asm_list",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms_tc_asm_list",
+  "ModuleName": "Quản lý bài giảng",
+  "UpdateTime": "2026-01-08 16:26:57",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-07-11",
+  "LoadCount": 112,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

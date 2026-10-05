@@ -1,0 +1,20 @@
+<!-- TS_1788117124549 -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<script>
+(function() {
+    if (!window.errorState) {
+        window.errorState = {
+            ui: { visible: false, message: '', show: function() {}, hide: function() {} },
+            api: { visible: false, message: '', code: null, status: null, show: function() {}, hide: function() {} }
+        };
+    }
+    if (!window.loadingState) {
+        window.loadingState = { count: 0, text: 'Đang xử lý...', get loading() { return false; } };
+    }
+    if (!window.staleDataState) {
+        window.staleDataState = { visible: false, retryCallback: null, show: function() {}, hide: function() {} };
+    }
+})();
+</script>

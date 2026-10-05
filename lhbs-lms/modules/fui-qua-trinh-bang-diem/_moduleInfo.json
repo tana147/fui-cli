@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/fui-qua-trinh-bang-diem",
+  "url": "//lms.lhbs.vn/fui-qua-trinh-bang-diem",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "fui-qua-trinh-bang-diem",
+  "ModuleName": "Bảng điểm quá trình",
+  "UpdateTime": "2025-06-04 14:33:08",
+  "UpdateUser": "DEV000050",
+  "LastLoad": "2025-07-10",
+  "LoadCount": 333,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

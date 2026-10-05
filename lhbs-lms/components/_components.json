@@ -1,0 +1,242 @@
+[
+  {
+    "comID": 7335,
+    "comName": "Global"
+  },
+  {
+    "comID": 9778,
+    "comName": "GlobalAlertNotification"
+  },
+  {
+    "comID": 7332,
+    "comName": "GlobalApiErrorDialog"
+  },
+  {
+    "comID": 8857,
+    "comName": "GlobalConfirmDialog"
+  },
+  {
+    "comID": 8122,
+    "comName": "GlobalDataTable"
+  },
+  {
+    "comID": 9201,
+    "comName": "GlobalFirebaseMessaging"
+  },
+  {
+    "comID": 8107,
+    "comName": "GlobalIframeWindow"
+  },
+  {
+    "comID": 7331,
+    "comName": "GlobalLoading"
+  },
+  {
+    "comID": 9652,
+    "comName": "GlobalNavigationDrawer"
+  },
+  {
+    "comID": 7334,
+    "comName": "GlobalStaleDataBanner"
+  },
+  {
+    "comID": 7333,
+    "comName": "GlobalUiSnackbar"
+  },
+  {
+    "comID": 10301,
+    "comName": "GlobalUploadManager"
+  },
+  {
+    "comID": 1773,
+    "comName": "uc-action-row"
+  },
+  {
+    "comID": 1819,
+    "comName": "uc-admin-layout"
+  },
+  {
+    "comID": 1922,
+    "comName": "uc-app"
+  },
+  {
+    "comID": 4462,
+    "comName": "uc-audio-record"
+  },
+  {
+    "comID": 1774,
+    "comName": "uc-btn-add"
+  },
+  {
+    "comID": 6779,
+    "comName": "uc-card-empty"
+  },
+  {
+    "comID": 2189,
+    "comName": "uc-chart"
+  },
+  {
+    "comID": 2198,
+    "comName": "uc-chart-apex"
+  },
+  {
+    "comID": 11585,
+    "comName": "uc-content-hub-import-dialog"
+  },
+  {
+    "comID": 2147,
+    "comName": "uc-date-input-vi"
+  },
+  {
+    "comID": 11351,
+    "comName": "uc-date-range-picker"
+  },
+  {
+    "comID": 2146,
+    "comName": "uc-datepicker-vi"
+  },
+  {
+    "comID": 1769,
+    "comName": "uc-dialog"
+  },
+  {
+    "comID": 1876,
+    "comName": "uc-empty"
+  },
+  {
+    "comID": 2323,
+    "comName": "uc-gender"
+  },
+  {
+    "comID": 11008,
+    "comName": "uc-hoclieu-resource-selector"
+  },
+  {
+    "comID": 4711,
+    "comName": "uc-image-annotator"
+  },
+  {
+    "comID": 4946,
+    "comName": "uc-image-annotator-test"
+  },
+  {
+    "comID": 4537,
+    "comName": "uc-img-zoom"
+  },
+  {
+    "comID": 2581,
+    "comName": "uc-info-student"
+  },
+  {
+    "comID": 1738,
+    "comName": "uc-jexcel"
+  },
+  {
+    "comID": 4518,
+    "comName": "uc-latex-view"
+  },
+  {
+    "comID": 6419,
+    "comName": "uc-lich"
+  },
+  {
+    "comID": 7626,
+    "comName": "uc-lich-desktop"
+  },
+  {
+    "comID": 7625,
+    "comName": "uc-lich-mobile"
+  },
+  {
+    "comID": 1932,
+    "comName": "uc-loading-page"
+  },
+  {
+    "comID": 11353,
+    "comName": "uc-modal-edit-profile-shared"
+  },
+  {
+    "comID": 3392,
+    "comName": "uc-nien-khoa"
+  },
+  {
+    "comID": 3382,
+    "comName": "uc-page"
+  },
+  {
+    "comID": 4472,
+    "comName": "uc-question-audio-response"
+  },
+  {
+    "comID": 4473,
+    "comName": "uc-question-essay"
+  },
+  {
+    "comID": 4474,
+    "comName": "uc-question-file-upload"
+  },
+  {
+    "comID": 4475,
+    "comName": "uc-question-fill-in-blank"
+  },
+  {
+    "comID": 4479,
+    "comName": "uc-question-matching"
+  },
+  {
+    "comID": 4476,
+    "comName": "uc-question-multiple-choice"
+  },
+  {
+    "comID": 4516,
+    "comName": "uc-question-multiple-true-false"
+  },
+  {
+    "comID": 4477,
+    "comName": "uc-question-short-answer"
+  },
+  {
+    "comID": 4471,
+    "comName": "uc-question-single-choice"
+  },
+  {
+    "comID": 4478,
+    "comName": "uc-question-true-false"
+  },
+  {
+    "comID": 2327,
+    "comName": "uc-quill-editor"
+  },
+  {
+    "comID": 11158,
+    "comName": "uc-rich-text-editor"
+  },
+  {
+    "comID": 1775,
+    "comName": "uc-search-field"
+  },
+  {
+    "comID": 9840,
+    "comName": "uc-system-toolbar"
+  },
+  {
+    "comID": 9066,
+    "comName": "uc-ticket-fab"
+  },
+  {
+    "comID": 9241,
+    "comName": "uc-ticket-status"
+  },
+  {
+    "comID": 2582,
+    "comName": "uc-tinh-trang-hsl"
+  },
+  {
+    "comID": 2924,
+    "comName": "uc-vaitro"
+  },
+  {
+    "comID": 4441,
+    "comName": "uc-wave-audio-player"
+  }
+]

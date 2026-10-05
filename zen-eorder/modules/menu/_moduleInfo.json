@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/menu",
+  "url": "/zen-eorder/menu",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "menu",
+  "ModuleName": "Menu Khách Hàng",
+  "UpdateTime": "2025-12-09 08:53:16",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 82567,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

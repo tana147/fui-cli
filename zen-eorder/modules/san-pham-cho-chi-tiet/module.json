@@ -1,0 +1,395 @@
+{
+  "data": [
+    {
+      "SanPhamID": "spid",
+      "TabProduct": "`Tab_DuLieuCoSo",
+      "IsShowDialogSettingProduct": false,
+      "DS_SanPham_CuaHang": []
+    },
+    {
+      "getSanPhamById": {
+        "API": "/eorder/SanPhamCho_Select_ById",
+        "IN": {
+          "SanPhamID": "SanPhamID"
+        },
+        "OUT": "CTSanPham"
+      }
+    },
+    {
+      "getSanPhamCuaHang": {
+        "API": "/eorder/SanPhamCuaHangCho_Select_ById",
+        "IN": {
+          "SanPhamID": "SanPhamID"
+        },
+        "OUT": "DS_SanPham_CuaHang"
+      }
+    },
+    {
+      "CALL": "getSanPhamById"
+    },
+    {
+      "CALL": "getSanPhamCuaHang"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "page-container grid-list-md fluid ma-0",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "font-weight-bold"
+              },
+              "innerHTML": "Chi tiết sản phẩm chờ: <span class='success--text'>{{CTSanPham?.SanPham?.TenSanPham}} - {{CTSanPham?.SanPham?.MaSanPham}}</span>"
+            }
+          ]
+        },
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-button-action",
+              "attr": {
+                ":ct_sanpham": "CTSanPham?.SanPham",
+                ":sp_ch": "DS_SanPham_CuaHang"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-tabs",
+              "attr": {
+                "v-model": "TabProduct",
+                "color": "white",
+                "background-color": "green"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_DuLieuCoSo"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Dữ liệu cơ sở"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_CuaHang"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Cửa hàng áp dụng"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_CaiDat"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Cài đặt"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_TrangThai"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Trạng thái"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_ThietLapGia"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Thiết lập giá"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_KhuCheBien"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Khu chế biến"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_MayInTem"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Máy in tem"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_LichBan"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Lịch bán"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_NhomLienKet"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Nhóm liên kết"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_NguyenLieu"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Nguyên liệu"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_MoTa"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Mô tả"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-tabs-items",
+              "attr": {
+                "v-model": "TabProduct"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_DuLieuCoSo"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-tab-du-lieu-co-so",
+                      "attr": {
+                        ":ct_sanpham": "CTSanPham.SanPham"
+                      },
+                      "w": 12
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_CuaHang"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-tab-cua-hang",
+                      "attr": {
+                        ":ct_sanpham": "CTSanPham.SanPham"
+                      },
+                      "w": 12
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_CaiDat"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-tab-cai-dat",
+                      "attr": {
+                        ":sp_ch": "DS_SanPham_CuaHang"
+                      },
+                      "w": 12
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_TrangThai"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-tab-trang-thai",
+                      "attr": {
+                        ":sp_ch": "DS_SanPham_CuaHang"
+                      },
+                      "w": 12
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_ThietLapGia"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-tab-gia",
+                      "attr": {
+                        ":sp_ch": "DS_SanPham_CuaHang"
+                      },
+                      "w": 12
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_KhuCheBien"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-tab-khu-che-bien",
+                      "attr": {
+                        ":sp_ch": "DS_SanPham_CuaHang"
+                      },
+                      "w": 12
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_MayInTem"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-tab-may-in-tem",
+                      "attr": {
+                        ":sp_ch": "DS_SanPham_CuaHang"
+                      },
+                      "w": 12
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_LichBan"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-tab-lich-ban",
+                      "attr": {
+                        ":sp_ch": "DS_SanPham_CuaHang"
+                      },
+                      "w": 12
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_NhomLienKet"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-tab-nhom-lien-ket",
+                      "attr": {
+                        ":ct_sanpham": "CTSanPham.SanPham"
+                      },
+                      "w": 12
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_NguyenLieu"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-tab-nguyen-lieu",
+                      "attr": {
+                        ":ct_sanpham": "CTSanPham.SanPham"
+                      },
+                      "w": 12
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_MoTa"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-tab-mo-ta",
+                      "attr": {
+                        ":ct_sanpham": "CTSanPham.SanPham"
+                      },
+                      "w": 12
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false
+  }
+}

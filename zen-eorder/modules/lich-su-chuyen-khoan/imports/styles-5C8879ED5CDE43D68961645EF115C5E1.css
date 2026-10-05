@@ -1,0 +1,11 @@
+.table-log .v-text-field .v-input__control .v-input__slot:before {
+    border-color: inherit !important;
+    border-style: solid !important;
+    border-width: thin 0 0 !important;
+}
+
+.table-log thead th {
+    background-color: #F9F9F9 !important;
+    color: #fff !important;
+    font-weight: bold !important;
+}

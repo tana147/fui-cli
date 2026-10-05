@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-tc-lesson-preview",
+  "url": "//lms.lhbs.vn/lms-tc-lesson-preview",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-tc-lesson-preview",
+  "ModuleName": "lms-tc-lesson-preview",
+  "UpdateTime": null,
+  "UpdateUser": null,
+  "LastLoad": "2026-05-08",
+  "LoadCount": 1,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

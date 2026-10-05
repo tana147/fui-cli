@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "EXE": "IsCheck_NotRoleParent(vueData.user)"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

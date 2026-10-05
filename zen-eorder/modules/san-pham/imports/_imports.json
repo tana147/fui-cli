@@ -1,0 +1,42 @@
+[
+  {
+    "name": "/include/vue-advanced-cropper/style.css",
+    "type": ".css",
+    "contentType": "comp-link",
+    "fileID": "E1F428BBD0F94A299EEE95E947C30383",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://ws.fui.vn/Scripts/jquery.signalR-2.4.1.min.js\t",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "9E28CC51BC954C3A99463DEE4151EFB8",
+    "scope": "module",
+    "sort": 25
+  },
+  {
+    "name": "https://ws.fui.vn/signalr/hubs\t",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "1998BF37019E439F9E465ECB349FB1B2",
+    "scope": "module",
+    "sort": 26
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "681D39B5B90F4B06A7EA5BD73C7939AD",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/vue-advanced-cropper/index.umd.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "3646C5978CB74CFA8F749FDF50880F6E",
+    "scope": "module",
+    "sort": 50
+  }
+]

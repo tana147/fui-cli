@@ -1,0 +1,78 @@
+[
+  {
+    "comID": 11900,
+    "comName": "uc-anpham-khenthuong"
+  },
+  {
+    "comID": 493,
+    "comName": "uc-btn"
+  },
+  {
+    "comID": 441,
+    "comName": "uc-card-item"
+  },
+  {
+    "comID": 454,
+    "comName": "uc-card-list"
+  },
+  {
+    "comID": 11901,
+    "comName": "uc-cgcn"
+  },
+  {
+    "comID": 424,
+    "comName": "uc-chart"
+  },
+  {
+    "comID": 583,
+    "comName": "uc-chart-line"
+  },
+  {
+    "comID": 455,
+    "comName": "uc-dcard"
+  },
+  {
+    "comID": 459,
+    "comName": "uc-dchart-card"
+  },
+  {
+    "comID": 11902,
+    "comName": "uc-de-tai-nckh"
+  },
+  {
+    "comID": 457,
+    "comName": "uc-dialog"
+  },
+  {
+    "comID": 458,
+    "comName": "uc-dtable"
+  },
+  {
+    "comID": 456,
+    "comName": "uc-excel-btn"
+  },
+  {
+    "comID": 11903,
+    "comName": "uc-giaithuong"
+  },
+  {
+    "comID": 6731,
+    "comName": "uc-hoat-dong-khoa-hoc"
+  },
+  {
+    "comID": 4778,
+    "comName": "uc-main-component"
+  },
+  {
+    "comID": 11904,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 6274,
+    "comName": "uc-phan-loai-an-pham"
+  },
+  {
+    "comID": 11905,
+    "comName": "uc-stats"
+  }
+]

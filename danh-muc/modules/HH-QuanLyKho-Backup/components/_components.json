@@ -1,0 +1,62 @@
+[
+  {
+    "comID": 8655,
+    "comName": "uc-kho-desktop"
+  },
+  {
+    "comID": 8656,
+    "comName": "uc-kho-mobile"
+  },
+  {
+    "comID": 8240,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 8244,
+    "comName": "uc-modal-duyet-phieu-kiem-ke"
+  },
+  {
+    "comID": 8247,
+    "comName": "uc-modal-duyet-phieu-nhap"
+  },
+  {
+    "comID": 8603,
+    "comName": "uc-modal-history"
+  },
+  {
+    "comID": 8246,
+    "comName": "uc-modal-qr"
+  },
+  {
+    "comID": 8250,
+    "comName": "uc-modal-quet-qr"
+  },
+  {
+    "comID": 8252,
+    "comName": "uc-modal-transfer"
+  },
+  {
+    "comID": 8253,
+    "comName": "uc-modal-update-ca-biet"
+  },
+  {
+    "comID": 8251,
+    "comName": "uc-modal-view-tai-san"
+  },
+  {
+    "comID": 7856,
+    "comName": "uc-stats"
+  },
+  {
+    "comID": 7853,
+    "comName": "uc-table-hang-sap-het"
+  },
+  {
+    "comID": 7857,
+    "comName": "uc-table-kho"
+  },
+  {
+    "comID": 7850,
+    "comName": "uc-table-yeu-cau"
+  }
+]

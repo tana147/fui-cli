@@ -1,0 +1,243 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')"
+    },
+    {
+      "DSInChungBillCheBien": [
+        {
+          "value": 0,
+          "text": "Không"
+        },
+        {
+          "value": 1,
+          "text": "Có"
+        }
+      ]
+    },
+    {
+      "DSIsTuDongTraMon": [
+        {
+          "value": 0,
+          "text": "Không"
+        },
+        {
+          "value": 1,
+          "text": "Có"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": {
+        "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+      }
+    },
+    {
+      "getKhuCheBien": {
+        "API": "/eorder/KhuCheBien_Select_ByCuaHangId",
+        "IN": {
+          "CuaHangID": "CuaHangID"
+        },
+        "OUT": "DSKhuCheBien"
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "CALL": "getKhuCheBien"
+      },
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "w": 12,
+              "attr": {
+                "label": "Khu vực chế biến",
+                ":excel": true,
+                ":items": "DSKhuCheBien",
+                "height": "calc(100vh - 118px)",
+                ":headers": [
+                  {
+                    "text": "Cửa hàng",
+                    "value": "TenCuaHang"
+                  },
+                  {
+                    "text": "Khu",
+                    "value": "TenKhuCheBien"
+                  },
+                  {
+                    "text": "Tên máy in",
+                    "value": "TenMayIn",
+                    "el": "span",
+                    "innerHTML": "<b class='primary--text'>{{item.TenMayIn}}</b>"
+                  },
+                  {
+                    "text": "Tự động trả món",
+                    "align": "center",
+                    "value": "Is_TuDongTraMon",
+                    "el": "v-chip",
+                    "attr": {
+                      "v-if": "item.Is_TuDongTraMon == 1",
+                      "color": "success",
+                      ":small": true
+                    },
+                    "innerHTML": "Có"
+                  },
+                  {
+                    "text": "In chung món",
+                    "align": "center",
+                    "value": "InChungBillCheBien",
+                    "el": "v-chip",
+                    "attr": {
+                      "v-if": "item.InChungBillCheBien == 1",
+                      "color": "success",
+                      ":small": true
+                    },
+                    "innerHTML": "Có"
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-select",
+                    "w": 12,
+                    "attr": {
+                      "v-model": "CuaHangID",
+                      "label": "Cửa hàng",
+                      ":items": "vueData.DSCuaHang",
+                      "item-value": "CuaHangID",
+                      "item-text": "TenCuaHang"
+                    }
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenKhuCheBien",
+                      "label": "Tên khu chế biến",
+                      "maxlength": "50"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "TenMayIn",
+                      "label": "Tên máy in"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "InChungBillCheBien",
+                      "label": "In chung món",
+                      ":items": "vueData.DSInChungBillCheBien"
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "Is_TuDongTraMon",
+                      "label": "Tự động trả món",
+                      ":items": "vueData.DSIsTuDongTraMon"
+                    },
+                    "w": 2
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "CuaHangID": "vueData.CuaHangID",
+                    "InChungBillCheBien": 0,
+                    "Is_TuDongTraMon": 0
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới khu chế biến",
+                    "API": "/eorder/KhuCheBien_Insert",
+                    "IN": {
+                      "CuaHangID": "item.CuaHangID",
+                      "TenKhuCheBien": "item.TenKhuCheBien",
+                      "TenMayIn": "item.TenMayIn",
+                      "InChungBillCheBien": "item.InChungBillCheBien",
+                      "Is_TuDongTraMon": "item.Is_TuDongTraMon"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": {
+                      "CALL": "getKhuCheBien"
+                    }
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật khu chế biến <br/><b>{{item.TenKhuCheBien}}</b>",
+                    "API": "/eorder/KhuCheBien_Update",
+                    "IN": {
+                      "CuaHangID": "item.CuaHangID",
+                      "KhuCheBienID": "item.KhuCheBienID",
+                      "TenKhuCheBien": "item.TenKhuCheBien",
+                      "TenMayIn": "item.TenMayIn",
+                      "InChungBillCheBien": "item.InChungBillCheBien",
+                      "Is_TuDongTraMon": "item.Is_TuDongTraMon"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getKhuCheBien"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa khu chế biến <br/><b>{{item.TenKhuCheBien}}</b>",
+                    "API": "/eorder/KhuCheBien_Delete",
+                    "IN": {
+                      "KhuCheBienID": "item.KhuCheBienID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getKhuCheBien"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

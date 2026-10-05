@@ -1,0 +1,26 @@
+[
+  {
+    "name": "https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "E7A42AA9F62343F1ABA1F9B60548C69E",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://unpkg.com/html5-qrcode",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "E85471BC634247CA99BC225EBD200322",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/+esm",
+    "type": ".js-module",
+    "contentType": "link",
+    "fileID": "0AC0EFFB259448BDB40C9E0E4E2E91A3",
+    "scope": "module",
+    "sort": 1
+  }
+]

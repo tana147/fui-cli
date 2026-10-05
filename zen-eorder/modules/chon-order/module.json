@@ -1,0 +1,177 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "DSLau": [],
+      "DSKhu": [],
+      "DSBan": [],
+      "IsShowDialogChangeTable": false,
+      "IsShowDialogMergeTable": false,
+      "IsShowDialogCancelMergeTable": false,
+      "IsShowDialogSplitTable": false,
+      "IshowDialogMangVe": false
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": {
+        "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+      }
+    },
+    {
+      "getLauSelectByCuaHangId": {
+        "IF": "CuaHangID > 0",
+        "THEN": {
+          "API": "/eorder/Lau_Select_ByCuaHangId",
+          "IN": {
+            "CuaHangID": "CuaHangID"
+          },
+          "OUT": "DSLau",
+          "CALLBACK": {
+            "LauID": "DSLau[0]?.LauID"
+          }
+        },
+        "ELSE": {
+          "DSLau": [],
+          "DSKhu": [],
+          "DSBan": []
+        }
+      }
+    },
+    {
+      "getKhuSelectByLauId": {
+        "IF": "LauID > 0",
+        "THEN": {
+          "API": "/eorder/Khu_Select_ByLauId",
+          "IN": {
+            "LauID": "LauID"
+          },
+          "OUT": "DSKhu",
+          "CALLBACK": {
+            "KhuID": "DSKhu[0]?.KhuID"
+          }
+        },
+        "ELSE": {
+          "DSKhu": [],
+          "DSBan": []
+        }
+      }
+    },
+    {
+      "getBan": {
+        "IF": "KhuID > 0",
+        "THEN": {
+          "API": "/eorder/Ban_Select_TrangThai_ByKhuId",
+          "IN": {
+            "KhuID": "KhuID"
+          },
+          "OUT": "DSBan"
+        },
+        "ELSE": {
+          "DSBan": []
+        }
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "LauID": 0,
+        "KhuID": 0,
+        "LoaiPhanHieuID": "DSCuaHang.find((item) => item.CuaHangID === vueData.CuaHangID).LoaiPhanHieuID"
+      },
+      {
+        "CALL": "getLauSelectByCuaHangId"
+      },
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      }
+    ],
+    "LauID": {
+      "CALL": "getKhuSelectByLauId"
+    },
+    "KhuID": {
+      "CALL": "getBan"
+    }
+  },
+  "controls": [
+    {
+      "prop": "page-container grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "bg-green py-1 px-2",
+          "cols": [
+            {
+              "el": "uc-navigation"
+            }
+          ]
+        },
+        {
+          "prop": "page-navigation justify-center row",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            },
+            {
+              "el": "v-select",
+              "w": 2,
+              "attr": {
+                "v-model": "LauID",
+                "label": "Lầu",
+                ":disabled": "!vueData.CuaHangID",
+                ":items": "vueData.DSLau",
+                "item-value": "LauID",
+                "item-text": "TenLau"
+              }
+            },
+            {
+              "el": "v-select",
+              "w": 2,
+              "attr": {
+                "v-model": "KhuID",
+                "label": "Khu vực",
+                ":disabled": "!vueData.LauID",
+                ":items": "vueData.DSKhu",
+                "item-value": "KhuID",
+                "item-text": "TenKhu"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "page-navigation pa-0",
+          "cols": [
+            {
+              "el": "uc-button-action",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "justify-center",
+          "cols": [
+            {
+              "el": "uc-table-container",
+              "attr": {
+                ":list": "DSBan"
+              },
+              "w": 8
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false
+  }
+}

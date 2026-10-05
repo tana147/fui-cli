@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/admin-alert",
+  "url": "//lms.lhbs.vn/admin-alert",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "admin-alert",
+  "ModuleName": "admin-alert",
+  "UpdateTime": "2026-07-17 10:59:03",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-09-14",
+  "LoadCount": 72,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

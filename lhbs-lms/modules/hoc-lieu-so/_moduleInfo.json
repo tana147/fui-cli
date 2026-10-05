@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/hoc-lieu-so",
+  "url": "//lms.lhbs.vn/hoc-lieu-so",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "hoc-lieu-so",
+  "ModuleName": "Khám phá học liệu số",
+  "UpdateTime": "2026-07-23 15:57:05",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 1735,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": "Chọn Cấp Độ Học Liệu Số"
+}

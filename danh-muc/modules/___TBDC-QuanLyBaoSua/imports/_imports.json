@@ -1,0 +1,26 @@
+[
+  {
+    "name": "https://cdn.jsdelivr.net/npm/axios@1.8.3/dist/axios.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "D92A9D718ECB44039BE49120C11E0E93",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "21FCE2EBF14D4F55B3B5100209BAD13F",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://unpkg.com/vue-cookies@1.8.3/vue-cookies.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "41396441CE3E4BBB93D2E49D59557873",
+    "scope": "module",
+    "sort": 50
+  }
+]

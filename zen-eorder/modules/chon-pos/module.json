@@ -1,0 +1,115 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "CTNhanVien": [],
+      "Ca": 0,
+      "DSCa": [
+        {
+          "Id": 0,
+          "Ca": "Không"
+        },
+        {
+          "Id": 1,
+          "Ca": "Sáng"
+        },
+        {
+          "Id": 2,
+          "Ca": "Tối"
+        },
+        {
+          "Id": 3,
+          "Ca": "Đêm"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/NhanVien_Select_ById",
+      "OUT": "CTNhanVien",
+      "CALLBACK": [
+        {
+          "Ca": "vueData.CTNhanVien[1][0].Ca"
+        }
+      ]
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      }
+    ],
+    "Ca": [
+      {
+        "API": "/eorder/NhanVien_Update_Ca",
+        "IN": {
+          "Ca": "vueData.Ca"
+        }
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "page-container grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "bg-green py-1 px-2",
+          "cols": [
+            {
+              "el": "uc-navigation"
+            }
+          ]
+        },
+        {
+          "prop": "page-navigation justify-center",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 5,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            },
+            {
+              "el": "v-select",
+              "w": 1,
+              "attr": {
+                "v-model": "Ca",
+                "label": "Ca",
+                ":items": "vueData.DSCa",
+                "item-value": "Id",
+                "item-text": "Ca"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "justify-center",
+          "cols": [
+            {
+              "el": "uc-button-action",
+              "w": 8
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false
+  }
+}

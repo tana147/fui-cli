@@ -1,0 +1,152 @@
+{
+  "data": [
+    {
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')"
+    },
+    {
+      "getLogData": {
+        "API": "/eorder/LichSu_Sms",
+        "IN": {
+          "tuNgay": "TuNgay",
+          "toiNgay": "DenNgay"
+        },
+        "OUT": "LogData",
+        "CALLBACK": [
+          {
+            "LogData_1": "LogData[0]",
+            "LogData_2": "LogData[1]"
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "getLogData"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "TuNgay",
+                "label": "Từ ngày",
+                "date-add": 0
+              },
+              "w": "2"
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "DenNgay",
+                "label": "Tới ngày",
+                "date-add": 0
+              },
+              "w": "2"
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getLogData"
+                }
+              },
+              "w": 3
+            }
+          ]
+        },
+        {
+          "prop": "justify-left row",
+          "cols": [
+            {
+              "el": "v-tabs",
+              "w": 12,
+              "attr": {
+                "v-model": "TabSMS",
+                "color": "white",
+                "background-color": "green"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_SMSNotSend"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "SMS lỗi"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_SMSSend"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "SMS đã gửi"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "el": "v-tabs-items",
+              "w": 12,
+              "attr": {
+                "v-model": "TabSMS"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_SMSNotSend"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "f-table",
+                      "attr": {
+                        "label": "SMS lỗi",
+                        ":items": "LogData_1",
+                        "disabled-update": true
+                      }
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_SMSSend"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "f-table",
+                      "attr": {
+                        "label": "SMS đã gửi",
+                        ":items": "LogData_2",
+                        "disabled-update": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

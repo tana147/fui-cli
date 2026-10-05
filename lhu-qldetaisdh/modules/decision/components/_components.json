@@ -1,0 +1,34 @@
+[
+  {
+    "comID": 10392,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 10391,
+    "comName": "uc-main-view"
+  },
+  {
+    "comID": 10384,
+    "comName": "uc-modal-add"
+  },
+  {
+    "comID": 10387,
+    "comName": "uc-modal-edit"
+  },
+  {
+    "comID": 10388,
+    "comName": "uc-modal-give-sqd"
+  },
+  {
+    "comID": 10389,
+    "comName": "uc-student-detail-table"
+  },
+  {
+    "comID": 10390,
+    "comName": "uc-student-edit-table"
+  },
+  {
+    "comID": 10385,
+    "comName": "uc-student-list-add"
+  }
+]

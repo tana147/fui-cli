@@ -1,0 +1,26 @@
+[
+  {
+    "comID": 3207,
+    "comName": "uc-tab-chu-de"
+  },
+  {
+    "comID": 3208,
+    "comName": "uc-tab-diem-tong"
+  },
+  {
+    "comID": 3209,
+    "comName": "uc-tab-diem-trung-binh"
+  },
+  {
+    "comID": 3210,
+    "comName": "uc-tab-ky-nang"
+  },
+  {
+    "comID": 3211,
+    "comName": "uc-tab-phan-phoi-diem"
+  },
+  {
+    "comID": 3212,
+    "comName": "uc-tab-ty-le-hoc-sinh"
+  }
+]

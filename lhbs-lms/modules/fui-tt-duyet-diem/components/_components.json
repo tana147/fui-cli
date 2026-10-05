@@ -1,0 +1,46 @@
+[
+  {
+    "comID": 2525,
+    "comName": "uc-dialog-approve"
+  },
+  {
+    "comID": 2521,
+    "comName": "uc-dialog-reject"
+  },
+  {
+    "comID": 2515,
+    "comName": "uc-filter-mon-hoc"
+  },
+  {
+    "comID": 2510,
+    "comName": "uc-item-hoc-sinh"
+  },
+  {
+    "comID": 2518,
+    "comName": "uc-item-hoc-sinh-c1"
+  },
+  {
+    "comID": 2519,
+    "comName": "uc-item-hoc-sinh-c2"
+  },
+  {
+    "comID": 2520,
+    "comName": "uc-item-hoc-sinh-c3"
+  },
+  {
+    "comID": 1910,
+    "comName": "uc-main-layout"
+  },
+  {
+    "comID": 1984,
+    "comName": "uc-nhap-diem"
+  },
+  {
+    "comID": 2052,
+    "comName": "uc-stepper"
+  },
+  {
+    "comID": 2584,
+    "comName": "uc-table"
+  }
+]

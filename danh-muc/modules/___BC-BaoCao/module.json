@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "Nam": null,
+      "Thang": null,
+      "DiaDiem_Id": null
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page",
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false
+  }
+}

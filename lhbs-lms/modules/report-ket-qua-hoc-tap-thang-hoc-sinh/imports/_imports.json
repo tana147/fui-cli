@@ -1,0 +1,20 @@
+[
+  {
+    "name": "style",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "EF247C200E974ECA9A52CAB29C443F9E",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/style-EF247C200E974ECA9A52CAB29C443F9E.css"
+  },
+  {
+    "name": "stylePage",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "303BBA88458540F1B7B256BFA7E4E739",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/stylePage-303BBA88458540F1B7B256BFA7E4E739.css"
+  }
+]

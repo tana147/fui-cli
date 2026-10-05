@@ -1,0 +1,28 @@
+.table-doi-soat tbody tr:hover {
+  background-color: transparent !important;
+}
+
+.table-doi-soat thead th {
+  background-color: #F9F9F9 !important;
+  color: #fff !important;
+  font-weight: bold !important;
+}
+
+.wrong-text {
+  color: red !important;
+}
+
+.border-bottom-primary {
+  padding-bottom: 10px !important;
+  border-bottom: 2px dashed #4CAF50 !important;
+}
+
+.table-doi-soat .v-text-field .v-input__control .v-input__slot:before {
+  border-color: inherit !important;
+  border-style: solid !important;
+  border-width: thin 0 0 !important;
+}
+
+.table-doi-soat .edit-class {
+  background-color: #ECECEC !important;
+}

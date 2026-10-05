@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/cau-hinh-ki-nang-cau-hoi",
+  "url": "//lms.lhbs.vn/cau-hinh-ki-nang-cau-hoi",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "cau-hinh-ki-nang-cau-hoi",
+  "ModuleName": "Cấu hình kĩ năng câu hỏi",
+  "UpdateTime": "2026-06-02 17:30:35",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-09-22",
+  "LoadCount": 64,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

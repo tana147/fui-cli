@@ -1,0 +1,19 @@
+[
+  {
+    "name": "pageStyle",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "05ABA77853ED4D35855DA5AED83878F3",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/pageStyle-05ABA77853ED4D35855DA5AED83878F3.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/apextree",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "323E68F87C9D434A999EAE71DB08D6B9",
+    "scope": "module",
+    "sort": 50
+  }
+]

@@ -1,0 +1,159 @@
+.container {
+    padding: 0;
+    margin: 0;
+}
+
+.container-page {
+    height: 100vh;
+}
+
+.bg-case {
+    height: 100vh;
+    width: 100vw;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+}
+
+.card-block {
+    text-align: center;
+    width: calc(100vw - 50px);
+    max-width: 450px;
+    padding: 5px;
+    font-size: 16px;
+    background-color: transparent !important;
+    border: unset !important;
+    box-shadow: unset !important;
+}
+
+.card-block-code {
+    font-weight: bold;
+    line-height: 1.2;
+    background-image: url("https://cdn.zentea.vn/filedata/zen-eorder/secret-in-zen/bg-code.png?v=202410280951");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+}
+
+.text-pin {
+    font-weight: 900;
+    font-size: 38px;
+}
+
+.card-input {
+    background-image: url("https://cdn.zentea.vn/filedata/zen-eorder/secret-in-zen/bg-input.png?v=202410280951");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    text-align: center;
+    padding: 10px 5px;
+    margin: 5px;
+    height: 70px;
+    font-size: 24px;
+}
+
+.card-input .v-input__slot {
+    background-color: transparent !important;
+}
+
+.pin-input input {
+    padding: 0;
+    font-size: 24px;
+    font-weight: bold !important;
+    text-align: center;
+    width: 40px;
+}
+
+.card-block-title {
+    background-image: url("https://cdn.zentea.vn/filedata/zen-eorder/secret-in-zen/bg-title-lg.png?v=202410280951");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    font-weight: 500;
+    font-size: 18px;
+    text-align: center;
+    font-family: math;
+}
+
+.card-block-content {
+    text-align: center;
+    margin: 5px 0;
+    padding: 5px;
+    background-color: transparent !important;
+    border: unset !important;
+    background-image: linear-gradient(#000000c2, #00000082, #000000c2);
+    font-family: math;
+}
+
+.card-block-content p {
+    color: #fbdf8f;
+    margin-bottom: 0;
+    font-size: 15px;
+}
+
+.warning-2-3 {
+    position: absolute;
+    bottom: 0;
+}
+
+.mt-90 {
+    margin-top: 90px;
+}
+
+.mb-150 {
+    margin-bottom: 150px;
+}
+
+.text-small {
+    text-align: left;
+    font-size: 12px !important;
+}
+
+.text-button {
+    font-weight: 900 !important;
+}
+
+.img-voucher {
+    width: 130px;
+    height: 130px;
+    background-position: center;
+    background-size: cover;
+}
+
+.container-wheel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    background-image: url("https://cdn.zentea.vn/filedata/zen-eorder/secret-in-zen/bg-wheel.jpg");
+    pointer-events: none !important;
+}
+
+.lucky-wheel {
+    width: 100%;
+    height: 500px;
+    flex: 1;
+}
+
+.bg-secret-info {
+    background-image: url("https://cdn.zentea.vn/filedata/zen-eorder/secret-in-zen/bg-secret-in-zen.jpg?v=202410280951");
+    height: 100vh;
+    width: 100vw;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+}
+
+.position-info {
+    position: absolute;
+    bottom: 10px;
+}

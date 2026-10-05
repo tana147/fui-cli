@@ -1,0 +1,178 @@
+{
+  "data": [
+    {
+      "formInfo": {},
+      "dsFields": [],
+      "selectedField": null,
+      "isShowDialog": false,
+      "formID": "formID",
+      "pageTitle": null,
+      "isAddNew": false
+    },
+    {
+      "getFormInfo": {
+        "API": "/HDKH_Form_GetByID",
+        "IN": {
+          "formID": "formID"
+        },
+        "OUT": "formInfo",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.pageTitle = `Thiết kế Form: ${vueData.formInfo[0].FormTitle ?? ''}`"
+          }
+        ]
+      }
+    },
+    {
+      "getDSFields": {
+        "API": "/HDKH_Field_GetListByForm",
+        "IN": {
+          "formID": "formID"
+        },
+        "OUT": "dsFields"
+      }
+    },
+    {
+      "CALL": "getFormInfo"
+    },
+    {
+      "CALL": "getDSFields"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "d-flex justify-space-between align-center mb-4"
+              },
+              "innerHTML": [
+                {
+                  "el": "h2",
+                  "attr": {
+                    "class": "text-primary font-weight-bold"
+                  },
+                  "innerHTML": "{{pageTitle}}"
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "d-flex ga-2"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Quản lý Quy tắc",
+                        "icon-text": "mdi-cog-outline",
+                        "color": "primary",
+                        ":action": [
+                          {
+                            "EXE": "moveToRuleDefinition()"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Thêm mới Trường",
+                        "icon-text": "mdi-plus-circle-outline",
+                        "color": "primary",
+                        ":action": [
+                          {
+                            "isShowDialog": true,
+                            "isAddNew": true
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                ":headers": [
+                  {
+                    "title": "Tên hiển thị (Label)",
+                    "key": "FieldLabel"
+                  },
+                  {
+                    "title": "Tên biến (Name)",
+                    "key": "FieldName"
+                  },
+                  {
+                    "title": "Loại",
+                    "key": "FieldType",
+                    "width": "120px"
+                  },
+                  {
+                    "title": "Nhóm",
+                    "key": "FieldGroup"
+                  },
+                  {
+                    "title": "Thao tác",
+                    "key": "actions",
+                    "width": "150px",
+                    "align": "center",
+                    "el": "div",
+                    "innerHTML": [
+                      {
+                        "el": "v-btn",
+                        "attr": {
+                          "icon": "mdi-trash-can-outline",
+                          "size": "small",
+                          "variant": "text",
+                          "color": "error",
+                          "title": "Xoá",
+                          "v-on:click": "vueData.deleteField(item)"
+                        }
+                      },
+                      {
+                        "el": "v-btn",
+                        "attr": {
+                          "icon": "mdi-square-edit-outline",
+                          "size": "small",
+                          "variant": "text",
+                          "color": "success",
+                          "title": "Chỉnh sửa",
+                          "v-on:click": "() => { vueData.selectedField = item; vueData.isShowDialog = true; vueData.isAddNew = false}"
+                        }
+                      }
+                    ]
+                  }
+                ],
+                ":items": "dsFields"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-form-quanly-field",
+              "attr": {
+                "v-model": "isShowDialog"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

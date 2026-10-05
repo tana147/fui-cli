@@ -1,0 +1,30 @@
+[
+  {
+    "comID": 3777,
+    "comName": "uc-category-list"
+  },
+  {
+    "comID": 5149,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 5151,
+    "comName": "uc-menu"
+  },
+  {
+    "comID": 5150,
+    "comName": "uc-menu-pos"
+  },
+  {
+    "comID": 5313,
+    "comName": "uc-modal-background"
+  },
+  {
+    "comID": 5170,
+    "comName": "uc-modal-product-list"
+  },
+  {
+    "comID": 5315,
+    "comName": "uc-modal-store"
+  }
+]

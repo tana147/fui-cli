@@ -1,0 +1,90 @@
+.v-input--selection-controls{
+    margin-top: 5px;
+}
+.updateCustom{
+    height: 15px;
+    font-size: 15px;
+    width: 15px;
+}
+
+.v-application .text-h6{
+    font-size: 1.1rem !important;
+}
+
+.customSignCol{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5%;
+}
+
+.txtSize{
+    font-size: large;
+    /* margin-top: 1%; */
+    color: black;
+}
+
+.statusSelect {
+    width: 215px;
+}
+
+/* ==========================================================================
+   CLASS FROZEN COLUMNS (CỘT ĐÓNG BĂNG KHI CUỘN) CHO V-DATA-TABLE
+   Hướng dẫn sử dụng:
+   1. Thêm class "table-frozen-cols" vào thẻ <v-data-table>
+   2. Các cột được đóng băng sẽ tự động được ghim ở bên trái khi scroll ngang
+   3. Cần thiết lập width cố định cho các cột đóng băng để hiển thị chính xác
+   ========================================================================== */
+.table-frozen-cols .v-data-table__wrapper {
+    overflow-x: auto;
+}
+
+/* ==========================================================================
+   CLASS FROZEN COLUMNS (CỘT ĐÓNG BĂNG KHI CUỘN) CHO V-DATA-TABLE
+   Hướng dẫn sử dụng:
+   1. Thêm class "table-frozen-cols" vào thẻ <v-data-table>
+   2. Các cột được đóng băng sẽ tự động được ghim ở bên trái khi scroll ngang
+   3. Cần thiết lập width cố định cho các cột đóng băng để hiển thị chính xác
+   ========================================================================== */
+.table-frozen-cols .v-data-table__wrapper {
+    overflow-x: auto;
+}
+
+/* Cột 1 */
+.table-frozen-cols th:nth-child(1),
+.table-frozen-cols td:nth-child(1) {
+    position: sticky !important;
+    left: 0;
+    z-index: 3;
+    background-color: #ffffff;
+    min-width: 60px;
+    /* Đặt width cố định để cột 2 biết vị trí left */
+    max-width: 60px;
+}
+
+/* Cột 2 */
+.table-frozen-cols th:nth-child(2),
+.table-frozen-cols td:nth-child(2) {
+    position: sticky !important;
+    left: 60px;
+    /* Bằng width của cột 1 */
+    z-index: 3;
+    background-color: #ffffff;
+    min-width: 50px;
+    /* Đặt width cố định để cột 3 biết vị trí left */
+    max-width: 50px;
+    /* Đổ bóng để tạo cảm giác phân cách với các cột bị cuộn ở dưới */
+    box-shadow: 4px 0 6px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Đảm bảo z-index của header lớn hơn cell data để không bị đè khi cuộn dọc */
+.table-frozen-cols th:nth-child(1),
+.table-frozen-cols th:nth-child(2) {
+    z-index: 4 !important;
+}
+
+/* Xử lý background màu xám khi hover dòng trong Vuetify (tránh mất màu nền của cột đóng băng) */
+.theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper)>td:nth-child(1),
+.theme--light.v-data-table>.v-data-table__wrapper>table>tbody>tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper)>td:nth-child(2) {
+    background-color: #eeeeee !important;
+}

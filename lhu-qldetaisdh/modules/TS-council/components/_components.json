@@ -1,0 +1,34 @@
+[
+  {
+    "comID": 11434,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 12220,
+    "comName": "uc-main-view"
+  },
+  {
+    "comID": 12223,
+    "comName": "uc-modal-add-council"
+  },
+  {
+    "comID": 12224,
+    "comName": "uc-modal-give-sqd"
+  },
+  {
+    "comID": 12225,
+    "comName": "uc-modal-import-excel"
+  },
+  {
+    "comID": 12226,
+    "comName": "uc-modal-input-score"
+  },
+  {
+    "comID": 12222,
+    "comName": "uc-modal-update-council"
+  },
+  {
+    "comID": 12221,
+    "comName": "uc-table-council"
+  }
+]

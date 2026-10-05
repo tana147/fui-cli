@@ -1,0 +1,216 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "DialogSettingOpen": false,
+      "DanhGia_LoaiID": 0,
+      "DSDanhGia_Filter": [],
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')",
+      "DSChiTiet": []
+    },
+    {
+      "getDanhGia": {
+        "API": "/eorder/DanhGia_Select",
+        "IN": {
+          "TuNgay": "TuNgay",
+          "DenNgay": "DenNgay",
+          "CuaHangID": "CuaHangID"
+        },
+        "OUT": "DSDanhGia",
+        "CALLBACK": [
+          {
+            "EXE": "mapDataDiemDanhGia()"
+          }
+        ]
+      }
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        },
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "CALL": "getDanhGia"
+    }
+  ],
+  "watch": {
+    "DialogSettingOpen": {
+      "IF": "DialogSettingOpen",
+      "THEN": [
+        {
+          "CALL": "getDanhGia"
+        }
+      ]
+    },
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);",
+        "CALL": "getBaoCao"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "TuNgay",
+                "label": "Từ ngày",
+                "date-add": 0
+              },
+              "w": 3
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "DenNgay",
+                "label": "Đến ngày",
+                "date-add": 0
+              },
+              "w": 3
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getDanhGia"
+                }
+              },
+              "w": 3
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Danh sách đánh giá",
+                ":excel": true,
+                ":items": "DSDanhGia_Filter",
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Mã hoá đơn",
+                    "el": "t-button",
+                    "value": "detail-button",
+                    "attr": {
+                      "color": "green",
+                      ":label": "item.MaHoaDon",
+                      ":action": [
+                        {
+                          "DialogSettingOpen": true,
+                          "MaHoaDon": "item.MaHoaDon",
+                          "DSChiTiet": "vueData.DSDanhGia[1].filter(ct => ct.DanhGiaID === item.DanhGiaID)"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "text": "Tên cửa hàng",
+                    "value": "TenCuaHang"
+                  },
+                  {
+                    "text": "Thời gian đánh giá",
+                    "value": "ThoiGianDanhGia"
+                  },
+                  {
+                    "text": "Điểm đánh giá",
+                    "value": "DiemDanhGia",
+                    "el": "v-chip",
+                    "attr": {
+                      "v-for": "diem in item.DiemDanhGia",
+                      "color": "success",
+                      "small": "true",
+                      "class": "ma-1"
+                    },
+                    "innerHTML": "{{diem.TenLoaiDanhGia}}: {{diem.DiemDanhGia}}"
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "f-dialog",
+              "attr": {
+                "v-model": "DialogSettingOpen",
+                ":controls": [
+                  {
+                    "el": "f-table",
+                    "w": 12,
+                    "attr": {
+                      ":label": "`Chi tiết đánh giá hoá đơn <span class='red--text'>${vueData.MaHoaDon ?? ''}</span>`",
+                      ":excel": true,
+                      ":items": "vueData.DSChiTiet",
+                      ":headers": [
+                        {
+                          "text": "Tên loại đánh giá",
+                          "value": "TenLoaiDanhGia"
+                        },
+                        {
+                          "text": "Điểm đánh giá",
+                          "align": "center",
+                          "value": "DiemDanhGia"
+                        },
+                        {
+                          "text": "Nội dung đánh giá",
+                          "align": "right",
+                          "value": "NoiDung"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                ":button": [
+                  {
+                    "label": "Đóng",
+                    "action": [
+                      {
+                        "DialogSettingOpen": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

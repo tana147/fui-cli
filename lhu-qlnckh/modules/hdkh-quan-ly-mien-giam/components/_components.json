@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 9944,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 9946,
+    "comName": "uc-main-view"
+  },
+  {
+    "comID": 9945,
+    "comName": "uc-modal-mien-giam"
+  },
+  {
+    "comID": 9963,
+    "comName": "uc-modal-nhan-vien-add"
+  },
+  {
+    "comID": 9964,
+    "comName": "uc-modal-nhan-vien-edit"
+  }
+]

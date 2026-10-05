@@ -1,0 +1,38 @@
+.v-main__wrap {
+    background-color: #b7ebb970 !important;
+}
+
+
+.nav-header {
+    font-size: 40px;
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px 15px 11px 15px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.container-box {
+    height: 100vh;
+    padding: 0;
+}
+
+.item-bill {
+    padding: 0px 10px;
+    font-size: 50px;
+    font-weight: 1000;
+    text-align: center;
+    min-width: 80px;
+    margin: 5px;
+    background-color: #fff;
+    color: #4caf50;
+    border: #4caf50 solid 1px;
+    border-radius: 10px;
+}
+
+.container {
+    padding: 0 !important;
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "comID": 8539,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 6722,
+    "comName": "uc-modal-add"
+  },
+  {
+    "comID": 8290,
+    "comName": "uc-modal-edit"
+  },
+  {
+    "comID": 6852,
+    "comName": "uc-top-bar"
+  },
+  {
+    "comID": 8295,
+    "comName": "uc-update-chuyen-doi-don-vi"
+  },
+  {
+    "comID": 8296,
+    "comName": "uc-update-dia-diem-ap-dung"
+  },
+  {
+    "comID": 8293,
+    "comName": "uc-update-info"
+  },
+  {
+    "comID": 8294,
+    "comName": "uc-update-ton-toi-thieu"
+  }
+]

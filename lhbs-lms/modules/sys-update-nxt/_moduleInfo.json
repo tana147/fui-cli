@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/sys-update-nxt",
+  "url": "//lms.lhbs.vn/sys-update-nxt",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "sys-update-nxt",
+  "ModuleName": "Cập nhật tình trạng nhận xét tháng",
+  "UpdateTime": "2025-09-25 12:15:01",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2025-09-25",
+  "LoadCount": 16,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

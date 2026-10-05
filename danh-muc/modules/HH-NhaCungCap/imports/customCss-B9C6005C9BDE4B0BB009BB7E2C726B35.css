@@ -1,0 +1,25 @@
+/* Styles moved to /danh-muc/imports/utility.css.css */
+.chip {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 16px;
+  font-weight: 500;
+  color: white;
+  line-height: 1;
+}
+
+/* primary */
+.chip-primary {
+  background-color: #1976d2; /* giống Vuetify primary */
+}
+
+/* warning */
+.chip-warning {
+  background-color: #fb8c00; /* cam */
+}
+
+/* default */
+.chip-grey {
+  background-color: #9e9e9e;
+}

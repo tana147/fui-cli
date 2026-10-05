@@ -1,0 +1,180 @@
+{
+  "data": [
+    {
+      "MenuBookID": "MenuBookID",
+      "CuaHangID": "CuaHangID",
+      "DanhSachMenu": [],
+      "DanhSachMon": [],
+      "DanhSachMon_API": [],
+      "DanhSachMenuBook": [],
+      "DanhSachCuaHang": [],
+      "storeMapping": [
+        {
+          "MenuBookID": 108,
+          "CuaHangID": 30,
+          "name": "ZEN-GOT-PIZZA-Vo-Thi-Sau"
+        },
+        {
+          "MenuBookID": 107,
+          "CuaHangID": 32,
+          "name": "ZEN-FOOD-COURT"
+        },
+        {
+          "MenuBookID": 106,
+          "CuaHangID": 38,
+          "name": "ZEN-TEA-FOOD-COURT"
+        },
+        {
+          "MenuBookID": 106,
+          "CuaHangID": 20,
+          "name": "ZEN-TEA-Bien-Hung"
+        },
+        {
+          "MenuBookID": 106,
+          "CuaHangID": 21,
+          "name": "ZEN-TEA-Ngo-Quyen"
+        },
+        {
+          "MenuBookID": 106,
+          "CuaHangID": 22,
+          "name": "ZEN-TEA-Quang-Truong"
+        },
+        {
+          "MenuBookID": 106,
+          "CuaHangID": 23,
+          "name": "ZEN-TEA-Ho-Nai"
+        },
+        {
+          "MenuBookID": 106,
+          "CuaHangID": 24,
+          "name": "ZEN-TEA-Trang-Bom"
+        },
+        {
+          "MenuBookID": 106,
+          "CuaHangID": 25,
+          "name": "ZEN-TEA-Long-Thanh"
+        },
+        {
+          "MenuBookID": 106,
+          "CuaHangID": 26,
+          "name": "ZEN-TEA-Trang-Dai"
+        },
+        {
+          "MenuBookID": 106,
+          "CuaHangID": 27,
+          "name": "ZEN-TEA-Long-Khanh"
+        },
+        {
+          "MenuBookID": 106,
+          "CuaHangID": 28,
+          "name": "ZEN-TEA-Thich-Quang-Duc"
+        },
+        {
+          "MenuBookID": 106,
+          "CuaHangID": 35,
+          "name": "ZEN-TEA-Vo-Thi-Sau"
+        },
+        {
+          "MenuBookID": 106,
+          "CuaHangID": 41,
+          "name": "ZEN-TEA-3-2-Trang-Bom"
+        },
+        {
+          "MenuBookID": 106,
+          "CuaHangID": 42,
+          "name": "ZEN-TEA-Gia-Kiem"
+        },
+        {
+          "MenuBookID": 106,
+          "CuaHangID": 43,
+          "name": "ZEN-TEA-136-Nguyen-Thai-Hoc"
+        },
+        {
+          "MenuBookID": 105,
+          "CuaHangID": 36,
+          "name": "ZEN-HONGKONG-DIMSUM-Vo-Thi-Sau-Buoi-Toi"
+        },
+        {
+          "MenuBookID": 102,
+          "CuaHangID": 36,
+          "name": "ZEN-HONGKONG-DIMSUM-Vo-Thi-Sau-Buoi-Sang"
+        },
+        {
+          "MenuBookID": 88,
+          "CuaHangID": 36,
+          "name": "ZEN-Vo-Thi-Sau-Party-Decoration"
+        }
+      ]
+    },
+    {
+      "EXE": "initPage()"
+    },
+    {
+      "api_Menu_GET": {
+        "API": "/eorder/auth/MenuBook_Select_ById",
+        "IN": {
+          "MenuBookID": "MenuBookID"
+        },
+        "OUT": "DanhSachMenu"
+      },
+      "api_Mon_GET": {
+        "API": "/eorder/auth/SanPham_Select_ByCuaHangId",
+        "IN": {
+          "CuaHangID": "CuaHangID ?? 0"
+        },
+        "OUT": "DanhSachMon_API",
+        "CALLBACK": {
+          "DanhSachMon": "DanhSachMon_API[1]"
+        }
+      },
+      "api_MenuBook_GET": {
+        "API": "/eorder/auth/MenuBook_Select",
+        "OUT": "DanhSachMenuBook"
+      },
+      "api_CuaHang_GET": {
+        "API": "/eorder/auth/CuaHang_Select",
+        "OUT": "DanhSachCuaHang"
+      }
+    },
+    {
+      "CALL": "api_Menu_GET"
+    },
+    {
+      "CALL": "api_MenuBook_GET"
+    },
+    {
+      "CALL": "api_Mon_GET"
+    },
+    {
+      "CALL": "api_CuaHang_GET"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-e-menu-new",
+              "attr": {
+                ":dsmenu": "vueData.DanhSachMenu",
+                ":dsmon": "vueData.DanhSachMon",
+                ":dsmenubook": "vueData.DanhSachMenuBook",
+                ":dscuahang": "vueData.DanhSachCuaHang"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "login": false,
+    "userInfo": "",
+    "menuLeft": false
+  }
+}

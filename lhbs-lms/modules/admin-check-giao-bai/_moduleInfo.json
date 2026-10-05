@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/admin-check-giao-bai",
+  "url": "//lms.lhbs.vn/admin-check-giao-bai",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "admin-check-giao-bai",
+  "ModuleName": "Kiểm tra số liệu giao bài",
+  "UpdateTime": "2026-06-02 17:31:06",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-08-18",
+  "LoadCount": 162,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

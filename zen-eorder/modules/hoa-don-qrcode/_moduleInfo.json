@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/hoa-don-qrcode",
+  "url": "/zen-eorder/hoa-don-qrcode",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "hoa-don-qrcode",
+  "ModuleName": "Hoá Đơn / Thông Tin QR Code Chuyển Khoản",
+  "UpdateTime": "2026-03-29 13:56:26",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 12660,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

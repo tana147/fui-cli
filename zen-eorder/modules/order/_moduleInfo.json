@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/order",
+  "url": "/zen-eorder/order",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "order",
+  "ModuleName": "Order QR (Khách)",
+  "UpdateTime": "2026-01-17 17:02:14",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-08-21",
+  "LoadCount": 1041620,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

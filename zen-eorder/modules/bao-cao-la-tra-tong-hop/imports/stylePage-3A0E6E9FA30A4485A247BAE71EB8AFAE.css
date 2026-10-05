@@ -1,0 +1,23 @@
+.isVisible{
+    display: none;
+}
+
+.freezy-header thead tr th:first-child{
+    position: sticky;
+    left: 0;
+    z-index: 7 !important;
+    top:0;
+}
+
+.freezy-column tbody tr td:first-child {
+    position: sticky;
+    left: 0;
+    top: 0;
+    z-index: 6 !important;
+    background-color: #fff;
+}
+
+.highlight-total{
+    color: #4caf50;
+    font-weight: 500;
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "comID": 3444,
+    "comName": "uc-close"
+  },
+  {
+    "comID": 3022,
+    "comName": "uc-lucky-wheel"
+  },
+  {
+    "comID": 3023,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 3024,
+    "comName": "uc-modal-banner"
+  }
+]

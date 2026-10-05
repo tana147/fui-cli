@@ -1,0 +1,42 @@
+{
+  "data": [
+    {
+      "DSCauHinh": [],
+      "DSCoKhong": [
+        {
+          "value": 0,
+          "text": "Không"
+        },
+        {
+          "value": 1,
+          "text": "Có"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CauHinh_Select",
+      "OUT": "DSCauHinh"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md pa-5",
+      "rows": [
+        {
+          "prop": "justify-center",
+          "cols": [
+            {
+              "el": "uc-config-company",
+              "w": 6,
+              "attr": {
+                "v-if": "vueData.DSCauHinh.length > 0"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

@@ -1,0 +1,44 @@
+.v-dialog--fullscreen .v-overlay__content {
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+/* Tối ưu header f-window (openWindow): nút đóng X luôn nằm sát góc phải cho tiện thao tác mobile (tránh ifw__toolbar) */
+.v-overlay:not(:has(.ifw__toolbar)) .v-toolbar__content,
+.v-dialog:not(:has(.ifw__toolbar)) .v-toolbar__content,
+.v-card > .v-toolbar:not(.ifw__toolbar) > .v-toolbar__content,
+.v-toolbar:not(.ifw__toolbar) > .v-toolbar__content {
+    position: relative !important;
+    display: flex !important;
+    width: 100% !important;
+}
+
+.v-overlay:not(:has(.ifw__toolbar)) .v-toolbar__content > .v-toolbar-title,
+.v-dialog:not(:has(.ifw__toolbar)) .v-toolbar__content > .v-toolbar-title,
+.v-card > .v-toolbar:not(.ifw__toolbar) .v-toolbar-title,
+.v-toolbar:not(.ifw__toolbar) .v-toolbar-title {
+    flex: 1 1 auto !important;
+    max-width: calc(100% - 56px) !important;
+}
+
+.v-overlay:not(:has(.ifw__toolbar)) .v-toolbar__content > .v-btn:last-child,
+.v-dialog:not(:has(.ifw__toolbar)) .v-toolbar__content > .v-btn:last-child,
+.v-card > .v-toolbar:not(.ifw__toolbar) .v-btn:last-child,
+.v-toolbar:not(.ifw__toolbar) > .v-toolbar__content > .v-btn:last-child,
+.v-toolbar:not(.ifw__toolbar) .v-toolbar-title + .v-btn,
+.v-toolbar:not(.ifw__toolbar) .v-toolbar-title ~ .v-btn:last-child,
+.v-toolbar:not(.ifw__toolbar) .v-btn.ml-4:last-child {
+    position: absolute !important;
+    right: 8px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin-left: auto !important;
+}
+
+.v-toolbar:not(.ifw__toolbar) .v-btn:has(.mdi-close) {
+    position: absolute !important;
+    right: 8px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin-left: auto !important;
+}

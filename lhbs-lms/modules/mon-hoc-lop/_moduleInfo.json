@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/mon-hoc-lop",
+  "url": "//lms.lhbs.vn/mon-hoc-lop",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "mon-hoc-lop",
+  "ModuleName": "Môn học lớp",
+  "UpdateTime": "2025-04-14 15:41:56",
+  "UpdateUser": "DEV000050",
+  "LastLoad": "2025-09-17",
+  "LoadCount": 21,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

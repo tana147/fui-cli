@@ -1,0 +1,48 @@
+{
+  "data": [
+    {
+      "CuaHangID": "chid",
+      "webSocket_Hub_Waiting": "`waiting_{{CuaHangID}}",
+      "webSocket": "{[webSocket_Hub_Waiting]: null }"
+    },
+    {
+      "getHoaDonCho": {
+        "API": "/eordertest/HoaDon_Select_ManHinhCho",
+        "IN": {
+          "CuaHangID": "CuaHangID"
+        },
+        "OUT": "DSHoaDon"
+      }
+    },
+    {
+      "CALL": "getHoaDonCho"
+    }
+  ],
+  "watch": {
+    "webSocket.{{webSocket_Hub_Waiting}}": {
+      "CALL": "getHoaDonCho"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": {},
+          "cols": [
+            {
+              "el": "uc-waiting",
+              "attr": {
+                ":ds_hoadon": "DSHoaDon"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false
+  }
+}

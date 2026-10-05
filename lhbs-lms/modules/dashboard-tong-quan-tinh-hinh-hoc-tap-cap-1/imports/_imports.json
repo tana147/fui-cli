@@ -1,0 +1,19 @@
+[
+  {
+    "name": "pageStyle",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "1ECB99BC31AA4647A27E617A3F24A2D2",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/pageStyle-1ECB99BC31AA4647A27E617A3F24A2D2.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/apexcharts",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "965D078162ED495B872CDEDEF2ADFD70",
+    "scope": "module",
+    "sort": 50
+  }
+]

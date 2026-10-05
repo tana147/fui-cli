@@ -1,0 +1,34 @@
+[
+  {
+    "comID": 4482,
+    "comName": "uc-latex-edit"
+  },
+  {
+    "comID": 4481,
+    "comName": "uc-lesson-builder"
+  },
+  {
+    "comID": 4484,
+    "comName": "uc-lesson-canvas"
+  },
+  {
+    "comID": 4483,
+    "comName": "uc-lesson-component-library"
+  },
+  {
+    "comID": 4485,
+    "comName": "uc-lesson-properties"
+  },
+  {
+    "comID": 4486,
+    "comName": "uc-lesson-viewer"
+  },
+  {
+    "comID": 11652,
+    "comName": "uc-media-player"
+  },
+  {
+    "comID": 11651,
+    "comName": "uc-slide-viewer-v3"
+  }
+]

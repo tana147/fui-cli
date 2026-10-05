@@ -1,0 +1,393 @@
+{
+  "data": [
+    {
+      "webSocket": "{}",
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "DSCuaHangXuat": [],
+      "DSNhanVien": [],
+      "DSNhanVien_Tao": [],
+      "DSHoaDonDaTiepNhan_Res": [],
+      "DSHoaDonDaTiepNhan_ResFilter": [],
+      "DSHoaDonDaTiepNhan": [],
+      "DSHoaDon_Res": [],
+      "DSHoaDon": [],
+      "CTHoaDon": [],
+      "DSHoaDon_Table": [],
+      "DSChiTietHoaDon": [],
+      "IsShowDialogDetail": false,
+      "IsShowDialogBankDetail": false,
+      "CT_KetCa": null,
+      "CT_KetCa_Insert": null,
+      "CuaHangID": 0,
+      "isShowModalMaLoi": false,
+      "MaLoiObject": {},
+      "eInvoiceRefresh": false,
+      "isShowModalDetailInvoice": false,
+      "isShowModalDetailInvoiceReplace": false,
+      "detailInvoice": {},
+      "isShowModalPrintInvoice": false,
+      "dataPDF": {},
+      "fileUpload": {
+        "Files": []
+      },
+      "fileEX": {
+        "max_file_size": "100mb",
+        "mime_types": [
+          {
+            "title": "All files",
+            "extensions": "jpg,png,docx,pdf"
+          }
+        ]
+      },
+      "CTBank": {}
+    },
+    {
+      "DSTrangThai": [
+        {
+          "value": 1,
+          "text": "Đã gửi Bếp-Bar"
+        },
+        {
+          "value": 2,
+          "text": "Đã trả món"
+        },
+        {
+          "value": 3,
+          "text": "Đã đổi món"
+        },
+        {
+          "value": 4,
+          "text": "Chờ xử lý"
+        },
+        {
+          "value": 5,
+          "text": "Đang chế biến"
+        },
+        {
+          "value": 6,
+          "text": "Đã hủy"
+        },
+        {
+          "value": 7,
+          "text": "Bếp xác nhận hủy"
+        }
+      ],
+      "OptionsCancelOrder": [
+        {
+          "value": 1001,
+          "text": "Sản phẩm không còn"
+        },
+        {
+          "value": 1002,
+          "text": "Quá tải đơn hàng"
+        },
+        {
+          "value": 1003,
+          "text": "Cửa hàng đã đóng cửa"
+        },
+        {
+          "value": 1004,
+          "text": "Cửa hàng sắp đóng cửa"
+        }
+      ],
+      "cancelCodeGRAB": null
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHangXuat",
+      "CALLBACK": [
+        {
+          "EXE": "vueData.DSCuaHangXuat.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/NhanVien_Select_Dropdown",
+      "OUT": "DSNhanVien",
+      "CALLBACK": [
+        {
+          "DSNhanVien_Tao": "vueData.DSNhanVien"
+        }
+      ]
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "webSocket_Hub_Order": "`order_{{CuaHangID}}"
+      },
+      {
+        "FUN": "webSocketJoinGroup",
+        "IN": {
+          "{{webSocket_Hub_Order}}": null
+        }
+      },
+      {
+        "FUN": "createWatch",
+        "IN": {
+          "'webSocket.{{webSocket_Hub_Order}}'": {
+            "EXE": "getOrder()"
+          }
+        }
+      },
+      {
+        "EXE": "getOrder()"
+      },
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      },
+      {
+        "LoaiPhanHieuID": "DSCuaHang.find((item) => item.CuaHangID === vueData.CuaHangID).LoaiPhanHieuID",
+        "DSHoaDonDaTiepNhan_Res": [],
+        "DSHoaDonDaTiepNhan_ResFilter": [],
+        "DSHoaDonDaTiepNhan": [],
+        "DSHoaDon_Res": [],
+        "DSHoaDon": [],
+        "CTHoaDon": [],
+        "DSHoaDon_Table": [],
+        "DSChiTietHoaDon": [],
+        "IsShowDialogDetail": false,
+        "webSocket_Hub_Order": "`order_{{vueData.CuaHangID}}"
+      }
+    ],
+    "IsShowDialogDetail": {
+      "IF": "IsShowDialogDetail === false",
+      "THEN": {
+        "CTHoaDon": [],
+        "DSChiTietHoaDon": []
+      }
+    },
+    "LauID": {
+      "IF": "LauID > 0",
+      "THEN": {
+        "CALL": "getKhuSelectByLauId"
+      }
+    },
+    "KhuID": {
+      "IF": "KhuID > 0",
+      "THEN": {
+        "CALL": "getBan"
+      }
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            },
+            {
+              "el": "f-button",
+              "w": 2,
+              "attr": {
+                "icon-text": "mdi-cash-lock",
+                "color": "success",
+                "label": "Thực hiện kết ca",
+                ":text": false,
+                ":action": {
+                  "EXE": "window.location.href = '/ket-ca?chid=' + vueData.CuaHangID"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "prop": "justify-left row",
+          "cols": [
+            {
+              "el": "v-tabs",
+              "W": 12,
+              "attr": {
+                "v-model": "TabProduct",
+                "color": "white",
+                "background-color": "green"
+              },
+              "innerHTML": [
+                {
+                  "el": "span",
+                  "innerHTML": "<v-icon color='white'>mdi-home</v-icon>",
+                  "attr": {
+                    "style": "align-self: center; cursor: pointer; padding: 0 20px;",
+                    "v-on:click": "redirect('/')"
+                  }
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_DaTiepNhan"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Đang tiếp nhận"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_DonHang"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Đơn hàng"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_HoaDonDienTu"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Hóa đơn điện tử"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_HoaDonThayThe"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Hóa đơn thay thế"
+                    }
+                  ]
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "style": "position:absolute; top:-2px; right:6px;",
+                    "v-if": "vueData.TabProduct === 0"
+                  },
+                  "innerHTML": "<uc-input-search v-model='vueData.DSHoaDonDaTiepNhan_Res' />"
+                }
+              ]
+            },
+            {
+              "el": "v-tabs-items",
+              "W": 12,
+              "attr": {
+                "v-model": "TabProduct"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_DaTiepNhan"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-tab-invoice",
+                      "attr": {
+                        ":data_order": "vueData.DSHoaDonDaTiepNhan_Res"
+                      },
+                      "w": 12
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_DonHang"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-table-invoice",
+                      "attr": {
+                        ":chid": "CuaHangID"
+                      },
+                      "w": 12
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_HoaDonDienTu"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-table-einvoice",
+                      "attr": {
+                        ":chid": "CuaHangID",
+                        ":einvoice_refresh": "eInvoiceRefresh"
+                      },
+                      "w": 12
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_HoaDonThayThe"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "uc-table-einvoice-replace",
+                      "attr": {
+                        ":chid": "CuaHangID",
+                        ":einvoice_refresh": "eInvoiceRefresh",
+                        ":file_einvoice": "fileUpload"
+                      },
+                      "w": 12
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "uc-modal-invoice",
+              "attr": {
+                ":show_dialog": "vueData.IsShowDialogDetail"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "uc-modal-bank-transfer",
+              "attr": {
+                ":show_dialog": "vueData.IsShowDialogBankDetail"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

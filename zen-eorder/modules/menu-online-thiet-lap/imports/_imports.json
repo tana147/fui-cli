@@ -1,0 +1,43 @@
+[
+  {
+    "name": "custom",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "FE257B912FF44CB89468AB23B0B19889",
+    "scope": "module",
+    "sort": 25,
+    "filePath": "imports/custom-FE257B912FF44CB89468AB23B0B19889.css"
+  },
+  {
+    "name": "https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap",
+    "type": ".css",
+    "contentType": "link",
+    "fileID": "3864B34F48B344DFAC32263224E30595",
+    "scope": "module",
+    "sort": 29
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "95FBBA5EE2E743A48E20F29C219FD59F",
+    "scope": "module",
+    "sort": 26
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/vuedraggable@2.24.3/dist/vuedraggable.umd.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "9F68FA5DDBE24FD7A6F20D85FDABAD23",
+    "scope": "module",
+    "sort": 27
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "0D529436AF3E4710B95C05E0820E60AE",
+    "scope": "module",
+    "sort": 28
+  }
+]

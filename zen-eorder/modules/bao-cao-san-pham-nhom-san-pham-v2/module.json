@@ -1,0 +1,246 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "DataSummary": null,
+      "PhanHieuID": 0,
+      "KhuVucID": 0,
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')",
+      "Ngay": "moment().format('YYYY-MM-DD')",
+      "HinhThucThoiGian": 2,
+      "Nam": null,
+      "Thang": null,
+      "TuNam": null,
+      "DenNam": null,
+      "DSHinhThucThoiGian": [
+        {
+          "value": 1,
+          "text": "Theo giờ"
+        },
+        {
+          "value": 2,
+          "text": "Theo ngày"
+        },
+        {
+          "value": 3,
+          "text": "Theo tuần"
+        },
+        {
+          "value": 4,
+          "text": "Theo quý"
+        },
+        {
+          "value": 5,
+          "text": "Theo tháng"
+        },
+        {
+          "value": 6,
+          "text": "Theo năm"
+        }
+      ],
+      "DSThang": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "DSNam": "GetDSNam()",
+      "headers": [
+        {
+          "text": "",
+          "value": "HinhThucThoiGian",
+          "align": "end"
+        },
+        {
+          "text": "Ngày đặt hàng",
+          "value": "NgayDatHang"
+        },
+        {
+          "text": "Nhóm sản phẩm",
+          "value": "TenNhomSanPham"
+        },
+        {
+          "text": "Đơn vị",
+          "value": "DonVi"
+        },
+        {
+          "text": "Số lượng bán",
+          "value": "SoLuongBan"
+        },
+        {
+          "text": "Doanh thu",
+          "value": "DoanhThu",
+          "el": "span",
+          "innerHTML": "{{item.DoanhThu?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Số lượng tặng",
+          "value": "SoLuongTang"
+        },
+        {
+          "text": "Giá trị tặng",
+          "value": "GiaTriTang"
+        },
+        {
+          "text": "Số lượng hủy",
+          "value": "SoLuongHuy"
+        },
+        {
+          "text": "Tiền hủy",
+          "value": "TienHuy",
+          "el": "span",
+          "innerHTML": "{{item.TienHuy?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Số lượng đổi điểm",
+          "value": "SoLuongDoiDiem"
+        },
+        {
+          "text": "Tiền đổi điểm",
+          "value": "TienDoiDiem",
+          "el": "span",
+          "innerHTML": "{{item.TienDoiDiem?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Số lượng trả",
+          "value": "SoLuongTra"
+        },
+        {
+          "text": "Tiền trả",
+          "value": "TienTra",
+          "el": "span",
+          "innerHTML": "{{item.TienTra?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Cửa hàng",
+          "value": "CuaHang",
+          "width": 300
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        },
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/KhuVuc_Select",
+      "OUT": "DSKhuVuc",
+      "CALLBACK": [
+        {
+          "EXE": "DSKhuVuc.unshift({'KhuVucID': 0, 'TenKhuVuc': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/PhanHieu_Select",
+      "OUT": "DSPhanHieu",
+      "CALLBACK": [
+        {
+          "EXE": "DSPhanHieu.unshift({'PhanHieuID': 0, 'TenPhanHieu': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_SanPham_NhomSanPham_v2",
+        "IN": {
+          "CuaHangID": "CuaHangID",
+          "Ngay": "Ngay ?? -1",
+          "TuNgay": "TuNgay ?? -1",
+          "DenNgay": "DenNgay ?? -1",
+          "Nam": "Nam ?? -1",
+          "TuNam": "TuNam ?? -1",
+          "DenNam": "DenNam ?? -1",
+          "Thang": "Thang ?? -1",
+          "HinhThucThoiGian": "HinhThucThoiGian"
+        },
+        "OUT": "DSChiTietHoaDon",
+        "CALLBACK": [
+          {
+            "EXE": "sumFooterTable()"
+          },
+          {
+            "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+          }
+        ]
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);",
+        "CALL": "getBaoCao"
+      }
+    ],
+    "HinhThucThoiGian": [
+      {
+        "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+      },
+      {
+        "EXE": "vueData.DSChiTietHoaDon = []"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-summary",
+              "attr": {
+                ":data": "vueData.DataSummary"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo thống kê nhóm sản phẩm bán",
+                ":items": "DSChiTietHoaDon",
+                ":excel": true,
+                "height": "calc(100vh - 293px)",
+                ":hide-default-footer": false,
+                ":headers": "headers"
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

@@ -1,0 +1,279 @@
+.ts-module-wrapper {
+    height: calc(100vh - 110px);
+    max-height: calc(100vh - 110px);
+    overflow: hidden;
+}
+
+.ts-module-wrapper .v-expansion-panel-content__wrap {
+    padding: 16px 24px 16px;
+}
+
+.ts-module-wrapper .workflow-panels .v-expansion-panel-content__wrap {
+    padding: 16px 20px 16px;
+}
+
+.ts-module-wrapper .v-text-field.v-text-field--enclosed .v-text-field__details {
+    margin-bottom: 4px;
+}
+
+.ts-module-wrapper .v-data-table>.v-data-table__wrapper>table>tbody>tr>td,
+.ts-module-wrapper .v-data-table>.v-data-table__wrapper>table>tfoot>tr>td,
+.ts-module-wrapper .v-data-table>.v-data-table__wrapper>table>thead>tr>td {
+    height: 38px;
+}
+
+/* Student Info Card styling */
+.student-info-card {
+    border: 1px solid #d7e3ea !important;
+    border-radius: 4px !important;
+    overflow: hidden;
+    background: linear-gradient(140deg, #f8fcff 0%, #ffffff 40%, #f7faf6 100%);
+    box-shadow: 0 10px 30px rgba(24, 52, 77, 0.08);
+}
+
+.student-info-panels {
+    border-radius: 4px;
+}
+
+.student-info-panels .v-expansion-panel::before {
+    box-shadow: none !important;
+}
+
+.student-info-panels .v-expansion-panel {
+    background: transparent;
+}
+
+.student-info-collapse-header {
+    border: 1px solid #d7e3ea;
+    border-radius: 4px;
+    background: linear-gradient(90deg,
+            rgba(19, 100, 148, 0.08) 0%,
+            rgba(74, 160, 84, 0.1) 100%);
+}
+
+.student-info-panels .v-expansion-panel-header {
+    min-height: 40px !important;
+    padding: 6px 12px;
+}
+
+.student-info-panels .v-expansion-panel--active>.v-expansion-panel-header {
+    min-height: 40px !important;
+}
+
+.student-info-panels .v-expansion-panel-content__wrap {
+    padding: 8px 0 0;
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.student-info-card__header {
+    padding: 16px 20px 10px;
+    border-bottom: 1px solid #e6edf2;
+    background: linear-gradient(90deg,
+            rgba(19, 100, 148, 0.06) 0%,
+            rgba(74, 160, 84, 0.08) 100%);
+}
+
+.student-info-card__title {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.3;
+    color: #17445e;
+    font-weight: 700;
+}
+
+.student-info-card__subtitle {
+    margin: 4px 0 0;
+    color: #537180;
+    font-size: 13px;
+}
+
+.student-info-text {
+    min-height: 40px;
+    border: 1px solid #dbe7ee !important;
+    border-radius: 4px !important;
+    color: #173b4d !important;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.student-info-text:hover {
+    border-color: #bfd4e0 !important;
+    box-shadow: 0 3px 12px rgba(21, 73, 104, 0.08) !important;
+}
+
+@media (max-width: 600px) {
+    .workflow-panels .v-expansion-panel-content__wrap {
+        padding: 12px 12px 14px;
+    }
+
+    .student-info-panels .v-expansion-panel-header {
+        min-height: 66px;
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .student-info-card__title {
+        font-size: 18px;
+    }
+
+    .student-info-text {
+        min-height: 38px;
+        font-size: 14px;
+    }
+}
+
+/* Workflow Preview Mockup styling */
+.wp-border {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.wp-border-bottom {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.wp-timeline-container {
+    max-height: 600px;
+    overflow-y: auto;
+    border-right: 1px solid #f0f0f0;
+}
+
+.wp-timeline-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.wp-timeline-container::-webkit-scrollbar-thumb {
+    background: #bdbdbd;
+    border-radius: 3px;
+}
+
+.wp-cursor-pointer {
+    cursor: pointer;
+}
+
+/* Main Page Header styling */
+.uc-main-header {
+    border: 1px solid #d7e3ea !important;
+    background-color: #fafbfc;
+}
+
+/* Preview Card */
+.wp-preview-card-detail {
+    min-height: 400px;
+}
+
+.wp-preview-card-title-content {
+    line-height: 1.4;
+}
+
+.wp-preview-card-empty {
+    height: 100%;
+    min-height: 400px;
+    background: #fafafa;
+}
+
+/* Custom utilities and components added for inline-style removal */
+.main-view-card {
+    border: 1px solid #d7e3ea !important;
+    background-color: #fafbfc;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden;
+}
+
+.main-view-inner-card {
+    border: 1px solid #d7e3ea !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden;
+}
+
+.ts-main-view-row {
+    height: 100%;
+    overflow: hidden;
+}
+
+.main-view-title {
+    color: #17445e;
+}
+
+.topic-status-badge {
+    min-height: 34px;
+    padding: 0 12px;
+    background: rgba(46, 125, 50, 0.08);
+    letter-spacing: 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.border-dashed-card {
+    border: 1px dashed #d7e3ea !important;
+    background-color: #fafbfc;
+}
+
+.gap-4 {
+    gap: 4px;
+}
+
+.gap-8 {
+    gap: 8px;
+}
+
+.gap-15 {
+    gap: 15px;
+}
+
+.line-height-1-2 {
+    line-height: 1.2;
+}
+
+.line-height-1-4 {
+    line-height: 1.4;
+}
+
+.line-height-1-5 {
+    line-height: 1.5;
+}
+
+.min-h-40 {
+    min-height: 40px !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.scale-1-1 {
+    transform: scale(1.1);
+}
+
+.w-165 {
+    width: 165px;
+}
+
+.w-12-min-100 {
+    width: 12%;
+    min-width: 100px;
+}
+
+.letter-spacing-0-4 {
+    letter-spacing: 0.4px;
+}
+
+.white-space-nowrap {
+    white-space: nowrap;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e6edf2 !important;
+}
+
+.border-top {
+    border-top: 1px solid #e6edf2 !important;
+}
+
+.min-h-0 {
+    min-height: 0 !important;
+}

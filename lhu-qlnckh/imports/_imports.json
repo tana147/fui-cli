@@ -1,0 +1,28 @@
+[
+  {
+    "name": "style-main",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "F5ECA0BA8BFA48389AC8EA3F3BFA3977",
+    "scope": "project",
+    "sort": 20,
+    "filePath": "imports/style-main-F5ECA0BA8BFA48389AC8EA3F3BFA3977.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/v-mask/dist/v-mask.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "D226B9B918A848668786E933D3157787",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "script-main",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "604AA2A6C0E649F5940A002C11210A2D",
+    "scope": "project",
+    "sort": 20,
+    "filePath": "imports/script-main-604AA2A6C0E649F5940A002C11210A2D.js"
+  }
+]

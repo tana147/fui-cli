@@ -1,0 +1,347 @@
+{
+  "data": [
+    {
+      "DSPhanHieu": [],
+      "DSKhuVuc": [],
+      "PhanHieuID": 0,
+      "KhuVucID": 0,
+      "TinhTrang": null,
+      "DSTinhTrang": [
+        {
+          "value": 1,
+          "text": "Chờ xử lý"
+        },
+        {
+          "value": 2,
+          "text": "Chờ thanh toán"
+        },
+        {
+          "value": 3,
+          "text": "Đã thanh toán"
+        },
+        {
+          "value": 4,
+          "text": "Đã hoàn tất"
+        },
+        {
+          "value": 5,
+          "text": "Đã hủy"
+        },
+        {
+          "value": 6,
+          "text": "Đã thanh toán một phần"
+        },
+        {
+          "value": 7,
+          "text": "Đã trả hàng"
+        },
+        {
+          "value": 8,
+          "text": "Đang đặt trước"
+        },
+        {
+          "value": 9,
+          "text": "Đang tiếp nhận"
+        }
+      ],
+      "Ngay": "moment().format('YYYY-MM-DD')",
+      "HinhThucThoiGian": 2,
+      "Nam": null,
+      "Thang": null,
+      "TuNam": null,
+      "DenNam": null,
+      "DSHinhThucThoiGian": [
+        {
+          "value": 1,
+          "text": "Theo giờ"
+        },
+        {
+          "value": 2,
+          "text": "Theo ngày"
+        },
+        {
+          "value": 3,
+          "text": "Theo tuần"
+        },
+        {
+          "value": 4,
+          "text": "Theo quý"
+        },
+        {
+          "value": 5,
+          "text": "Theo tháng"
+        },
+        {
+          "value": 6,
+          "text": "Theo năm"
+        }
+      ],
+      "DSThang": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "DSNam": "GetDSNam()",
+      "headers": [
+        {
+          "text": "Mã đơn hàng",
+          "value": "MaDonHang"
+        },
+        {
+          "text": "",
+          "value": "HinhThucThoiGian",
+          "align": "end"
+        },
+        {
+          "text": "Ngày đặt hàng",
+          "value": "NgayDatHang"
+        },
+        {
+          "text": "Giờ đặt hàng",
+          "value": "GioDatHang"
+        },
+        {
+          "text": "Mã khách hàng",
+          "value": "MaKhachHang"
+        },
+        {
+          "text": "Tên khách hàng",
+          "value": "TenKhachHang"
+        },
+        {
+          "text": "Tên nhân viên",
+          "value": "TenNhanVien"
+        },
+        {
+          "text": "Tiền hàng",
+          "value": "TienHang",
+          "el": "span",
+          "innerHTML": "{{item.TienHang?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Khuyến mãi",
+          "value": "KhuyenMai"
+        },
+        {
+          "text": "Tiền đổi điểm",
+          "value": "TienDoiDiem",
+          "el": "span",
+          "innerHTML": "{{item.TienDoiDiem?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Cần thanh toán",
+          "value": "TienCanThanhToan",
+          "el": "span",
+          "innerHTML": "{{item.TienCanThanhToan?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Đã thanh toán",
+          "value": "TienDaThanhToan",
+          "el": "span",
+          "innerHTML": "{{item.TienDaThanhToan?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Còn lại",
+          "value": "TienConLai",
+          "el": "span",
+          "innerHTML": "{{item.TienConLai?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Tiền mặt",
+          "value": "KhachTra_TienMat",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_TienMat?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "CK",
+          "value": "KhachTra_CK",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_CK?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "SPF",
+          "value": "KhachTra_SPF",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_SPF?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Grab",
+          "value": "KhachTra_GRAB",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_GRAB?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "XSM",
+          "value": "KhachTra_XSM",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_XSM?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Quẹt thẻ",
+          "value": "KhachTra_QT",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_QT?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "HT1",
+          "value": "KhachTra_HT1",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_HT1?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "HT2",
+          "value": "KhachTra_HT2",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_HT2?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "HT3",
+          "value": "KhachTra_HT3",
+          "el": "span",
+          "innerHTML": "{{item.KhachTra_HT3?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Trạng thái",
+          "value": "TrangThai",
+          "width": 150
+        },
+        {
+          "text": "Ghi chú",
+          "value": "GhiChu",
+          "width": 500
+        },
+        {
+          "text": "Loại đơn hàng",
+          "value": "LoaiDonHang",
+          "width": 200
+        },
+        {
+          "text": "Cửa hàng",
+          "value": "CuaHang",
+          "width": 300
+        },
+        {
+          "text": "Lý do hủy",
+          "value": "GhiChu_Huy",
+          "width": 300
+        }
+      ]
+    },
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')"
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        },
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/KhuVuc_Select",
+      "OUT": "DSKhuVuc",
+      "CALLBACK": [
+        {
+          "EXE": "DSKhuVuc.unshift({'KhuVucID': 0, 'TenKhuVuc': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/PhanHieu_Select",
+      "OUT": "DSPhanHieu",
+      "CALLBACK": [
+        {
+          "EXE": "DSPhanHieu.unshift({'PhanHieuID': 0, 'TenPhanHieu': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_HoaDon_TongQuan_v2",
+        "IN": {
+          "CuaHangID": "CuaHangID",
+          "TrangThai": "vueData.TinhTrang ? vueData.TinhTrang.join(',') : ''",
+          "HinhThucThoiGian": "HinhThucThoiGian",
+          "Ngay": "Ngay ?? -1",
+          "TuNgay": "TuNgay ?? -1",
+          "DenNgay": "DenNgay ?? -1",
+          "Nam": "Nam ?? -1",
+          "TuNam": "TuNam ?? -1",
+          "DenNam": "DenNam ?? -1",
+          "Thang": "Thang ?? -1"
+        },
+        "OUT": "DSChiTietHoaDon",
+        "CALLBACK": [
+          {
+            "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+          }
+        ]
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);",
+        "CALL": "getBaoCao"
+      }
+    ],
+    "HinhThucThoiGian": [
+      {
+        "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+      },
+      {
+        "EXE": "vueData.DSChiTietHoaDon = []"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo tổng quan đơn hàng",
+                ":items": "DSChiTietHoaDon",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": "headers"
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

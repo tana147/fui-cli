@@ -1,0 +1,84 @@
+/* ===== vùng chứa ===== */
+#printArea {
+  width: 90mm;
+}
+
+/* ===== mỗi dòng 2 tem ===== */
+.page {
+  width: 90mm;
+  height: 20mm;
+
+  display: grid;
+  grid-template-columns: 45mm 45mm;
+
+  break-after: page;
+  page-break-after: always;
+  overflow: hidden;
+}
+
+/* ===== mỗi tem ===== */
+.label {
+  width: 45mm;
+  height: 20mm;
+  position: relative;
+}
+
+/* ===== QR ===== */
+.qr-img {
+  width: 16mm;
+  height: 16mm;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+}
+
+/* ===== text ===== */
+.asset-info {
+  position: absolute;
+  left: 32mm;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  font-size: 8px;
+  line-height: 1.1;
+}
+
+.asset-code {
+  font-weight: bold;
+}
+
+/* ===== print ===== */
+@media print {
+
+  @page {
+    size: 90mm 20mm Landscape;
+    margin: 0;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #printArea,
+  #printArea * {
+    visibility: visible;
+  }
+
+  #printArea {
+    transform: rotate(0deg);
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+}

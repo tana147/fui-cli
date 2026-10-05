@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-san-pham-chi-tiet-v2",
+  "url": "/zen-eorder/bao-cao-san-pham-chi-tiet-v2",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-san-pham-chi-tiet-v2",
+  "ModuleName": "Báo Cáo / Sản Phẩm / Thống Kê Sản Phẩm",
+  "UpdateTime": "2026-03-20 16:23:37",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-06-11",
+  "LoadCount": 180,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

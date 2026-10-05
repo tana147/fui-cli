@@ -1,0 +1,63 @@
+{
+  "data": [
+    {
+      "DsGetHocHam": [],
+      "NganhGiangDay": [],
+      "GlobalHeArr": [],
+      "DsHeDaoTao": [],
+      "HeArr": [],
+      "NganhData": null,
+      "RecordGiangVien": {},
+      "GiangVienName": "",
+      "GiangVienHocHam": "",
+      "heKey": "`C",
+      "isUpdDialog": false,
+      "isExcelDialog": false,
+      "isAddTeacherDialog": false
+    },
+    {
+      "loadheDaoTao": {
+        "API": "/hedaotao_get",
+        "OUT": "DsHeDaoTao"
+      }
+    },
+    {
+      "getDsGiangVien": {
+        "API": "/giangvien_get",
+        "OUT": "DsGiangVien",
+        "CALLBACK": {
+          "DsGiangVien": "vueData.DsGiangVien.map((item, index) => {return {...item,stt: index + 1, NganhID: item.NganhID ? item.NganhID.toString() : item.NganhID, HocHamHoTen: item.HocViHocHam + '. ' + item.HoTenGiangVien}})"
+        }
+      }
+    },
+    {
+      "CALL": "loadheDaoTao"
+    },
+    {
+      "CALL": "getDsGiangVien"
+    }
+  ],
+  "watch": {
+    "nganhID": {
+      "CALL": "getNganhByHe"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "teacher-container",
+              "col": {},
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

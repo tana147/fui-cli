@@ -1,0 +1,52 @@
+[
+  {
+    "name": "lesson-viewer",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "3AC13D8B95234C5EB60CC3BB5F9195F3",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/lesson-viewer-3AC13D8B95234C5EB60CC3BB5F9195F3.css"
+  },
+  {
+    "name": "stylePage",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "3752D5478D014AF9909871C3600D2ADF",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/stylePage-3752D5478D014AF9909871C3600D2ADF.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "3BEEE0C0926243919BFC1F7F66AD42EE",
+    "scope": "module",
+    "sort": 49
+  },
+  {
+    "name": "/include/ckeditor5/build/ckeditor.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "9F3ED9D5C157470988926F4D38E50684",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "94C9A351E3C84F17BB8313E78757F905",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/@calvinckho/mic-recorder-to-mp3@2.2.3/dist/index.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "7FBAFEBC2B1948A3BE9C11F9862F6904",
+    "scope": "module",
+    "sort": 51
+  }
+]

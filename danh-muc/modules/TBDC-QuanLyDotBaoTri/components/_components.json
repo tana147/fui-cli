@@ -1,0 +1,26 @@
+[
+  {
+    "comID": 8058,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 8060,
+    "comName": "uc-modal-detail-bao-tri"
+  },
+  {
+    "comID": 8062,
+    "comName": "uc-modal-them-lich-bao-tri"
+  },
+  {
+    "comID": 8059,
+    "comName": "uc-table-bao-tri"
+  },
+  {
+    "comID": 8087,
+    "comName": "uc-temp"
+  },
+  {
+    "comID": 8061,
+    "comName": "uc-top-bar"
+  }
+]

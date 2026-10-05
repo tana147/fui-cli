@@ -1,0 +1,18 @@
+[
+  {
+    "comID": 10260,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 10261,
+    "comName": "uc-main-view"
+  },
+  {
+    "comID": 11364,
+    "comName": "uc-modal-view-old-process"
+  },
+  {
+    "comID": 10262,
+    "comName": "uc-student-info"
+  }
+]

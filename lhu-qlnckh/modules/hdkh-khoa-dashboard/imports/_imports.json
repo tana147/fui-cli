@@ -1,0 +1,43 @@
+[
+  {
+    "name": "style",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "365916E4FD4F4AB1B1D211A5B834A6CF",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/style-365916E4FD4F4AB1B1D211A5B834A6CF.css"
+  },
+  {
+    "name": "/include/pdfmake/pdfmake.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "FE2F1B283D7B4914B913EDAE6DEC9F80",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/pdfmake/print.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "8B84ED50FD864D2D8597393897F7FBE0",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/pdfmake/vfs_fonts.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "9095CBECF65A4CD8BBB67A1944F2BC75",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "C3B662B1C99C45CB9BD5C1767E8FBDB0",
+    "scope": "module",
+    "sort": 50
+  }
+]

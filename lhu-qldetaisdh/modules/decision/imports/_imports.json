@@ -1,0 +1,27 @@
+[
+  {
+    "name": "styles",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "346C479889604405BB5EF564B864C887",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/styles-346C479889604405BB5EF564B864C887.css"
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "B111430017B94F34B8CC95246B417796",
+    "scope": "module",
+    "sort": 51
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "911ED71200B04EAA97C07FBC50739C97",
+    "scope": "module",
+    "sort": 51
+  }
+]

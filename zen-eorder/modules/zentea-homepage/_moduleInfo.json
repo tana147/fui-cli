@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/zentea-homepage",
+  "url": "/zen-eorder/zentea-homepage",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "zentea-homepage",
+  "ModuleName": "ZENTEA - Menu",
+  "UpdateTime": "2026-03-29 13:56:32",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2025-12-01",
+  "LoadCount": 288308,
+  "HTMLOnly": true,
+  "Framework": "V2",
+  "mTitle": ""
+}

@@ -1,0 +1,19 @@
+[
+  {
+    "name": "customCss",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "70785FE398034C5AA1170A94C7CE76C2",
+    "scope": "module",
+    "sort": 51,
+    "filePath": "imports/customCss-70785FE398034C5AA1170A94C7CE76C2.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "130F2A33476647048FAF271DEFB86CAC",
+    "scope": "module",
+    "sort": 52
+  }
+]

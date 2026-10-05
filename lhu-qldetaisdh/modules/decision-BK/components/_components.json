@@ -1,0 +1,38 @@
+[
+  {
+    "comID": 240,
+    "comName": "dialog-add-sqd"
+  },
+  {
+    "comID": 239,
+    "comName": "dialog-give-sqd"
+  },
+  {
+    "comID": 176,
+    "comName": "parent-holder"
+  },
+  {
+    "comID": 187,
+    "comName": "sqd-list"
+  },
+  {
+    "comID": 197,
+    "comName": "student-detail-table"
+  },
+  {
+    "comID": 235,
+    "comName": "student-edit-dialog"
+  },
+  {
+    "comID": 236,
+    "comName": "student-edit-table"
+  },
+  {
+    "comID": 177,
+    "comName": "student-list-add"
+  },
+  {
+    "comID": 178,
+    "comName": "text-comp"
+  }
+]

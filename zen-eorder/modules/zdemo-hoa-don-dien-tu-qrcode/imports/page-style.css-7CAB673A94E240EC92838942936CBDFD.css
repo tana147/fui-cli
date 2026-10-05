@@ -1,0 +1,79 @@
+.container {
+    position: relative;
+    padding: 0;
+    max-width: unset;
+}
+
+.theme--light.v-card {
+    background-image: url("/_cdn/zen-eorder/bg-bill.jpg");
+    background-size: cover;
+    height: 100%;
+}
+
+.theme--light.v-btn--active:before,
+.theme--light.v-btn--active:hover:before {
+    opacity: 0;
+}
+
+body {
+    overflow: hidden !important;
+}
+
+.center-dialog {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+html .v-application .error,
+body .v-application .error,
+.v-application .v-card .error,
+.v-application .v-sheet.v-card .error {
+    background-color: #4caf50 !important;
+}
+
+.card-container {
+    height: auto !important;
+    min-height: 0;
+    background-color: #fbfcee !important;
+}
+
+.sheet-card-container .v-sheet {
+    position: static !important;
+    bottom: auto !important;
+}
+
+.pag-btn {
+    background: #fbfcee !important;
+    /* position: fixed; */
+}
+
+.status-msg {
+    border: 1px solid #4caf50;
+    gap: 15px;
+    border-radius: 7px;
+    padding: 10px 10px 7px 10px;
+    background-color: #4caf500f;
+}
+
+.status-main {
+    border: 1px solid #f5222d;
+    gap: 15px;
+    border-radius: 7px;
+    padding: 10px 10px 7px 10px;
+    background-color: #af4c4c0f;
+}
+
+.bottom-sheet {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.info-bottom {
+    position: absolute;
+    bottom: 70px;
+    width: 100%;
+    border-top: 1px solid;
+    left: 0;
+}

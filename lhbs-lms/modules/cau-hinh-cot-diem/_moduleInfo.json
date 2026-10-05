@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/cau-hinh-cot-diem",
+  "url": "//lms.lhbs.vn/cau-hinh-cot-diem",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "cau-hinh-cot-diem",
+  "ModuleName": "Cấu Hình Cột Điểm",
+  "UpdateTime": "2025-04-14 15:35:17",
+  "UpdateUser": "DEV000050",
+  "LastLoad": "2025-10-15",
+  "LoadCount": 159,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

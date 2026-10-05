@@ -1,0 +1,41 @@
+{
+  "data": [
+    {
+      "NCKH_LoaiHoiDong_Get": {
+        "API": "/NCKH_LoaiHoiDong_Get",
+        "OUT": "DSLoaiHoiDong"
+      }
+    },
+    {
+      "NCKH_Dot_Get": {
+        "API": "/NCKH_Dot_Get",
+        "OUT": "DSDotKhenThuong"
+      }
+    },
+    {
+      "CALL": "NCKH_LoaiHoiDong_Get"
+    },
+    {
+      "CALL": "NCKH_Dot_Get"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page",
+              "attr": {},
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

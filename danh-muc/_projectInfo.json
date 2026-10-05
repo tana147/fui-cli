@@ -1,0 +1,15 @@
+{
+  "id": "danh-muc",
+  "pDomain": "",
+  "ProjectID": "danh-muc",
+  "ProjectName": "Quản lý danh mục | CCDC | Nguyên liệu",
+  "GroupName": "ZEN",
+  "Framework": "V3",
+  "ProjectText": "Quản lý danh mục | CCDC | Nguyên liệu @ danh-muc ",
+  "Router": "welcome",
+  "url": "/fp/module?pid=danh-muc",
+  "UserRight": 8,
+  "UpdateUser": "DEV000007",
+  "UpdateTime": "2026-06-22T15:58:34.62",
+  "fetchedAt": "2026-10-05T07:20:20.787Z"
+}

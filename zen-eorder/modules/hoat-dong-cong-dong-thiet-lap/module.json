@@ -1,0 +1,725 @@
+{
+  "data": [
+    {
+      "AnhSanPham_Url": [],
+      "DSHoatDongCongDong": [],
+      "DSHinhAnhHoatDongCongDong": [],
+      "HoatDongCongDongID": null,
+      "HoatDongCongDong_Obj": {
+        "Nam": null,
+        "Thang": null,
+        "PhanTramQuy": null,
+        "TongTienQuy": null,
+        "TongTienQuy_HeThong": null,
+        "DoanhThu": null,
+        "MoTa": "",
+        "TinhTrang": null
+      },
+      "indexImg": null,
+      "overlay1": false,
+      "titleHinhAnh": "",
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 1,
+          "text": "Tạm khóa"
+        }
+      ],
+      "DSThang": [
+        {
+          "value": 1,
+          "text": "Tháng 1"
+        },
+        {
+          "value": 2,
+          "text": "Tháng 2"
+        },
+        {
+          "value": 3,
+          "text": "Tháng 3"
+        },
+        {
+          "value": 4,
+          "text": "Tháng 4"
+        },
+        {
+          "value": 5,
+          "text": "Tháng 5"
+        },
+        {
+          "value": 6,
+          "text": "Tháng 6"
+        },
+        {
+          "value": 7,
+          "text": "Tháng 7"
+        },
+        {
+          "value": 8,
+          "text": "Tháng 8"
+        },
+        {
+          "value": 9,
+          "text": "Tháng 9"
+        },
+        {
+          "value": 10,
+          "text": "Tháng 10"
+        },
+        {
+          "value": 11,
+          "text": "Tháng 11"
+        },
+        {
+          "value": 12,
+          "text": "Tháng 12"
+        }
+      ],
+      "DSNam": [],
+      "filelist": [],
+      "fileEX": {
+        "max_file_size": "100mb",
+        "mime_types": [
+          {
+            "title": "All files",
+            "extensions": "jpg,png,xlsx"
+          }
+        ]
+      },
+      "dialogTable": false,
+      "label": ""
+    },
+    {
+      "LoadDSHoatDongCongDong": {
+        "API": "/eorder/HoatDongCongDong_Select",
+        "OUT": "DSHoatDongCongDong",
+        "CALLBACK": {
+          "IF": "DSHoatDongCongDong.length > 0",
+          "THEN": {
+            "HoatDongCongDongID": "DSHoatDongCongDong[0].HoatDongCongDongID",
+            "titleHinhAnh": "DSHoatDongCongDong[0].Thang + '/' + DSHoatDongCongDong[0].Nam "
+          }
+        }
+      }
+    },
+    {
+      "LoadDSHinhAnhHoatDongCongDong": {
+        "API": "/eorder/HoatDongCongDongHinhAnh_Select_ById",
+        "IN": {
+          "HoatDongCongDongID": "HoatDongCongDongID"
+        },
+        "OUT": "DSHinhAnhHoatDongCongDong"
+      }
+    },
+    {
+      "CALL": "LoadDSHoatDongCongDong"
+    },
+    {
+      "EXE": "getDSNam(8)"
+    },
+    {
+      "EXE": "init()"
+    }
+  ],
+  "watch": {
+    "HoatDongCongDongID": {
+      "CALL": "LoadDSHinhAnhHoatDongCongDong"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container pt-1 grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "w": 6,
+              "attr": {
+                "label": "Hoạt động cộng đồng",
+                ":items": "DSHoatDongCongDong",
+                ":excel": true,
+                "height": "calc(100vh - 63px)",
+                ":headers": [
+                  {
+                    "text": "Năm",
+                    "value": "Nam",
+                    "align": "center"
+                  },
+                  {
+                    "text": "Tháng",
+                    "value": "Thang",
+                    "align": "center"
+                  },
+                  {
+                    "text": "Phần trăm quỹ",
+                    "value": "PhanTramQuy",
+                    "align": "right",
+                    "el": "span",
+                    "innerHTML": "<span>{{item.PhanTramQuy}} %</span>"
+                  },
+                  {
+                    "text": "Tổng tiền quỹ",
+                    "value": "TongTienQuy",
+                    "el": "span",
+                    "innerHTML": "<span>{{formatPrice(item.TongTienQuy)}} VNĐ</span>",
+                    "align": "right"
+                  },
+                  {
+                    "text": "Quỹ hệ thống",
+                    "value": "TongTienQuy_HeThong",
+                    "el": "span",
+                    "innerHTML": "<span>{{formatPrice(item.TongTienQuy_HeThong)}} VNĐ</span>",
+                    "align": "right"
+                  },
+                  {
+                    "text": "",
+                    "value": "view-button",
+                    "el": "t-button",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Hình ảnh",
+                      ":action": {
+                        "HoatDongCongDongID": "item.HoatDongCongDongID",
+                        "titleHinhAnh": "item.Thang + '/' + item.Nam"
+                      }
+                    },
+                    "align": "center"
+                  },
+                  {
+                    "text": "Khóa",
+                    "align": "center",
+                    "value": "TinhTrang",
+                    "el": "v-icon",
+                    "attr": {
+                      "color": "red",
+                      ":dense": true
+                    },
+                    "innerHTML": "{{item.TinhTrang == 0 ? '': 'mdi-lock'}}"
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "vueData.HoatDongCongDong_Obj.Nam",
+                      "label": "Năm",
+                      ":items": "vueData.DSNam",
+                      "item-text": "text",
+                      "item-value": "value"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "vueData.HoatDongCongDong_Obj.Thang",
+                      "label": "Tháng",
+                      ":items": "vueData.DSThang",
+                      "item-text": "text",
+                      "item-value": "value"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.HoatDongCongDong_Obj.PhanTramQuy",
+                      "label": "Phần trăm quỹ",
+                      "suffix": "%",
+                      "type": "number"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "f-button",
+                    "w": 3,
+                    "attr": {
+                      "icon-text": "mdi-calculator-variant-outline",
+                      "color": "success",
+                      "label": "Tính tiền quỹ",
+                      ":block": true,
+                      ":text": false,
+                      ":action": {
+                        "IF": "vueData.HoatDongCongDong_Obj.PhanTramQuy && parseFloat(vueData.HoatDongCongDong_Obj.PhanTramQuy) >= 0",
+                        "THEN": {
+                          "API": "/eorder/HoatDongCongDong_Select_Quy",
+                          "IN": {
+                            "Nam": "vueData.HoatDongCongDong_Obj.Nam",
+                            "Thang": "vueData.HoatDongCongDong_Obj.Thang",
+                            "PhanTramQuy": "parseFloat(vueData.HoatDongCongDong_Obj.PhanTramQuy)"
+                          },
+                          "OUT": "reponse",
+                          "CALLBACK": [
+                            {
+                              "EXE": "vueData.HoatDongCongDong_Obj.TongTienQuy_HeThong = reponse[0].TongTienQuy_HeThong; vueData.HoatDongCongDong_Obj.DoanhThu = reponse[0].DoanhThu"
+                            }
+                          ]
+                        },
+                        "ELSE": {
+                          "FUN": "showMessage",
+                          "IN": {
+                            "title": "`Vui lòng nhập phần trăm quỹ`",
+                            "type": "`red"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.HoatDongCongDong_Obj.TongTienQuy",
+                      "label": "Tổng tiền quỹ",
+                      "suffix": "VNĐ",
+                      "type": "number"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.HoatDongCongDong_Obj.TongTienQuy_HeThong",
+                      "label": "Tổng tiền quỹ hệ thống",
+                      "suffix": "VNĐ",
+                      "type": "number"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.HoatDongCongDong_Obj.DoanhThu",
+                      "label": "Tổng doanh thu",
+                      "suffix": "VNĐ",
+                      "type": "number",
+                      ":readonly": true
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-textarea",
+                    "attr": {
+                      "v-model": "vueData.HoatDongCongDong_Obj.MoTa",
+                      "label": "Mô tả",
+                      "hide-details": true
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "vueData.HoatDongCongDong_Obj.TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "div",
+                    "w": 8
+                  }
+                ],
+                ":update-api": {
+                  "new-action": {
+                    "HoatDongCongDong_Obj": {
+                      "Nam": null,
+                      "Thang": null,
+                      "PhanTramQuy": null,
+                      "TongTienQuy": null,
+                      "TongTienQuy_HeThong": null,
+                      "DoanhThu": null,
+                      "MoTa": "",
+                      "TinhTrang": null
+                    }
+                  },
+                  "edit-action": {
+                    "HoatDongCongDong_Obj": "{...item}"
+                  },
+                  "delete-action": {
+                    "HoatDongCongDong_Obj": "{...item}"
+                  },
+                  "default-item": {
+                    "HoatDongCongDong_Obj": {
+                      "Nam": null,
+                      "Thang": null,
+                      "PhanTramQuy": null,
+                      "TongTienQuy": null,
+                      "TongTienQuy_HeThong": null,
+                      "DoanhThu": null,
+                      "MoTa": "",
+                      "TinhTrang": null
+                    }
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm hoạt động cộng đồng",
+                    "API": "/eorder/HoatDongCongDong_Insert",
+                    "IN": {
+                      "Nam": "vueData.HoatDongCongDong_Obj.Nam",
+                      "Thang": "vueData.HoatDongCongDong_Obj.Thang",
+                      "PhanTramQuy": "parseFloat(vueData.HoatDongCongDong_Obj.PhanTramQuy)",
+                      "TongTienQuy": "parseFloat(vueData.HoatDongCongDong_Obj.TongTienQuy)",
+                      "TongTienQuy_HeThong": "vueData.HoatDongCongDong_Obj.TongTienQuy_HeThong ?? 0",
+                      "MoTa": "vueData.HoatDongCongDong_Obj.MoTa",
+                      "TinhTrang": "vueData.HoatDongCongDong_Obj.TinhTrang"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": {
+                      "CALL": "LoadDSHoatDongCongDong"
+                    }
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật hoạt động cộng đồng",
+                    "API": "/eorder/HoatDongCongDong_Update",
+                    "IN": {
+                      "HoatDongCongDongID": "vueData.HoatDongCongDong_Obj.HoatDongCongDongID",
+                      "Nam": "vueData.HoatDongCongDong_Obj.Nam",
+                      "Thang": "vueData.HoatDongCongDong_Obj.Thang",
+                      "PhanTramQuy": "parseFloat(vueData.HoatDongCongDong_Obj.PhanTramQuy)",
+                      "TongTienQuy": "parseFloat(vueData.HoatDongCongDong_Obj.TongTienQuy)",
+                      "TongTienQuy_HeThong": "vueData.HoatDongCongDong_Obj.TongTienQuy_HeThong ?? 0",
+                      "MoTa": "vueData.HoatDongCongDong_Obj.MoTa",
+                      "TinhTrang": "vueData.HoatDongCongDong_Obj.TinhTrang"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": {
+                      "CALL": "LoadDSHoatDongCongDong"
+                    }
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa hoạt động cộng đồng tháng <span class='error--text'>{{item.Thang}}/{{item.Nam}} </i></span>?",
+                    "API": "/eorder/HoatDongCongDong_Delete",
+                    "IN": {
+                      "HoatDongCongDongID": "item.HoatDongCongDongID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": {
+                      "CALL": "LoadDSHoatDongCongDong"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "el": "v-card",
+              "w": 6,
+              "attr": {
+                "style": "height:calc(100vh - 8px)"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card-title",
+                  "attr": {
+                    "align": "end",
+                    "class": "py-2 px-3 border-bottom"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "primary--text text-left",
+                        "style": "font-weight: 500; font-size: 1.1rem;"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "span",
+                          "innerHTML": "Hình ảnh hoạt động tháng {{vueData.titleHinhAnh}} ({{vueData.DSHinhAnhHoatDongCongDong.length}} ảnh)"
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-spacer"
+                    },
+                    {
+                      "el": "v-btn",
+                      "attr": {
+                        "class": "ml-3",
+                        "outlined": "",
+                        "x-small": "",
+                        "fab": "",
+                        "dark": "",
+                        "color": "primary",
+                        "v-on:click": "dialogTable = true"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-icon",
+                          "attr": {
+                            "dark": ""
+                          },
+                          "innerHTML": "mdi-plus"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "el": "v-row",
+                  "attr": {
+                    "class": "px-2 pt-3"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-col",
+                      "attr": {
+                        "v-for": "(n,index) in vueData.DSHinhAnhHoatDongCongDong",
+                        ":key": "n.FileID",
+                        "class": "d-flex child-flex",
+                        "cols": "3",
+                        "style": "position: relative"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "a",
+                          "attr": {
+                            ":href": "n.FileURL",
+                            "target": "_blank"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-img",
+                              "attr": {
+                                ":src": "n.FileURL",
+                                "aspect-ratio": "1",
+                                "class": "grey lighten-2"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "template",
+                                  "attr": {
+                                    "v-slot:placeholder": ""
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "class": "mt-2 me-2",
+                            "depressed": "",
+                            "fab": "",
+                            "x-small": "",
+                            "v-on:click": "vueData.DeleteImage(n)",
+                            "style": "position: absolute; top: 5px; right: 5px"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.DSHinhAnhHoatDongCongDong.length == 0",
+                        "class": "d-flex justify-center align-center mt-5",
+                        "style": "width:100%"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "span",
+                          "innerHTML": "Chưa có hình ảnh"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "el": "v-dialog",
+                  "attr": {
+                    "v-model": "dialogTable",
+                    "width": 900
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-card",
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar",
+                          "attr": {
+                            ":dense": true,
+                            ":flat": true
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-toolbar-title",
+                              "innerHTML": "Hình ảnh hoạt động cộng đồng"
+                            },
+                            {
+                              "el": "v-spacer"
+                            },
+                            {
+                              "el": "v-btn",
+                              "attr": {
+                                "icon": "",
+                                "v-on:click": "vueData.dialogTable = false; vueData.filelist=[]"
+                              },
+                              "innerHTML": "<v-icon>mdi-close</v-icon>"
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-card-text",
+                          "attr": {
+                            "style": "min-height:300px"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "f-file-upload-2",
+                              "col": {},
+                              "attr": {
+                                "color": "primary",
+                                "label": "Chọn ảnh từ máy tính",
+                                ":elevation": "0",
+                                "v-on:input": "(file)=> {vueData.uploadFile(file)}",
+                                ":url": "vueData.v_Set.apiFile",
+                                ":filters": "vueData.fileEX",
+                                ":multiple": true,
+                                "class": "mb-3 ml-1"
+                              },
+                              "w": 5
+                            },
+                            {
+                              "el": "v-row",
+                              "innerHTML": [
+                                {
+                                  "el": "v-col",
+                                  "attr": {
+                                    "v-for": "(n,index) in vueData.filelist",
+                                    ":key": "n.FileID",
+                                    "class": "d-flex child-flex",
+                                    "cols": "3",
+                                    "style": "position: relative"
+                                  },
+                                  "innerHTML": [
+                                    {
+                                      "el": "v-img",
+                                      "attr": {
+                                        ":src": "`https://file.zenfoodcourt.vn/eorder/auth/FileData/${n.FileID}`",
+                                        "aspect-ratio": "1",
+                                        "class": "grey lighten-2",
+                                        "v-on:click": "vueData.handleClick(n, index)"
+                                      },
+                                      "innerHTML": [
+                                        {
+                                          "el": "template",
+                                          "attr": {
+                                            "v-slot:placeholder": ""
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "el": "v-btn",
+                                      "attr": {
+                                        "class": "mt-2 me-2",
+                                        "depressed": "",
+                                        "fab": "",
+                                        "x-small": "",
+                                        "v-on:click": "vueData.filelist= vueData.filelist.filter((item,i) => i != index)",
+                                        "style": "position: absolute; top: 0; right: 0"
+                                      },
+                                      "innerHTML": [
+                                        {
+                                          "el": "v-icon",
+                                          "innerHTML": "mdi-close"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-overlay",
+                              "attr": {
+                                ":value": "vueData.overlay1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-carousel",
+                                  "attr": {
+                                    ":absolute": true,
+                                    "hide-delimiters": "",
+                                    ":value": "vueData.indexImg",
+                                    "height": "500px"
+                                  },
+                                  "innerHTML": [
+                                    {
+                                      "el": "v-carousel-item",
+                                      "attr": {
+                                        "v-for": "(item, i) in vueData.filelist",
+                                        ":key": "i",
+                                        ":src": "`https://file.zenfoodcourt.vn/eorder/auth/FileData/${item.FileID}`",
+                                        "style": "position: relative",
+                                        "class": "pa-2"
+                                      },
+                                      "innerHTML": [
+                                        {
+                                          "el": "v-btn",
+                                          "attr": {
+                                            "class": "mt-2 me-2",
+                                            "icon": "",
+                                            "color": "white",
+                                            "v-on:click": "vueData.overlay1 = false",
+                                            "style": "position: absolute; top: 0; right: 0"
+                                          },
+                                          "innerHTML": [
+                                            {
+                                              "el": "v-icon",
+                                              "innerHTML": "mdi-close"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-card-actions",
+                          "innerHTML": [
+                            {
+                              "el": "v-spacer"
+                            },
+                            {
+                              "el": "v-btn",
+                              "attr": {
+                                "color": "primary",
+                                "text": "",
+                                "v-on:click": "vueData.HandleMultipleImage()"
+                              },
+                              "innerHTML": "Lưu"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

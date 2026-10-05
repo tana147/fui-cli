@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/lich-su-san-pham",
+  "url": "/zen-eorder/lich-su-san-pham",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "lich-su-san-pham",
+  "ModuleName": "Lịch Sử / Cập Nhật Sản Phẩm",
+  "UpdateTime": "2026-03-29 13:56:31",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2026-04-22",
+  "LoadCount": 253,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

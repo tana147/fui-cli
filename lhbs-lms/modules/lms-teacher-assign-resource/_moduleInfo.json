@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-teacher-assign-resource",
+  "url": "//lms.lhbs.vn/lms-teacher-assign-resource",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-teacher-assign-resource",
+  "ModuleName": "Báo cáo/ Thống kê giao bài ",
+  "UpdateTime": "2026-06-02 17:31:58",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-09-02",
+  "LoadCount": 1497,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

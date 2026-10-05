@@ -1,0 +1,34 @@
+[
+  {
+    "comID": 6606,
+    "comName": "uc-main-nl-page"
+  },
+  {
+    "comID": 6608,
+    "comName": "uc-modal-add-nguyen-lieu"
+  },
+  {
+    "comID": 6995,
+    "comName": "uc-modal-import-excel"
+  },
+  {
+    "comID": 6609,
+    "comName": "uc-modal-update-nguyen-lieu"
+  },
+  {
+    "comID": 8462,
+    "comName": "uc-modal-update-nguyen-lieu-tab-conversion"
+  },
+  {
+    "comID": 8463,
+    "comName": "uc-modal-update-nguyen-lieu-tab-info"
+  },
+  {
+    "comID": 8464,
+    "comName": "uc-modal-update-nguyen-lieu-tab-location"
+  },
+  {
+    "comID": 8465,
+    "comName": "uc-modal-update-nguyen-lieu-tab-minimum-stock"
+  }
+]

@@ -1,0 +1,55 @@
+{
+  "data": [
+    {
+      "DSViewer": null,
+      "TableHeader": null,
+      "DataSummary": null
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-summary",
+              "attr": {
+                ":data": "vueData.DataSummary"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo mức độ tiếp cận của Poster",
+                ":items": "DSViewer",
+                ":excel": true,
+                "class": "freezy-header freezy-column",
+                ":hide-default-footer": false,
+                ":items-per-page": -1,
+                ":headers": "TableHeader",
+                "height": "calc(100vh - 243px)"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

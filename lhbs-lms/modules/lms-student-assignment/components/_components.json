@@ -1,0 +1,38 @@
+[
+  {
+    "comID": 7433,
+    "comName": "AssignmentHeader"
+  },
+  {
+    "comID": 7434,
+    "comName": "AssignmentProgress"
+  },
+  {
+    "comID": 7436,
+    "comName": "GroupHeader"
+  },
+  {
+    "comID": 7437,
+    "comName": "QuestionCard"
+  },
+  {
+    "comID": 7435,
+    "comName": "QuestionNavigation"
+  },
+  {
+    "comID": 7432,
+    "comName": "uc-assignment-taker-2"
+  },
+  {
+    "comID": 8146,
+    "comName": "uc-assignment-taker-page"
+  },
+  {
+    "comID": 8147,
+    "comName": "uc-dialog-confirm"
+  },
+  {
+    "comID": 11649,
+    "comName": "uc-interactive-video-player"
+  }
+]

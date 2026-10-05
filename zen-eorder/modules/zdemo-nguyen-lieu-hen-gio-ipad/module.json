@@ -1,0 +1,262 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "DSNhanVien": [],
+      "DSHoaDonDaTiepNhan_Res": [],
+      "DSHoaDonDaTiepNhan_ResFilter": [],
+      "DSHoaDonDaTiepNhan": [],
+      "DSHoaDon_Res": [],
+      "DSHoaDon": [],
+      "CTHoaDon": [],
+      "DSHoaDon_Table": [],
+      "DSChiTietHoaDon": [],
+      "IsShowDialogDetail": false,
+      "CT_KetCa": null,
+      "CT_KetCa_Insert": null,
+      "CuaHangID": 0,
+      "dialogOpenAddNhomSV": false
+    },
+    {
+      "API": "/eordertest/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        }
+      ]
+    },
+    {
+      "API": "/eordertest/NhanVien_Select_Dropdown",
+      "OUT": "DSNhanVien"
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      },
+      {
+        "LoaiPhanHieuID": "DSCuaHang.find((item) => item.CuaHangID === vueData.CuaHangID).LoaiPhanHieuID",
+        "DSHoaDonDaTiepNhan_Res": [],
+        "DSHoaDonDaTiepNhan_ResFilter": [],
+        "DSHoaDonDaTiepNhan": [],
+        "DSHoaDon_Res": [],
+        "DSHoaDon": [],
+        "CTHoaDon": [],
+        "DSHoaDon_Table": [],
+        "DSChiTietHoaDon": [],
+        "IsShowDialogDetail": false,
+        "webSocket_Hub_Order": "`order_{{vueData.CuaHangID}}"
+      }
+    ],
+    "IsShowDialogDetail": {
+      "IF": "IsShowDialogDetail === false",
+      "THEN": {
+        "CTHoaDon": [],
+        "DSChiTietHoaDon": []
+      }
+    },
+    "LauID": {
+      "IF": "LauID > 0",
+      "THEN": {
+        "CALL": "getKhuSelectByLauId"
+      }
+    },
+    "KhuID": {
+      "IF": "KhuID > 0",
+      "THEN": {
+        "CALL": "getBan"
+      }
+    }
+  },
+  "controls": [
+    {
+      "prop": "page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "label": "Thêm chế biến mới",
+                "icon-text": "mdi-plus",
+                "style": "align-self: center; padding: 0 20px; margin-left: 10px",
+                ":action": [
+                  {
+                    "dialogOpenAddFood": true
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "prop": "justify-left row",
+          "cols": [
+            {
+              "el": "v-tabs",
+              "w": 12,
+              "attr": {
+                "v-model": "TabProduct",
+                "color": "white",
+                "background-color": "green"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_DaTiepNhan"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Danh sách chế biến"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_Chế"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Chế biến"
+                    }
+                  ]
+                },
+                {
+                  "el": "",
+                  "attr": {
+                    "label": "Thêm chế biến mới",
+                    "icon-text": "mdi-plus",
+                    "style": ""
+                  }
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "style": "position:absolute; top:-2px; right:6px;",
+                    "v-if": "vueData.TabProduct === 0"
+                  },
+                  "innerHTML": "<uc-filter-nguyenlieu v-model='vueData.DSHoaDonDaTiepNhan_Res' />"
+                }
+              ]
+            },
+            {
+              "el": "v-tabs-items",
+              "w": 12,
+              "attr": {
+                "v-model": "TabProduct"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_DaTiepNhan"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "order-component",
+                      "attr": {
+                        ":data_order": "vueData.DSHoaDonDaTiepNhan_Res"
+                      },
+                      "w": 12
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_DonHang"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "tab-history-component",
+                      "attr": {
+                        ":chid": "CuaHangID"
+                      },
+                      "w": 12
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "row justify-center",
+          "cols": [
+            {
+              "el": "f-dialog",
+              "attr": {
+                "v-model": "dialogOpenAddFood",
+                "title": "Thêm chế biến",
+                ":controls": [
+                  {
+                    "el": "div",
+                    "attr": {
+                      "class": "d-flex justify-space-between align-center"
+                    },
+                    "innerHTML": [
+                      {
+                        "el": "v-select",
+                        "attr": {
+                          "v-on:change": "value => vueData.StudentID = value",
+                          "label": "Chọn thực phẩm",
+                          ":value": "StudentID",
+                          ":require": true
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "el": "f-button",
+                    "attr": {
+                      "type": "submit",
+                      "class": "d-none"
+                    }
+                  }
+                ],
+                ":button": [
+                  {
+                    "label": "Thêm thực phẩm",
+                    "type": "button"
+                  },
+                  {
+                    "label": "Đóng",
+                    "save": true,
+                    "action": [
+                      {
+                        "dialogOpenAddFood": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              "col": {},
+              "innerHTML": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false
+  }
+}

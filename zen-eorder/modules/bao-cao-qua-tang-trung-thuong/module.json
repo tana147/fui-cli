@@ -1,0 +1,113 @@
+{
+  "data": [
+    {
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')"
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_QuaTang_TrungThuong",
+        "IN": {
+          "TuNgay": "TuNgay",
+          "DenNgay": "DenNgay"
+        },
+        "OUT": "DSChiTietQuaTang"
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "TuNgay",
+                "label": "Từ ngày (Khởi tạo)",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "DenNgay",
+                "label": "Đến ngày (Khởi tạo)",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getBaoCao"
+                }
+              },
+              "w": 3
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo danh sách mã thưởng",
+                ":items": "DSChiTietQuaTang",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":headers": [
+                  {
+                    "text": "Cửa hàng",
+                    "value": "TenCuaHang"
+                  },
+                  {
+                    "text": "Ngày khởi tạo",
+                    "value": "NgayKhoiTao"
+                  },
+                  {
+                    "text": "Số thứ tự trúng",
+                    "value": "SoThuTuTrung"
+                  },
+                  {
+                    "text": "Mã QR trúng",
+                    "value": "QrCode_TrungThuong"
+                  },
+                  {
+                    "text": "Tổng ly thỏa điều kiện",
+                    "value": "Tong_LyThoaDieuKien",
+                    "el": "span",
+                    "innerHTML": "{{item.Tong_LyThoaDieuKien.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Đã đổi thưởng",
+                    "value": "Is_DoiThuong"
+                  },
+                  {
+                    "text": "Ngày đổi thưởng",
+                    "value": "DoiThuong_Ngay"
+                  },
+                  {
+                    "text": "Giờ đổi thưởng",
+                    "value": "DoiThuong_Gio"
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

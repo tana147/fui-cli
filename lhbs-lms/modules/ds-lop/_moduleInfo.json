@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/ds-lop",
+  "url": "//lms.lhbs.vn/ds-lop",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "ds-lop",
+  "ModuleName": "Danh sách lớp",
+  "UpdateTime": "2025-04-14 15:38:24",
+  "UpdateUser": "DEV000050",
+  "LastLoad": "2026-08-11",
+  "LoadCount": 46,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

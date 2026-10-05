@@ -1,0 +1,133 @@
+{
+  "data": [
+    {
+      "dsGioChuan": [],
+      "selectedItem": null,
+      "isShowDialog": false,
+      "isAddNew": false
+    },
+    {
+      "getDSGioChuan": {
+        "API": "/HDKH_DM_ChucDanhHocVi_GetList",
+        "IN": {},
+        "OUT": "dsGioChuan"
+      }
+    },
+    {
+      "CALL": "getDSGioChuan"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "d-flex justify-space-between align-center mb-4"
+              },
+              "innerHTML": [
+                {
+                  "el": "h2",
+                  "attr": {
+                    "class": "text-primary font-weight-bold"
+                  },
+                  "innerHTML": "THIẾT LẬP ĐỊNH MỨC GIỜ CHUẨN"
+                },
+                {
+                  "el": "f-button",
+                  "attr": {
+                    "label": "Thêm mới định mức",
+                    "icon-text": "mdi-plus-circle-outline",
+                    "color": "primary",
+                    ":action": [
+                      {
+                        "isShowDialog": true,
+                        "isAddNew": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                ":items": "dsGioChuan.filter(item => item.IsActive)",
+                ":headers": [
+                  {
+                    "title": "Tên chức danh",
+                    "key": "TenChucDanh"
+                  },
+                  {
+                    "title": "Định mức giờ chuẩn",
+                    "key": "DinhMucGioChuan",
+                    "width": "200px"
+                  },
+                  {
+                    "title": "Ghi chú",
+                    "key": "GhiChu"
+                  },
+                  {
+                    "title": "Thao tác",
+                    "key": "actions",
+                    "align": "center",
+                    "el": "div",
+                    "innerHTML": [
+                      {
+                        "el": "v-btn",
+                        "attr": {
+                          "icon": "mdi-trash-can-outline",
+                          "size": "small",
+                          "variant": "text",
+                          "color": "error",
+                          "v-on:click": "vueData.deleteGioChuan(item)"
+                        }
+                      },
+                      {
+                        "el": "v-btn",
+                        "attr": {
+                          "icon": "mdi-square-edit-outline",
+                          "size": "small",
+                          "variant": "text",
+                          "color": "success",
+                          "v-on:click": "() => { vueData.selectedItem = item; vueData.isShowDialog = true; vueData.isAddNew = false}"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-form-quanly-giochuan",
+              "attr": {
+                "v-model": "isShowDialog"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

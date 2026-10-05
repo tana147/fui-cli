@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/test",
+  "url": "//lms.lhbs.vn/test",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "test",
+  "ModuleName": "test",
+  "UpdateTime": "2026-05-29 11:40:22",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-07-01",
+  "LoadCount": 400,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms_tc_grade_asm",
+  "url": "//lms.lhbs.vn/lms_tc_grade_asm",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms_tc_grade_asm",
+  "ModuleName": "Chấm bài ",
+  "UpdateTime": "2026-09-18 10:58:45",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 14670,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

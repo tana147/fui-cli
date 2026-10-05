@@ -1,0 +1,27 @@
+{
+  "data": [
+    {
+      "IsDetailDoiDieuChinhModal": false,
+      "isOpenQDTotNghiep": false,
+      "isOpenTotalTotNghiep": false
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "thong-ke-container",
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

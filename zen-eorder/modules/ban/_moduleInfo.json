@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/ban",
+  "url": "/zen-eorder/ban",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "ban",
+  "ModuleName": "Bàn",
+  "UpdateTime": "2026-06-12 17:28:57",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-09-03",
+  "LoadCount": 3894,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-student-lesson-viewer",
+  "url": "//lms.lhbs.vn/lms-student-lesson-viewer",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-student-lesson-viewer",
+  "ModuleName": "Học Bài",
+  "UpdateTime": "2026-10-02 16:22:45",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 13017,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

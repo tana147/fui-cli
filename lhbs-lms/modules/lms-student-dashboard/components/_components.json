@@ -1,0 +1,82 @@
+[
+  {
+    "comID": 4692,
+    "comName": "uc-achievement-card"
+  },
+  {
+    "comID": 7629,
+    "comName": "uc-achievement-card-desktop"
+  },
+  {
+    "comID": 7628,
+    "comName": "uc-achievement-card-mobile"
+  },
+  {
+    "comID": 6368,
+    "comName": "uc-alert"
+  },
+  {
+    "comID": 6372,
+    "comName": "uc-bts-mon-hoc"
+  },
+  {
+    "comID": 6371,
+    "comName": "uc-ca-nhan"
+  },
+  {
+    "comID": 7623,
+    "comName": "uc-ca-nhan-mobile-menu"
+  },
+  {
+    "comID": 6369,
+    "comName": "uc-hoat-dong"
+  },
+  {
+    "comID": 7630,
+    "comName": "uc-hoc-lieu-so"
+  },
+  {
+    "comID": 7814,
+    "comName": "uc-iframe-window"
+  },
+  {
+    "comID": 9640,
+    "comName": "uc-kqht"
+  },
+  {
+    "comID": 7631,
+    "comName": "uc-leaderboard"
+  },
+  {
+    "comID": 6412,
+    "comName": "uc-list-loading"
+  },
+  {
+    "comID": 4698,
+    "comName": "uc-navigation-drawer"
+  },
+  {
+    "comID": 6367,
+    "comName": "uc-nhiem-vu"
+  },
+  {
+    "comID": 9047,
+    "comName": "uc-store-question"
+  },
+  {
+    "comID": 4697,
+    "comName": "uc-student-dashboard-v3"
+  },
+  {
+    "comID": 7815,
+    "comName": "uc-student-gradebook-dialog"
+  },
+  {
+    "comID": 4691,
+    "comName": "uc-summary-modal"
+  },
+  {
+    "comID": 6370,
+    "comName": "uc-tien-do"
+  }
+]

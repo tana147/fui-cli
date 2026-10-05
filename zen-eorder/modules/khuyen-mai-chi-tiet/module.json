@@ -1,0 +1,290 @@
+{
+  "data": [
+    {
+      "ChuongTrinhID": "kmid",
+      "DS_Out": [],
+      "CTChuongTrinh": {},
+      "DSChuongTrinh_ChiTiet": [],
+      "IsEdit": false
+    },
+    {
+      "DSTrangThai": [
+        {
+          "value": 0,
+          "text": "Chưa sử dụng"
+        },
+        {
+          "value": 1,
+          "text": "Đã sử dụng"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang"
+    },
+    {
+      "getChuongTrinh_ChiTiet": {
+        "API": "/eorder/ChuongTrinhChiTiet_Select",
+        "IN": {
+          "ChuongTrinhID": "ChuongTrinhID"
+        },
+        "OUT": "DS_Out",
+        "CALLBACK": [
+          {
+            "CTChuongTrinh": "vueData.DS_Out[0][0]",
+            "DSChuongTrinh_ChiTiet": "vueData.DS_Out[1]"
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "getChuongTrinh_ChiTiet"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-promotion-info",
+              "attr": {
+                ":ct_khuyenmai": "vueData.CTChuongTrinh"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Danh sách chi tiết chương trình",
+                ":excel": true,
+                ":items": "DSChuongTrinh_ChiTiet",
+                "height": "calc(100vh - 237px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Khách hàng",
+                    "value": "SoDienThoai_KhachHang",
+                    "el": "span",
+                    "innerHTML": "<b>{{item.TenKhachHang}}</b> ({{item.SoDienThoai_KhachHang}})"
+                  },
+                  {
+                    "text": "Trạng thái",
+                    "align": "center",
+                    "value": "TrangThai",
+                    "el": "v-chip",
+                    "width": 100,
+                    "attr": {
+                      ":color": "item.TrangThai === 0 ? 'success': 'error'",
+                      ":small": true
+                    },
+                    "innerHTML": "{{item.TrangThai_Ten}}"
+                  },
+                  {
+                    "text": "Hình thức nhận",
+                    "value": "HinhThuc_Nhan",
+                    "align": "center"
+                  },
+                  {
+                    "text": "Ngày nhận",
+                    "value": "NgayNhan",
+                    "el": "span",
+                    "innerHTML": "<b>{{item.NgayNhan}}</b> <br/> <span v-if='item.MaHoaDonNhan'><b class='primary--text'>{{item.MaHoaDonNhan}}</b> <span>({{item.TenCuaHangNhan}})</span></span>"
+                  },
+                  {
+                    "text": "Ngày sử dụng (Ngày tặng)",
+                    "value": "NgaySuDung",
+                    "el": "span",
+                    "innerHTML": "<span v-if='item.NgaySuDung'><b>{{item.NgaySuDung}}</b> <br/> <span v-if='item.MaHoaDonSuDung'><b class='primary--text'>{{item.MaHoaDonSuDung}}</b> <span>({{item.TenCuaHangSuDung}})</span></span></span>"
+                  },
+                  {
+                    "text": "Ngày hết hạn",
+                    "value": "NgayHetHan",
+                    "el": "span",
+                    "innerHTML": "{{item.NgayHetHan}}"
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center",
+                    "width": 80
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":disabled": "vueData.IsEdit",
+                      ":rules": "!vueData.IsEdit",
+                      "v-model": "SoDienThoai_KhachHang",
+                      "label": "Điện thoại khách hàng"
+                    },
+                    "w": 7
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      ":disabled": true,
+                      ":rules": false,
+                      "v-model": "TrangThai",
+                      "label": "Trạng thái (Voucher)",
+                      ":items": "vueData.DSTrangThai"
+                    },
+                    "w": 5
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":disabled": true,
+                      ":rules": false,
+                      "v-model": "HinhThuc_Nhan",
+                      "label": "Hình thức nhận"
+                    },
+                    "w": 6
+                  },
+                  {
+                    "el": "f-date",
+                    "attr": {
+                      ":disabled": "vueData.IsEdit",
+                      ":rules": "!vueData.IsEdit",
+                      "v-model": "NgayHetHan_Date",
+                      "label": "Ngày hết hạn",
+                      "date-add": 0
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "f-date",
+                    "attr": {
+                      ":disabled": "vueData.IsEdit",
+                      ":rules": "!vueData.IsEdit",
+                      "v-model": "NgayNhan_Date",
+                      "label": "Ngày nhận",
+                      "date-add": 0
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-select",
+                    "w": 8,
+                    "attr": {
+                      ":disabled": "vueData.IsEdit",
+                      ":rules": false,
+                      "v-model": "Nhan_CuaHangID",
+                      "label": "Cửa hàng nhận (nếu có)",
+                      ":items": "vueData.DSCuaHang",
+                      "item-value": "CuaHangID",
+                      "item-text": "TenCuaHang"
+                    }
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":disabled": "vueData.IsEdit",
+                      ":rules": false,
+                      "v-model": "MaHoaDonNhan",
+                      "label": "Mã hóa đơn nhận (nếu có)"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "w": 8,
+                    "attr": {
+                      "v-if": "vueData.IsEdit",
+                      ":rules": "!vueData.IsEdit",
+                      "v-model": "SuDung_CuaHangID",
+                      "label": "Cửa hàng sử dụng",
+                      ":items": "vueData.DSCuaHang",
+                      "item-value": "CuaHangID",
+                      "item-text": "TenCuaHang"
+                    }
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-if": "vueData.IsEdit",
+                      ":rules": "!vueData.IsEdit",
+                      "v-model": "MaHoaDonSuDung",
+                      "label": "Mã hóa đơn sử dụng"
+                    },
+                    "w": 4
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "HinhThuc_Nhan": "`MANUAL",
+                    "NgayHetHan_Date": "moment().format('YYYY-MM-DD')",
+                    "NgayNhan_Date": "moment().format('YYYY-MM-DD')",
+                    "TrangThai": 0
+                  },
+                  "new-action": {
+                    "IsEdit": false
+                  },
+                  "edit-action": {
+                    "IsEdit": true
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm voucher cho khách <br/><b>{{item.SoDienThoai_KhachHang}}</b>",
+                    "API": "/eorder/ChuongTrinhChiTiet_Insert",
+                    "IN": {
+                      "ChuongTrinhID": "vueData.ChuongTrinhID",
+                      "SoDienThoai_KhachHang": "item.SoDienThoai_KhachHang",
+                      "NgayHetHan": "item.NgayHetHan_Date",
+                      "Nhan_CuaHangID": "item.Nhan_CuaHangID ?? 0",
+                      "Nhan_MaHoaDon": "item.MaHoaDonNhan ?? ''",
+                      "NgayNhan": "item.NgayNhan_Date"
+                    },
+                    "MESS": "Thêm voucher thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getChuongTrinh_ChiTiet"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật sử dụng voucher của khách <br/><b>{{item.SoDienThoai_KhachHang}}</b>",
+                    "API": "/eorder/ChuongTrinhChiTiet_Update",
+                    "IN": {
+                      "ChuongTrinhChiTietID": "item.ChuongTrinhChiTietID",
+                      "SuDung_CuaHangID": "item.SuDung_CuaHangID",
+                      "SuDung_MaHoaDon": "item.MaHoaDonSuDung"
+                    },
+                    "MESS": "Cập nhật sử dụng voucher thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getChuongTrinh_ChiTiet"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa voucher của khách <br/><b>{{item.SoDienThoai_KhachHang}}</b>",
+                    "API": "/eorder/ChuongTrinhChiTiet_Delete",
+                    "IN": {
+                      "ChuongTrinhChiTietID": "item.ChuongTrinhChiTietID"
+                    },
+                    "MESS": "Xóa voucher thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getChuongTrinh_ChiTiet"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

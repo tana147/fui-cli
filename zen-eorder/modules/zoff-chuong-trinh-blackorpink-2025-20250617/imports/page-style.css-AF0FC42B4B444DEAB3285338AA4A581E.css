@@ -1,0 +1,151 @@
+html {
+    overflow-y: hidden;
+    overflow-x: hidden;
+    font-family: system-ui;
+    letter-spacing: 1px;
+    font-size: 14px;
+}
+
+.container {
+    padding: 0;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.full-screen {
+    width: 100%;
+    min-height: 100vh;
+    max-height: 100dvh;
+    background-image: url(/_cdn/zen-eorder/08032025/bg.jpg?v=25032025);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    text-align: center;
+}
+
+.full-screen-close {
+    width: 100%;
+    min-height: 100vh;
+    max-height: 100dvh;
+    background-image: url(/_cdn/zen-eorder/cuc-hoa-mi-2025/bg-soon.jpg?v=25032025);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    text-align: center;
+}
+
+.card-white {
+    background-color: #ffffff;
+    color: #e5248a;
+    font-weight: 900;
+    width: 100%;
+    padding: 10px 20px;
+}
+
+.card-white-trans {
+    background-color: transparent;
+    color: #ffffff;
+    font-weight: 900;
+    width: 100%;
+    padding: 10px 20px;
+}
+
+.text-title {
+    font-size: 20px;
+}
+
+.text-pin {
+    font-size: 28px;
+    letter-spacing: 5px;
+    line-height: 1;
+    font-weight: 900;
+}
+
+.text-lucky {
+    font-weight: 900;
+    font-size: 14px;
+    color: #df268a;
+    text-shadow: 2px 0 #fff, -2px 0 #fff, 0 2px #fff, 0 -2px #fff, 1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
+    position: absolute;
+    bottom: 15px;
+    width: 100%;
+}
+
+.text-note {
+    font-weight: 500;
+    font-size: 11px;
+    color: #ffffff;
+    width: 100%;
+}
+
+.button-start {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 900;
+    padding: 10px 20px;
+    margin: 20px 50px;
+    background-color: #df268a;
+    border-radius: 25px;
+    color: #ffffff;
+}
+
+.card-input {
+    margin: 20px;
+    border-bottom: 3px dashed #df268a;
+}
+
+.v-input__slot {
+    padding: 0 !important;
+    height: 50px;
+    background-color: transparent !important;
+}
+
+.pin-input input {
+    font-size: 36px;
+    padding-left: 10px;
+    font-weight: 900 !important;
+    text-align: center;
+    letter-spacing: 10px;
+    max-height: 70px;
+    padding-top: 0;
+    padding-bottom: 0;
+    color: #df268a !important;
+}
+
+.container-wheel {
+    width: 100%;
+    min-height: 100vh;
+    max-height: 100dvh;
+    overflow: hidden;
+}
+
+.lucky-wheel {
+    width: 100%;
+    height: 400px;
+    z-index: 1;
+}
+
+.img-voucher {
+    width: 70px;
+    height: 70px;
+    background-position: center;
+    background-size: cover;
+    margin: 0 20px;
+}
+
+.div-banner-carousel .v-btn__content {
+    font-size: 22px;
+}
+
+.h-100dvh {
+    min-height: 100vh !important;
+    max-height: 100dvh !important;
+}
+
+.mt-80px {
+    margin-top: 80px;
+}

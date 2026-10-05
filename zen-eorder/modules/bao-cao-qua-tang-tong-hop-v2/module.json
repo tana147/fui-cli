@@ -1,0 +1,185 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')",
+      "PhanHieuID": 0,
+      "KhuVucID": 0,
+      "Ngay": "moment().format('YYYY-MM-DD')",
+      "HinhThucThoiGian": 2,
+      "Nam": null,
+      "Thang": null,
+      "TuNam": null,
+      "DenNam": null,
+      "DSHinhThucThoiGian": [
+        {
+          "value": 2,
+          "text": "Theo ngày"
+        },
+        {
+          "value": 3,
+          "text": "Theo tuần"
+        },
+        {
+          "value": 4,
+          "text": "Theo quý"
+        },
+        {
+          "value": 5,
+          "text": "Theo tháng"
+        },
+        {
+          "value": 6,
+          "text": "Theo năm"
+        }
+      ],
+      "DSThang": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "DSNam": "GetDSNam()",
+      "headers": [
+        {
+          "text": "",
+          "value": "HinhThucThoiGian"
+        },
+        {
+          "text": "Cửa hàng",
+          "value": "TenCuaHang"
+        },
+        {
+          "text": "Ngày",
+          "value": "NgayTao"
+        },
+        {
+          "text": "Số mã dự tính dựa trên tỉ lệ (Tổng ly thỏa điều kiện/150)",
+          "value": "TongQrCode",
+          "el": "span",
+          "innerHTML": "{{(item.TongQrCode/150)?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Tổng mã thưởng",
+          "value": "TongQrCode_TrungThuong",
+          "el": "span",
+          "innerHTML": "{{item.TongQrCode_TrungThuong?.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Tổng đã đổi",
+          "value": "Tong_DaDoiThuong",
+          "el": "span",
+          "innerHTML": "{{item.Tong_DaDoiThuong?.toLocaleString('vi-vn')}}"
+        }
+      ]
+    },
+    {
+      "API": "/eordertest/KhuVuc_Select",
+      "OUT": "DSKhuVuc",
+      "CALLBACK": [
+        {
+          "EXE": "DSKhuVuc.unshift({'KhuVucID': 0, 'TenKhuVuc': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eordertest/PhanHieu_Select",
+      "OUT": "DSPhanHieu",
+      "CALLBACK": [
+        {
+          "EXE": "DSPhanHieu.unshift({'PhanHieuID': 0, 'TenPhanHieu': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eordertest/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        },
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_QuaTang_TongHop_v2",
+        "IN": {
+          "CuaHangID": "CuaHangID",
+          "HinhThucThoiGian": "HinhThucThoiGian",
+          "Ngay": "Ngay ?? 0",
+          "TuNgay": "TuNgay ?? 0",
+          "DenNgay": "DenNgay ?? 0",
+          "Nam": "Nam ?? 0",
+          "TuNam": "TuNam ?? 0",
+          "DenNam": "DenNam ?? 0",
+          "Thang": "Thang ?? 0",
+          "KhuVucID": "KhuVucID ?? 0",
+          "PhanHieuID": "PhanHieuID ?? 0"
+        },
+        "OUT": "DSQuaTangTongHop",
+        "CALLBACK": [
+          {
+            "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+          }
+        ]
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);",
+        "CALL": "getBaoCao"
+      }
+    ],
+    "HinhThucThoiGian": [
+      {
+        "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo quà tặng tổng hợp",
+                ":items": "DSQuaTangTongHop",
+                ":excel": true,
+                "height": "calc(100vh - 118px)",
+                ":headers": "headers"
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

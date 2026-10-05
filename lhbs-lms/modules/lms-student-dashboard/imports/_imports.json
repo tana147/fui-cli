@@ -1,0 +1,28 @@
+[
+  {
+    "name": "pageStyle",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "4BBD1F526FC549E1A9A69BE097CCFAEA",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/pageStyle-4BBD1F526FC549E1A9A69BE097CCFAEA.css"
+  },
+  {
+    "name": "student-dashboard",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "9D882AA1C07F4C60B1532ACB3B0F18A2",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/student-dashboard-9D882AA1C07F4C60B1532ACB3B0F18A2.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/@calvinckho/mic-recorder-to-mp3@2.2.3/dist/index.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "29F247942A5749928B9FEC32EB639046",
+    "scope": "module",
+    "sort": 50
+  }
+]

@@ -1,0 +1,122 @@
+{
+  "data": [
+    {
+      "formData": {}
+    },
+    {
+      "DSDanhMucTapChi": []
+    },
+    {
+      "Get_DSDanhMucTapChi": {
+        "API": "/HDKH_DM_GetDanhMucTapChi",
+        "IN": {},
+        "OUT": "DSDanhMucTapChi"
+      }
+    },
+    {
+      "CALL": "Get_DSDanhMucTapChi"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "QUẢN LÝ DANH MỤC TẠP CHÍ",
+                ":items": "DSDanhMucTapChi",
+                ":headers": [
+                  {
+                    "title": "ID",
+                    "key": "value"
+                  },
+                  {
+                    "title": "Tên danh mục",
+                    "key": "title"
+                  },
+                  {
+                    "title": "Thao tác",
+                    "key": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.formData.title",
+                      "label": "Tên danh mục"
+                    },
+                    "w": 12
+                  }
+                ],
+                ":update-api": {
+                  "new-action": {
+                    "formData": {
+                      "title": "",
+                      "value": 0
+                    }
+                  },
+                  "edit-action": {
+                    "formData": "{...item}"
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới danh mục <br/><b>{{vueData.formData.title}}</b>",
+                    "API": "/HDKH_DM_DanhMucTapChi_Save",
+                    "IN": {
+                      "ID": 0,
+                      "TenDanhMuc": "vueData.formData.title",
+                      "IsActive": true
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "Get_DSDanhMucTapChi"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật danh mục <br/><b>{{formData.title}}</b>",
+                    "API": "/HDKH_DM_DanhMucTapChi_Save",
+                    "IN": {
+                      "ID": "item.value",
+                      "TenDanhMuc": "vueData.formData.title",
+                      "IsActive": true
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "Get_DSDanhMucTapChi"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa danh mục <br/><b>{{item.title}}</b>",
+                    "API": "/HDKH_DM_DanhMucTapChi_Save",
+                    "IN": {
+                      "ID": "item.value",
+                      "TenDanhMuc": "item.title",
+                      "IsActive": false
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "Get_DSDanhMucTapChi"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

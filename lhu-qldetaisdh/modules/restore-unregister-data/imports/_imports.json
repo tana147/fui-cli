@@ -1,0 +1,27 @@
+[
+  {
+    "name": "styles",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "36F8AF3303B84605A11DDE08EADD7178",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/styles-36F8AF3303B84605A11DDE08EADD7178.css"
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "30A1E29CBCF8450885FE485AED6EBCC9",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "22296D73A86F4A6FA47D73FF9174B547",
+    "scope": "module",
+    "sort": 51
+  }
+]

@@ -1,0 +1,210 @@
+{
+  "data": [
+    {
+      "formInfo": {},
+      "dsRules": [],
+      "selectedRule": null,
+      "isShowDialog": false,
+      "dialogTitle": "Thêm mới Quy tắc",
+      "formID": null,
+      "dsFieldsForRule": [],
+      "DSQuyTacPhanChia": [
+        {
+          "value": "KHONG_CHIA",
+          "title": "Không chia"
+        },
+        {
+          "value": "CHIA_DEU",
+          "title": "Chia đều"
+        },
+        {
+          "value": "CHIA_DE_TAI",
+          "title": "Đề tài nghiên cứu khoa học - Chia"
+        },
+        {
+          "value": "CHIA_SACH",
+          "title": "Sách giáo trình - Chia"
+        },
+        {
+          "value": "CHIA_BAI_BAO",
+          "title": "Bài báo khoa học - Chia"
+        },
+        {
+          "value": "CHIA_GIAI_PHAP",
+          "title": "Sáng chế giải pháp - Chia"
+        }
+      ]
+    },
+    {
+      "getFormInfo": {
+        "API": "/HDKH_Form_GetByID",
+        "IN": {
+          "FormID": "formID"
+        },
+        "OUT": "formInfo",
+        "PATH": "data[0][0]"
+      },
+      "getDSFields": {
+        "API": "/HDKH_Field_GetListByForm",
+        "IN": {
+          "FormID": "formID"
+        },
+        "OUT": "dsFieldsForRule",
+        "PATH": "data[0]"
+      }
+    },
+    {
+      "EXE": "initPage()"
+    }
+  ],
+  "watch": {
+    "selectedRule": {
+      "IF": "vueData.selectedRule && vueData.selectedRule.RuleID > 0",
+      "THEN": [
+        {
+          "dialogTitle": "Chỉnh sửa Quy tắc Tính điểm"
+        }
+      ]
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "d-flex justify-space-between align-center mb-4"
+              },
+              "innerHTML": [
+                {
+                  "el": "h2",
+                  "attr": {
+                    "class": "text-primary font-weight-bold"
+                  },
+                  "innerHTML": "Quản lý Quy tắc cho Form:  {{formInfo[0]?.FormTitle || 'Đang tải...'}}"
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "d-flex ga-2"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Quản lý bằng Ma trận",
+                        "variant": "tonal",
+                        "disabled": true
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Thêm Quy tắc mới",
+                        "icon-text": "mdi-plus-circle-outline",
+                        "color": "primary",
+                        ":action": "[{ \"EXE\": \"openNewRuleDialog()\" }]"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                ":headers": [
+                  {
+                    "title": "Mô tả",
+                    "key": "RuleDescription",
+                    "width": "30%"
+                  },
+                  {
+                    "title": "Điều kiện (IF)",
+                    "key": "Conditions_HTML",
+                    "width": "40%",
+                    "el": "div",
+                    "innerHTML": [
+                      {
+                        "el": "div",
+                        "attr": {
+                          "v-html": "item.Conditions_HTML"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "title": "Kết quả (THEN)",
+                    "key": "Result_HTML",
+                    "el": "div",
+                    "innerHTML": [
+                      {
+                        "el": "div",
+                        "attr": {
+                          "v-html": "item.Result_HTML"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "title": "Hành động",
+                    "key": "actions",
+                    "width": "120px",
+                    "align": "center",
+                    "el": "div",
+                    "innerHTML": [
+                      {
+                        "el": "v-btn",
+                        "attr": {
+                          "icon": "mdi-trash-can-outline",
+                          "size": "small",
+                          "variant": "text",
+                          "color": "error",
+                          "v-on:click": "() => { vueData.confirmAction(`Bạn có chắc chắn muốn xoá Form <br/><b>${item.RuleDescription}</b>?`,'/HDKH_Rule_Delete', {RuleID: item.RuleID})}"
+                        }
+                      },
+                      {
+                        "el": "v-btn",
+                        "attr": {
+                          "icon": "mdi-square-edit-outline",
+                          "size": "small",
+                          "variant": "text",
+                          "color": "success",
+                          "v-on:click": "() => { vueData.selectedRule = JSON.parse(JSON.stringify(item)); vueData.isShowDialog = true;}"
+                        }
+                      }
+                    ]
+                  }
+                ],
+                ":items": "dsRules"
+              }
+            }
+          ]
+        },
+        {
+          "cols": [
+            {
+              "el": "uc-form-quanly-rule",
+              "attr": {
+                "v-model": "isShowDialog",
+                ":form-data": "selectedRule",
+                "v-model:title": "dialogTitle",
+                ":fields-for-rule": "dsFieldsForRule",
+                "v-on:saved": "initPage()",
+                "v-on:close": "selectedRule= null"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

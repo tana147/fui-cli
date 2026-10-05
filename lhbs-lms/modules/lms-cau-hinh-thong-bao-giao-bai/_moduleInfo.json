@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-cau-hinh-thong-bao-giao-bai",
+  "url": "//lms.lhbs.vn/lms-cau-hinh-thong-bao-giao-bai",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-cau-hinh-thong-bao-giao-bai",
+  "ModuleName": "Cấu hình thông báo giao bài",
+  "UpdateTime": "2026-06-02 17:30:17",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-10-02",
+  "LoadCount": 194,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

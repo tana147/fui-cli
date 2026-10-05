@@ -1,0 +1,15 @@
+{
+  "id": "danh-muc/z-tabulator",
+  "url": "/danh-muc/z-tabulator",
+  "mDomain": "",
+  "ProjectID": "danh-muc",
+  "ModuleID": "z-tabulator",
+  "ModuleName": "Demo Tabulator Table",
+  "UpdateTime": "2026-03-29 13:56:25",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2026-03-18",
+  "LoadCount": 95,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

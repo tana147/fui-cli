@@ -1,0 +1,28 @@
+[
+  {
+    "name": "page-style.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "FABC65C842E743FFA89E40A51587814E",
+    "scope": "module",
+    "sort": 24,
+    "filePath": "imports/page-style.css-FABC65C842E743FFA89E40A51587814E.css"
+  },
+  {
+    "name": "jquery-qrcode-v0.18.0.js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "A276B5B6F0D64044A99CE92660A43006",
+    "scope": "module",
+    "sort": 25,
+    "filePath": "imports/jquery-qrcode-v0.18.0.js-A276B5B6F0D64044A99CE92660A43006.js"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/spin-wheel@4.4.0/dist/spin-wheel-iife.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "FB4FB2D8A0B34B83BA0F12B6254CCF47",
+    "scope": "module",
+    "sort": 26
+  }
+]

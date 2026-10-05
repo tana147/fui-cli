@@ -1,0 +1,101 @@
+{
+  "data": [
+    {
+      "getNgayLe": {
+        "API": "/eorder/NgayLe_Select",
+        "OUT": "DSNgayLe"
+      }
+    },
+    {
+      "CALL": "getNgayLe"
+    }
+  ],
+  "controls": [
+    {
+      "prop": "fluid page-container mt-1 grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Ngày lễ",
+                ":excel": true,
+                ":items": "DSNgayLe",
+                "height": "calc(100vh - 121px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Ngày",
+                    "value": "Ngay"
+                  },
+                  {
+                    "text": "Mô tả",
+                    "value": "MoTa"
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center",
+                    "width": 80
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "f-date",
+                    "attr": {
+                      "v-model": "Ngay",
+                      "label": "Ngày lễ",
+                      "date-add": 0
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "MoTa",
+                      "label": "Mô tả"
+                    },
+                    "w": 8
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "Ngay": "moment().format('YYYY-MM-DD')"
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới ngày lễ",
+                    "API": "/eorder/NgayLe_Insert",
+                    "IN": {
+                      "Ngay": "item.Ngay",
+                      "MoTa": "item.MoTa"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": {
+                      "CALL": "getNgayLe"
+                    }
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa ngày lễ <br/><b>{{item.Ngay}}</b>",
+                    "API": "/eorder/NgayLe_Delete",
+                    "IN": {
+                      "NgayLeID": "item.NgayLeID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getNgayLe"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

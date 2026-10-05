@@ -1,0 +1,5 @@
+/* Highlight dòng lỗi */
+.error-row {
+  background-color: #ffeaea !important;
+  border-left: 4px solid #ff5252;
+}

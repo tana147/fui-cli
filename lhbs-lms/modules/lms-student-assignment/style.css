@@ -1,0 +1,183 @@
+/* ==========================================================================
+   lms-student-assignment: Styles cho video tương tác & câu hỏi
+   ========================================================================== */
+/*
+   MathJax chuyển $$...$$ thành mjx-container display=true. Trong nội dung câu
+   hỏi, kiểu display này là đúng; nhưng trong nhãn radio/checkbox, nó làm công
+   thức bị phóng quá lớn và tạo khoảng trống dọc bất thường. Chỉ thu gọn các
+   công thức nằm trong lựa chọn đáp án để không ảnh hưởng phần đề bài.
+*/
+.question-card .v-radio .uc-latex-view,
+.question-card .v-checkbox .uc-latex-view {
+	min-width: 0;
+	max-width: 100%;
+	line-height: 1.35;
+}
+.question-card .v-radio .uc-latex-view p,
+.question-card .v-checkbox .uc-latex-view p {
+	margin: 0 !important;
+}
+.question-card .v-radio .uc-latex-view mjx-container[display="true"],
+.question-card .v-checkbox .uc-latex-view mjx-container[display="true"] {
+	display: inline-block !important;
+	margin: 0 !important;
+	font-size: 1rem !important;
+	line-height: 1.35 !important;
+	vertical-align: middle;
+}
+/* Lớp phủ trong suốt che lên player YouTube để chặn tương tác chuột trực tiếp vào iframe */
+.player-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: transparent;
+	z-index: 5;
+	cursor: pointer;
+}
+/* Chấm tròn marker câu hỏi trên thanh timeline slider */
+.interaction-marker-dot {
+	position: absolute;
+	top: 50%;
+	width: 12px;
+	height: 12px;
+	background-color: #ff5722;
+	border: 2px solid #ffffff;
+	border-radius: 50%;
+	cursor: pointer;
+	z-index: 5;
+	transform: translate(-50%, -50%);
+	transition: transform 0.15s ease, background-color 0.15s ease;
+	box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.interaction-marker-dot:hover {
+	transform: translate(-50%, -50%) scale(1.4);
+	background-color: #e64a19;
+}
+.interaction-marker-dot.is-completed {
+	background-color: #4caf50 !important;
+}
+.interaction-marker-dot.is-active {
+	background-color: #6200ea !important;
+	box-shadow: 0 0 0 4px rgba(98, 0, 234, 0.25);
+}
+/* Danh sách dọc dòng sự kiện video */
+.video-events-list {
+	scrollbar-width: thin;
+}
+.event-timeline-item {
+	transition: background-color 0.2s ease;
+}
+.timeline-indicator-col {
+	position: relative;
+	width: 16px;
+	min-height: 40px;
+}
+.timeline-dot {
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	border: 2px solid #b0bec5;
+	background-color: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 2;
+}
+.timeline-dot.is-completed {
+	border-color: #4caf50;
+	background-color: #4caf50;
+}
+.timeline-dot.is-active {
+	border-color: #6200ea;
+	background-color: #ede7f6;
+}
+.timeline-line {
+	position: absolute;
+	top: 16px;
+	bottom: -10px;
+	width: 2px;
+	background-color: #cfd8dc;
+	z-index: 1;
+}
+/* ==========================================================================
+   Styles cho uc-dialog-confirm
+   ========================================================================== */
+.confirm-dialog-card {
+    border-radius: 16px !important;
+    overflow: hidden;
+}
+/* Header */
+.confirm-dialog__header {
+    background: linear-gradient(135deg, rgb(var(--v-theme-primary)), rgba(var(--v-theme-primary), 0.75));
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.confirm-dialog__title {
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+/* Body */
+.confirm-dialog__body {
+    padding: 20px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.confirm-dialog__warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgba(0, 0, 0, 0.75);
+    background: rgba(255, 152, 0, 0.06);
+    border: 1px solid rgba(255, 152, 0, 0.22);
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+.confirm-dialog__unanswered {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    background: rgba(244, 67, 54, 0.05);
+    border: 1px dashed rgba(244, 67, 54, 0.3);
+    border-radius: 8px;
+    padding: 10px 12px;
+    flex-wrap: wrap;
+}
+.confirm-dialog__summary {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 0.7);
+}
+/* Actions */
+.confirm-dialog__actions {
+    padding: 10px 16px 16px !important;
+    gap: 8px;
+}
+.confirm-dialog__submit-btn {
+    border-radius: 8px !important;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0 18px;
+}
+.mt-0_5 {
+    margin-top: 2px;
+}

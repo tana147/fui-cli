@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/quiz-builder",
+  "url": "//lms.lhbs.vn/quiz-builder",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "quiz-builder",
+  "ModuleName": "Soạn Quiz",
+  "UpdateTime": "2025-07-08 18:30:27",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-07-04",
+  "LoadCount": 6,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

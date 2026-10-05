@@ -1,0 +1,59 @@
+[
+  {
+    "name": "/include/vue-advanced-cropper/style.css",
+    "type": ".css",
+    "contentType": "comp-link",
+    "fileID": "241969152C0848DE838DE90F8C64A844",
+    "scope": "module",
+    "sort": 26
+  },
+  {
+    "name": "page-style.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "8A5E321C24284FD7A8D427309A0F7825",
+    "scope": "module",
+    "sort": 28,
+    "filePath": "imports/page-style.css-8A5E321C24284FD7A8D427309A0F7825.css"
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "895503A1B2104E7A9001478FEF2464F3",
+    "scope": "module",
+    "sort": 24
+  },
+  {
+    "name": "/include/vue-advanced-cropper/index.umd.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "F322A5F4262E476B9FA43EEC009E010B",
+    "scope": "module",
+    "sort": 25
+  },
+  {
+    "name": "/include/ckeditor5/build/ckeditor.js\t",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "3BC8D961907448A99DE2B40AEF49659D",
+    "scope": "module",
+    "sort": 27
+  },
+  {
+    "name": "https://ws.fui.vn/Scripts/jquery.signalR-2.4.1.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "783C42258EFB4327B36C339921CD11C6",
+    "scope": "module",
+    "sort": 29
+  },
+  {
+    "name": "https://ws.fui.vn/signalr/hubs\t",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "2C421F3D5F474EFB9A861D4582700AE8",
+    "scope": "module",
+    "sort": 29
+  }
+]

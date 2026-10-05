@@ -1,0 +1,38 @@
+[
+  {
+    "comID": 8766,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 8767,
+    "comName": "uc-modal-dat-hang"
+  },
+  {
+    "comID": 8768,
+    "comName": "uc-modal-mua-hang"
+  },
+  {
+    "comID": 8769,
+    "comName": "uc-modal-transfer"
+  },
+  {
+    "comID": 8770,
+    "comName": "uc-modal-view-detail-phieu-dat-hang"
+  },
+  {
+    "comID": 8771,
+    "comName": "uc-table-chua-xu-ly"
+  },
+  {
+    "comID": 8772,
+    "comName": "uc-table-da-xu-ly"
+  },
+  {
+    "comID": 8773,
+    "comName": "uc-table-phieu-dat-hang"
+  },
+  {
+    "comID": 8774,
+    "comName": "uc-table-tong-hop-theo-ncc"
+  }
+]

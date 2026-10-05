@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-khuyen-mai-thu-cong-v2",
+  "url": "/zen-eorder/bao-cao-khuyen-mai-thu-cong-v2",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-khuyen-mai-thu-cong-v2",
+  "ModuleName": "Báo Cáo / Khuyến Mãi / Tích Voucher Thủ Công",
+  "UpdateTime": "2026-03-20 16:21:39",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-03-09",
+  "LoadCount": 18,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

@@ -1,0 +1,147 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "NgayCapNhat": "moment().format('YYYY-MM-DD')"
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": {
+        "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+      }
+    },
+    {
+      "getLichSuCapNhatSanPham": {
+        "API": "/eorder/LichSu_SanPham_CapNhat",
+        "IN": {
+          "CuaHangID": "CuaHangID",
+          "NgayCapNhat": "NgayCapNhat"
+        },
+        "OUT": "DSLichSuCapNhatSanPham"
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "NgayCapNhat",
+                "label": "Ngày cập nhật",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getLichSuCapNhatSanPham"
+                }
+              },
+              "w": 2
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Lịch sử cập nhật sản phẩm",
+                ":excel": true,
+                ":items": "DSLichSuCapNhatSanPham",
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Mã sản phẩm",
+                    "value": "MaSanPham"
+                  },
+                  {
+                    "text": "Mã số thứ tự",
+                    "value": "MaSoSanPham"
+                  },
+                  {
+                    "text": "Tên sản phẩm",
+                    "value": "TenSanPham"
+                  },
+                  {
+                    "text": "Giá bán",
+                    "value": "GiaBan_CuaHang",
+                    "el": "span",
+                    "innerHTML": "{{(item.GiaBan_CuaHang).toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "VAT",
+                    "value": "VAT_CuaHang",
+                    "el": "span",
+                    "innerHTML": "{{(item.VAT_CuaHang).toLocaleString('vi-vn')}}%"
+                  },
+                  {
+                    "text": "Bán trực tiếp",
+                    "align": "center",
+                    "value": "ChoPhepBan",
+                    "el": "span",
+                    "innerHTML": "{{item.ChoPhepBan == 1 ? 'Có' : 'Không'}}"
+                  },
+                  {
+                    "text": "Bán App Loyalty",
+                    "align": "center",
+                    "value": "ChoPhepBan_App",
+                    "el": "span",
+                    "innerHTML": "{{item.ChoPhepBan_App == 1 ? 'Có' : 'Không'}}"
+                  },
+                  {
+                    "text": "Trạng thái",
+                    "align": "center",
+                    "value": "TinhTrang",
+                    "el": "span",
+                    "innerHTML": "{{item.TinhTrang == 0 ? 'Mở Khóa': 'Tạm Khóa'}}"
+                  },
+                  {
+                    "text": "Nhân viên thực hiện",
+                    "value": "TenNhanVienCapNhat"
+                  },
+                  {
+                    "text": "Thời gian",
+                    "value": "ThoiGianCapNhat"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

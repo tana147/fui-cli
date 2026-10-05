@@ -1,0 +1,76 @@
+{
+  "data": [
+    {
+      "EXE": "checkRole()"
+    },
+    {
+      "IsLoading": true,
+      "NienKhoa": "`2023-01",
+      "DsNienKhoa": []
+    },
+    {
+      "loadSummaryGiaiThuong": {
+        "API": "/RPT_Summarry",
+        "OUT": "DSSummary",
+        "CALLBACK": {
+          "DSDaoTaoThacSi": "DSSummary[0]",
+          "DSDoiDTLuanVan": "DSSummary[1]"
+        }
+      }
+    },
+    {
+      "loadSummaryProcess": {
+        "API": "/RPT_Process_Summarry",
+        "IN": {
+          "NienKhoa": "vueData.NienKhoa"
+        },
+        "OUT": "DSProcessSummary",
+        "CALLBACK": {
+          "DSTongNganh": "DSProcessSummary[0]",
+          "DSNganh": "DSProcessSummary[1]",
+          "DSChiTietNganh": "DSProcessSummary[2]",
+          "DSSelectNganh": "DSProcessSummary[2].map(item => ({ text: item.TenNganh, value: parseInt(item.NganhID) }))",
+          "IsLoading": false
+        }
+      }
+    },
+    {
+      "IF": "!isRightAdmin()",
+      "THEN": {
+        "CALL": "loadSummaryGiaiThuong"
+      }
+    },
+    {
+      "IF": "!isRightAdmin()",
+      "THEN": {
+        "CALL": "loadSummaryProcess"
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid ",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-component",
+              "attr": {
+                "v-if": "vueData.IsLoading === false",
+                ":dsdaotaothacsi": "vueData.DSDaoTaoThacSi",
+                ":dsdoidtluanvan": "vueData.DSDoiDTLuanVan",
+                ":dstongnganh": "vueData.DSTongNganh",
+                ":dsnganh": "vueData.DSNganh",
+                ":dschitietnganh": "vueData.DSChiTietNganh"
+              }
+            }
+          ],
+          "w": 12
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

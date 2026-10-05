@@ -1,0 +1,24 @@
+{
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "cols": [
+            {
+              "el": "uc-main-page",
+              "col": {},
+              "attr": {},
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {},
+  "data": [],
+  "watch": {},
+  "ModuleID": "___TS-council",
+  "ModuleName": "Quản lý hội đồng (Tiến sĩ)"
+}

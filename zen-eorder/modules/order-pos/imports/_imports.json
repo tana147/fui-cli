@@ -1,0 +1,43 @@
+[
+  {
+    "name": "page-style.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "239C14E072BE4893AD959753B1B73E95",
+    "scope": "module",
+    "sort": 24,
+    "filePath": "imports/page-style.css-239C14E072BE4893AD959753B1B73E95.css"
+  },
+  {
+    "name": "https://ws.fui.vn/Scripts/jquery.signalR-2.4.1.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "5289A1B430FB44B88A1922121EBFE737",
+    "scope": "module",
+    "sort": 25
+  },
+  {
+    "name": "https://ws.fui.vn/signalr/hubs\t",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "016D04D5B7E149C2A787905888785DEA",
+    "scope": "module",
+    "sort": 26
+  },
+  {
+    "name": "/include/qrcode/qrcode.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "A3163F9CAE544B6BACA2D1B327A5EBCD",
+    "scope": "module",
+    "sort": 27
+  },
+  {
+    "name": "/include/qrcode/qrcode-reader.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "BBDB459E4A124F35910DC74D6A08581D",
+    "scope": "module",
+    "sort": 28
+  }
+]

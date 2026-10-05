@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms",
+  "pDomain": "lms.lhbs.vn",
+  "ProjectID": "lhbs-lms",
+  "ProjectName": "LHBS LMS System",
+  "GroupName": "LHBS",
+  "Framework": "V3",
+  "ProjectText": "LHBS LMS System @ lhbs-lms lms.lhbs.vn",
+  "Router": "default",
+  "url": "/fp/module?pid=lhbs-lms",
+  "UserRight": 6,
+  "UpdateUser": "DEV000037",
+  "UpdateTime": "2026-09-22T15:00:28.823",
+  "fetchedAt": "2026-10-05T07:20:22.385Z"
+}

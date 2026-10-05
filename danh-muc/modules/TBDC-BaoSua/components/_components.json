@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 8140,
+    "comName": "uc-image-upload"
+  },
+  {
+    "comID": 8139,
+    "comName": "uc-lich-su-bao-sua"
+  },
+  {
+    "comID": 8136,
+    "comName": "uc-main"
+  },
+  {
+    "comID": 8138,
+    "comName": "uc-table"
+  },
+  {
+    "comID": 8137,
+    "comName": "uc-top-bar"
+  }
+]

@@ -1,0 +1,85 @@
+{
+  "data": [
+    {
+      "IsShowBanner": true,
+      "QRCode": "code",
+      "KhachHangID": "khid",
+      "OS_Device": "os",
+      "QuaTang_Insert": null,
+      "CTQuaTang": null
+    },
+    {
+      "API": "/eorder/auth/QuaTang_Check_QrCode_Insert",
+      "IN": {
+        "QRCode": "QRCode",
+        "KhachHangID": "KhachHangID"
+      },
+      "OUT": "QuaTang_Insert",
+      "CALLBACK": [
+        {
+          "API": "/eorder/auth/QuaTang_Check_QrCode_V3",
+          "IN": {
+            "QRCode": "QRCode",
+            "KhachHangID": "KhachHangID"
+          },
+          "OUT": "CTQuaTang"
+        }
+      ]
+    }
+  ],
+  "watch": {
+    "IsShowBanner": [
+      {
+        "FUN": "playMusic"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-modal-banner",
+              "attr": {
+                "v-if": "vueData.IsShowBanner"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page",
+              "attr": {
+                "v-if": "!vueData.IsShowBanner && vueData.KhachHangID && vueData.QRCode && vueData.CTQuaTang"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "audio",
+              "attr": {
+                "style": "display: hidden",
+                "id": "audio-bg"
+              },
+              "innerHTML": "<source src='/_cdn/zen-eorder/30042025/music-bg.MP3' type='audio/mpeg' />"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false,
+    "login": false,
+    "userInfo": ""
+  }
+}

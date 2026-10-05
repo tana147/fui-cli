@@ -1,0 +1,27 @@
+{
+  "data": [],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {},
+              "innerHTML": [
+                {
+                  "el": "uc-tim-kiem",
+                  "attr": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

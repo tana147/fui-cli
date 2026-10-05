@@ -1,0 +1,262 @@
+{
+  "data": [
+    {
+      "headers": [
+        {
+          "text": "STT (ItemNo)",
+          "value": "ItemNo"
+        },
+        {
+          "text": "Nhóm hóa đơn (Group)",
+          "value": "Group"
+        },
+        {
+          "text": "Người mua không lấy HĐ (BuyerNotAcceptInvoice)",
+          "value": "BuyerNotAcceptInvoice"
+        },
+        {
+          "text": "Mã KH (BuyerCode)",
+          "value": "BuyerCode"
+        },
+        {
+          "text": "Họ tên (BuyerName)",
+          "value": "BuyerName",
+          "width": 250
+        },
+        {
+          "text": "Địa chỉ (BuyerAddress)",
+          "value": "BuyerAddress",
+          "width": 350
+        },
+        {
+          "text": "Số điện thoại (BuyerPhone)",
+          "value": "BuyerPhone"
+        },
+        {
+          "text": "Email (BuyerEmail)",
+          "value": "BuyerEmail"
+        },
+        {
+          "text": "Mã số thuế (BuyerTaxCode)",
+          "value": "BuyerTaxCode"
+        },
+        {
+          "text": "Mã đơn vị quan hệ ngân sách (BudgetaryUnitCode)",
+          "value": "BudgetaryUnitCode"
+        },
+        {
+          "text": "Loại giấy tờ (BuyerIdType)",
+          "value": "BuyerIdType"
+        },
+        {
+          "text": "Số giấy tờ (BuyerIdNo)",
+          "value": "BuyerIdNo"
+        },
+        {
+          "text": "Tên đơn vị (BuyerLegalName)",
+          "value": "BuyerLegalName",
+          "width": 400
+        },
+        {
+          "text": "Tên ngân hàng (BuyerBankName)",
+          "value": "BuyerBankName"
+        },
+        {
+          "text": "Tài khoản ngân hàng (BuyerBankAccount)",
+          "value": "BuyerBankAccount"
+        },
+        {
+          "text": "Hợp đồng số (ContactNo)",
+          "value": "ContactNo"
+        },
+        {
+          "text": "Mã cửa hàng (StoreCode)",
+          "value": "StoreCode"
+        },
+        {
+          "text": "Tên cửa hàng (StoreName)",
+          "value": "StoreName",
+          "width": 300
+        },
+        {
+          "text": "Hình thức thanh toán (PayMethod)",
+          "value": "PayMethod"
+        },
+        {
+          "text": "Thanh toán (PayStatus)",
+          "value": "PayStatus"
+        },
+        {
+          "text": "Loại tiền (CurrencyCode)",
+          "value": "CurrencyCode"
+        },
+        {
+          "text": "Tỷ giá (ExchangeRate)",
+          "value": "ExchangeRate"
+        },
+        {
+          "text": "Số bảng kê (DetailedListNo)",
+          "value": "DetailedListNo"
+        },
+        {
+          "text": "Ngày bảng kê (DetailedListDate)",
+          "value": "DetailedListDate"
+        },
+        {
+          "text": "Tính chất hóa đơn (AdjustmentType)",
+          "value": "AdjustmentType"
+        },
+        {
+          "text": "Mẫu hóa đơn gốc (OriginalInvoiceTemplate)",
+          "value": "OriginalInvoiceTemplate"
+        },
+        {
+          "text": "Ký hiệu hóa đơn gốc (OriginalInvoiceSeri)",
+          "value": "OriginalInvoiceSeri"
+        },
+        {
+          "text": "Số hóa đơn gốc (OriginalInvoiceNumber)",
+          "value": "OriginalInvoiceNumber"
+        },
+        {
+          "text": "Ngày lập hóa đơn gốc (OriginalIssueDate)",
+          "value": "OriginalIssueDate"
+        },
+        {
+          "text": "Văn bản thỏa thuận (AdditionalReferenceDesc)",
+          "value": "AdditionalReferenceDesc"
+        },
+        {
+          "text": "Ngày thỏa thuận (AdditionalReferenceDate)",
+          "value": "AdditionalReferenceDate"
+        },
+        {
+          "text": "Ghi chú (InvoiceNote)",
+          "value": "InvoiceNote",
+          "width": 700
+        },
+        {
+          "text": "Loại hàng hóa (Selection)",
+          "value": "Selection"
+        },
+        {
+          "text": "Loại hàng hoá đặc trưng (ItemType)",
+          "value": "ItemType"
+        },
+        {
+          "text": "Mã hàng hóa/dịch vụ (ItemCode)",
+          "value": "ItemCode"
+        },
+        {
+          "text": "Tên hàng hóa/dịch vụ (ItemName)",
+          "value": "ItemName",
+          "width": 350
+        },
+        {
+          "text": "Ghi chú (ItemNote)",
+          "value": "ItemNote"
+        },
+        {
+          "text": "Số lô (BatchNo)",
+          "value": "BatchNo"
+        },
+        {
+          "text": "Hạn dùng (ExpDate)",
+          "value": "ExpDate"
+        },
+        {
+          "text": "Đơn vị tính (ItemUnit)",
+          "value": "ItemUnit"
+        },
+        {
+          "text": "Số lượng (ItemQuantity)",
+          "value": "ItemQuantity"
+        },
+        {
+          "text": "Đơn giá (ItemPrice)",
+          "value": "ItemPrice"
+        },
+        {
+          "text": "Thành tiền (AmountBeforeTax)",
+          "value": "AmountBeforeTax"
+        },
+        {
+          "text": "Thuế GTGT (%) (TaxPercentage)",
+          "value": "TaxPercentage"
+        },
+        {
+          "text": "Tiền thuế (TaxAmount)",
+          "value": "TaxAmount"
+        }
+      ]
+    },
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')"
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "EXE": " vueData.CuaHangID = (vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        },
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_HoaDon_ThayThe",
+        "IN": {
+          "CuaHangID": "CuaHangID",
+          "TuNgay": "TuNgay",
+          "DenNgay": "DenNgay"
+        },
+        "OUT": "DSChiTietHoaDon"
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);",
+        "CALL": "getBaoCao"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo hóa đơn thay thế",
+                ":items": "DSChiTietHoaDon",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": "headers"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

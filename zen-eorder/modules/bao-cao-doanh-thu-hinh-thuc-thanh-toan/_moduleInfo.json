@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-doanh-thu-hinh-thuc-thanh-toan",
+  "url": "/zen-eorder/bao-cao-doanh-thu-hinh-thuc-thanh-toan",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-doanh-thu-hinh-thuc-thanh-toan",
+  "ModuleName": "Báo Cáo / Doanh Thu / Hình Thức Thanh Toán",
+  "UpdateTime": "2026-03-20 16:19:35",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-04-30",
+  "LoadCount": 127,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

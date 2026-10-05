@@ -1,0 +1,26 @@
+[
+  {
+    "name": "\t/include/pdfmake/print.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "B1336AE1902C49149C5768023544B242",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/pdfmake/pdfmake.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "905D6067712747688FFCA76EA40C9DA8",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/pdfmake/vfs_fonts.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "49E56FAFABE0458B9C89EABAB448FF66",
+    "scope": "module",
+    "sort": 50
+  }
+]

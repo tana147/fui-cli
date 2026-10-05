@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/cau-hinh-chi-tieu-mon-hoc",
+  "url": "//lms.lhbs.vn/cau-hinh-chi-tieu-mon-hoc",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "cau-hinh-chi-tieu-mon-hoc",
+  "ModuleName": "Cấu hình chỉ tiêu môn học (Tiếng Anh)",
+  "UpdateTime": "2026-06-02 17:25:53",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-09-28",
+  "LoadCount": 780,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

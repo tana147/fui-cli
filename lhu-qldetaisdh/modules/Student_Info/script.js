@@ -1,0 +1,1 @@
+// Empty by design - logic resides in uc-main-page.vue

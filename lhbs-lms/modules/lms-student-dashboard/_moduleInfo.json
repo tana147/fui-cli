@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-student-dashboard",
+  "url": "//lms.lhbs.vn/lms-student-dashboard",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-student-dashboard",
+  "ModuleName": "Trang Chủ Học Sinh ",
+  "UpdateTime": "2026-09-25 17:03:54",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 112995,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

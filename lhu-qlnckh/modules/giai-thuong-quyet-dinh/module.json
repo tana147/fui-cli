@@ -1,0 +1,363 @@
+{
+  "data": [
+    {
+      "CALL": "initFile()"
+    },
+    {
+      "DialogFile_Open": false,
+      "CT_QuyetDinh": null,
+      "FileID_Remove": null,
+      "DS_FileDecisionUpload": null
+    },
+    {
+      "getQuyetDinh": {
+        "API": "/GiaiThuong_QuyetDinh_Get_All",
+        "IN": {
+          "LoaiQD": 1
+        },
+        "OUT": "DS_QuyetDinh"
+      }
+    },
+    {
+      "CALL": "getQuyetDinh"
+    },
+    {
+      "callApiRemoveFile": {
+        "CONFIRM": "Bạn có chắc muốn xóa tập tin?",
+        "API": "/GiaiThuong_QuyetDinh_Upd_File",
+        "IN": {
+          "QDID": "vueData.CT_QuyetDinh[0][0].QDID",
+          "DS_FileID": "vueData.CT_QuyetDinh[1].filter(item => item.FILE_ID !== vueData.FileID_Remove).map(item => item.FILE_ID).join(',')"
+        },
+        "MESS": "Xóa tập tin thành công",
+        "CALLBACK": [
+          {
+            "FileID_Remove": null
+          },
+          {
+            "API": "/GiaiThuong_QuyetDinh_Get_ByID",
+            "IN": {
+              "QDID": "vueData.CT_QuyetDinh[0][0].QDID"
+            },
+            "OUT": "CT_QuyetDinh",
+            "CALLBACK": [
+              {
+                "CT_QuyetDinh": "CT_QuyetDinh",
+                "DS_FileDecisionUpload": null
+              }
+            ]
+          },
+          {
+            "CALL": "getQuyetDinh"
+          }
+        ]
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "col": {},
+              "attr": {
+                "label": "Danh sách quyết định",
+                ":excel": true,
+                ":items": "DS_QuyetDinh",
+                ":fixed-header": true,
+                ":show-select": false,
+                ":fixed-cols": 2,
+                ":mobile-breakpoint": 600,
+                ":headers": [
+                  {
+                    "text": "Số quyết định",
+                    "value": "MaSoQD",
+                    "el": "span",
+                    "attr": {
+                      ":class": "item.MaSoQD === '' ? 'grey--text' : 'red--text'"
+                    },
+                    "innerHTML": "<b>{{item.MaSoQD === '' ? 'Chưa có' : item.MaSoQD}}</b>"
+                  },
+                  {
+                    "text": "Mô tả",
+                    "value": "MoTaQD"
+                  },
+                  {
+                    "text": "Ngày, Tháng, Năm QĐ",
+                    "value": "NgayQD",
+                    "align": "center",
+                    "el": "span",
+                    "innerHTML": "{{item.NgayQD}}-{{item.ThangQD}}-{{item.NamQD}}"
+                  },
+                  {
+                    "text": "Đề tài",
+                    "align": "center",
+                    "value": "SoGiaiThuong",
+                    "el": "v-chip",
+                    "attr": {
+                      "color": "primary"
+                    },
+                    "innerHTML": "{{Number(item.SoGiaiThuong)}}"
+                  },
+                  {
+                    "text": "Tập tin",
+                    "align": "center",
+                    "value": "SoTapTin",
+                    "el": "v-chip",
+                    "attr": {
+                      "color": "primary"
+                    },
+                    "innerHTML": "{{ Number(item.SoTapTin)}}"
+                  },
+                  {
+                    "text": "",
+                    "value": "UploadFile",
+                    "align": "center",
+                    "el": "t-button",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Tập tin",
+                      ":action": {
+                        "API": "/GiaiThuong_QuyetDinh_Get_ByID",
+                        "IN": {
+                          "QDID": "item.QDID"
+                        },
+                        "OUT": "CT_QuyetDinh",
+                        "CALLBACK": [
+                          {
+                            "DialogFile_Open": true,
+                            "CT_QuyetDinh": "CT_QuyetDinh"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "text": "Chức năng",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "MaSoQD",
+                      "label": "Số quyết định",
+                      ":rules": false
+                    },
+                    "w": 5
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "NgayQD",
+                      "label": "Ngày QĐ",
+                      "type": "number",
+                      ":rules": false
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "ThangQD",
+                      "label": "Tháng QĐ",
+                      "type": "number",
+                      ":rules": false
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "NamQD",
+                      "label": "Năm QĐ",
+                      "type": "number",
+                      ":rules": false
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-textarea",
+                    "attr": {
+                      "v-model": "MoTaQD",
+                      "label": "Mô tả quyết định",
+                      "rows": 2,
+                      "hide-details": true
+                    },
+                    "w": 12
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "MaSoQD": "",
+                    "MoTaQD": ""
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới quyết định",
+                    "API": "/GiaiThuong_QuyetDinh_Ins",
+                    "IN": {
+                      "MaSoQD": "item.MaSoQD",
+                      "NgayQD": "item.NgayQD ?? 0",
+                      "ThangQD": "item.ThangQD ?? 0",
+                      "NamQD": "item.NamQD ?? 0",
+                      "MoTaQD": "item.MoTaQD",
+                      "TemplateQD": 1,
+                      "LoaiQD": 1
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": {
+                      "CALL": "getQuyetDinh"
+                    }
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật quyết định",
+                    "API": "/GiaiThuong_QuyetDinh_Upd",
+                    "IN": {
+                      "QDID": "item.QDID",
+                      "MaSoQD": "item.MaSoQD",
+                      "NgayQD": "item.NgayQD ?? 0",
+                      "ThangQD": "item.ThangQD ?? 0",
+                      "NamQD": "item.NamQD ?? 0",
+                      "MoTaQD": "item.MoTaQD",
+                      "DS_FileID": null
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": {
+                      "CALL": "getQuyetDinh"
+                    }
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa quyết định <b><i> {{item.MaSoQD}} </i></b>?",
+                    "API": "/GiaiThuong_QuyetDinh_Del",
+                    "IN": {
+                      "QDID": "item.QDID"
+                    },
+                    "OUT": "ERRMSG",
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": {
+                      "CALL": "getQuyetDinh"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-dialog",
+              "attr": {
+                "v-model": "DialogFile_Open",
+                "title": "Thông tin quyết định",
+                ":controls": [
+                  {
+                    "el": "div",
+                    "attr": {
+                      "class": "text-left black--text"
+                    },
+                    "innerHTML": "<p class='mb-0'><b>Quyết định:</b> <span class='red--text'>{{vueData.CT_QuyetDinh[0][0].MaSoQD === '' ? 'Chưa có' : vueData.CT_QuyetDinh[0][0].MaSoQD}}</span> <br/> <b>Ngày/Tháng/Năm:</b> <span>{{vueData.CT_QuyetDinh[0][0].NgayQD}}/{{vueData.CT_QuyetDinh[0][0].ThangQD}}/{{vueData.CT_QuyetDinh[0][0].NamQD}}</span> <br/> <b>Mô tả:</b> <span>{{vueData.CT_QuyetDinh[0][0].MoTaQD}}</span></p>"
+                  },
+                  {
+                    "el": "div",
+                    "attr": {
+                      "class": "text-left"
+                    },
+                    "innerHTML": "<span class='title black--text'>Danh sách tập tin đính kèm</span>",
+                    "w": 9
+                  },
+                  {
+                    "el": "f-file-upload",
+                    "w": 3,
+                    "attr": {
+                      "v-model": "vueData.DS_FileDecisionUpload",
+                      "label": "Tải lên tập tin",
+                      ":url": "vueData.v_Set.apiFile",
+                      ":filters": "vueData.fileEX",
+                      ":onclose": [
+                        {
+                          "EXE": "vueData.CT_QuyetDinh[1].push(vueData.DS_FileDecisionUpload.Files[0])"
+                        },
+                        {
+                          "API": "/GiaiThuong_QuyetDinh_Upd_File",
+                          "IN": {
+                            "QDID": "vueData.CT_QuyetDinh[0][0].QDID",
+                            "DS_FileID": "vueData.CT_QuyetDinh[1].map(item => item.FILE_ID).join(',')"
+                          },
+                          "MESS": "Tải tập tin thành công",
+                          "CALLBACK": {
+                            "DS_FileDecisionUpload": null,
+                            "CALL": "getQuyetDinh"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "el": "f-table",
+                    "w": 12,
+                    "col": {},
+                    "attr": {
+                      ":excel": false,
+                      ":show-search": false,
+                      ":fixed-header": true,
+                      ":show-select": false,
+                      ":fixed-cols": 2,
+                      ":mobile-breakpoint": 600,
+                      ":items": "vueData.CT_QuyetDinh[1]",
+                      ":headers": [
+                        {
+                          "text": "Tập tin",
+                          "el": "span",
+                          "value": "FileName",
+                          "innerHTML": "<a :href='`${vueData.v_Set.urlReturnFile}/FileData/${item.FILE_ID}`' target='_blank'>{{item.FILE_NAME}}</a> ({{item.FILE_SIZE}}kb)"
+                        },
+                        {
+                          "text": "",
+                          "el": "t-button",
+                          "value": "Xoa",
+                          "align": "right",
+                          "attr": {
+                            "color": "red",
+                            "label": "Xóa",
+                            ":action": [
+                              {
+                                "FileID_Remove": "item.FILE_ID"
+                              },
+                              {
+                                "CALL": "callApiRemoveFile"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                ":button": [
+                  {
+                    "label": "Đóng",
+                    "action": [
+                      {
+                        "DialogFile_Open": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

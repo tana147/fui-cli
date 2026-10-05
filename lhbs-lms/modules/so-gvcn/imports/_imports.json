@@ -1,0 +1,35 @@
+[
+  {
+    "name": "stylePage",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "77E39BAAF1D3441884C3352AEC625DCB",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/stylePage-77E39BAAF1D3441884C3352AEC625DCB.css"
+  },
+  {
+    "name": "/include/pdfmake/pdfmake.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "D2EEABAB7DB24021BE816DF3A0CF6C1F",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/pdfmake/print.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "7B89D38FB4DD430BAB86743A1D11A95F",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/pdfmake/vfs_fonts.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "7EA9AC42E5B04C709F30E0AD8A13A33F",
+    "scope": "module",
+    "sort": 50
+  }
+]

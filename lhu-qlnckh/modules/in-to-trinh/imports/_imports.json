@@ -1,0 +1,35 @@
+[
+  {
+    "name": "htmlToPdfmake.js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "7B643531812243FDACBAAEE6E06C7656",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/htmlToPdfmake.js-7B643531812243FDACBAAEE6E06C7656.js"
+  },
+  {
+    "name": "/include/pdfmake/pdfmake.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "2FC39FFA015C41CEBC12FEC23ABF187B",
+    "scope": "module",
+    "sort": 51
+  },
+  {
+    "name": "/include/pdfmake/print.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "4FAF8B8C6EC44AAA80D953690C97DD96",
+    "scope": "module",
+    "sort": 52
+  },
+  {
+    "name": "/include/pdfmake/vfs_fonts.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "043B67F27EBD4201838ECA46BD8AA8DE",
+    "scope": "module",
+    "sort": 53
+  }
+]

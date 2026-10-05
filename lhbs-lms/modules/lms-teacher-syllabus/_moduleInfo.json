@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-teacher-syllabus",
+  "url": "//lms.lhbs.vn/lms-teacher-syllabus",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-teacher-syllabus",
+  "ModuleName": "lms-teacher-syllabus",
+  "UpdateTime": "2026-06-15 10:18:04",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-06-15",
+  "LoadCount": 14,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

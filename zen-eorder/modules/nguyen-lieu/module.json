@@ -1,0 +1,149 @@
+{
+  "data": [
+    {
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 1,
+          "text": "Tạm khóa"
+        }
+      ]
+    },
+    {
+      "getNguyenLieu": {
+        "API": "/eorder/NguyenLieu_Select",
+        "OUT": "DSNguyenLieu"
+      }
+    },
+    {
+      "CALL": "getNguyenLieu"
+    }
+  ],
+  "controls": [
+    {
+      "prop": "fluid page-container pt-1 grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "w": 12,
+              "attr": {
+                "label": "Nguyên liệu",
+                ":excel": true,
+                ":items": "DSNguyenLieu",
+                "height": "calc(100vh - 121px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Mã nguyên liệu",
+                    "value": "MaNguyenLieu"
+                  },
+                  {
+                    "text": "Tên nguyên liệu",
+                    "value": "TenNguyenLieu"
+                  },
+                  {
+                    "text": "Tạm khóa",
+                    "align": "center",
+                    "value": "TinhTrang",
+                    "el": "v-icon",
+                    "attr": {
+                      "color": "red",
+                      ":dense": true
+                    },
+                    "innerHTML": "{{item.TinhTrang == 0 ? '': 'mdi-lock'}}"
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "MaNguyenLieu",
+                      "label": "Mã nguyên liệu"
+                    },
+                    "w": 8
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenNguyenLieu",
+                      "label": "Tên nguyên liệu"
+                    },
+                    "w": 12
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "TinhTrang": 0
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới nguyên liệu",
+                    "API": "/eorder/NguyenLieu_Insert",
+                    "IN": {
+                      "MaNguyenLieu": "item.MaNguyenLieu",
+                      "TenNguyenLieu": "item.TenNguyenLieu",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": {
+                      "CALL": "getNguyenLieu"
+                    }
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật nguyên liệu <br/><b>{{item.TenNguyenLieu}}</b>",
+                    "API": "/eorder/NguyenLieu_Update",
+                    "IN": {
+                      "NguyenLieuID": "item.NguyenLieuID",
+                      "MaNguyenLieu": "item.MaNguyenLieu",
+                      "TenNguyenLieu": "item.TenNguyenLieu",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getNguyenLieu"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa nguyên liệu <br/><b>{{item.TenNguyenLieu}}</b>",
+                    "API": "/eorder/NguyenLieu_Delete",
+                    "IN": {
+                      "NguyenLieuID": "item.NguyenLieuID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getNguyenLieu"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

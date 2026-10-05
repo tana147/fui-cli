@@ -1,0 +1,20 @@
+[
+  {
+    "name": "style",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "44A0A7D964EE414FA6EFF2C74402D468",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/style-44A0A7D964EE414FA6EFF2C74402D468.css"
+  },
+  {
+    "name": "jquery-qrcode-v0.18.0.js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "68CC1972B3754387BA6255F1DB5C58A6",
+    "scope": "module",
+    "sort": 52,
+    "filePath": "imports/jquery-qrcode-v0.18.0.js-68CC1972B3754387BA6255F1DB5C58A6.js"
+  }
+]

@@ -1,0 +1,61 @@
+{
+  "data": [
+    {
+      "CheckLopDoAn": false,
+      "HocVienInfo": {}
+    },
+    {
+      "EXE": "loadLocalStorage()"
+    },
+    {
+      "StartPrint": {
+        "API": "/HoiDong_Get_ByHoiDongID",
+        "IN": {
+          "HoiDong_ID": "HoiDong_ID"
+        },
+        "OUT": "data",
+        "CALLBACK": [
+          {
+            "FUN": "InQuyetDinhDanhGiaLuanVanThacSi",
+            "IN": {
+              "data": "data"
+            }
+          },
+          {
+            "FUN": "printPDF",
+            "IN": {
+              "data": "dataPDF"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "StartPrint"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row justify-center",
+          "cols": [
+            {
+              "el": "xxf-pdfmake",
+              "attr": {
+                ":data": "pageContent",
+                ":height": "height"
+              },
+              "col": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false
+  }
+}

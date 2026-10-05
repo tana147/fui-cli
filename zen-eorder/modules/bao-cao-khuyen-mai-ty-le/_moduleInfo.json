@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-khuyen-mai-ty-le",
+  "url": "/zen-eorder/bao-cao-khuyen-mai-ty-le",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-khuyen-mai-ty-le",
+  "ModuleName": "Báo Cáo / Khuyến Mãi / Tỷ Lệ Sử Dụng Voucher",
+  "UpdateTime": "2026-03-20 16:21:46",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-05-14",
+  "LoadCount": 337,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

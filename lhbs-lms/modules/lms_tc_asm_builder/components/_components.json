@@ -1,0 +1,42 @@
+[
+  {
+    "comID": 4288,
+    "comName": "uc-assignment-builder"
+  },
+  {
+    "comID": 4289,
+    "comName": "uc-assignment-canvas"
+  },
+  {
+    "comID": 4291,
+    "comName": "uc-assignment-component-library"
+  },
+  {
+    "comID": 4290,
+    "comName": "uc-assignment-properties"
+  },
+  {
+    "comID": 6193,
+    "comName": "uc-chon-ki-nang"
+  },
+  {
+    "comID": 4410,
+    "comName": "uc-latex-edit"
+  },
+  {
+    "comID": 9028,
+    "comName": "uc-main-layout"
+  },
+  {
+    "comID": 4672,
+    "comName": "uc-media"
+  },
+  {
+    "comID": 10672,
+    "comName": "uc-question-from-bank"
+  },
+  {
+    "comID": 5093,
+    "comName": "uc-question-from-hoc-lieu"
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "name": "style-page.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "76BCF9B19CAE4E0FAC5B1F58DF85DF67",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/style-page.css-76BCF9B19CAE4E0FAC5B1F58DF85DF67.css"
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/apexcharts/5.3.5/apexcharts.js",
+    "type": ".js-module",
+    "contentType": "link",
+    "fileID": "51C4E21564DC444A92A80D035CB3B8D6",
+    "scope": "module",
+    "sort": 50
+  }
+]

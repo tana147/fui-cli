@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-student-assignment",
+  "url": "//lms.lhbs.vn/lms-student-assignment",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-student-assignment",
+  "ModuleName": "Nộp bài tập",
+  "UpdateTime": "2026-10-05 11:31:22",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 158576,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

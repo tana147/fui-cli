@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-qua-tang-so-lan-quet-ma",
+  "url": "/zen-eorder/bao-cao-qua-tang-so-lan-quet-ma",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-qua-tang-so-lan-quet-ma",
+  "ModuleName": "Báo Cáo / Quà Tặng / Số Lần Quét Mã",
+  "UpdateTime": "2026-03-29 13:56:26",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2026-05-04",
+  "LoadCount": 44,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

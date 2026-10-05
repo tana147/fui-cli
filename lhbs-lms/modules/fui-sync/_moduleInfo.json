@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/fui-sync",
+  "url": "//lms.lhbs.vn/fui-sync",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "fui-sync",
+  "ModuleName": "Đồng bộ dữ liệu",
+  "UpdateTime": "2026-02-25 15:00:50",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-07-16",
+  "LoadCount": 47,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

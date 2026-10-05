@@ -1,0 +1,15 @@
+{
+  "id": "lhu-qlnckh",
+  "pDomain": "qlnckh.lhu.edu.vn",
+  "ProjectID": "lhu-qlnckh",
+  "ProjectName": "Quản lý nghiên cứu khoa học",
+  "GroupName": "LHU",
+  "Framework": "V2",
+  "ProjectText": "Quản lý nghiên cứu khoa học @ lhu-qlnckh qlnckh.lhu.edu.vn",
+  "Router": "",
+  "url": "/fp/module?pid=lhu-qlnckh",
+  "UserRight": 5,
+  "UpdateUser": "DEV000068",
+  "UpdateTime": "2026-08-28T15:19:48.157",
+  "fetchedAt": "2026-10-05T07:20:21.767Z"
+}

@@ -1,0 +1,53 @@
+.v-messages__message {
+    font-size: 16px;
+    line-height: unset;
+}
+
+.v-text-field--outlined.v-input--dense .v-label .change-color {
+    color: yellow
+}
+
+.div-window {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+@media only screen and (max-width: 600px) {
+    .v-data-table .v-data-table__mobile-row {
+        min-height: 48px !important;
+        height: fit-content !important;
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+    }
+
+    .v-data-table .v-data-table__mobile-row .v-data-table__mobile-row__header {
+        width: 80%;
+    }
+
+    .div-mobile {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start;
+    }
+
+}
+
+.table-custom .v-data-footer {
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+}
+
+.publication-type-menu {
+    min-width: 1060px;
+}
+
+.publication-type-item-active {
+    background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.publication-type-item-active:before {
+    opacity: 0.08 !important;
+}

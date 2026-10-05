@@ -1,0 +1,355 @@
+{
+  "data": {
+    "ProjectName": "Quản lý đề tài sau đại học",
+    "apiDomain": "https://tapi.lhu.edu.vn/qldetaisdh",
+    "apiFile": "https://file.lhu.edu.vn/qldetaisdh/upload/FileData",
+    "login": "https://app.lhu.edu.vn",
+    "menu": [
+      {
+        "GroupID": [
+          1
+        ],
+        "SystemRight": [
+          9,
+          1,
+          2,
+          3
+        ],
+        "icon": "mdi-chart-bar",
+        "name": "Dashboard",
+        "right": {
+          "GroupID": [
+            1
+          ],
+          "SystemRight": [
+            9,
+            1,
+            2,
+            3
+          ]
+        },
+        "url": "/dashboard"
+      },
+      {
+        "GroupID": [
+          2
+        ],
+        "roleCode": "Master",
+        "icon": "mdi-post",
+        "name": "Luận văn của tôi",
+        "right": {
+          "GroupID": [
+            2
+          ]
+        },
+        "submenu": [
+          {
+            "icon": "mdi-post",
+            "name": "Đăng ký thực hiện Luận văn",
+            "url": "/my-thesis"
+          },
+          {
+            "icon": "mdi-post",
+            "name": "Thủ tục Đổi Đề tài/GVHD",
+            "url": "/Change_Topic"
+          },
+          {
+            "icon": "calendar-plus",
+            "name": "Thủ tục Gia hạn Đề tài",
+            "url": "/extend-time-topic"
+          }
+        ]
+      },
+      {
+        "GroupID": [
+          2
+        ],
+        "roleCode": "Phd",
+        "icon": "mdi-school-outline",
+        "name": "Luận án của tôi",
+        "right": {
+          "GroupID": [
+            2
+          ]
+        },
+        "submenu": [
+          {
+            "icon": "mdi-school-outline",
+            "name": "Đăng ký & Quản lý Luận án",
+            "url": "/TS-my-thesis"
+          }
+        ]
+      },
+      {
+        "GroupID": [
+          1
+        ],
+        "SystemRight": [
+          9,
+          1,
+          2,
+          3
+        ],
+        "icon": "mdi-pencil-box-outline",
+        "name": "Xét duyệt đề nghị",
+        "right": {
+          "GroupID": [
+            1
+          ],
+          "SystemRight": [
+            9,
+            1,
+            2,
+            3
+          ]
+        },
+        "submenu": [
+          {
+            "name": "Danh sách đăng ký đề tài",
+            "url": "/Export-Topic-Registed"
+          },
+          {
+            "name": "Nộp đề cương",
+            "url": "/nop-de-cuong"
+          },
+          {
+            "name": "Danh sách đăng ký bảo vệ",
+            "url": "/reckon-dky-bao-ve-ths"
+          },
+          {
+            "name": "Xét tốt nghiệp",
+            "url": "/xet-tot-nghiep"
+          },
+          {
+            "name": "Mời giảng viên",
+            "url": "https://qldetaisdh.lhu.edu.vn/teacher-invite"
+          },
+          {
+            "name": "Duyệt tiến độ thực hiện",
+            "url": "/approve-request"
+          },
+          {
+            "icon": "mdi-post",
+            "name": "Duyệt Đổi Đề tài",
+            "url": "/approve-change-request"
+          },
+          {
+            "icon": "calendar-plus",
+            "name": "Duyệt Gia hạn Đề tài",
+            "url": "/approve-extend-time"
+          }
+        ],
+        "url": "/approve-request"
+      },
+      {
+        "GroupID": [
+          1
+        ],
+        "SystemRight": [
+          9,
+          1,
+          2,
+          3
+        ],
+        "icon": "mdi-file-document-multiple",
+        "name": "Lập hội đồng",
+        "right": {
+          "GroupID": [
+            1
+          ],
+          "SystemRight": [
+            9,
+            1,
+            2,
+            3
+          ]
+        },
+        "submenu": [
+          {
+            "name": "Hội đồng Bảo vệ Thạc sĩ",
+            "url": "/council"
+          },
+          {
+            "name": "Giảng viên Hội Đồng",
+            "url": "/teacher-manager"
+          }
+        ],
+        "url": "/council"
+      },
+      {
+        "GroupID": [
+          1
+        ],
+        "SystemRight": [
+          9,
+          1,
+          2,
+          3
+        ],
+        "icon": "mdi-file-document-multiple",
+        "name": "Quản lý Quyết Định",
+        "right": {
+          "GroupID": [
+            1
+          ],
+          "SystemRight": [
+            9,
+            1,
+            2,
+            3
+          ]
+        },
+        "url": "/decision"
+      },
+      {
+        "GroupID": [
+          1
+        ],
+        "SystemRight": [
+          9,
+          1,
+          2,
+          3
+        ],
+        "icon": "mdi-account-school",
+        "name": "Hệ thống",
+        "right": {
+          "GroupID": [
+            1
+          ],
+          "SystemRight": [
+            9,
+            1,
+            2,
+            3
+          ]
+        },
+        "submenu": [
+          {
+            "name": "Quản lý học viên",
+            "url": "/Student_Info"
+          },
+          {
+            "name": "Thống kê tình hình hướng dẫn học viên",
+            "url": "/list-Thesis-ThesisProf"
+          },
+          {
+            "name": "Thống kê dữ liệu",
+            "url": "/thong-ke-quy-trinh"
+          },
+          {
+            "name": "Cấu hình Process của Lớp",
+            "url": "/manage-class-process"
+          }
+        ]
+      },
+      {
+        "icon": "mdi-account-school",
+        "name": "Tiến sĩ",
+        "right": {
+          "FunctionRight": [
+            2,
+            "2"
+          ]
+        },
+        "submenu": [
+          {
+            "icon": "mdi-account-school-outline",
+            "name": "Quản lý Nghiên cứu sinh",
+            "right": {
+              "FunctionRight": [
+                2,
+                "2"
+              ]
+            },
+            "url": "/TS-student-info"
+          },
+          {
+            "icon": "mdi-pencil-box-outline",
+            "name": "Duyệt tiến độ thực hiện",
+            "right": {
+              "FunctionRight": [
+                2,
+                "2"
+              ]
+            },
+            "url": "/TS-approve-request"
+          },
+          {
+            "icon": "mdi-post",
+            "name": "Duyệt Đổi Đề tài",
+            "right": {
+              "FunctionRight": [
+                2,
+                "2"
+              ]
+            },
+            "url": "/TS-approve-change-request"
+          },
+          {
+            "icon": "mdi-calendar-plus",
+            "name": "Duyệt Gia hạn Đề tài",
+            "right": {
+              "FunctionRight": [
+                2,
+                "2"
+              ]
+            },
+            "url": "/TS-approve-extend-time"
+          },
+          {
+            "icon": "mdi-file-document-multiple",
+            "name": "Hội đồng Bảo vệ Tiến sĩ",
+            "right": {
+              "FunctionRight": [
+                2,
+                "2"
+              ]
+            },
+            "url": "/TS-council"
+          },
+          {
+            "icon": "mdi-chart-box-outline",
+            "name": "Thống kê dữ liệu Tiến sĩ",
+            "right": {
+              "FunctionRight": [
+                2,
+                "2"
+              ]
+            },
+            "url": "/TS-thong-ke-quy-trinh"
+          }
+        ]
+      }
+    ],
+    "menustyle": {
+      "leftmenu": {
+        "bgcolor": "blue",
+        "textcolor": "white"
+      },
+      "topmenu": {
+        "bgcolor": "blue",
+        "textcolor": "white"
+      }
+    },
+    "themeStyle": {
+      "theme": {
+        "themes": {
+          "light": {
+            "primary": "#1976d2"
+          }
+        }
+      }
+    },
+    "title": "QLĐT - Sau đại học",
+    "urlReadFile": "https://file.lhu.edu.vn/qldetaisdh/",
+    "urlReturnFile": "https://file.lhu.edu.vn/qldetaisdh",
+    "userInfo": "https://tapi.lhu.edu.vn/acc/UserInfo/qldetaisdh",
+    "userProfileSetting": {
+      "urlAvatar": "https://file.lhu.edu.vn/me/avatarOrigin/",
+      "urlChangePassword": "https://login.lhu.edu.vn.vn/ChangePassword",
+      "urlProfile": "https://login.lhu.edu.vn.vn",
+      "urlSignout": "https://user.lhu.edu.vn.vn/Signout"
+    }
+  }
+}

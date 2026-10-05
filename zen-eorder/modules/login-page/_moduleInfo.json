@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/login-page",
+  "url": "//login.zenfoodcourt.vn",
+  "mDomain": "[\"login.zenfoodcourt.vn\",\"login.zentea.vn\"]",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "login-page",
+  "ModuleName": "Đăng Nhập",
+  "UpdateTime": "2026-06-16 15:26:01",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 166108,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

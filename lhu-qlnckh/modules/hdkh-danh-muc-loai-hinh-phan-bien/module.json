@@ -1,0 +1,122 @@
+{
+  "data": [
+    {
+      "formData": {}
+    },
+    {
+      "DSDanhMucLoaiHinhPhanBien": []
+    },
+    {
+      "Get_DSDanhMucLoaiHinhPhanBien": {
+        "API": "/HDKH_DM_GetLoaiHinhPhanBien",
+        "IN": {},
+        "OUT": "DSDanhMucLoaiHinhPhanBien"
+      }
+    },
+    {
+      "CALL": "Get_DSDanhMucLoaiHinhPhanBien"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "QUẢN LÝ DANH MỤC LOẠI HÌNH PHẢN BIỆN",
+                ":items": "DSDanhMucLoaiHinhPhanBien",
+                ":headers": [
+                  {
+                    "title": "ID",
+                    "key": "value"
+                  },
+                  {
+                    "title": "Tên loại hình",
+                    "key": "title"
+                  },
+                  {
+                    "title": "Thao tác",
+                    "key": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.formData.title",
+                      "label": "Tên loại hình"
+                    },
+                    "w": 12
+                  }
+                ],
+                ":update-api": {
+                  "new-action": {
+                    "formData": {
+                      "title": "",
+                      "value": 0
+                    }
+                  },
+                  "edit-action": {
+                    "formData": "{...item}"
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới loại hình <br/><b>{{vueData.formData.title}}</b>",
+                    "API": "/HDKH_DM_LoaiHinhPhanBien_Save",
+                    "IN": {
+                      "ID": 0,
+                      "TenLoaiHinh": "vueData.formData.title",
+                      "IsActive": true
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "Get_DSDanhMucLoaiHinhPhanBien"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật loại hình <br/><b>{{formData.title}}</b>",
+                    "API": "/HDKH_DM_LoaiHinhPhanBien_Save",
+                    "IN": {
+                      "ID": "item.value",
+                      "TenLoaiHinh": "vueData.formData.title",
+                      "IsActive": true
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "Get_DSDanhMucLoaiHinhPhanBien"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa loại hình <br/><b>{{item.title}}</b>",
+                    "API": "/HDKH_DM_LoaiHinhPhanBien_Save",
+                    "IN": {
+                      "ID": "item.value",
+                      "TenLoaiHinh": "item.title",
+                      "IsActive": false
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "Get_DSDanhMucLoaiHinhPhanBien"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

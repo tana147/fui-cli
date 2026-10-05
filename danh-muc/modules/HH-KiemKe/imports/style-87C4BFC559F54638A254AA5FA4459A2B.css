@@ -1,0 +1,164 @@
+/* ===== Mobile-first base styles ===== */
+
+.mobile-input .v-field__input {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+/* ===== Filter bar sticky ===== */
+.kiem-ke-filter-sticky {
+	position: sticky;
+	top: 0;
+	z-index: 5;
+	background: rgb(var(--v-theme-surface));
+}
+
+/* ===== Mobile virtual scroll list ===== */
+.kiem-ke-mobile-container {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.kiem-ke-mobile-scroll {
+	-webkit-overflow-scrolling: touch;
+}
+
+.kiem-ke-mobile-item {
+	cursor: pointer;
+	transition: background-color 0.15s;
+	min-height: 72px;
+	display: flex;
+	align-items: center;
+}
+
+.kiem-ke-mobile-item:active {
+	background-color: rgba(var(--v-theme-primary), 0.08);
+}
+
+/* ===== Bottom sheet detail ===== */
+.kiem-ke-detail-sheet {
+	max-height: 85dvh;
+	display: flex;
+	flex-direction: column;
+	border-radius: 16px 16px 0 0 !important;
+}
+
+.kiem-ke-detail-body {
+	overflow-y: auto;
+	flex: 1;
+	-webkit-overflow-scrolling: touch;
+}
+
+/* ===== Bottom action bar ===== */
+.kiem-ke-bottom-bar {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 8px 12px;
+	background: rgb(var(--v-theme-surface));
+	border-top: 1px solid rgba(0, 0, 0, 0.12);
+	z-index: 10;
+}
+
+/* ===== Touch-friendly inputs on mobile ===== */
+@media (max-width: 600px) {
+	.mobile-input .v-field {
+		min-height: 44px;
+	}
+
+	.mobile-input .v-field__input,
+	.mobile-input input {
+		font-size: 16px;
+	}
+
+	.kiem-ke-mobile-item .v-avatar {
+		min-width: 40px;
+		min-height: 40px;
+	}
+}
+
+/* ===== Native form controls cho expanded row (desktop) ===== */
+/* Dùng native thay Vuetify component: mỗi v-select/v-text-field/v-textarea/v-checkbox
+   tạo 20–50 DOM nodes. Với 20 dòng expanded = 80+ component = hàng nghìn DOM nodes.
+   Native elements giảm xuống còn ~1 DOM node mỗi control → mở expand gần như instant. */
+
+.kk-native-select {
+	width: 100%;
+	padding: 6px 8px;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	border-radius: 4px;
+	background: transparent;
+	font-size: 13px;
+	outline: none;
+	cursor: pointer;
+}
+
+.kk-native-select:focus {
+	border-color: rgb(var(--v-theme-primary));
+}
+
+.kk-native-input {
+	width: 100%;
+	padding: 6px 8px;
+	border: none;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+	background: transparent;
+	font-size: 13px;
+	outline: none;
+}
+
+.kk-native-input:focus {
+	border-bottom-color: rgb(var(--v-theme-primary));
+}
+
+.kk-native-input:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.kk-native-textarea {
+	width: 100%;
+	padding: 6px 8px;
+	border: none;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+	background: transparent;
+	font-size: 13px;
+	outline: none;
+	resize: vertical;
+	min-height: 28px;
+}
+
+.kk-native-textarea:focus {
+	border-bottom-color: rgb(var(--v-theme-primary));
+}
+
+.kk-native-checkbox {
+	width: 18px;
+	height: 18px;
+	cursor: pointer;
+	accent-color: rgb(var(--v-theme-primary));
+}
+
+/* ===== Desktop drawer detail ===== */
+.kk-drawer-body {
+	overflow-y: auto;
+	height: calc(100% - 100px);
+}
+
+.kk-drawer-footer {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: rgb(var(--v-theme-surface));
+}
+
+.kk-chip {
+	white-space: nowrap;
+	overflow: visible;
+	max-width: none;
+	flex: 0 0 auto;
+	min-width: max-content;
+}

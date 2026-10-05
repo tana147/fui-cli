@@ -1,0 +1,38 @@
+[
+  {
+    "comID": 4327,
+    "comName": "uc-achievement-card"
+  },
+  {
+    "comID": 4908,
+    "comName": "uc-audio-recorder"
+  },
+  {
+    "comID": 4317,
+    "comName": "uc-feed-item"
+  },
+  {
+    "comID": 4314,
+    "comName": "uc-focus-task-card"
+  },
+  {
+    "comID": 6123,
+    "comName": "uc-leaderboard"
+  },
+  {
+    "comID": 4318,
+    "comName": "uc-student-dashboard-v2"
+  },
+  {
+    "comID": 4316,
+    "comName": "uc-subject-progress-bar"
+  },
+  {
+    "comID": 4326,
+    "comName": "uc-summary-modal"
+  },
+  {
+    "comID": 4315,
+    "comName": "uc-week-calendar"
+  }
+]

@@ -1,0 +1,27 @@
+[
+  {
+    "name": "styles",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "9DE0B10FFB444D14BD6CADCFFC6E2D98",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/styles-9DE0B10FFB444D14BD6CADCFFC6E2D98.css"
+  },
+  {
+    "name": "https://fastly.jsdelivr.net/npm/chart.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "1621C94BD8944533B052BE4768383D11",
+    "scope": "module",
+    "sort": 21
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "BC52A01FE6404564B5BFD4A8388D3237",
+    "scope": "module",
+    "sort": 22
+  }
+]

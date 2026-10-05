@@ -1,0 +1,51 @@
+{
+  "data": [
+    {
+      "webSocket_Hub_Bep": "`bep_{{chid}}",
+      "webSocket_Hub_Order": "`order_{{chid}}",
+      "webSocket": "{[webSocket_Hub_Bep]: null, [webSocket_Hub_Order]: null }",
+      "KhuCheBienID": "parseInt(bepid)",
+      "CuaHangID": "parseInt(chid)",
+      "DTHoaDon": [],
+      "DSHoaDon": [],
+      "DSChiTietHoaDon": [],
+      "CTCuaHang": []
+    },
+    {
+      "EXE": "reloadOrder()"
+    }
+  ],
+  "watch": {
+    "webSocket.{{webSocket_Hub_Bep}}": {
+      "EXE": "reloadOrder()"
+    }
+  },
+  "controls": [
+    {
+      "prop": "grid-list-md fluid pa-0",
+      "rows": [
+        {
+          "prop": "bg-green py-1 px-2 fixed-header",
+          "cols": [
+            {
+              "el": "nav_component"
+            }
+          ]
+        },
+        {
+          "prop": "kitchen-layout",
+          "cols": [
+            {
+              "el": "order_list_component",
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false
+  }
+}

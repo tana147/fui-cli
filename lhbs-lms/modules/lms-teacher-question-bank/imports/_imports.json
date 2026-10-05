@@ -1,0 +1,27 @@
+[
+  {
+    "name": "stylePage",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "5A8839AE06E14A4AA4CF8AA44825923C",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/stylePage-5A8839AE06E14A4AA4CF8AA44825923C.css"
+  },
+  {
+    "name": "/include/ckeditor5/build/ckeditor.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "60EB60D4933546DBA6443258745A1302",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/@calvinckho/mic-recorder-to-mp3@2.2.3/dist/index.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "19613BE790C941859270A0984380D4AE",
+    "scope": "module",
+    "sort": 50
+  }
+]

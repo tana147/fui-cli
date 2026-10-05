@@ -1,0 +1,147 @@
+{
+  "data": [
+    {
+      "dsForms": [],
+      "selectedForm": null,
+      "isShowDialog": false,
+      "isAddNew": false
+    },
+    {
+      "getDSForms": {
+        "API": "/HDKH_Form_GetList",
+        "IN": {},
+        "OUT": "dsForms"
+      }
+    },
+    {
+      "CALL": "getDSForms"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "d-flex justify-space-between align-center mb-4"
+              },
+              "innerHTML": [
+                {
+                  "el": "h2",
+                  "attr": {
+                    "class": "text-primary font-weight-bold"
+                  },
+                  "innerHTML": "QUẢN LÝ NHIỆM VỤ KHOA HỌC"
+                },
+                {
+                  "el": "f-button",
+                  "attr": {
+                    "label": "Thêm mới nhiệm vụ",
+                    "icon-text": "mdi-plus-circle-outline",
+                    "color": "primary",
+                    ":action": [
+                      {
+                        "isShowDialog": true,
+                        "isAddNew": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                ":items": "dsForms",
+                ":headers": [
+                  {
+                    "title": "Mã Form",
+                    "key": "FormCode",
+                    "width": "200px"
+                  },
+                  {
+                    "title": "Tên Form",
+                    "key": "FormTitle"
+                  },
+                  {
+                    "title": "Thứ tự",
+                    "key": "SortOrder",
+                    "width": "120px"
+                  },
+                  {
+                    "title": "Thao tác",
+                    "key": "actions",
+                    "align": "center",
+                    "el": "div",
+                    "innerHTML": [
+                      {
+                        "el": "v-btn",
+                        "attr": {
+                          "icon": "mdi-trash-can-outline",
+                          "size": "small",
+                          "variant": "text",
+                          "color": "error",
+                          "title": "Xoá",
+                          "v-on:click": "vueData.deleteForm(item)"
+                        }
+                      },
+                      {
+                        "el": "v-btn",
+                        "attr": {
+                          "icon": "mdi-square-edit-outline",
+                          "size": "small",
+                          "variant": "text",
+                          "color": "success",
+                          "title": "Chỉnh sửa",
+                          "v-on:click": "() => { vueData.selectedForm = item; vueData.isShowDialog = true; vueData.isAddNew = false}"
+                        }
+                      },
+                      {
+                        "el": "v-btn",
+                        "attr": {
+                          "icon": "mdi-cog",
+                          "size": "small",
+                          "variant": "text",
+                          "color": "primary",
+                          "title": "Thiết kế Form",
+                          "v-on:click": "vueData.moveToConfigField(item)"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-form-quanly-form",
+              "attr": {
+                "v-model": "isShowDialog"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

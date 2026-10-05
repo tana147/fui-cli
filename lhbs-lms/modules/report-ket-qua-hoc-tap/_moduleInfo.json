@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/report-ket-qua-hoc-tap",
+  "url": "//lms.lhbs.vn/report-ket-qua-hoc-tap",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "report-ket-qua-hoc-tap",
+  "ModuleName": "Report Kết Quả Học Tập",
+  "UpdateTime": "2025-10-31 08:22:42",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2025-04-04",
+  "LoadCount": 1744,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

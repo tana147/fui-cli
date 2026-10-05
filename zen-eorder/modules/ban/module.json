@@ -1,0 +1,824 @@
+{
+  "data": [
+    {
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 1,
+          "text": "Tạm khóa"
+        }
+      ]
+    },
+    {
+      "DSTrangThai": [
+        {
+          "value": 1,
+          "text": "Bàn trống"
+        },
+        {
+          "value": 2,
+          "text": "Bàn đặt"
+        },
+        {
+          "value": 3,
+          "text": "Đang sử dụng"
+        },
+        {
+          "value": 4,
+          "text": "Bàn đổi món"
+        },
+        {
+          "value": 5,
+          "text": "Chờ thanh toán"
+        }
+      ]
+    },
+    {
+      "getLoaiBan": {
+        "API": "/eorder/LoaiBan_Select",
+        "OUT": "DSLoaiBan"
+      }
+    },
+    {
+      "CALL": "getLoaiBan"
+    },
+    {
+      "getLauSelectByCuaHangId": {
+        "API": "/eorder/Lau_Select_ByCuaHangId",
+        "IN": {
+          "CuaHangID": "CuaHangID"
+        },
+        "OUT": "DSLau",
+        "CALLBACK": [
+          {
+            "LauID": "DSLau[0]?.LauID ?? 0"
+          }
+        ]
+      }
+    },
+    {
+      "getKhuSelectByLauId": {
+        "API": "/eorder/Khu_Select_ByLauId",
+        "IN": {
+          "LauID": "LauID"
+        },
+        "OUT": "DSKhu",
+        "CALLBACK": [
+          {
+            "KhuID": "DSKhu[0]?.KhuID ?? 0"
+          }
+        ]
+      }
+    },
+    {
+      "getBan": {
+        "API": "/eorder/Ban_Select_ByKhuId",
+        "IN": {
+          "KhuID": "KhuID"
+        },
+        "OUT": "DSBan"
+      }
+    },
+    {
+      "getLoaiBanSanPham": {
+        "API": "/eorder/LoaiBanSanPham_Select_ByLoaiBanId",
+        "IN": {
+          "LoaiBanID": "LoaiBanID"
+        },
+        "OUT": "DSLoaiBanSanPham"
+      }
+    },
+    {
+      "getDSBanKhoa": {
+        "API": "/eorder/Ban_Select_ByTenBan",
+        "IN": {
+          "KhuID": "vueData.KhuID",
+          "TuBan": "vueData.TuBan",
+          "DenBan": "vueData.DenBan"
+        },
+        "OUT": "DSBanKhoa"
+      }
+    },
+    {
+      "getBanById": {
+        "API": "/eorder/Ban_Select_ById",
+        "IN": {
+          "BanID": "QrCodeBanID"
+        },
+        "OUT": "CTBan"
+      }
+    },
+    {
+      "getSanPhamMacDinh": {
+        "API": "/eorder/LoaiBanSanPham_Select_ByLoaiBanId",
+        "IN": {
+          "LoaiBanID": "vueData.LoaiBanID"
+        },
+        "OUT": "DSLoaiBanSanPham"
+      }
+    },
+    {
+      "getSanPhamByCuaHang": {
+        "API": "/eorder/SanPham_Select_Dropdown_ByCuaHangId",
+        "IN": {
+          "CuaHangID": "vueData.CuaHangID"
+        },
+        "OUT": "DSSanPham"
+      }
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": {
+        "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+      }
+    },
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "DialogSettingOpen": false,
+      "DialogQrCodeOpen": false,
+      "DialogLockTableOpen": false,
+      "TuBan": null,
+      "DenBan": null,
+      "SanPham": null,
+      "SoLuong": 0,
+      "BanID": 0,
+      "QrCodeBanID": 0,
+      "TenBan": "",
+      "TenKhu": "",
+      "CTBan": []
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "CALL": "getLauSelectByCuaHangId"
+      },
+      {
+        "CALL": "getSanPhamByCuaHang"
+      },
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      }
+    ],
+    "LauID": [
+      {
+        "CALL": "getKhuSelectByLauId"
+      }
+    ],
+    "KhuID": [
+      {
+        "IF": "KhuID > 0",
+        "THEN": {
+          "CALL": "getBan"
+        },
+        "ELSE": {
+          "DSBan": []
+        }
+      }
+    ],
+    "DialogSettingOpen": {
+      "IF": "DialogSettingOpen",
+      "THEN": [
+        {
+          "CALL": "getSanPhamMacDinh"
+        }
+      ]
+    },
+    "CTBan": {
+      "IF": "CTBan.length > 0",
+      "THEN": {
+        "DialogQrCodeOpen": true
+      }
+    },
+    "DSLoaiBanSanPham": null,
+    "DSBanKhoa": null
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            },
+            {
+              "el": "v-select",
+              "w": 2,
+              "attr": {
+                "v-model": "LauID",
+                "label": "Lầu",
+                ":disabled": "!vueData.CuaHangID",
+                ":items": "vueData.DSLau",
+                "item-value": "LauID",
+                "item-text": "TenLau"
+              }
+            },
+            {
+              "el": "v-select",
+              "w": 2,
+              "attr": {
+                "v-model": "KhuID",
+                "label": "Khu vực",
+                ":disabled": "!vueData.LauID",
+                ":items": "vueData.DSKhu",
+                "item-value": "KhuID",
+                "item-text": "TenKhu"
+              }
+            },
+            {
+              "el": "v-btn",
+              "w": 2,
+              "innerHTML": "<v-icon left>mdi-lock</v-icon>Khóa bàn theo danh sách",
+              "attr": {
+                "v-on:click": "vueData.DialogLockTableOpen=true",
+                "color": "error",
+                ":disabled": "!vueData.KhuID"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "w": 4,
+              "attr": {
+                "label": "Loại bàn",
+                ":items": "DSLoaiBan",
+                ":excel": true,
+                "height": "calc(100vh - 118px)",
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenLoaiBan",
+                      "label": "Tên loại bàn"
+                    },
+                    "w": 8
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "GhiChu",
+                      "label": "Mô tả"
+                    },
+                    "w": 12
+                  }
+                ],
+                ":headers": [
+                  {
+                    "text": "Loại bàn",
+                    "el": "span",
+                    "value": "TenLoaiBan",
+                    "attr": {
+                      "style": "display: flex; align-items: center;"
+                    },
+                    "innerHTML": "<div><b>{{item.TenLoaiBan}}</b><br/><span>{{item.GhiChu}}</span></div>"
+                  },
+                  {
+                    "text": "",
+                    "el": "t-button",
+                    "align": "right",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Món mặc định",
+                      ":action": {
+                        "DialogSettingOpen": true,
+                        "LoaiBanID": "item.LoaiBanID",
+                        "TenLoaiBan": "item.TenLoaiBan"
+                      }
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "TinhTrang": 0
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới loại bàn",
+                    "API": "/eorder/LoaiBan_Insert",
+                    "IN": {
+                      "TenLoaiBan": "item.TenLoaiBan",
+                      "GhiChu": "item.GhiChu",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getLoaiBan"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật loại bàn <br/><b>{{item.TenLoaiBan}}</b>",
+                    "API": "/eorder/LoaiBan_Update",
+                    "IN": {
+                      "LoaiBanID": "item.LoaiBanID",
+                      "TenLoaiBan": "item.TenLoaiBan",
+                      "GhiChu": "item.GhiChu",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getLoaiBan"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa loại bàn <br/><b>{{item.TenLoaiBan}}</b>",
+                    "API": "/eorder/LoaiBan_Delete",
+                    "IN": {
+                      "LoaiBanID": "item.LoaiBanID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getLoaiBan"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "el": "f-table",
+              "w": 8,
+              "attr": {
+                "label": "Danh sách bàn",
+                ":items": "DSBan",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Cửa hàng / Lầu / Khu",
+                    "el": "span",
+                    "value": "TenCuaHang",
+                    "innerHTML": "<b>{{item.TenCuaHang}}</b> <br/> {{item.TenLau}} - {{item.TenKhu}} - {{item.TenLoaiBan}}",
+                    "width": 300
+                  },
+                  {
+                    "text": "Tên bàn",
+                    "align": "center",
+                    "el": "v-chip",
+                    "value": "TenBan",
+                    "attr": {
+                      "color": "success",
+                      ":small": true
+                    },
+                    "innerHTML": "{{item.TenBan}}"
+                  },
+                  {
+                    "text": "Tạm khóa",
+                    "align": "center",
+                    "value": "TinhTrang",
+                    "el": "v-icon",
+                    "attr": {
+                      "color": "red",
+                      ":dense": true
+                    },
+                    "innerHTML": "{{item.TinhTrang == 0 ? '': 'mdi-lock'}}"
+                  },
+                  {
+                    "text": "",
+                    "value": "TamKhoa",
+                    "el": "t-button",
+                    "attr": {
+                      "color": "error",
+                      ":label": "item.TinhTrang == 0 ? 'Tạm khóa' : 'Mở khóa'",
+                      ":action": {
+                        "FUN": "updateStatus",
+                        "IN": {
+                          "data": "{{item}}"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "text": "",
+                    "el": "t-button",
+                    "align": "right",
+                    "attr": {
+                      "color": "primary",
+                      "label": "QR Code",
+                      ":action": [
+                        {
+                          "QrCodeBanID": "item.BanID"
+                        },
+                        {
+                          "CALL": "getBanById"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "KhuID",
+                      "label": "Khu vực",
+                      ":items": "vueData.DSKhu",
+                      "item-value": "KhuID",
+                      "item-text": "TenKhu"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenBan",
+                      "label": "Tên bàn"
+                    },
+                    "w": 8
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "LoaiBanID",
+                      "label": "Loại bàn",
+                      ":items": "vueData.DSLoaiBan",
+                      "item-value": "LoaiBanID",
+                      "item-text": "TenLoaiBan"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TrangThai",
+                      "label": "Trạng thái",
+                      ":items": "vueData.DSTrangThai"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "KhuID": "vueData.KhuID",
+                    "TinhTrang": 0,
+                    "TrangThai": 3
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới bàn",
+                    "API": "/eorder/Ban_Insert",
+                    "IN": {
+                      "KhuID": "item.KhuID",
+                      "TenBan": "item.TenBan",
+                      "LoaiBanID": "item.LoaiBanID",
+                      "TinhTrang": "item.TinhTrang",
+                      "TrangThai": "item.TrangThai"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getBan"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật bàn <br/><b>{{item.TenBan}}</b>",
+                    "API": "/eorder/Ban_Update",
+                    "IN": {
+                      "BanID": "item.BanID",
+                      "KhuID": "item.KhuID",
+                      "TenBan": "item.TenBan",
+                      "LoaiBanID": "item.LoaiBanID",
+                      "TinhTrang": "item.TinhTrang",
+                      "TrangThai": "item.TrangThai"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getBan"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa bàn <br/><b>{{item.TenBan}}</b>",
+                    "API": "/eorder/Ban_Delete",
+                    "IN": {
+                      "BanID": "item.BanID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getBan"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "f-dialog",
+              "attr": {
+                "v-model": "DialogSettingOpen",
+                ":title": "`Thiết lập món mặc định - ${vueData.TenLoaiBan}`",
+                ":controls": [
+                  {
+                    "el": "v-combobox",
+                    "attr": {
+                      "v-model": "vueData.SanPham",
+                      "label": "Chọn món mặc định",
+                      ":items": "vueData.DSSanPham"
+                    },
+                    "w": 7
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.SoLuong",
+                      "label": "Số lượng"
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "f-button",
+                    "w": 3,
+                    "attr": {
+                      "icon-text": "mdi-plus-circle",
+                      "color": "primary",
+                      "label": "THÊM MÓN",
+                      ":text": false,
+                      ":block": true,
+                      ":action": {
+                        "IF": "vueData.SanPham.value === 0",
+                        "THEN": {
+                          "FUN": "showMessage",
+                          "IN": {
+                            "title": "`Vui lòng chọn món mặc định",
+                            "type": "`red"
+                          }
+                        },
+                        "ELSE": {
+                          "API": "/eorder/LoaiBanSanPham_Insert",
+                          "IN": {
+                            "LoaiBanID": "vueData.LoaiBanID",
+                            "SanPhamID": "vueData.SanPham.value",
+                            "SoLuong": "vueData.SoLuong"
+                          },
+                          "MESS": "Lưu món mặc định thành công",
+                          "CALLBACK": [
+                            {
+                              "CALL": "getLoaiBanSanPham"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "el": "f-table",
+                    "w": 12,
+                    "attr": {
+                      "label": "Danh sách món mặc định",
+                      ":excel": true,
+                      ":items": "vueData.DSLoaiBanSanPham",
+                      ":headers": [
+                        {
+                          "text": "Tên món",
+                          "value": "TenSanPham"
+                        },
+                        {
+                          "text": "Số lượng",
+                          "align": "right",
+                          "value": "SoLuong"
+                        },
+                        {
+                          "text": "",
+                          "value": "ctrl-update",
+                          "align": "center",
+                          "width": 80
+                        }
+                      ],
+                      ":update-api": {
+                        "delete": {
+                          "CONFIRM": "Bạn có muốn xóa món mặc định <br/><b>{{item.TenSanPham}}</b>",
+                          "API": "/eorder/LoaiBanSanPham_Delete",
+                          "IN": {
+                            "LoaiBanSanPhamID": "item.LoaiBanSanPhamID"
+                          },
+                          "MESS": "Xóa món mặc định thành công",
+                          "CALLBACK": [
+                            {
+                              "CALL": "getLoaiBanSanPham"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "f-dialog",
+              "attr": {
+                "v-model": "DialogQrCodeOpen",
+                ":width": 500,
+                "title": "Mã QR Code Bàn",
+                ":controls": [
+                  {
+                    "el": "qrcode"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "f-dialog",
+              "attr": {
+                "v-model": "DialogLockTableOpen",
+                "title": "Khóa bàn theo danh sách",
+                ":controls": [
+                  {
+                    "el": "div",
+                    "attr": {
+                      "class": "text-left"
+                    },
+                    "innerHTML": "<b class='primary--text'>Nhập phạm vi bàn muốn khóa/mở khóa</b> <br/> Ví dụ: Từ bàn 1, Đến bàn 50",
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.TuBan",
+                      "label": "Từ bàn",
+                      "type": "number"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.DenBan",
+                      "label": "Đến bàn",
+                      "type": "number"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "f-button",
+                    "w": 4,
+                    "attr": {
+                      "icon-text": "mdi-list-box-outline",
+                      "color": "primary",
+                      "label": "XEM DANH SÁCH BÀN",
+                      ":block": true,
+                      ":text": false,
+                      ":action": {
+                        "CALL": "getDSBanKhoa"
+                      }
+                    }
+                  },
+                  {
+                    "el": "f-table",
+                    "w": 12,
+                    "attr": {
+                      "label": "Danh sách bàn",
+                      ":excel": true,
+                      ":items": "vueData.DSBanKhoa",
+                      "height": 250,
+                      ":headers": [
+                        {
+                          "text": "Cửa hàng / Lầu / Khu",
+                          "el": "span",
+                          "value": "TenCuaHang",
+                          "innerHTML": "{{item.TenCuaHang}} / {{item.TenLau}} / {{item.TenKhu}}"
+                        },
+                        {
+                          "text": "Tên bàn",
+                          "align": "center",
+                          "el": "v-chip",
+                          "value": "TenBan",
+                          "attr": {
+                            "color": "success",
+                            ":small": true
+                          },
+                          "innerHTML": "{{item.TenBan}}"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                ":button": [
+                  {
+                    "label": "Mở khóa bàn",
+                    "action": {
+                      "CONFIRM": "Bạn có muốn mở khóa bàn <br/> Từ bàn <b>{{vueData.TuBan}}</b> đến bàn <b>{{vueData.DenBan}}</b>",
+                      "API": "/eorder/Ban_Update_TinhTrang_ByTenBan",
+                      "IN": {
+                        "KhuID": "vueData.KhuID",
+                        "TuBan": "vueData.TuBan",
+                        "DenBan": "vueData.DenBan",
+                        "TinhTrang": 0
+                      },
+                      "MESS": "Mở khóa bàn thành công",
+                      "CALLBACK": [
+                        {
+                          "DialogLockTableOpen": false,
+                          "DSBanKhoa": [],
+                          "TuBan": null,
+                          "DenBan": null
+                        },
+                        {
+                          "CALL": "getBan"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "label": "Tạm khóa bàn",
+                    "action": {
+                      "CONFIRM": "Bạn có muốn tạm khóa bàn <br/> Từ bàn <b>{{vueData.TuBan}}</b> đến bàn <b>{{vueData.DenBan}}</b>",
+                      "API": "/eorder/Ban_Update_TinhTrang_ByTenBan",
+                      "IN": {
+                        "KhuID": "vueData.KhuID",
+                        "TuBan": "vueData.TuBan",
+                        "DenBan": "vueData.DenBan",
+                        "TinhTrang": 1
+                      },
+                      "MESS": "Khóa bàn thành công",
+                      "CALLBACK": [
+                        {
+                          "DialogLockTableOpen": false,
+                          "DSBanKhoa": [],
+                          "TuBan": null,
+                          "DenBan": null
+                        },
+                        {
+                          "CALL": "getBan"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

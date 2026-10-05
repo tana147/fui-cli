@@ -1,0 +1,27 @@
+[
+  {
+    "name": "customCss",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "E9F70C645841418DB188C62CA25E9015",
+    "scope": "module",
+    "sort": 51,
+    "filePath": "imports/customCss-E9F70C645841418DB188C62CA25E9015.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "6032064F089145F3BF0993013DE03DCB",
+    "scope": "module",
+    "sort": 52
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "53CE4DC812384187B943A6A867417278",
+    "scope": "module",
+    "sort": 52
+  }
+]

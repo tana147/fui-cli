@@ -1,0 +1,54 @@
+[
+  {
+    "comID": 3233,
+    "comName": "uc-empty"
+  },
+  {
+    "comID": 3234,
+    "comName": "uc-modal-history"
+  },
+  {
+    "comID": 3235,
+    "comName": "uc-modal-order"
+  },
+  {
+    "comID": 3236,
+    "comName": "uc-modal-product"
+  },
+  {
+    "comID": 3237,
+    "comName": "uc-modal-voucher"
+  },
+  {
+    "comID": 3238,
+    "comName": "uc-navigation"
+  },
+  {
+    "comID": 3240,
+    "comName": "uc-product-history"
+  },
+  {
+    "comID": 3239,
+    "comName": "uc-product-history-topping"
+  },
+  {
+    "comID": 3242,
+    "comName": "uc-product-list"
+  },
+  {
+    "comID": 3241,
+    "comName": "uc-product-list-item"
+  },
+  {
+    "comID": 3244,
+    "comName": "uc-product-order"
+  },
+  {
+    "comID": 3243,
+    "comName": "uc-product-order-topping"
+  },
+  {
+    "comID": 3245,
+    "comName": "uc-topping"
+  }
+]

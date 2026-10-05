@@ -1,0 +1,109 @@
+/* 
+    1: Đã gửi Bếp-Bar,
+    2: Đã trả món,
+    3: Đã đổi món,
+    5: Đang chế biến ,
+    6: Đã hủy
+*/
+.bg-status-1 {
+    background-color: #ffffff;
+}
+
+.bg-status-2 {
+    background-color: #82e986;
+}
+
+.bg-status-3 {
+    background-color: #f59e32;
+}
+
+.bg-status-5 {
+    background-color: #bae0ff;
+}
+
+.bg-status-6 {
+    background-color: #ff52526b;
+}
+
+.bg-purple-unit {
+    background-color: #ce6ce0;
+}
+
+.bg-status-5 .black--text {
+    color: #3656b5 !important;
+}
+
+.fs-16 {
+    font-size: 16px;
+}
+
+.tr-product {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.td-product-name-send {
+    width: 85%;
+}
+
+.td-product-action {
+    width: 15%;
+    text-align: right;
+    padding-right: 10px;
+}
+
+.span-unit {
+    color: white;
+    margin-right: 5px;
+    border-radius: 10px;
+    padding: 1px 5px;
+}
+
+.kitchen-container {
+    display: flex;
+    max-height: calc(100vh - 48px);
+    overflow: auto;
+    grid-gap: 5px;
+    padding: 10px;
+    flex-flow: column wrap;
+    align-content: flex-start;
+}
+
+.kitchen-layout {
+    margin-top: 40px !important;
+}
+
+.container.grid-list-md .layout:not(:only-child) {
+    margin: auto 0px;
+}
+
+.v-main__wrap {
+    background-color: #b7ebb970 !important;
+}
+
+.scroll-shadows {
+    --scrollbarBG: transparent;
+    --thumbBG: #4caf50a1;
+
+    scrollbar-width: thin;
+    scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+}
+
+.scroll-shadows::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scroll-shadows::-webkit-scrollbar-track {
+    background: var(--scrollbarBG);
+}
+
+.scroll-shadows::-webkit-scrollbar-thumb {
+    background-color: var(--thumbBG);
+    border-radius: 6px;
+    border: 3px solid var(--scrollbarBG);
+}
+
+.container.grid-list-md .layout .flex {
+    padding: 0
+}

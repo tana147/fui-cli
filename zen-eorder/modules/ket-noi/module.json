@@ -1,0 +1,26 @@
+{
+  "data": [],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "uc-connect",
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "login": false,
+    "userInfo": "",
+    "menuLeft": false
+  }
+}

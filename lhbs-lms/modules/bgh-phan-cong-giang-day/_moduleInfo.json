@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/bgh-phan-cong-giang-day",
+  "url": "//lms.lhbs.vn/bgh-phan-cong-giang-day",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "bgh-phan-cong-giang-day",
+  "ModuleName": "Phân Công Giảng Dạy",
+  "UpdateTime": "2025-06-20 16:06:34",
+  "UpdateUser": "DEV000018",
+  "LastLoad": "2026-06-11",
+  "LoadCount": 650,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

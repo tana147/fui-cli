@@ -1,0 +1,43 @@
+[
+  {
+    "name": "stylePage",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "FF3C5318C9584563B8414495995BC239",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/stylePage-FF3C5318C9584563B8414495995BC239.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "1E127719394648D984FF7EF46DF0E3CD",
+    "scope": "module",
+    "sort": 49
+  },
+  {
+    "name": "/include/ckeditor5/build/ckeditor.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "AE2156DB85D34844BC9E8F16089DF12E",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "9B34269935924AB58B063A7815F63001",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/@calvinckho/mic-recorder-to-mp3@2.2.3/dist/index.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "37222ACFB326457F8D0D4E07C8863561",
+    "scope": "module",
+    "sort": 51
+  }
+]

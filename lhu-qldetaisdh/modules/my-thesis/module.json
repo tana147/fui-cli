@@ -1,0 +1,62 @@
+{
+  "data": [
+    {
+      "id": "id",
+      "fullflow": "",
+      "rootflow": "",
+      "similiarTopic": [],
+      "similiarList": [],
+      "DefaultFLow": null,
+      "Panel": null
+    },
+    {
+      "getStudentRootFlow": {
+        "API": "/Student_Process_Get",
+        "IN": {
+          "Student_ID": "vueData.user.UserID",
+          "IsFull": 0
+        },
+        "OUT": "StudentProcess",
+        "CALLBACK": {
+          "API": "/Get_RootFlow",
+          "IN": {
+            "StudentID": "vueData.user.UserID",
+            "Process_Student_ID": "vueData.StudentProcess.length > 0 ? vueData.StudentProcess[0].Process_Student_ID : 0",
+            "Process_Tree": "1"
+          },
+          "OUT": "DS_RootFlow",
+          "CALLBACK": [
+            {
+              "DefaultFLow": "vueData.DS_RootFlow.find(item=> item.LOCK_STATUS === 1)"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "CALL": "getStudentRootFlow"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "student-container",
+              "col": {},
+              "attr": {
+                ":fullflow": "vueData.DS_FullFlow",
+                ":rootflow": "vueData.DS_RootFlow"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

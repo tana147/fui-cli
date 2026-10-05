@@ -1,0 +1,9 @@
+.card-dashed {
+  /* border-style: dashed !important;
+  border-color: #1976D2; */
+  border: 2px dashed #58a1eb;
+}
+
+.searchBar{
+  width: 420px;
+}

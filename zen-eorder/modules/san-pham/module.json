@@ -1,0 +1,388 @@
+{
+  "data": [
+    {
+      "webSocket": "{}",
+      "webSocket_Menu": null,
+      "IsShowDialogPushMenu": false,
+      "DSCuaHang": []
+    },
+    {
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 1,
+          "text": "Tạm khóa"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/DonViTinh_Select",
+      "OUT": "DSDonViTinh"
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": {
+        "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+      }
+    },
+    {
+      "getNhomSanPham": {
+        "API": "/eorder/NhomSanPham_Select_Tree",
+        "OUT": "DSNhomSanPham"
+      }
+    },
+    {
+      "CALL": "getNhomSanPham"
+    },
+    {
+      "getSanPham": {
+        "API": "/eorder/SanPham_Select_ByNhomSanPhamId",
+        "IN": {
+          "CuaHangID": "CuaHangID",
+          "NhomSanPhamID": "NhomSanPhamID_Selected.join(',')"
+        },
+        "OUT": "DSSanPham"
+      }
+    },
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "AnhSanPham_FileID": null,
+      "SanPhamID": 0,
+      "NhomSanPhamID_Selected": []
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "CALL": "getSanPham"
+      },
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      },
+      {
+        "webSocket_Menu": "`menu_pos_{{CuaHangID}}"
+      },
+      {
+        "FUN": "webSocketJoinGroup",
+        "IN": {
+          "{{webSocket_Menu}}": null
+        }
+      }
+    ],
+    "NhomSanPhamID_Selected": {
+      "CALL": "getSanPham"
+    },
+    "DSNhomSanPham": {
+      "FUN": "convertJsonToTree",
+      "IN": {
+        "data": "DSNhomSanPham"
+      },
+      "OUT": "DSNhomSanPham_Tree"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            },
+            {
+              "el": "div",
+              "attr": {
+                "class": "d-flex"
+              },
+              "innerHTML": [
+                {
+                  "el": "f-button",
+                  "attr": {
+                    "icon-text": "mdi-lock-open-check",
+                    "color": "primary",
+                    "label": "Mở lại tất cả món tạm hết",
+                    ":text": false,
+                    ":action": {
+                      "CONFIRM": "Bạn có chắc muốn mở lại tất cả món đang tạm hết? <br/>Chỉ áp dụng các món cho phép bán App và POS, mPOS",
+                      "API": "/eorder/SanPham_Update_HuyTamHet",
+                      "IN": {
+                        "CuaHangID": "CuaHangID"
+                      },
+                      "MESS": "Mở lại tất cả món tạm hết thành công",
+                      "CALLBACK": [
+                        {
+                          "EXE": "window.location.reload()"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "el": "f-button",
+                  "attr": {
+                    "class": "ms-2",
+                    "icon-text": "mdi-cached",
+                    "color": "primary",
+                    "label": "Đồng bộ menu lên GRAB",
+                    ":text": false,
+                    ":action": {
+                      "EXE": "vueData.IsShowDialogPushMenu = true; console.log(vueData.IsShowDialogPushMenu)"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "w": 12,
+              "attr": {
+                "label": "Danh sách sản phẩm",
+                ":items": "DSSanPham",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Mã số",
+                    "align": "center",
+                    "value": "MaSoSanPham"
+                  },
+                  {
+                    "text": "Mã sản phẩm",
+                    "el": "t-button",
+                    "value": "detail-button",
+                    "width": 150,
+                    "attr": {
+                      "color": "primary",
+                      ":label": "item.MaSanPham",
+                      ":action": {
+                        "EXE": "window.location.href = `/san-pham-chi-tiet?spid=${item.SanPhamID}`"
+                      }
+                    }
+                  },
+                  {
+                    "text": "Tên sản phẩm",
+                    "width": 500,
+                    "el": "span",
+                    "value": "TenSanPham",
+                    "innerHTML": "{{item.TenSanPham}} <span class='grey--text'>({{item.TenDVT}})</span> <v-chip v-if='item.Is_BestSeller === 1' color='success' class='ml-1' small>Bán chạy</v-chip><v-chip v-if='item.Is_Signature === 1' color='success' class='ml-1' small>Signature</v-chip>"
+                  },
+                  {
+                    "text": "Giá",
+                    "el": "span",
+                    "value": "GiaBan_CuaHang",
+                    "innerHTML": "<b class='error--text'>{{(item.GiaBan_CuaHang).toLocaleString('vi-vn')}}</b>"
+                  },
+                  {
+                    "text": "Nhóm / Liên kết",
+                    "width": 220,
+                    "el": "span",
+                    "value": "TenNhomSanPham",
+                    "innerHTML": "{{item.TenNhomSanPham}}<br/><a :href='`/nhom-lien-ket?id=${item.NhomLienKetID}`' target='_blank' class='primary--text cursor-pointer'>{{item.MaNhomLienKet}} <v-icon v-if='item.NhomLienKetID > 0' color='primary' small>mdi-open-in-new</v-icon></a>"
+                  },
+                  {
+                    "text": "Quản lý tồn",
+                    "el": "v-chip",
+                    "align": "center",
+                    "value": "QuanLyTon",
+                    "attr": {
+                      "v-if": "item.QuanLyTon === 1",
+                      "color": "success",
+                      ":small": true
+                    },
+                    "innerHTML": "Có"
+                  },
+                  {
+                    "text": "Tồn",
+                    "el": "span",
+                    "align": "right",
+                    "value": "SoLuongTon",
+                    "innerHTML": "<uc-modal-quantity v-model='item' />"
+                  },
+                  {
+                    "text": "Khóa",
+                    "align": "center",
+                    "value": "TinhTrang",
+                    "el": "v-icon",
+                    "width": 50,
+                    "attr": {
+                      "color": "red",
+                      ":dense": true
+                    },
+                    "innerHTML": "{{item.TinhTrang == 0 ? '': 'mdi-lock'}}"
+                  },
+                  {
+                    "text": "",
+                    "value": "TamKhoa",
+                    "el": "t-button",
+                    "width": 100,
+                    "attr": {
+                      "color": "error",
+                      ":label": "item.TinhTrang == 0 ? 'Tạm khóa' : 'Mở khóa'",
+                      ":action": [
+                        {
+                          "EXE": "onSave(item)"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "text": "Cho phép bán",
+                    "el": "span",
+                    "value": "ChoPhepBan_TrucTiep",
+                    "innerHTML": "{{item.ChoPhepBan_TrucTiep ? 'POS' : ''}} {{item.ChoPhepBan_App ? ', App' : ''}} {{item.ChoPhepBan_OrderTaiBan ? ', Bàn' : ''}}"
+                  },
+                  {
+                    "text": "Nhóm hóa đơn",
+                    "width": 150,
+                    "value": "TenNhomSanPhamHoaDon"
+                  },
+                  {
+                    "text": "Nhóm loại ly",
+                    "width": 220,
+                    "value": "TenNhomLoaiLy"
+                  },
+                  {
+                    "text": "Nhóm báo cáo",
+                    "width": 500,
+                    "value": "TenNhomSanPhamBaoCao"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "f-image-update",
+                    "attr": {
+                      "v-model": "AnhSanPham_Url",
+                      "v-on:update": "vueData.AnhSanPham_FileID=$event.returnData.Files[0].FileID;AnhSanPham_Url='https://file.zentea.vn/eorder/' + $event.returnData.Files[0].Url",
+                      "api-upload": "https://file.zentea.vn/eorder/upload/FileData",
+                      "label": "Ảnh đại diện",
+                      "dialog-width": 600,
+                      "dialog-height": 400,
+                      ":size": {
+                        "width": 800,
+                        "height": 800
+                      },
+                      "quality": 0.5,
+                      ":croper-attr": {
+                        "stencil-props": {
+                          "aspectRatio": 1
+                        },
+                        "default-size": {
+                          "width": 9999,
+                          "height": 9999
+                        },
+                        "transitions": true,
+                        "image-restriction": "fit-area"
+                      }
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "MaSanPham",
+                      "label": "Mã sản phẩm"
+                    },
+                    "w": 8
+                  },
+                  {
+                    "el": "v-checkbox",
+                    "attr": {
+                      "color": "success",
+                      "v-model": "TuDongTaoMa",
+                      "label": "Tự động tạo mã"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenSanPham",
+                      "label": "Tên sản phẩm"
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "TenNgan",
+                      "label": "Tên ngắn"
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "MoTa",
+                      "label": "Mô tả"
+                    },
+                    "w": 12
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "TinhTrang": 0,
+                    "MaSoSanPham": 0
+                  },
+                  "new-action": {
+                    "AnhSanPham_FileID": null
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới sản phẩm",
+                    "API": "/eorder/SanPham_Insert",
+                    "IN": {
+                      "CuaHangID": "vueData.CuaHangID",
+                      "AnhSanPham_FileID": "vueData.AnhSanPham_FileID ?? ''",
+                      "MaSanPham": "item.MaSanPham",
+                      "TuDongTaoMa": "item.TuDongTaoMa ?? false",
+                      "TenSanPham": "item.TenSanPham",
+                      "TenNgan": "item.TenNgan",
+                      "MoTa": "item.MoTa"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "OUT": "SanPhamID_New",
+                    "CALLBACK": [
+                      {
+                        "EXE": "window.location.href = `/san-pham-chi-tiet?spid=${vueData.SanPhamID_New[0].SanPhamID}`"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "w": 12,
+              "el": "uc-modal-push-menu-grab"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

@@ -1,0 +1,235 @@
+{
+  "data": [
+    {
+      "CuaHangID": 0,
+      "SanPhamCho_List": [],
+      "DSSanPham_CuaHang": [],
+      "SanPhamID_Add": null,
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 1,
+          "text": "Tạm khóa"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang"
+    },
+    {
+      "getSanPham_Cho": {
+        "API": "/eorder/SanPhamCho_Select",
+        "OUT": "DSSanPham_Cho",
+        "CALLBACK": [
+          {
+            "SanPhamCho_List": [],
+            "SanPhamID_Add": null
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "getSanPham_Cho"
+    },
+    {
+      "getSanPhamByCuaHang": {
+        "API": "/eorder/SanPham_Select_Dropdown_ByCuaHangId",
+        "IN": {
+          "CuaHangID": "CuaHangID"
+        },
+        "OUT": "DSSanPham_CuaHang",
+        "CALLBACK": [
+          {
+            "SanPhamID_Add": null
+          }
+        ]
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": {
+      "IF": "vueData.CuaHangID > 0",
+      "THEN": {
+        "CALL": "getSanPhamByCuaHang"
+      }
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "f-button",
+              "w": 2,
+              "attr": {
+                ":disabled": "SanPhamCho_List?.length === 0",
+                ":block": true,
+                "icon-text": "mdi-trash-can",
+                "color": "error",
+                ":text": false,
+                ":label": "`XÓA DỮ LIỆU CHỜ (${SanPhamCho_List?.length})`",
+                ":action": {
+                  "CONFIRM": "Bạn có chắc muốn xóa <b>{{SanPhamCho_List?.length}}</b> sản phẩm chờ",
+                  "API": "/eorder/SanPhamCho_Delete",
+                  "IN": {
+                    "SanPhamID_List": "SanPhamCho_List.map(item => item.SanPhamID).join(',')"
+                  },
+                  "MESS": "Xóa {{SanPhamCho_List?.length}} sản phẩm chờ thành công",
+                  "CALLBACK": [
+                    {
+                      "CALL": "getSanPham_Cho"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "el": "f-button",
+              "w": 2,
+              "attr": {
+                ":disabled": "SanPhamCho_List?.length === 0",
+                ":block": true,
+                "icon-text": "mdi-database-sync",
+                "color": "primary",
+                ":text": false,
+                ":label": "`ĐỒNG BỘ DỮ LIỆU (${SanPhamCho_List?.length})`",
+                ":action": {
+                  "CONFIRM": "Bạn có chắc muốn đồng bộ <b>{{SanPhamCho_List?.length}}</b> sản phẩm xuống cửa hàng",
+                  "API": "/eorder/SanPhamCho_Sync",
+                  "IN": {
+                    "SanPhamID_List": "SanPhamCho_List.map(item => item.SanPhamID).join(',')"
+                  },
+                  "MESS": "Đồng bộ dữ liệu {{SanPhamCho_List?.length}} sản phẩm thành công. Sản phẩm sẽ được xóa khỏi danh sách chờ",
+                  "CALLBACK": [
+                    {
+                      "CALL": "getSanPham_Cho"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Danh sách sản phẩm chờ",
+                ":excel": true,
+                ":items": "DSSanPham_Cho",
+                "height": "calc(100vh - 176px)",
+                "v-model": "SanPhamCho_List",
+                ":show-select": true,
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Mã sản phẩm",
+                    "el": "t-button",
+                    "width": 150,
+                    "value": "MaSanPham",
+                    "attr": {
+                      ":label": "item.MaSanPham",
+                      "target": "dialog",
+                      ":url": "`/san-pham-cho-chi-tiet?spid=${item.SanPhamID}`",
+                      "title": "Cập nhật sản phẩm chờ"
+                    }
+                  },
+                  {
+                    "text": "Tên sản phẩm",
+                    "el": "span",
+                    "value": "TenSanPham",
+                    "innerHTML": "{{item.TenSanPham}}"
+                  },
+                  {
+                    "text": "Đơn vị tính",
+                    "value": "TenDVT"
+                  },
+                  {
+                    "text": "Nhóm sản phẩm",
+                    "el": "span",
+                    "value": "TenNhomSanPham",
+                    "innerHTML": "{{item.TenNhomSanPham}}"
+                  },
+                  {
+                    "text": "Nhóm liên kết",
+                    "el": "span",
+                    "value": "MaNhomLienKet",
+                    "innerHTML": "<a :href='`/nhom-lien-ket?id=${item.NhomLienKetID}`' target='_blank' class='primary--text cursor-pointer'>{{item.MaNhomLienKet}} <v-icon v-if='item.NhomLienKetID > 0' color='primary' small>mdi-open-in-new</v-icon></a>"
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-select",
+                    "w": 12,
+                    "attr": {
+                      "v-model": "vueData.CuaHangID",
+                      "label": "Cửa hàng",
+                      ":items": "vueData.DSCuaHang",
+                      "item-value": "CuaHangID",
+                      "item-text": "TenCuaHang"
+                    }
+                  },
+                  {
+                    "el": "v-combobox",
+                    "w": 12,
+                    "attr": {
+                      "v-model": "vueData.SanPhamID_Add",
+                      ":disabled": "vueData.CuaHangID === 0",
+                      "label": "Sản phẩm",
+                      ":items": "vueData.DSSanPham_CuaHang"
+                    }
+                  }
+                ],
+                ":update-api": {
+                  "new-action": {
+                    "SanPhamID_Add": null
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới sản phẩm chờ",
+                    "API": "/eorder/SanPhamCho_Insert",
+                    "IN": {
+                      "SanPhamID": "vueData.SanPhamID_Add.value"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getSanPham_Cho"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa sản phẩm chờ <br/><b>{{item.TenNhomSanPham}}</b>",
+                    "API": "/eorder/SanPhamCho_Delete",
+                    "IN": {
+                      "SanPhamID_List": "item.SanPhamID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getSanPham_Cho"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

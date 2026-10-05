@@ -1,0 +1,34 @@
+{
+  "data": [
+    {
+      "IsShowBanner": true,
+      "QRCode_Full": "code",
+      "QR": "qr",
+      "QRCode_Array": "QR ? QR.split('|') : QRCode_Full.split('|')",
+      "QRCode": "QRCode_Array[QRCode_Array.length - 1]",
+      "KhachHangID": "khid"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-modal-banner"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false,
+    "login": false,
+    "userInfo": ""
+  }
+}

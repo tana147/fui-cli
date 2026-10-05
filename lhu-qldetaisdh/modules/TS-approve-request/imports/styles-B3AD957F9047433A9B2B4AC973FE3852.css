@@ -1,0 +1,188 @@
+.uc-ar-select-box {
+    width: 12%;
+}
+
+.uc-ar-input-container {
+    width: 100%;
+    margin-bottom: 2%;
+}
+
+.uc-ar-teacher-title {
+    margin-bottom: 0.5%;
+}
+
+.uc-ar-title-txt {
+    text-align: center;
+    line-height: 1.5;
+    display: block;
+    font-weight: bold;
+}
+
+.uc-ar-wrap-data-info {
+    width: 30%;
+}
+
+.uc-ar-info-card-wrap {
+    width: 600px;
+}
+
+.uc-ar-info-title {
+    text-align: center;
+    line-height: 1.5;
+    display: block;
+    font-weight: bold;
+}
+
+.uc-ar-text-score {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    line-height: 1.5;
+}
+
+.uc-ar-stepper-step {
+    color: white;
+    font-weight: bold;
+}
+
+.uc-ar-name-padding {
+    padding: 5px 0 5px 0;
+}
+
+.uc-ar-checkbox-des {
+    transform: scale(1.2);
+}
+
+.uc-ar-pass-column {
+    border-bottom: none !important;
+}
+
+.uc-ar-limit-text {
+    text-align: right;
+    font-size: 14px;
+    color: gray;
+}
+
+.uc-ar-txt-topic-des {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.uc-ar-custom-chip {
+    height: 130px;
+}
+
+.uc-ar-container .v-application--is-ltr .v-stepper--vertical .v-stepper__content {
+    margin: 0 !important;
+}
+
+.uc-ar-container .v-application--is-ltr .v-stepper--vertical .v-stepper__content {
+    padding: 16px 23px 16px 23px;
+}
+
+.uc-ar-container .v-input--selection-controls {
+    margin-top: 0px;
+    padding-top: 0px;
+}
+
+.uc-ar-container .v-application--is-ltr .v-input--selection-controls__input {
+    margin-right: 0px;
+}
+
+.uc-ar-container .v-expansion-panel-content__wrap {
+    padding: 0 16px 16px;
+}
+
+.uc-ar-render-col {
+    width: 80px;
+}
+
+.uc-ar-score-field {
+    width: 68px;
+}
+
+.uc-ar-container .theme--light.v-data-table thead tr th {
+    font-size: 0.9rem !important;
+}
+
+.uc-ar-container .v-data-table>.v-data-table__wrapper>table>tbody>tr>td,
+.uc-ar-container .v-data-table>.v-data-table__wrapper>table>tfoot>tr>td,
+.uc-ar-container .v-data-table>.v-data-table__wrapper>table>thead>tr>td {
+    height: 40px;
+}
+
+.uc-ar-justify-col {
+    justify-content: center !important;
+}
+
+.uc-ar-de-cuong-wrap {
+    width: 230px;
+}
+
+/* Vẽ trực tiếp border-bottom cho control wrapper để đảm bảo luôn hiển thị gạch chân */
+.uc-ar-container .uc-ar-underline-search .v-input__control {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.42) !important;
+}
+
+.uc-ar-container .uc-ar-underline-search .v-input__slot::before,
+.uc-ar-container .uc-ar-underline-search .v-field__outline::before {
+    display: none !important;
+    /* Ẩn line mặc định bị lỗi của platform */
+}
+
+.uc-ar-container .uc-ar-underline-search .v-input__slot::after,
+.uc-ar-container .uc-ar-underline-search .v-field__outline::after {
+    border-color: var(--v-primary-base) !important;
+}
+
+/* Student info styling */
+.uc-student-info-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 2px;
+    padding: 10px 16px;
+}
+
+.uc-student-info-item {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #475569;
+}
+
+.uc-student-icon {
+    color: #64748b !important;
+}
+
+.uc-student-label {
+    font-weight: 500;
+    margin-right: 4px;
+    color: #64748b;
+}
+
+.uc-student-name {
+    font-weight: 700;
+    color: #1e293b;
+    text-transform: uppercase;
+}
+
+.uc-student-id {
+    font-weight: 600;
+    color: #0f172a;
+    background-color: #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-family: monospace;
+}
+
+.uc-student-class {
+    font-weight: 600;
+    color: #0f172a;
+    background-color: #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 2px;
+}

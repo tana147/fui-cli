@@ -1,0 +1,37 @@
+.section-title {
+    font-weight: 600;
+    color: var(--v-theme-primary);
+    margin: 8px 0 4px;
+}
+
+.tabulator-select {
+    width: 100%;
+    height: 26px;
+    padding: 2px 6px;
+
+    font-size: 12px;
+    font-family: inherit;
+
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+
+    cursor: pointer;
+    outline: none;
+
+    /* bỏ arrow mặc định */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: none;
+}
+
+.tabulator-select:focus {
+    border-color: #1976d2;
+    box-shadow: 0 0 0 1px rgba(25, 118, 210, 0.2);
+}
+
+.tabulator-select:hover {
+    border-color: #999;
+}

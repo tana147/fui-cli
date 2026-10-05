@@ -1,0 +1,66 @@
+[
+  {
+    "comID": 2550,
+    "comName": "uc-modal-huy-mon"
+  },
+  {
+    "comID": 2551,
+    "comName": "uc-modal-khuyen-mai"
+  },
+  {
+    "comID": 2552,
+    "comName": "uc-modal-table-change"
+  },
+  {
+    "comID": 3340,
+    "comName": "uc-modal-table-choose"
+  },
+  {
+    "comID": 2554,
+    "comName": "uc-modal-table-merge"
+  },
+  {
+    "comID": 2553,
+    "comName": "uc-modal-table-merge-cancel"
+  },
+  {
+    "comID": 2555,
+    "comName": "uc-modal-table-split"
+  },
+  {
+    "comID": 2556,
+    "comName": "uc-order-info"
+  },
+  {
+    "comID": 2558,
+    "comName": "uc-order-product"
+  },
+  {
+    "comID": 2557,
+    "comName": "uc-order-product-topping"
+  },
+  {
+    "comID": 2559,
+    "comName": "uc-order-summary"
+  },
+  {
+    "comID": 2560,
+    "comName": "uc-product-list"
+  },
+  {
+    "comID": 3341,
+    "comName": "uc-tab-info"
+  },
+  {
+    "comID": 2561,
+    "comName": "uc-tab-pos"
+  },
+  {
+    "comID": 2563,
+    "comName": "uc-tab-table"
+  },
+  {
+    "comID": 2562,
+    "comName": "uc-tab-table-item"
+  }
+]

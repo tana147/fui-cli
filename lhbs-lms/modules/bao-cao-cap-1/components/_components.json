@@ -1,0 +1,34 @@
+[
+  {
+    "comID": 5964,
+    "comName": "uc-main-layout"
+  },
+  {
+    "comID": 6008,
+    "comName": "uc-tab-mon-hoc-diem-chung"
+  },
+  {
+    "comID": 5989,
+    "comName": "uc-tab-mon-hoc-hk"
+  },
+  {
+    "comID": 6006,
+    "comName": "uc-tab-mon-hoc-nl"
+  },
+  {
+    "comID": 6655,
+    "comName": "uc-tab-mon-hoc-nl-tat-ca-hk"
+  },
+  {
+    "comID": 6005,
+    "comName": "uc-tab-mon-hoc-pc"
+  },
+  {
+    "comID": 6654,
+    "comName": "uc-tab-mon-hoc-pc-tat-ca-hk"
+  },
+  {
+    "comID": 6004,
+    "comName": "uc-tab-mon-hoc-ss-kn"
+  }
+]

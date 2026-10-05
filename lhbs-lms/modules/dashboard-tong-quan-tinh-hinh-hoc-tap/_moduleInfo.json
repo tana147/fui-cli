@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/dashboard-tong-quan-tinh-hinh-hoc-tap",
+  "url": "//lms.lhbs.vn/dashboard-tong-quan-tinh-hinh-hoc-tap",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "dashboard-tong-quan-tinh-hinh-hoc-tap",
+  "ModuleName": "dashboard-tong-quan-tinh-hinh-hoc-tap",
+  "UpdateTime": "2026-01-08 16:22:55",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2025-06-03",
+  "LoadCount": 1255,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

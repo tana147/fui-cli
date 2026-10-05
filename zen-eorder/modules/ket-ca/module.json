@@ -1,0 +1,72 @@
+{
+  "data": [
+    {
+      "CuaHangID": "chid",
+      "CT_KetCa": [],
+      "GhiChu": "",
+      "To_500000": 0,
+      "To_200000": 0,
+      "To_100000": 0,
+      "To_50000": 0,
+      "To_20000": 0,
+      "To_10000": 0,
+      "To_5000": 0,
+      "To_2000": 0,
+      "To_1000": 0,
+      "To_500": 0,
+      "CTNhanVien": [],
+      "Ca": 0
+    },
+    {
+      "EXE": "initCTKD()"
+    },
+    {
+      "API": "/eorder/KetCa_XacNhan_V2",
+      "OUT": "CT_KetCa",
+      "IN": {
+        "CuaHangID": "CuaHangID"
+      }
+    },
+    {
+      "API": "/eorder/NhanVien_Select_ById",
+      "OUT": "CTNhanVien",
+      "CALLBACK": [
+        {
+          "Ca": "vueData.CTNhanVien[1][0].Ca"
+        }
+      ]
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "page-container grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "bg-green py-1 px-2 mb-2",
+          "cols": [
+            {
+              "el": "nav_component"
+            }
+          ]
+        },
+        {
+          "prop": "justify-center",
+          "cols": [
+            {
+              "el": "info_component",
+              "attr": {
+                "v-if": "vueData.CT_KetCa.length > 0",
+                ":ct_ketca": "CT_KetCa"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false
+  }
+}

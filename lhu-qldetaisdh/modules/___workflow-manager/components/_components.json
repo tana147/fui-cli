@@ -1,0 +1,30 @@
+[
+  {
+    "comID": 513,
+    "comName": "add-flow-detail-dialog"
+  },
+  {
+    "comID": 527,
+    "comName": "add-new-worktree-dialog"
+  },
+  {
+    "comID": 511,
+    "comName": "add-root-dialog"
+  },
+  {
+    "comID": 509,
+    "comName": "edit-flow-detail-dialog"
+  },
+  {
+    "comID": 512,
+    "comName": "edit-root-dialog"
+  },
+  {
+    "comID": 526,
+    "comName": "workflow-container"
+  },
+  {
+    "comID": 507,
+    "comName": "workflow-detail"
+  }
+]

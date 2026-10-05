@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/cau-hinh-chi-tieu-tieng-anh",
+  "url": "//lms.lhbs.vn/cau-hinh-chi-tieu-tieng-anh",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "cau-hinh-chi-tieu-tieng-anh",
+  "ModuleName": "Cấu hình chỉ tiêu môn tiếng anh",
+  "UpdateTime": "2025-07-14 13:26:08",
+  "UpdateUser": "DEV000050",
+  "LastLoad": "2026-05-25",
+  "LoadCount": 164,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

@@ -1,0 +1,59 @@
+[
+  {
+    "name": "page-style.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "2CE4FA4D5B4A4F7093B0520BB7866620",
+    "scope": "module",
+    "sort": 24,
+    "filePath": "imports/page-style.css-2CE4FA4D5B4A4F7093B0520BB7866620.css"
+  },
+  {
+    "name": "https://ws.fui.vn/Scripts/jquery.signalR-2.4.1.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "90AD09200FAA4A05A7FD7926CEA90C58",
+    "scope": "module",
+    "sort": 25
+  },
+  {
+    "name": "https://ws.fui.vn/signalr/hubs",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "544251C8CFD84D0D9C21761AF08ACB6F",
+    "scope": "module",
+    "sort": 26
+  },
+  {
+    "name": "/include/pdfmake/pdfmake.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "542B65A1C92D4BA4B16AFF832E30D7DC",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/pdfmake/print.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "FCADA888D17E4D78B8300EB75CC68791",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/pdfmake/vfs_fonts.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "840D010FA3544F37B94B06FF5BFDA4DB",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js\t",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "483500DA46EC481E878009EAA4838A52",
+    "scope": "module",
+    "sort": 51
+  }
+]

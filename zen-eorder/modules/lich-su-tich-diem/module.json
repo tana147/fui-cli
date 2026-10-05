@@ -1,0 +1,132 @@
+{
+  "data": [
+    {
+      "Keyword": ""
+    },
+    {
+      "getLichSuGiaoDich": {
+        "API": "/eorder/LichSu_KhachHang_TichDiem",
+        "IN": {
+          "Search": "Keyword"
+        },
+        "OUT": "DSLichSuGiaoDich"
+      }
+    }
+  ],
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-text-field",
+              "w": 4,
+              "attr": {
+                "v-model": "Keyword",
+                "label": "Tìm theo số điện thoại, mã khách hàng",
+                ":rules": false
+              }
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getLichSuGiaoDich"
+                }
+              },
+              "w": 2
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Lịch sử tích điểm",
+                ":excel": true,
+                ":items": "DSLichSuGiaoDich",
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Ngày giao dịch",
+                    "value": "NgayThemMoi",
+                    "width": 170
+                  },
+                  {
+                    "text": "Mã khách hàng",
+                    "value": "KhachHangID"
+                  },
+                  {
+                    "text": "Tên khách hàng",
+                    "value": "HoTen"
+                  },
+                  {
+                    "text": "Điện thoại",
+                    "value": "DienThoai"
+                  },
+                  {
+                    "text": "Hình thức GD",
+                    "value": "HinhThucGiaoDich"
+                  },
+                  {
+                    "text": "Mã hóa đơn",
+                    "value": "MaGiaoDich"
+                  },
+                  {
+                    "text": "Cửa hàng",
+                    "value": "TenCuaHang",
+                    "width": 300
+                  },
+                  {
+                    "text": "Tổng tiền hóa đơn",
+                    "value": "TongTien",
+                    "align": "right",
+                    "el": "span",
+                    "innerHTML": "{{(item.TongTien).toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "ZEN trước GD",
+                    "value": "ZenTruocGiaoDich",
+                    "align": "right",
+                    "el": "span",
+                    "innerHTML": "{{(item.ZenTruocGiaoDich).toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "ZEN sử dụng",
+                    "value": "ZenSuDung",
+                    "align": "right",
+                    "el": "span",
+                    "innerHTML": "{{(item.ZenSuDung).toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "ZEN tích điểm",
+                    "value": "ZenTichDiem",
+                    "align": "right",
+                    "el": "span",
+                    "innerHTML": "{{(item.ZenTichDiem).toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "ZEN sau GD",
+                    "value": "ZenSauGiaoDich",
+                    "align": "right",
+                    "el": "span",
+                    "innerHTML": "{{(item.ZenSauGiaoDich).toLocaleString('vi-vn')}}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

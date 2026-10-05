@@ -1,0 +1,42 @@
+[
+  {
+    "comID": 11312,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 11318,
+    "comName": "uc-main-view"
+  },
+  {
+    "comID": 11321,
+    "comName": "uc-modal-import-new-student"
+  },
+  {
+    "comID": 11772,
+    "comName": "uc-modal-import-update-student"
+  },
+  {
+    "comID": 11311,
+    "comName": "uc-modal-old-data"
+  },
+  {
+    "comID": 11308,
+    "comName": "uc-modal-reset-process"
+  },
+  {
+    "comID": 11320,
+    "comName": "uc-modal-sync-gvhd"
+  },
+  {
+    "comID": 12144,
+    "comName": "uc-modal-update-student-id"
+  },
+  {
+    "comID": 11317,
+    "comName": "uc-modal-update-task"
+  },
+  {
+    "comID": 11315,
+    "comName": "uc-modal-view-old-process"
+  }
+]

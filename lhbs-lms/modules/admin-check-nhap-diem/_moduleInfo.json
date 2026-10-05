@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/admin-check-nhap-diem",
+  "url": "//lms.lhbs.vn/admin-check-nhap-diem",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "admin-check-nhap-diem",
+  "ModuleName": "Kiểm tra tiến độ nhập điểm",
+  "UpdateTime": "2026-06-02 17:30:45",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-09-10",
+  "LoadCount": 574,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

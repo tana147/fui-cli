@@ -1,0 +1,395 @@
+{
+  "data": [
+    {
+      "ManHinhID": 0,
+      "AnhManHinh_FileID": null,
+      "AnhManHinh_FileID_View": null,
+      "AnhManHinh_FileID_ContentType": null,
+      "fileSetting": {
+        "max_file_size": "100mb",
+        "mime_types": [
+          {
+            "title": "Image or Video",
+            "extensions": "jpg,jpeg,png,mp4,mov"
+          }
+        ]
+      }
+    },
+    {
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 1,
+          "text": "Tạm khóa"
+        }
+      ]
+    },
+    {
+      "getManHinh": {
+        "API": "/eordertest/ManHinh_Select",
+        "OUT": "DSManHinh"
+      }
+    },
+    {
+      "CALL": "getManHinh"
+    },
+    {
+      "getManHinhChiTiet": {
+        "API": "/eordertest/ManHinhChiTiet_Select_ById",
+        "IN": {
+          "ManHinhID": "vueData.ManHinhID"
+        },
+        "OUT": "CTManHinh"
+      }
+    }
+  ],
+  "watch": {
+    "AnhManHinh_FileID": [
+      {
+        "AnhManHinh_FileID_View": "AnhManHinh_FileID.Files[0].FileID ?? null",
+        "AnhManHinh_FileID_ContentType": "AnhManHinh_FileID.Files[0].ContentType ?? null"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": []
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Màn hình quảng cáo",
+                ":items": "DSManHinh",
+                ":excel": true,
+                "height": "calc(100vh - 118px)",
+                ":headers": [
+                  {
+                    "text": "Tên màn hình",
+                    "el": "span",
+                    "value": "TenManHinh",
+                    "attr": {
+                      "style": "display: flex; align-items: center;"
+                    },
+                    "innerHTML": "<div><b>{{item.TenManHinh}}</b><br/><span>{{item.GhiChu}}</span></div>"
+                  },
+                  {
+                    "text": "URL",
+                    "align": "center",
+                    "el": "v-chip",
+                    "value": "URL",
+                    "attr": {
+                      "color": "success",
+                      "title": "Review",
+                      "v-on:click": "()=> window.open('https://eorder.zenfoodcourt.vn/man-hinh-quang-cao?id=' + item.ManHinhID)"
+                    },
+                    "innerHTML": "<span style='cursor:pointer; color:white'>https://eorder.zenfoodcourt.vn/man-hinh-quang-cao?id={{item.ManHinhID}}</span>"
+                  },
+                  {
+                    "text": "",
+                    "el": "t-button",
+                    "align": "right",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Xem chi tiết",
+                      ":action": [
+                        {
+                          "ManHinhID": "item.ManHinhID"
+                        },
+                        {
+                          "CALL": "getManHinhChiTiet"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenManHinh",
+                      "label": "Tên màn hình"
+                    },
+                    "w": 8
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "GhiChu",
+                      "label": "Mô tả"
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "TocDoChuyen",
+                      "label": "Tốc độ chuyển trang theo giây"
+                    },
+                    "w": 12
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "TinhTrang": 0
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới màn hình",
+                    "API": "/eordertest/ManHinh_Insert",
+                    "IN": {
+                      "TenManHinh": "item.TenManHinh",
+                      "GhiChu": "item.GhiChu",
+                      "TinhTrang": "item.TinhTrang",
+                      "TocDoChuyen": "item.TocDoChuyen"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getManHinh"
+                      },
+                      {
+                        "CALL": "getManHinhChiTiet"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật màn hình <b><i> {{item.TenManHinh}} </i></b>?",
+                    "API": "/eordertest/ManHinh_Update",
+                    "IN": {
+                      "ManHinhID": "item.ManHinhID",
+                      "TenManHinh": "item.TenManHinh",
+                      "GhiChu": "item.GhiChu",
+                      "TinhTrang": "item.TinhTrang",
+                      "TocDoChuyen": "item.TocDoChuyen"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getManHinh"
+                      },
+                      {
+                        "CALL": "getManHinhChiTiet"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa màn hình <span class='error--text'> {{item.TenManHinh}} </i></span>?",
+                    "API": "/eordertest/ManHinh_Delete",
+                    "IN": {
+                      "ManHinhID": "item.ManHinhID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getManHinh"
+                      },
+                      {
+                        "CALL": "getManHinhChiTiet"
+                      }
+                    ]
+                  }
+                }
+              },
+              "w": "6"
+            },
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Chi tiết màn hình quảng cáo",
+                ":items": "CTManHinh",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":headers": [
+                  {
+                    "text": "Số thứ tự",
+                    "align": "center",
+                    "value": "ThuTu"
+                  },
+                  {
+                    "text": "URL",
+                    "align": "center",
+                    "el": "a",
+                    "value": "URL",
+                    "attr": {
+                      "color": "primary",
+                      "title": "Review",
+                      "v-on:click": "()=> window.open(vueData.v_Set.urlReadFile + item.FileID)"
+                    },
+                    "innerHTML": "{{vueData.v_Set.urlReadFile + item.FileID}}"
+                  },
+                  {
+                    "text": "Tạm khóa",
+                    "align": "center",
+                    "value": "TinhTrang",
+                    "el": "v-icon",
+                    "attr": {
+                      "color": "red"
+                    },
+                    "innerHTML": "{{item.TinhTrang == 0 ? '': 'mdi-lock'}}"
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "b",
+                    "innerHTML": "Hình ảnh hoặc video hiển thị"
+                  },
+                  {
+                    "el": "f-file-upload",
+                    "attr": {
+                      ":url": "vueData.v_Set.apiFile",
+                      "label": "Tải tập tin",
+                      "v-model": "vueData.AnhManHinh_FileID",
+                      ":filters": "vueData.fileSetting"
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "fiv",
+                    "attr": {
+                      "class": "d-flex justify-center"
+                    },
+                    "innerHTML": "<uc-read-file />"
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "ManHinhID",
+                      "label": "Màn hình",
+                      ":items": "vueData.DSManHinh",
+                      "item-value": "ManHinhID",
+                      "item-text": "TenManHinh"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "ThuTu",
+                      "label": "Số thứ tự màn hình"
+                    },
+                    "w": 4
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "ManHinhID": "vueData.ManHinhID",
+                    "TinhTrang": 0,
+                    "AnhManHinh_FileID": null,
+                    "AnhManHinh_FileID_View": null,
+                    "AnhManHinh_FileID_ContentType": null
+                  },
+                  "new-action": {
+                    "AnhManHinh_FileID": null,
+                    "AnhManHinh_FileID_View": null,
+                    "AnhManHinh_FileID_ContentType": null
+                  },
+                  "edit-action": {
+                    "AnhManHinh_FileID_View": "item.FileID",
+                    "AnhManHinh_FileID_ContentType": "item.FileContentType"
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới nội dung",
+                    "API": "/eordertest/ManHinhChiTiet_Insert",
+                    "IN": {
+                      "ManHinhID": "item.ManHinhID",
+                      "ThuTu": "item.ThuTu",
+                      "FileID": "vueData.AnhManHinh_FileID_View",
+                      "FileContentType": "vueData.AnhManHinh_FileID_ContentType",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getManHinh"
+                      },
+                      {
+                        "CALL": "getManHinhChiTiet"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật nội dung <b><i> {{item.TenManHinh}} </i></b>?",
+                    "API": "/eordertest/ManHinhChiTiet_Update",
+                    "IN": {
+                      "ManHinh_ChiTietID": "item.ManHinh_ChiTietID",
+                      "ThuTu": "item.ThuTu",
+                      "FileID": "vueData.AnhManHinh_FileID_View",
+                      "FileContentType": "vueData.AnhManHinh_FileID_ContentType",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getManHinh"
+                      },
+                      {
+                        "CALL": "getManHinhChiTiet"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa nội dung <span class='error--text'> {{item.TenManHinh}} </i></span>?",
+                    "API": "/eordertest/ManHinhChiTiet_Delete",
+                    "IN": {
+                      "ManHinh_ChiTietID": "item.ManHinh_ChiTietID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getManHinh"
+                      },
+                      {
+                        "CALL": "getManHinhChiTiet"
+                      }
+                    ]
+                  }
+                }
+              },
+              "w": "6"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

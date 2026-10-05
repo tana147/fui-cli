@@ -1,0 +1,82 @@
+[
+  {
+    "comID": 3035,
+    "comName": "uc-button-action"
+  },
+  {
+    "comID": 3036,
+    "comName": "uc-item-cai-dat"
+  },
+  {
+    "comID": 3037,
+    "comName": "uc-item-gia"
+  },
+  {
+    "comID": 3038,
+    "comName": "uc-item-khu-che-bien"
+  },
+  {
+    "comID": 3039,
+    "comName": "uc-item-lich-ban"
+  },
+  {
+    "comID": 3040,
+    "comName": "uc-item-may-in-tem"
+  },
+  {
+    "comID": 3041,
+    "comName": "uc-item-trang-thai"
+  },
+  {
+    "comID": 3042,
+    "comName": "uc-modal-sao-chep"
+  },
+  {
+    "comID": 3043,
+    "comName": "uc-modal-thiet-lap-nang-cao"
+  },
+  {
+    "comID": 3044,
+    "comName": "uc-tab-cai-dat"
+  },
+  {
+    "comID": 3045,
+    "comName": "uc-tab-cua-hang"
+  },
+  {
+    "comID": 3046,
+    "comName": "uc-tab-du-lieu-co-so"
+  },
+  {
+    "comID": 3047,
+    "comName": "uc-tab-gia"
+  },
+  {
+    "comID": 3048,
+    "comName": "uc-tab-khu-che-bien"
+  },
+  {
+    "comID": 3049,
+    "comName": "uc-tab-lich-ban"
+  },
+  {
+    "comID": 3050,
+    "comName": "uc-tab-may-in-tem"
+  },
+  {
+    "comID": 3051,
+    "comName": "uc-tab-mo-ta"
+  },
+  {
+    "comID": 3052,
+    "comName": "uc-tab-nguyen-lieu"
+  },
+  {
+    "comID": 3053,
+    "comName": "uc-tab-nhom-lien-ket"
+  },
+  {
+    "comID": 3054,
+    "comName": "uc-tab-trang-thai"
+  }
+]

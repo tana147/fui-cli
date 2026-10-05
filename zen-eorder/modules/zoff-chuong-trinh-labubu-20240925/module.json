@@ -1,0 +1,46 @@
+{
+  "data": [
+    {
+      "QRCode": "qr",
+      "CTQuaTang": null
+    },
+    {
+      "API": "/eorder/auth/QuaTang_Scan_QrCode",
+      "IN": {
+        "QRCode": "QRCode"
+      },
+      "OUT": "CTQuaTang"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-labubu",
+              "attr": {
+                "v-if": "QRCode && vueData.CTQuaTang"
+              }
+            },
+            {
+              "el": "uc-labubu-info",
+              "attr": {
+                "v-if": "!QRCode"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false,
+    "login": false,
+    "userInfo": ""
+  }
+}

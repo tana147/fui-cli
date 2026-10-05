@@ -1,0 +1,418 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "CTHoaDon": [],
+      "DSHoaDon_Table": [],
+      "DSChiTietHoaDon": [],
+      "IsShowDialogDetail": false,
+      "CuaHangID": 0
+    },
+    {
+      "DSTrangThai": [
+        {
+          "value": 1,
+          "text": "Đã gửi Bếp-Bar"
+        },
+        {
+          "value": 2,
+          "text": "Đã trả món"
+        },
+        {
+          "value": 3,
+          "text": "Đã đổi món"
+        },
+        {
+          "value": 4,
+          "text": "Chờ xử lý"
+        },
+        {
+          "value": 5,
+          "text": "Đang chế biến"
+        },
+        {
+          "value": 6,
+          "text": "Đã hủy"
+        },
+        {
+          "value": 7,
+          "text": "Bếp xác nhận hủy"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        }
+      ]
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      },
+      {
+        "LoaiPhanHieuID": "DSCuaHang.find((item) => item.CuaHangID === vueData.CuaHangID).LoaiPhanHieuID",
+        "CTHoaDon": [],
+        "DSHoaDon_Table": [],
+        "DSChiTietHoaDon": [],
+        "IsShowDialogDetail": false
+      }
+    ],
+    "IsShowDialogDetail": {
+      "IF": "IsShowDialogDetail === false",
+      "THEN": {
+        "CTHoaDon": [],
+        "DSChiTietHoaDon": []
+      }
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-tabs",
+              "attr": {
+                "v-model": "TabProduct",
+                "color": "white",
+                "background-color": "green"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_DonHang"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Lịch sử đơn hàng"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-tabs-items",
+              "attr": {
+                "v-model": "TabProduct"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-tab-item",
+                  "attr": {
+                    "key": "Tab_DonHang"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "tab-history-component",
+                      "attr": {
+                        ":chid": "CuaHangID"
+                      },
+                      "w": 12
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "f-dialog",
+              "attr": {
+                "v-model": "IsShowDialogDetail",
+                ":title": "`Chi tiết hóa đơn - ${vueData.CTHoaDon?.MaSoHoaDon}`",
+                "width": 1300,
+                ":controls": [
+                  {
+                    "el": "div",
+                    "attr": {
+                      "class": "text-right black--text mt-2"
+                    },
+                    "innerHTML": "<b>Ghi chú hủy:</b>",
+                    "w": 2
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.CTHoaDon.GhiChu_Huy",
+                      "label": "Ghi chú hủy",
+                      ":readonly": true,
+                      ":rules": false
+                    },
+                    "w": 10
+                  },
+                  {
+                    "el": "div",
+                    "attr": {
+                      "class": "text-right black--text mt-2",
+                      "v-if": "vueData.CTHoaDon.TrangThai === 3 || vueData.CTHoaDon.TrangThai === 4"
+                    },
+                    "innerHTML": "<b>Khách trả:</b>",
+                    "w": 2
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-if": "vueData.CTHoaDon.TrangThai === 3 || vueData.CTHoaDon.TrangThai === 4",
+                      "v-model": "vueData.CTHoaDon.KhachTra_TienMat",
+                      "type": "number",
+                      "label": "Tiền mặt",
+                      ":readonly": true,
+                      ":rules": false
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-if": "vueData.CTHoaDon.TrangThai === 3 || vueData.CTHoaDon.TrangThai === 4",
+                      "v-model": "vueData.CTHoaDon.KhachTra_CK",
+                      "type": "number",
+                      "label": "Chuyển khoản",
+                      ":readonly": true,
+                      ":rules": false
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-if": "vueData.CTHoaDon.TrangThai === 3 || vueData.CTHoaDon.TrangThai === 4",
+                      "v-model": "vueData.CTHoaDon.KhachTra_SPF",
+                      "type": "number",
+                      "label": "ShopeeFood",
+                      ":readonly": true,
+                      ":rules": false
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-if": "vueData.CTHoaDon.TrangThai === 3 || vueData.CTHoaDon.TrangThai === 4",
+                      "v-model": "vueData.CTHoaDon.KhachTra_GRAB",
+                      "type": "number",
+                      "label": "Grab",
+                      ":readonly": true,
+                      ":rules": false
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-if": "vueData.CTHoaDon.TrangThai === 3 || vueData.CTHoaDon.TrangThai === 4",
+                      "v-model": "vueData.CTHoaDon.KhachTra_QT",
+                      "type": "number",
+                      "label": "Quẹt thẻ",
+                      ":readonly": true,
+                      ":rules": false
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "div",
+                    "w": 2
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-if": "vueData.CTHoaDon.TrangThai === 3 || vueData.CTHoaDon.TrangThai === 4",
+                      "v-model": "vueData.CTHoaDon.KhachTra_XSM",
+                      "type": "number",
+                      "label": "Xanh SM",
+                      ":readonly": true,
+                      ":rules": false
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-if": "vueData.CTHoaDon.TrangThai === 3 || vueData.CTHoaDon.TrangThai === 4",
+                      "v-model": "vueData.CTHoaDon.KhachTra_HT1",
+                      "type": "number",
+                      "label": "HT1",
+                      ":readonly": true,
+                      ":rules": false
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-if": "vueData.CTHoaDon.TrangThai === 3 || vueData.CTHoaDon.TrangThai === 4",
+                      "v-model": "vueData.CTHoaDon.KhachTra_HT2",
+                      "type": "number",
+                      "label": "HT2",
+                      ":readonly": true,
+                      ":rules": false
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-if": "vueData.CTHoaDon.TrangThai === 3 || vueData.CTHoaDon.TrangThai === 4",
+                      "v-model": "vueData.CTHoaDon.KhachTra_HT3",
+                      "type": "number",
+                      "label": "HT3",
+                      ":readonly": true,
+                      ":rules": false
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "f-table",
+                    "w": 12,
+                    "attr": {
+                      ":label": "`Danh sách món <span class='red--text'>(${vueData.DSChiTietHoaDon.length})</span>`",
+                      ":excel": true,
+                      "height": "200px",
+                      ":items": "vueData.DSChiTietHoaDon",
+                      ":headers": [
+                        {
+                          "text": "Tên sản phẩm",
+                          "value": "TenNoiBo",
+                          "el": "span",
+                          "attr": {
+                            ":class": "`${item.Is_SanPham === 1 ? 'font-weight-bold' : 'ml-10'}`"
+                          },
+                          "innerHTML": "{{item.TenNoiBo}}"
+                        },
+                        {
+                          "text": "Mang về",
+                          "align": "center",
+                          "value": "Is_MangVe",
+                          "el": "v-icon",
+                          "attr": {
+                            "v-if": "item.Is_SanPham === 1",
+                            "color": "success",
+                            ":dense": true
+                          },
+                          "innerHTML": "{{item.Is_MangVe == 0 ? '': 'mdi-check'}}"
+                        },
+                        {
+                          "text": "Số lượng",
+                          "align": "right",
+                          "value": "SoLuong"
+                        },
+                        {
+                          "text": "Đơn giá",
+                          "align": "right",
+                          "el": "span",
+                          "value": "DonGia",
+                          "innerHTML": "{{item.DonGia.toLocaleString('vi-vn')}}"
+                        },
+                        {
+                          "text": "VAT",
+                          "align": "right",
+                          "el": "span",
+                          "value": "TienVAT",
+                          "innerHTML": "{{item.TienVAT.toLocaleString('vi-vn')}} ({{item.PhanTramVAT}}%)"
+                        },
+                        {
+                          "text": "ZEN",
+                          "align": "center",
+                          "value": "Is_ThanhToanZen",
+                          "el": "v-icon",
+                          "attr": {
+                            "color": "success",
+                            ":dense": true
+                          },
+                          "innerHTML": "{{item.Is_ThanhToanZen == 0 ? '': 'mdi-check'}}"
+                        },
+                        {
+                          "text": "Thành tiền",
+                          "align": "right",
+                          "el": "span",
+                          "value": "ThanhTien",
+                          "innerHTML": "{{item.ThanhTien.toLocaleString('vi-vn')}}"
+                        },
+                        {
+                          "text": "Ghi chú",
+                          "align": "right",
+                          "value": "GhiChu"
+                        },
+                        {
+                          "text": "Trạng thái",
+                          "align": "center",
+                          "el": "span",
+                          "value": "TenTrangThai",
+                          "innerHTML": "{{item.Is_SanPham === 0 ? '' : item.TenTrangThai}}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "el": "div",
+                    "attr": {
+                      "v-if": "vueData.CTHoaDon.GhiChu !== ''",
+                      "class": "text-left black--text"
+                    },
+                    "innerHTML": "<b>Ghi chú hóa đơn:</b> {{vueData.CTHoaDon.GhiChu}}"
+                  },
+                  {
+                    "el": "div",
+                    "attr": {
+                      "class": "text-right black--text"
+                    },
+                    "innerHTML": "<span class='px-5' style='border-right: 1px solid #b3b3b3'>Tạm tính: <b class='blue--text'>{{vueData.CTHoaDon.TongTien.toLocaleString('vi-vn')}}</b></span> <span class='px-5' style='border-right: 1px solid #b3b3b3'>Tổng VAT: <b>{{vueData.CTHoaDon.TongVAT.toLocaleString('vi-vn')}}</b></span> <span class='px-5' style='border-right: 1px solid #b3b3b3'>ZEN: <b class='primary--text'>{{vueData.CTHoaDon.KhachTra_Zen.toLocaleString('vi-vn')}}</b></span> <span class='pl-5'>Thành tiền: <b class='red--text'>{{vueData.CTHoaDon.TienPhaiTra.toLocaleString('vi-vn')}}</b></span>"
+                  }
+                ],
+                ":button": [
+                  {
+                    "label": "IN LẠI HÓA ĐƠN",
+                    "action": {
+                      "EXE": "onPrintOrder()"
+                    }
+                  },
+                  {
+                    "label": "Đóng",
+                    "action": {
+                      "IsShowDialogDetail": false
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

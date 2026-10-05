@@ -1,0 +1,363 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')",
+      "TabKetCa": 0,
+      "DSCa": [
+        {
+          "Id": 1,
+          "Ca": "Sáng"
+        },
+        {
+          "Id": 2,
+          "Ca": "Tối"
+        },
+        {
+          "Id": 3,
+          "Ca": "Đêm"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": {
+        "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+      }
+    },
+    {
+      "getKetCa": {
+        "API": "/eorder/KetCa_Select_ByCuaHangId",
+        "IN": {
+          "CuaHangID": "CuaHangID",
+          "TuNgay": "TuNgay",
+          "DenNgay": "DenNgay"
+        },
+        "OUT": "DSKetCa"
+      }
+    },
+    {
+      "getDonChuaKetCa": {
+        "API": "/eorder/KetCa_Select_HoaDon_ChuaKetCa",
+        "IN": {
+          "CuaHangID": "CuaHangID",
+          "TuNgay": "TuNgay",
+          "DenNgay": "DenNgay"
+        },
+        "OUT": "DSDonChuaKetCa"
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "CALL": "getKetCa"
+      },
+      {
+        "CALL": "getDonChuaKetCa"
+      },
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "TuNgay",
+                "label": "Từ ngày",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "DenNgay",
+                "label": "Đến ngày",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": [
+                  {
+                    "CALL": "getKetCa"
+                  },
+                  {
+                    "CALL": "getDonChuaKetCa"
+                  }
+                ]
+              },
+              "w": 3
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-tabs",
+              "w": 12,
+              "attr": {
+                "v-model": "TabKetCa",
+                "color": "white",
+                "background-color": "green"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_LichSu"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Lịch sử kết ca"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_DonHang"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Đơn chưa kết ca"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "f-table",
+              "w": 12,
+              "attr": {
+                "v-if": "TabKetCa === 0",
+                "label": "Lịch sử kết ca",
+                ":excel": true,
+                ":items": "DSKetCa",
+                "class": "ma-1",
+                "height": "calc(100vh - 232px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Cửa hàng",
+                    "value": "TenCuaHang",
+                    "width": 300
+                  },
+                  {
+                    "text": "Ngày kết ca",
+                    "value": "NgayKetCa"
+                  },
+                  {
+                    "text": "Giờ kết ca",
+                    "value": "GioKetCa"
+                  },
+                  {
+                    "text": "Ca",
+                    "value": "TenCa"
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center",
+                    "width": 80
+                  },
+                  {
+                    "text": "Nhân viên kết ca",
+                    "value": "NhanVienKetCa"
+                  },
+                  {
+                    "text": "Tổng hóa đơn",
+                    "value": "TongHoaDon_KetCa"
+                  },
+                  {
+                    "text": "Hóa đơn bàn giao",
+                    "value": "TongHoaDon_BanGiao"
+                  },
+                  {
+                    "text": "Hóa đơn hủy",
+                    "value": "TongHoaDon_Huy"
+                  },
+                  {
+                    "text": "Tổng tiền thanh toán",
+                    "el": "span",
+                    "value": "TongTienHoaDon",
+                    "innerHTML": "{{item.TongTienHoaDon?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "",
+                    "el": "t-button",
+                    "align": "right",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Xem chi tiết",
+                      ":action": {
+                        "FUN": "redirectToDetail",
+                        "IN": {
+                          "KetCaLogID": "{{item.KetCaLogID}}"
+                        }
+                      }
+                    }
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "f-date",
+                    "attr": {
+                      "v-model": "NgayKetCa_Date",
+                      "label": "Ngày kết ca",
+                      "date-add": 0
+                    },
+                    "w": 6
+                  },
+                  {
+                    "el": "f-time",
+                    "attr": {
+                      "v-model": "GioKetCa",
+                      "label": "Giờ kết ca",
+                      "date-add": 0
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      ":items": "vueData.DSCa",
+                      "item-text": "Ca",
+                      "item-value": "Id",
+                      "v-model": "Ca",
+                      "label": "Chọn ca"
+                    },
+                    "w": 3
+                  }
+                ],
+                ":update-api": {
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật ca?",
+                    "API": "/eorder/KetCa_Update_Ca",
+                    "IN": {
+                      "KetCaLogID": "item.KetCaLogID",
+                      "Ca": "item.Ca",
+                      "Ngay": "item.NgayKetCa_Date",
+                      "Gio": "item.GioKetCa"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getKetCa"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "f-table",
+              "w": 12,
+              "attr": {
+                "v-if": "TabKetCa === 1",
+                ":label": "`Đơn chưa kết ca <span class='red--text'>(${DSDonChuaKetCa.length ?? 0})</span>`",
+                ":items": "DSDonChuaKetCa",
+                ":excel": true,
+                "class": "ma-1",
+                "height": "calc(100vh - 232px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Mã hóa đơn",
+                    "value": "MaHoaDon"
+                  },
+                  {
+                    "text": "Ngày Order",
+                    "el": "span",
+                    "value": "NgayThemMoi",
+                    "innerHTML": "{{item.GioThemMoi}} {{item.NgayThemMoi}}"
+                  },
+                  {
+                    "text": "Nhân viên Order",
+                    "value": "NhanVienThemMoi"
+                  },
+                  {
+                    "text": "Ngày thanh toán",
+                    "el": "span",
+                    "value": "NgayThanhToan",
+                    "innerHTML": "{{item.GioThanhToan}} {{item.NgayThanhToan}}"
+                  },
+                  {
+                    "text": "Nhân viên thanh toán",
+                    "value": "NhanVienThanhToan"
+                  },
+                  {
+                    "text": "Ngày hủy",
+                    "el": "span",
+                    "value": "NgayHuy",
+                    "innerHTML": "{{item.GioHuy}} {{item.NgayHuy}}"
+                  },
+                  {
+                    "text": "Nhân viên hủy",
+                    "value": "NhanVienHuy"
+                  },
+                  {
+                    "text": "Tổng tiền hóa đơn",
+                    "el": "span",
+                    "value": "TienPhaiTra",
+                    "innerHTML": "{{item.TienPhaiTra?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Trạng thái",
+                    "value": "TenTrangThai"
+                  },
+                  {
+                    "text": "Cửa hàng",
+                    "value": "TenCuaHang",
+                    "width": 300
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

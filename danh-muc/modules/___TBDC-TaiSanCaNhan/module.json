@@ -1,0 +1,23 @@
+{
+  "data": [],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-ca-nhan",
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "login": "https://login.lhbs.vn/?ur=https://taisan.lhbs.vn/TaiSanCaNhan"
+  }
+}

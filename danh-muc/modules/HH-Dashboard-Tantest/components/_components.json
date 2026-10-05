@@ -1,0 +1,26 @@
+[
+  {
+    "comID": 8783,
+    "comName": "uc-dashboard-action-center"
+  },
+  {
+    "comID": 8779,
+    "comName": "uc-dashboard-alerts"
+  },
+  {
+    "comID": 8780,
+    "comName": "uc-dashboard-filter"
+  },
+  {
+    "comID": 8781,
+    "comName": "uc-dashboard-overview"
+  },
+  {
+    "comID": 8782,
+    "comName": "uc-dashboard-stats"
+  },
+  {
+    "comID": 8778,
+    "comName": "uc-main-page"
+  }
+]

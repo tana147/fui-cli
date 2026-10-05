@@ -1,0 +1,26 @@
+[
+  {
+    "comID": 4494,
+    "comName": "uc-latex-view"
+  },
+  {
+    "comID": 4492,
+    "comName": "uc-media-player"
+  },
+  {
+    "comID": 4493,
+    "comName": "uc-office-reader"
+  },
+  {
+    "comID": 4491,
+    "comName": "uc-pdf-book-reader"
+  },
+  {
+    "comID": 4490,
+    "comName": "uc-quiz-composite"
+  },
+  {
+    "comID": 4495,
+    "comName": "uc-slide-viewer-v3"
+  }
+]

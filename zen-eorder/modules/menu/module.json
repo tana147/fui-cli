@@ -1,0 +1,80 @@
+{
+  "data": [
+    {
+      "Menu_Hub_Id": "`{{localStorage.getItem('menu-hub')}}",
+      "webSocket_Hub": "`menu_{{chid}}_{{Menu_Hub_Id}}",
+      "webSocket_Menu": "`menu_pos_{{chid}}",
+      "webSocket": "{[webSocket_Hub]: null, [webSocket_Menu]: null }",
+      "CTHoaDon": ""
+    },
+    {
+      "IF": "!Menu_Hub_Id && Menu_Hub_Id.length !== 10",
+      "THEN": {
+        "EXE": "getMenuHubId()"
+      }
+    },
+    {
+      "API": "/eorder/CuaHang_Select_ById",
+      "IN": {
+        "CuaHangID": "chid"
+      },
+      "OUT": "CTCuaHang"
+    },
+    {
+      "API": "/eorder/NganHang_Select_ByCuaHangId",
+      "IN": {
+        "CuaHangID": "chid"
+      },
+      "OUT": "TKNganHang"
+    },
+    {
+      "getMenu": {
+        "API": "/eorder/CuaHangMenu_Select_ByCuaHangId",
+        "IN": {
+          "CuaHangID": "chid"
+        },
+        "OUT": "DSSanPham_Menu"
+      }
+    },
+    {
+      "CALL": "getMenu"
+    }
+  ],
+  "watch": {
+    "webSocket.{{webSocket_Menu}}": {
+      "CALL": "getMenu"
+    }
+  },
+  "controls": [
+    {
+      "prop": "grid-list-md fluid text-center",
+      "rows": [
+        {
+          "prop": "justify-center",
+          "cols": [
+            {
+              "el": "uc-menu-pos",
+              "w": 8,
+              "attr": {
+                ":ct_cuahang": "CTCuaHang",
+                ":ds_menu": "DSSanPham_Menu"
+              }
+            },
+            {
+              "el": "uc-order-list",
+              "w": 4,
+              "attr": {
+                "class": "style-order",
+                ":hoadon": "vueData.webSocket[vueData.webSocket_Hub]"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false
+  }
+}

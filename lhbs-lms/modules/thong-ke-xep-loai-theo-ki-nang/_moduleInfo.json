@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/thong-ke-xep-loai-theo-ki-nang",
+  "url": "//lms.lhbs.vn/thong-ke-xep-loai-theo-ki-nang",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "thong-ke-xep-loai-theo-ki-nang",
+  "ModuleName": "Thống kê xếp loại theo kĩ năng",
+  "UpdateTime": "2025-06-04 11:20:04",
+  "UpdateUser": "DEV000050",
+  "LastLoad": "2026-04-20",
+  "LoadCount": 683,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

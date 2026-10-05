@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/phan-cong-new-layout",
+  "url": "//lms.lhbs.vn/phan-cong-new-layout",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "phan-cong-new-layout",
+  "ModuleName": "phân công giáo viên table",
+  "UpdateTime": "2025-06-26 11:01:01",
+  "UpdateUser": "DEV000018",
+  "LastLoad": "2026-06-11",
+  "LoadCount": 48,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

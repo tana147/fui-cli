@@ -1,0 +1,55 @@
+{
+  "data": [
+    {
+      "ToTrinhGetAll": {
+        "API": "/ToTrinh_Get",
+        "OUT": "DSToTrinh"
+      }
+    },
+    {
+      "loadAnPhamByTrangThai": {
+        "API": "/AnPham_Get_ByTrangThai",
+        "IN": {
+          "TrangThai": "'3'"
+        },
+        "OUT": "DSToTrinhAnPham"
+      }
+    },
+    {
+      "CALL": "loadAnPhamByTrangThai"
+    },
+    {
+      "CALL": "ToTrinhGetAll"
+    },
+    {
+      "ToTrinhAnPhamGet": {
+        "API": "/ToTrinhAnPham_Get",
+        "OUT": "DSToTrinhAnPham"
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-table-to-trinh-khen-thuong",
+              "cols": {},
+              "attr": {
+                ":dstotrinh": "vueData.DSToTrinh",
+                ":dsanpham": "vueData.DSToTrinhAnPham"
+              },
+              "w": 12
+            }
+          ],
+          "w": 12
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

@@ -1,0 +1,31 @@
+.wrapTxt{
+    width: 85%;
+}
+.selectType{
+    width: 30%;
+}
+.selectCheckbox{
+    width: 20%;
+}
+.wrapUpDownBtn{
+    width: 5%;
+}
+.wrapRadioGroup{
+    width: 194px;
+}
+.wrapAllAction{
+    width: 90%;
+}
+.roleHeight{
+    height: 45px;
+}
+.wrapEditArea{
+    width: 42%;
+}
+.stepperStep {
+    color: white;
+    font-weight: bold;
+}
+.taskNumber{
+    width: 12%;
+}

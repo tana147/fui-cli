@@ -1,0 +1,35 @@
+[
+  {
+    "name": "stylePage",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "BD06ADB07D09412BBFBB7C4058412AA3",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/stylePage-BD06ADB07D09412BBFBB7C4058412AA3.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/apexcharts",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "200906C15618469E85ED0493B7AF1EDA",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/pdfmake.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "8C261810F472496BA04A90CE0DF1A7C2",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "F74DBA4C9AD04374AAE0903EE2C81C80",
+    "scope": "module",
+    "sort": 50
+  }
+]

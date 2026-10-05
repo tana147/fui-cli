@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 2586,
+    "comName": "uc-card-mon-hoc"
+  },
+  {
+    "comID": 2528,
+    "comName": "uc-dialog-approve"
+  },
+  {
+    "comID": 2529,
+    "comName": "uc-dialog-reject"
+  },
+  {
+    "comID": 2530,
+    "comName": "uc-item-hoc-sinh"
+  },
+  {
+    "comID": 2585,
+    "comName": "uc-table"
+  }
+]

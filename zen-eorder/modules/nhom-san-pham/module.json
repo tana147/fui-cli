@@ -1,0 +1,847 @@
+{
+  "data": [
+    {
+      "dialogDishOrder": false
+    },
+    {
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 1,
+          "text": "Tạm khóa"
+        }
+      ]
+    },
+    {
+      "getNhomSanPham": {
+        "API": "/eorder/NhomSanPham_Select",
+        "OUT": "DSNhomSanPham_Table"
+      }
+    },
+    {
+      "getNhomSanPham_BaoCao": {
+        "API": "/eorder/NhomSanPhamBaoCao_Select",
+        "OUT": "DSNhomSanPhamBaoCao_Table"
+      }
+    },
+    {
+      "getNhomBaoCao": {
+        "API": "/eorder/NhomBaoCao_Select",
+        "OUT": "DSNhomBaoCao_Table"
+      }
+    },
+    {
+      "getNhomSanPham_HoaDon": {
+        "API": "/eorder/NhomSanPhamHoaDon_Select",
+        "OUT": "DSNhomSanPhamHoaDon_Table"
+      }
+    },
+    {
+      "CALL": "getNhomSanPham"
+    },
+    {
+      "CALL": "getNhomSanPham_HoaDon"
+    },
+    {
+      "CALL": "getNhomSanPhamMon"
+    },
+    {
+      "CALL": "getNhomSanPham_BaoCao"
+    },
+    {
+      "CALL": "getNhomBaoCao"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container pt-1 grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-tabs",
+              "w": 12,
+              "attr": {
+                "v-model": "TabProduct",
+                "color": "white",
+                "background-color": "green"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_NhomSanPham"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Nhóm sản phẩm"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_NhomHoaDon"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Nhóm hóa đơn"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_NhomMonOrder"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Nhóm order"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tab",
+                  "attr": {
+                    "key": "Tab_NhomSanPhamBaoCao"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "span",
+                      "innerHTML": "Nhóm báo cáo"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-tabs-items",
+                  "attr": {
+                    "v-model": "TabProduct"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-tab-item",
+                      "attr": {
+                        "key": "Tab_NhomSanPham"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "f-table",
+                          "w": 12,
+                          "attr": {
+                            "class": "mt-1",
+                            "label": "Nhóm sản phẩm",
+                            ":excel": true,
+                            ":items": "DSNhomSanPham_Table",
+                            "height": "calc(100vh - 127px)",
+                            ":headers": [
+                              {
+                                "text": "Thứ tự",
+                                "value": "ThuTu",
+                                "align": "center",
+                                "width": 100
+                              },
+                              {
+                                "text": "Ảnh",
+                                "el": "div",
+                                "width": "50",
+                                "align": "center",
+                                "value": "IconUrlNhomSanPham",
+                                "attr": {
+                                  "class": "d-flex"
+                                },
+                                "innerHTML": "<img class='justify-center pa-1' v-if='item.IconUrlNhomSanPham' height='30' width='30' :src='item.IconUrlNhomSanPham'/>"
+                              },
+                              {
+                                "text": "Nhóm sản phẩm",
+                                "value": "TenNhomSanPham"
+                              },
+                              {
+                                "text": "Icon",
+                                "value": "IconNhomSanPham",
+                                "align": "center",
+                                "el": "v-icon",
+                                "attr": {
+                                  ":color": "item.MauHienThi",
+                                  ":dense": true
+                                },
+                                "innerHTML": "{{item.IconNhomSanPham}}"
+                              },
+                              {
+                                "text": "Sản phẩm",
+                                "align": "center",
+                                "value": "SoLuongSanPham",
+                                "el": "v-chip",
+                                "attr": {
+                                  ":color": "item.SoLuongSanPham > 0 ? 'success': 'error'",
+                                  ":small": true
+                                },
+                                "innerHTML": "{{item.SoLuongSanPham}}"
+                              },
+                              {
+                                "text": "Tạm khóa",
+                                "align": "center",
+                                "value": "TinhTrang",
+                                "el": "v-icon",
+                                "attr": {
+                                  "color": "red",
+                                  ":dense": true
+                                },
+                                "innerHTML": "{{item.TinhTrang == 0 ? '': 'mdi-lock'}}"
+                              },
+                              {
+                                "text": "",
+                                "value": "ctrl-update",
+                                "align": "center",
+                                "width": 100
+                              }
+                            ],
+                            ":update-form": [
+                              {
+                                "el": "v-text-field",
+                                "attr": {
+                                  "v-model": "ThuTu",
+                                  "label": "Thứ tự",
+                                  "type": "number"
+                                },
+                                "w": 2
+                              },
+                              {
+                                "el": "v-text-field",
+                                "attr": {
+                                  "v-model": "TenNhomSanPham",
+                                  "label": "Tên nhóm sản phẩm"
+                                },
+                                "w": 10
+                              },
+                              {
+                                "el": "v-text-field",
+                                "attr": {
+                                  ":rules": false,
+                                  "v-model": "IconUrlNhomSanPham",
+                                  "label": "URL ảnh nhóm sản phẩm (Dùng cho màn hình Order)"
+                                },
+                                "w": 12
+                              },
+                              {
+                                "el": "f-select-icon",
+                                "attr": {
+                                  ":rules": false,
+                                  "v-model": "IconNhomSanPham",
+                                  "label": "Font Icon",
+                                  "color": "primary"
+                                },
+                                "w": 5
+                              },
+                              {
+                                "el": "v-text-field",
+                                "attr": {
+                                  ":rules": false,
+                                  "v-model": "MauHienThi",
+                                  "label": "Mã màu hiển thị"
+                                },
+                                "w": 3
+                              },
+                              {
+                                "el": "v-select",
+                                "attr": {
+                                  "v-model": "TinhTrang",
+                                  "label": "Tình trạng",
+                                  ":items": "vueData.DSTinhTrang"
+                                },
+                                "w": 4
+                              }
+                            ],
+                            ":update-api": {
+                              "default-item": {
+                                "TinhTrang": 0
+                              },
+                              "new": {
+                                "CONFIRM": "Bạn có muốn thêm mới nhóm sản phẩm",
+                                "API": "/eorder/NhomSanPham_Insert",
+                                "IN": {
+                                  "NhomSanPham_ParentID": "item.NhomSanPham_ParentID ?? 0",
+                                  "TenNhomSanPham": "item.TenNhomSanPham",
+                                  "IconNhomSanPham": "item.IconNhomSanPham",
+                                  "IconUrlNhomSanPham": "item.IconUrlNhomSanPham",
+                                  "MauHienThi": "item.MauHienThi",
+                                  "ThuTu": "item.ThuTu",
+                                  "TinhTrang": "item.TinhTrang"
+                                },
+                                "MESS": "Thêm mới thành công",
+                                "CALLBACK": [
+                                  {
+                                    "CALL": "getNhomSanPham"
+                                  }
+                                ]
+                              },
+                              "edit": {
+                                "CONFIRM": "Bạn có muốn cập nhật nhóm sản phẩm <br/><b>{{item.TenNhomSanPham}}</b>",
+                                "API": "/eorder/NhomSanPham_Update",
+                                "IN": {
+                                  "NhomSanPham_ParentID": "item.NhomSanPham_ParentID ?? 0",
+                                  "NhomSanPhamID": "item.NhomSanPhamID",
+                                  "TenNhomSanPham": "item.TenNhomSanPham",
+                                  "IconNhomSanPham": "item.IconNhomSanPham",
+                                  "IconUrlNhomSanPham": "item.IconUrlNhomSanPham",
+                                  "MauHienThi": "item.MauHienThi",
+                                  "ThuTu": "item.ThuTu",
+                                  "TinhTrang": "item.TinhTrang"
+                                },
+                                "MESS": "Cập nhật thành công",
+                                "CALLBACK": [
+                                  {
+                                    "CALL": "getNhomSanPham"
+                                  }
+                                ]
+                              },
+                              "delete": {
+                                "CONFIRM": "Bạn có muốn xóa nhóm sản phẩm <br/><b>{{item.TenNhomSanPham}}</b>",
+                                "API": "/eorder/NhomSanPham_Delete",
+                                "IN": {
+                                  "NhomSanPhamID": "item.NhomSanPhamID"
+                                },
+                                "MESS": "Xóa thành công",
+                                "CALLBACK": [
+                                  {
+                                    "CALL": "getNhomSanPham"
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-tab-item",
+                      "attr": {
+                        "key": "Tab_NhomHoaDon"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "f-table",
+                          "w": 12,
+                          "attr": {
+                            "class": "mt-1",
+                            "label": "Nhóm hóa đơn",
+                            ":excel": true,
+                            ":items": "DSNhomSanPhamHoaDon_Table",
+                            "height": "calc(100vh - 127px)",
+                            ":headers": [
+                              {
+                                "text": "Thứ tự",
+                                "align": "center",
+                                "value": "ThuTu",
+                                "width": "50"
+                              },
+                              {
+                                "text": "Icon",
+                                "value": "IconNhomSanPhamHoaDon",
+                                "align": "center",
+                                "el": "v-icon",
+                                "attr": {
+                                  ":color": "item.MauHienThi",
+                                  ":dense": true
+                                },
+                                "innerHTML": "{{item.IconNhomSanPhamHoaDon}}"
+                              },
+                              {
+                                "text": "Nhóm sản phẩm hóa đơn",
+                                "value": "TenNhomSanPhamHoaDon"
+                              },
+                              {
+                                "text": "Tạm khóa",
+                                "align": "center",
+                                "value": "TinhTrang",
+                                "el": "v-icon",
+                                "attr": {
+                                  "color": "red",
+                                  ":dense": true
+                                },
+                                "innerHTML": "{{item.TinhTrang == 0 ? '': 'mdi-lock'}}"
+                              },
+                              {
+                                "text": "",
+                                "value": "ctrl-update",
+                                "align": "center",
+                                "width": 100
+                              }
+                            ],
+                            ":update-form": [
+                              {
+                                "el": "v-text-field",
+                                "attr": {
+                                  "v-model": "TenNhomSanPhamHoaDon",
+                                  "label": "Tên nhóm sản phẩm hóa đơn"
+                                },
+                                "w": 9
+                              },
+                              {
+                                "el": "v-text-field",
+                                "attr": {
+                                  "v-model": "ThuTu",
+                                  "label": "Thứ tự hiển thị"
+                                },
+                                "w": 3
+                              },
+                              {
+                                "el": "f-select-icon",
+                                "attr": {
+                                  ":rules": false,
+                                  "v-model": "IconNhomSanPhamHoaDon",
+                                  "label": "Font Icon",
+                                  "color": "primary"
+                                },
+                                "w": 5
+                              },
+                              {
+                                "el": "v-text-field",
+                                "attr": {
+                                  ":rules": false,
+                                  "v-model": "MauHienThi",
+                                  "label": "Mã màu hiển thị"
+                                },
+                                "w": 3
+                              },
+                              {
+                                "el": "v-select",
+                                "attr": {
+                                  "v-model": "TinhTrang",
+                                  "label": "Tình trạng",
+                                  ":items": "vueData.DSTinhTrang"
+                                },
+                                "w": 4
+                              }
+                            ],
+                            ":update-api": {
+                              "default-item": {
+                                "TinhTrang": 0
+                              },
+                              "new": {
+                                "CONFIRM": "Bạn có muốn thêm mới nhóm sản phẩm hóa đơn",
+                                "API": "/eorder/NhomSanPhamHoaDon_Insert",
+                                "IN": {
+                                  "TenNhomSanPhamHoaDon": "item.TenNhomSanPhamHoaDon",
+                                  "IconNhomSanPhamHoaDon": "item.IconNhomSanPhamHoaDon",
+                                  "ThuTu": "item.ThuTu",
+                                  "MauHienThi": "item.MauHienThi",
+                                  "TinhTrang": "item.TinhTrang"
+                                },
+                                "MESS": "Thêm mới thành công",
+                                "CALLBACK": [
+                                  {
+                                    "CALL": "getNhomSanPham_HoaDon"
+                                  }
+                                ]
+                              },
+                              "edit": {
+                                "CONFIRM": "Bạn có muốn cập nhật nhóm sản phẩm hóa đơn <br/><b>{{item.TenNhomSanPhamHoaDon}}</b>",
+                                "API": "/eorder/NhomSanPhamHoaDon_Update",
+                                "IN": {
+                                  "NhomSanPham_HoaDonID": "item.NhomSanPham_HoaDonID",
+                                  "TenNhomSanPhamHoaDon": "item.TenNhomSanPhamHoaDon",
+                                  "IconNhomSanPhamHoaDon": "item.IconNhomSanPhamHoaDon",
+                                  "ThuTu": "item.ThuTu",
+                                  "MauHienThi": "item.MauHienThi",
+                                  "TinhTrang": "item.TinhTrang"
+                                },
+                                "MESS": "Cập nhật thành công",
+                                "CALLBACK": [
+                                  {
+                                    "CALL": "getNhomSanPham_HoaDon"
+                                  }
+                                ]
+                              },
+                              "delete": {
+                                "CONFIRM": "Bạn có muốn xóa nhóm sản phẩm hóa đơn <br/><b>{{item.TenNhomSanPhamHoaDon}}</b>",
+                                "API": "/eorder/NhomSanPhamHoaDon_Delete",
+                                "IN": {
+                                  "NhomSanPham_HoaDonID": "item.NhomSanPham_HoaDonID"
+                                },
+                                "MESS": "Xóa thành công",
+                                "CALLBACK": [
+                                  {
+                                    "CALL": "getNhomSanPham_HoaDon"
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-tab-item",
+                      "attr": {
+                        "key": "Tab_NhomMonOrder"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "uc-tab-dish-order",
+                          "w": 12
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-tab-item",
+                      "attr": {
+                        "key": "Tab_NhomSanPhamBaoCao"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": 4
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "f-table",
+                                  "w": 4,
+                                  "attr": {
+                                    "class": "mt-1",
+                                    "label": "Nhóm báo cáo",
+                                    ":excel": true,
+                                    ":items": "DSNhomBaoCao_Table",
+                                    "height": "calc(100vh - 127px)",
+                                    ":headers": [
+                                      {
+                                        "text": "Thứ tự",
+                                        "align": "center",
+                                        "value": "ThuTu",
+                                        "width": "50"
+                                      },
+                                      {
+                                        "text": "Icon",
+                                        "value": "IconNhomBaoCao",
+                                        "align": "center",
+                                        "el": "v-icon",
+                                        "attr": {
+                                          ":color": "item.MauHienThi",
+                                          ":dense": true
+                                        },
+                                        "innerHTML": "{{item.IconNhomBaoCao}}"
+                                      },
+                                      {
+                                        "text": "Nhóm báo cáo",
+                                        "value": "TenNhomBaoCao"
+                                      },
+                                      {
+                                        "text": "Tạm khóa",
+                                        "align": "center",
+                                        "value": "TinhTrang",
+                                        "el": "v-icon",
+                                        "attr": {
+                                          "color": "red",
+                                          ":dense": true
+                                        },
+                                        "innerHTML": "{{item.TinhTrang == 0 ? '': 'mdi-lock'}}"
+                                      },
+                                      {
+                                        "text": "",
+                                        "value": "ctrl-update",
+                                        "align": "center",
+                                        "width": 100
+                                      }
+                                    ],
+                                    ":update-form": [
+                                      {
+                                        "el": "v-text-field",
+                                        "attr": {
+                                          "v-model": "TenNhomBaoCao",
+                                          "label": "Tên nhóm báo cáo"
+                                        },
+                                        "w": 9
+                                      },
+                                      {
+                                        "el": "v-text-field",
+                                        "attr": {
+                                          "v-model": "ThuTu",
+                                          "label": "Thứ tự hiển thị"
+                                        },
+                                        "w": 3
+                                      },
+                                      {
+                                        "el": "f-select-icon",
+                                        "attr": {
+                                          ":rules": false,
+                                          "v-model": "IconNhomBaoCao",
+                                          "label": "Icon",
+                                          "color": "primary"
+                                        },
+                                        "w": 5
+                                      },
+                                      {
+                                        "el": "v-text-field",
+                                        "attr": {
+                                          ":rules": false,
+                                          "v-model": "MauHienThi",
+                                          "label": "Mã màu hiển thị"
+                                        },
+                                        "w": 3
+                                      },
+                                      {
+                                        "el": "v-select",
+                                        "attr": {
+                                          "v-model": "TinhTrang",
+                                          "label": "Tình trạng",
+                                          ":items": "vueData.DSTinhTrang"
+                                        },
+                                        "w": 4
+                                      }
+                                    ],
+                                    ":update-api": {
+                                      "default-item": {
+                                        "TinhTrang": 0
+                                      },
+                                      "new": {
+                                        "CONFIRM": "Bạn có muốn thêm mới nhóm báo cáo",
+                                        "API": "/eorder/NhomBaoCao_Insert",
+                                        "IN": {
+                                          "TenNhomBaoCao": "item.TenNhomBaoCao",
+                                          "IconNhomBaoCao": "item.IconNhomBaoCao",
+                                          "ThuTu": "item.ThuTu",
+                                          "MauHienThi": "item.MauHienThi",
+                                          "TinhTrang": "item.TinhTrang"
+                                        },
+                                        "MESS": "Thêm mới thành công",
+                                        "CALLBACK": [
+                                          {
+                                            "CALL": "getNhomBaoCao"
+                                          }
+                                        ]
+                                      },
+                                      "edit": {
+                                        "CONFIRM": "Bạn có muốn cập nhật nhóm sản phẩm hóa đơn <br/><b>{{item.TenNhomBaoCao}}</b>",
+                                        "API": "/eorder/NhomBaoCao_Update",
+                                        "IN": {
+                                          "NhomBaoCaoID": "item.NhomBaoCaoID",
+                                          "TenNhomBaoCao": "item.TenNhomBaoCao",
+                                          "IconNhomSBaoCao": "item.IconNhomBaoCao",
+                                          "ThuTu": "item.ThuTu",
+                                          "MauHienThi": "item.MauHienThi",
+                                          "TinhTrang": "item.TinhTrang"
+                                        },
+                                        "MESS": "Cập nhật thành công",
+                                        "CALLBACK": [
+                                          {
+                                            "CALL": "getNhomBaoCao"
+                                          }
+                                        ]
+                                      },
+                                      "delete": {
+                                        "CONFIRM": "Bạn có muốn xóa nhóm sản phẩm hóa đơn <br/><b>{{item.TenNhomBaoCao}}</b>",
+                                        "API": "/eorder/NhomBaoCao_Delete",
+                                        "IN": {
+                                          "NhomBaoCaoID": "item.NhomBaoCaoID"
+                                        },
+                                        "MESS": "Xóa thành công",
+                                        "CALLBACK": [
+                                          {
+                                            "CALL": "getNhomBaoCao"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": 8
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "f-table",
+                                  "w": 4,
+                                  "attr": {
+                                    "class": "mt-1",
+                                    "label": "Nhóm báo cáo sản phẩm",
+                                    ":excel": true,
+                                    ":items": "DSNhomSanPhamBaoCao_Table",
+                                    "height": "calc(100vh - 127px)",
+                                    ":headers": [
+                                      {
+                                        "text": "Thứ tự",
+                                        "align": "center",
+                                        "value": "ThuTu",
+                                        "width": "50"
+                                      },
+                                      {
+                                        "text": "Icon",
+                                        "value": "IconNhomSanPhamBaoCao",
+                                        "align": "center",
+                                        "el": "v-icon",
+                                        "attr": {
+                                          ":color": "item.MauHienThi",
+                                          ":dense": true
+                                        },
+                                        "innerHTML": "{{item.IconNhomSanPhamBaoCao}}"
+                                      },
+                                      {
+                                        "text": "Nhóm sản phẩm báo cáo",
+                                        "value": "TenNhomSanPhamBaoCao"
+                                      },
+                                      {
+                                        "text": "Tạm khóa",
+                                        "align": "center",
+                                        "value": "TinhTrang",
+                                        "el": "v-icon",
+                                        "attr": {
+                                          "color": "red",
+                                          ":dense": true
+                                        },
+                                        "innerHTML": "{{item.TinhTrang == 0 ? '': 'mdi-lock'}}"
+                                      },
+                                      {
+                                        "text": "",
+                                        "value": "ctrl-update",
+                                        "align": "center",
+                                        "width": 100
+                                      }
+                                    ],
+                                    ":update-form": [
+                                      {
+                                        "el": "v-select",
+                                        "attr": {
+                                          "v-model": "NhomBaoCaoID",
+                                          "label": "Nhóm báo cáo",
+                                          ":items": "vueData.DSNhomBaoCao_Table",
+                                          "item-value": "NhomBaoCaoID",
+                                          "item-text": "TenNhomBaoCao"
+                                        },
+                                        "w": 4
+                                      },
+                                      {
+                                        "el": "v-text-field",
+                                        "attr": {
+                                          "v-model": "TenNhomSanPhamBaoCao",
+                                          "label": "Tên nhóm báo cáo"
+                                        },
+                                        "w": 8
+                                      },
+                                      {
+                                        "el": "v-text-field",
+                                        "attr": {
+                                          "v-model": "ThuTu",
+                                          "label": "Thứ tự"
+                                        },
+                                        "w": 2
+                                      },
+                                      {
+                                        "el": "f-select-icon",
+                                        "attr": {
+                                          ":rules": false,
+                                          "v-model": "IconNhomSanPhamBaoCao",
+                                          "label": "Icon",
+                                          "color": "primary"
+                                        },
+                                        "w": 4
+                                      },
+                                      {
+                                        "el": "v-text-field",
+                                        "attr": {
+                                          ":rules": false,
+                                          "v-model": "MauHienThi",
+                                          "label": "Mã màu hiển thị"
+                                        },
+                                        "w": 3
+                                      },
+                                      {
+                                        "el": "v-select",
+                                        "attr": {
+                                          "v-model": "TinhTrang",
+                                          "label": "Tình trạng",
+                                          ":items": "vueData.DSTinhTrang"
+                                        },
+                                        "w": 3
+                                      }
+                                    ],
+                                    ":update-api": {
+                                      "default-item": {
+                                        "TinhTrang": 0
+                                      },
+                                      "new": {
+                                        "CONFIRM": "Bạn có muốn thêm mới nhóm báo cáo",
+                                        "API": "/eorder/NhomSanPhamBaoCao_Insert",
+                                        "IN": {
+                                          "NhomBaoCaoID": "item.NhomBaoCaoID",
+                                          "TenNhomSanPhamBaoCao": "item.TenNhomSanPhamBaoCao",
+                                          "IconNhomSanPhamBaoCao": "item.IconNhomSanPhamBaoCao",
+                                          "ThuTu": "item.ThuTu",
+                                          "MauHienThi": "item.MauHienThi",
+                                          "TinhTrang": "item.TinhTrang"
+                                        },
+                                        "MESS": "Thêm mới thành công",
+                                        "CALLBACK": [
+                                          {
+                                            "CALL": "getNhomSanPham_BaoCao"
+                                          }
+                                        ]
+                                      },
+                                      "edit": {
+                                        "CONFIRM": "Bạn có muốn cập nhật nhóm sản phẩm hóa đơn <br/><b>{{item.TenNhomSanPhamBaoCao}}</b>",
+                                        "API": "/eorder/NhomSanPhamBaoCao_Update",
+                                        "IN": {
+                                          "NhomBaoCaoID": "item.NhomBaoCaoID",
+                                          "NhomSanPham_BaoCaoID": "item.NhomSanPham_BaoCaoID",
+                                          "TenNhomSanPhamBaoCao": "item.TenNhomSanPhamBaoCao",
+                                          "IconNhomSanPhamBaoCao": "item.IconNhomSanPhamBaoCao",
+                                          "ThuTu": "item.ThuTu",
+                                          "MauHienThi": "item.MauHienThi",
+                                          "TinhTrang": "item.TinhTrang"
+                                        },
+                                        "MESS": "Cập nhật thành công",
+                                        "CALLBACK": [
+                                          {
+                                            "CALL": "getNhomSanPham_BaoCao"
+                                          }
+                                        ]
+                                      },
+                                      "delete": {
+                                        "CONFIRM": "Bạn có muốn xóa nhóm sản phẩm hóa đơn <br/><b>{{item.TenNhomSanPhamBaoCao}}</b>",
+                                        "API": "/eorder/NhomSanPhamBaoCao_Delete",
+                                        "IN": {
+                                          "NhomSanPham_BaoCaoID": "item.NhomSanPham_BaoCaoID"
+                                        },
+                                        "MESS": "Xóa thành công",
+                                        "CALLBACK": [
+                                          {
+                                            "CALL": "getNhomSanPham_BaoCao"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {},
+  "ModuleName": "Nhóm Sản Phẩm"
+}

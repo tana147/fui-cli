@@ -1,0 +1,18 @@
+[
+  {
+    "comID": 9984,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 9985,
+    "comName": "uc-main-view"
+  },
+  {
+    "comID": 9986,
+    "comName": "uc-stats"
+  },
+  {
+    "comID": 9988,
+    "comName": "uc-topbar"
+  }
+]

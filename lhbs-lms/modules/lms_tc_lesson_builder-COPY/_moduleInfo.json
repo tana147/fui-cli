@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms_tc_lesson_builder-COPY",
+  "url": "//lms.lhbs.vn/lms_tc_lesson_builder-COPY",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms_tc_lesson_builder-COPY",
+  "ModuleName": "Trình soạn thảo Bài giảng",
+  "UpdateTime": "2025-11-11 15:38:25",
+  "UpdateUser": "DEV000050",
+  "LastLoad": null,
+  "LoadCount": 0,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

@@ -1,0 +1,26 @@
+{
+  "data": [],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": " class='v-row--no-gutters' style='margin:0px; padding: 0px'",
+          "cols": [
+            {
+              "el": "uc-main-layout",
+              "attr": {},
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "login": false,
+    "menu": false,
+    "menuLeft": false
+  }
+}

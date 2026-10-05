@@ -1,0 +1,55 @@
+{
+  "data": [
+    {
+      "id": "id",
+      "fullflow": "",
+      "rootflow": "",
+      "Panel": null
+    },
+    {
+      "API": "/Student_Process_Change_Get",
+      "IN": {
+        "Student_ID": "vueData.user.UserID",
+        "Process_Action": 2
+      },
+      "OUT": "StudentProcess",
+      "CALLBACK": {
+        "API": "/Get_RootFlow",
+        "IN": {
+          "StudentID": "vueData.user.UserID",
+          "Process_Student_ID": "vueData.StudentProcess.length > 0 ? vueData.StudentProcess[0].Process_Student_ID : 0",
+          "Process_Tree": "2"
+        },
+        "OUT": "DS_RootFlow",
+        "CALLBACK": [
+          {
+            "DefaultFLow": "vueData.DS_RootFlow.find(item=> item.LOCK_STATUS === 1)"
+          }
+        ]
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "change-topic-container",
+              "col": {},
+              "attr": {
+                ":defaultfLow": "vueData.DefaultFLow",
+                ":fullflow": "vueData.DS_FullFlow",
+                ":rootflow": "vueData.DS_RootFlow"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "name": "quiz-matching-css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "28A3D9B711D041DFBACAFD8B822EA69B",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/quiz-matching-css-28A3D9B711D041DFBACAFD8B822EA69B.css"
+  },
+  {
+    "name": "stylePage",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "205CADF10AA9400D83F84B0AFA8CA7AE",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/stylePage-205CADF10AA9400D83F84B0AFA8CA7AE.css"
+  },
+  {
+    "name": "/include/ckeditor5/build/ckeditor.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "F5CCCFD697564EA5947A96B7E74E21C0",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/@calvinckho/mic-recorder-to-mp3@2.2.3/dist/index.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "66979821429142E1B4732A966F20C74B",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://unpkg.com/vuedraggable@4.1.0/dist/vuedraggable.umd.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "C75EEDD65AAF4C519DF643D658D61D76",
+    "scope": "module",
+    "sort": 50
+  }
+]

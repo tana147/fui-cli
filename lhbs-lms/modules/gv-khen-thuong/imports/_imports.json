@@ -1,0 +1,18 @@
+[
+  {
+    "name": "https://cdn.jsdelivr.net/npm/sortablejs@1.10.2/Sortable.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "749D45D0E4824FD2A8E6489C9809CAF5",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://www.unpkg.com/vuedraggable@4.1.0/dist/vuedraggable.umd.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "7BF1A30A510D4CFABC18CD92FD6760B5",
+    "scope": "module",
+    "sort": 51
+  }
+]

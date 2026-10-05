@@ -1,0 +1,27 @@
+[
+  {
+    "name": "styles",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "B3AD957F9047433A9B2B4AC973FE3852",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/styles-B3AD957F9047433A9B2B4AC973FE3852.css"
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "A82765116E52432CB8F2CA1F8CF3E6EC",
+    "scope": "module",
+    "sort": 51
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/decimal.js@10.4.3/decimal.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "3A5D6ED800BF4F4FB6081197A1D2C01D",
+    "scope": "module",
+    "sort": 51
+  }
+]

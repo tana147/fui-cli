@@ -1,0 +1,19 @@
+[
+  {
+    "name": "page-style.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "AF0FC42B4B444DEAB3285338AA4A581E",
+    "scope": "module",
+    "sort": 24,
+    "filePath": "imports/page-style.css-AF0FC42B4B444DEAB3285338AA4A581E.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/spin-wheel@4.4.0/dist/spin-wheel-iife.js\t",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "8711D6B29DD948A9B3D08359E05D39F6",
+    "scope": "module",
+    "sort": 25
+  }
+]

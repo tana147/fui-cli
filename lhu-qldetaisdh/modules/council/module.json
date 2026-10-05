@@ -1,0 +1,136 @@
+{
+  "data": [
+    {
+      "isAddDialog": false,
+      "isTempDialog": false,
+      "isSQDDialog": false,
+      "isUpdateDialog": false,
+      "isViewDialog": false,
+      "isInputDialog": false,
+      "isExcelDialog": false,
+      "isThuMoiDialog": false,
+      "isThongKeKinhPhiDialog": false,
+      "isCouncilInfoManager": false,
+      "isTemBuuKienDialog": false,
+      "isDialogTepSomi": false,
+      "danhSachDetai": [],
+      "dsGetHoiDong": [],
+      "dsGetHocVien": [],
+      "dsGetGiangVien": [],
+      "dsGetChucTrach": [],
+      "heArr": [],
+      "suggestList": [],
+      "StudentID": "",
+      "DSHoiDongGiangVien": [],
+      "DSHoiDongChucTrach": [],
+      "DSHoiDongDeTai": [],
+      "NganhGiangDay": [],
+      "ThSUDChucTrach": [
+        {
+          "ChucTrach": "Chủ tịch"
+        },
+        {
+          "ChucTrach": "Phản biện"
+        },
+        {
+          "ChucTrach": "Thư ký"
+        }
+      ],
+      "nganhID": 0,
+      "nganhGiangDayID": 0
+    },
+    {
+      "getDSGiangVien": {
+        "API": "/HoiDong_GiangVien_Get",
+        "IN": {
+          "NganhID": "vueData.nganhGiangDayID"
+        },
+        "OUT": "DSHoiDongGiangVien",
+        "CALLBACK": {
+          "DSHoiDongGiangVien": "vueData.DSHoiDongGiangVien.map((item, index)=> ({...item, HoTenHocHamHocVi: item.HocViHocHam + '. ' + item.HoTenGiangVien ,STT: index + 1, Is_Chon: item.Is_Chon === 0 ? false : true}))"
+        }
+      }
+    },
+    {
+      "getHeCaoHocByID": {
+        "API": "/Nganh_Get_ByHeID",
+        "IN": {
+          "HeID": "`C"
+        },
+        "OUT": "heArr"
+      }
+    },
+    {
+      "API": "/HoiDong_ChucTrach_Get",
+      "IN": {
+        "NganhID": 0,
+        "LopID": "``"
+      },
+      "OUT": "DSHoiDongChucTrach"
+    },
+    {
+      "getHoiDongDeTai": {
+        "API": "/HoiDong_DeTai_Get",
+        "OUT": "DSHoiDongDeTai",
+        "IN": {
+          "NganhID": "vueData.nganhID",
+          "BacDaoTao": "'THS'"
+        },
+        "CALLBACK": {
+          "DSHoiDongDeTai": "vueData.DSHoiDongDeTai.map((item, index)=> ({...item, STT: index + 1, HoiDongThanhVienObj_Arr: [], HoTenMaSV: item.Ho_SV + ' ' + item.Ten_SV + ' ' + item.Student_ID + ' ' + item.Lop_ID }))"
+        }
+      }
+    },
+    {
+      "getHeDaoTao": {
+        "API": "/hedaotao_get",
+        "OUT": "DSHeDaoTao"
+      }
+    },
+    {
+      "CALL": "getHeByID"
+    },
+    {
+      "CALL": "getHoiDongDeTai"
+    },
+    {
+      "CALL": "getHeDaoTao"
+    },
+    {
+      "CALL": "getDSGiangVien"
+    },
+    {
+      "CALL": "getHeCaoHocByID"
+    }
+  ],
+  "watch": {
+    "nganhID": {
+      "CALL": "getHoiDongDeTai"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "table-council",
+              "col": {},
+              "attr": {
+                ":dshdgiangvien": "vueData.DSHoiDongGiangVien",
+                ":dshdchuctrach": "vueData.DSHoiDongChucTrach",
+                ":dshddetai": "vueData.DSHoiDongDeTai",
+                ":dshedaotao": "vueData.DSHeDaoTao",
+                ":hearr": "vueData.heArr"
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

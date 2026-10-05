@@ -1,0 +1,86 @@
+[
+  {
+    "comID": 11452,
+    "comName": "dialog-add-council"
+  },
+  {
+    "comID": 11435,
+    "comName": "dialog-add-council-by-excel"
+  },
+  {
+    "comID": 11447,
+    "comName": "dialog-council-temp"
+  },
+  {
+    "comID": 11438,
+    "comName": "dialog-detai-thanhvien"
+  },
+  {
+    "comID": 11453,
+    "comName": "dialog-give-sqd"
+  },
+  {
+    "comID": 11442,
+    "comName": "dialog-input-score"
+  },
+  {
+    "comID": 11439,
+    "comName": "dialog-tem-buu-kien"
+  },
+  {
+    "comID": 11440,
+    "comName": "dialog-tep-somi"
+  },
+  {
+    "comID": 11437,
+    "comName": "dialog-thong-ke-kinh-phi"
+  },
+  {
+    "comID": 11436,
+    "comName": "dialog-thu-moi"
+  },
+  {
+    "comID": 11454,
+    "comName": "dialog-update-council"
+  },
+  {
+    "comID": 11455,
+    "comName": "dialog-view-council"
+  },
+  {
+    "comID": 11443,
+    "comName": "file-comp"
+  },
+  {
+    "comID": 11444,
+    "comName": "file-comp-custom"
+  },
+  {
+    "comID": 11445,
+    "comName": "file-comp-custom-KD"
+  },
+  {
+    "comID": 11441,
+    "comName": "file-comp-diem"
+  },
+  {
+    "comID": 11451,
+    "comName": "table-council-2"
+  },
+  {
+    "comID": 11446,
+    "comName": "uc-autocomplete"
+  },
+  {
+    "comID": 11448,
+    "comName": "uc-table-add-single-hoi-dong"
+  },
+  {
+    "comID": 11450,
+    "comName": "uc-table-hoi-dong"
+  },
+  {
+    "comID": 11449,
+    "comName": "uc-table-view-hoi-dong"
+  }
+]

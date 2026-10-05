@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-doanh-thu-gia-tri-don-hang",
+  "url": "/zen-eorder/bao-cao-doanh-thu-gia-tri-don-hang",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-doanh-thu-gia-tri-don-hang",
+  "ModuleName": "Báo Cáo / Doanh Thu / Giá Trị Đơn Hàng",
+  "UpdateTime": "2026-03-20 16:19:27",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-05-15",
+  "LoadCount": 84,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

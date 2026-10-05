@@ -1,0 +1,46 @@
+[
+  {
+    "comID": 8744,
+    "comName": "uc-detail-bo-phan"
+  },
+  {
+    "comID": 8738,
+    "comName": "uc-list-bo-phan"
+  },
+  {
+    "comID": 8741,
+    "comName": "uc-list-nhan-vien"
+  },
+  {
+    "comID": 8737,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 8775,
+    "comName": "uc-main-view"
+  },
+  {
+    "comID": 8736,
+    "comName": "uc-modal-assignment"
+  },
+  {
+    "comID": 8739,
+    "comName": "uc-modal-bo-phan"
+  },
+  {
+    "comID": 8743,
+    "comName": "uc-modal-dia-diem"
+  },
+  {
+    "comID": 8742,
+    "comName": "uc-modal-nhan-vien"
+  },
+  {
+    "comID": 8740,
+    "comName": "uc-modal-quyen"
+  },
+  {
+    "comID": 8776,
+    "comName": "uc-stats-phan-quyen"
+  }
+]

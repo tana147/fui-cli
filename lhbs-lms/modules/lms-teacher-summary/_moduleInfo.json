@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-teacher-summary",
+  "url": "//lms.lhbs.vn/lms-teacher-summary",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-teacher-summary",
+  "ModuleName": "lms-teacher-summary",
+  "UpdateTime": "2026-09-30 14:23:15",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-03",
+  "LoadCount": 561,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

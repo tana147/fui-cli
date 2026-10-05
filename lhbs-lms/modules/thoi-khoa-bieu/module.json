@@ -1,0 +1,23 @@
+{
+  "data": [],
+  "controls": [
+    {
+      "prop": "fluid pa-0",
+      "rows": [
+        {
+          "prop": ":no-gutters='true'",
+          "cols": [
+            {
+              "el": "uc-thoi-khoa-bieu-page",
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false
+  }
+}

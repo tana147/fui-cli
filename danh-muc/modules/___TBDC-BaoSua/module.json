@@ -1,0 +1,61 @@
+{
+  "data": [
+    {
+      "dsTinNhan": [],
+      "tinhTrangTinNhan": null,
+      "newMess": [],
+      "message": "",
+      "webSocket": "{BaoSua: []}",
+      "getMessage": {
+        "API": "https://api.zentea.vn/work/ChiTietBaoSua_SelectByMaBaoSua",
+        "IN": {
+          "MaBaoSua": "maBaoSua"
+        },
+        "OUT": "dsTinNhan"
+      },
+      "updateTinhTrangTinNhan": {
+        "API": "https://api.zentea.vn/work/ChiTietBaoSua_UpdateTinhTrang",
+        "IN": {
+          "TinhTrang": "tinhTrangTinNhan",
+          "MaChiTiet": "maChiTiet"
+        },
+        "CALLBACK": [
+          {
+            "CALL": "getMessage"
+          }
+        ]
+      },
+      "hamtest": {}
+    }
+  ],
+  "watch": {
+    "webSocket.BaoSua": {
+      "IF": "webSocket.BaoSua != null",
+      "THEN": {
+        "CALL": "hamtest"
+      }
+    }
+  },
+  "controls": [
+    {
+      "prop": "grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "align-center",
+          "cols": [
+            {
+              "el": "uc-baosua-form",
+              "attr": {
+                ":ma-co-so": "maToaNha",
+                ":ma-vi-tri-phong": "maViTriPhong"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "login": "https://login.zentea.vn/?ur=https://danhmuc.zentea.vn/TBDC-BaoSua"
+  }
+}

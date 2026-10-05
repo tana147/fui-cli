@@ -1,0 +1,18 @@
+[
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "55CE5FA2976B404CB6CEDA1B00614EDC",
+    "scope": "module",
+    "sort": 49
+  },
+  {
+    "name": "/include/vue-advanced-cropper/index.umd.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "2C62E61D60354563A06616488926F72D",
+    "scope": "module",
+    "sort": 50
+  }
+]

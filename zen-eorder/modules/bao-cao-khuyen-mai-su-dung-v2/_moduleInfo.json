@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-khuyen-mai-su-dung-v2",
+  "url": "/zen-eorder/bao-cao-khuyen-mai-su-dung-v2",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-khuyen-mai-su-dung-v2",
+  "ModuleName": "Báo Cáo / Khuyến Mãi / Sử Dụng Voucher",
+  "UpdateTime": "2026-03-20 16:21:25",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-06-10",
+  "LoadCount": 74,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

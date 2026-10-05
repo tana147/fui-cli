@@ -1,0 +1,193 @@
+<template>
+	<div>
+		<v-btn @click="onPrintExcel" class="mb-3" color="success"><v-icon dense smal
+				left>mdi-microsoft-excel</v-icon>Xuất file excel</v-btn>
+
+		<c-table class="table-frozen-2-col" :items="DsBaiBaoKhoaHoc" :label="labelTable" :headers="tableHeader" dense
+			items-per-page="-1" isNew="false" isEdit="false" isSearch
+			:footer-props="{ 'items-per-page-options': [50, 100, 150, -1] }">
+			<template v-slot:item.HoTenMaSV="{ item }">
+				<span class="primary--text">
+					<b> {{ item.Ho_SV }} {{ item.Ten_SV }}</b>
+				</span>
+				<br />
+				<b>{{ item.Student_ID }}</b>
+				<span class="amber--text"> [{{ item.Lop_ID }}]</span>
+			</template>
+			<template v-slot:item.FileBaiBaoKhoaHocID="{ item }">
+				<div v-if="item.FileBaiBaoKhoaHocID">
+					<v-chip label outlined class="mb-3" color="deep-purple accent-4">
+						<v-icon left>mdi-file-check-outline</v-icon>
+						<a :href="vueData.v_Set.urlReadFile + 'FileData/' + item.FileBaiBaoKhoaHocID"
+							target="_blank">Bài báo khoa học</a>
+					</v-chip>
+				</div>
+
+				<v-chip v-else class="mb-3" color="deep-purple accent-4" outlined label> Chưa upload file </v-chip>
+			</template>
+		</c-table>
+	</div>
+</template>
+
+<script>
+	export default {
+		props: ['dsbaibaokhoahoc', 'nganhid', 'nganhgiangday', 'trangthaibaibao'],
+		data() {
+			return {
+				tableHeader: [
+					{
+						text: 'STT',
+						value: 'STT',
+						sortable: false,
+						align: 'center',
+						width: 50,
+					},
+					{
+						text: 'Học viên',
+						value: 'HoTenMaSV',
+						width: 170,
+					},
+					{
+						text: 'Niên khóa',
+						value: 'Nien_Khoa',
+						sortable: false,
+						align: 'center',
+						width: 100,
+					},
+					{
+						text: 'Tên ngành',
+						value: 'Ten_Nganh',
+						width: 180,
+					},
+					{
+						text: 'Tên đề tài',
+						value: 'Thesis_Name',
+						width: 490,
+					},
+					{
+						text: 'GVHD 1',
+						value: 'Thesises_Prof1',
+						width: 180,
+					},
+					{
+						text: 'GVHD 2',
+						value: 'Thesises_Prof2',
+						width: 180,
+					},
+					{
+						text: 'File bài báo',
+						value: 'FileBaiBaoKhoaHocID',
+						sortable: false,
+						align: 'center',
+					},
+					{
+						text: 'Tên bài báo',
+						value: 'TenBaiBao',
+						sortable: false,
+						width: 250,
+					},
+					{
+						text: 'Tên tạp chí/Hội thảo',
+						value: 'TenTapChi_HoiThao',
+						sortable: false,
+						width: 200,
+					},
+					{
+						text: 'Năm xuất bản',
+						value: 'NamXuatBan',
+						sortable: false,
+						width: 120,
+					},
+					{
+						text: 'Vị trí tác giả',
+						value: 'ViTriTacGia',
+						sortable: false,
+						width: 150,
+					},
+					{
+						text: 'Điểm Hội đồng GS',
+						value: 'DiemHoiDongGS',
+						sortable: false,
+						width: 100,
+					},
+				],
+			}
+		},
+		mounted() { },
+		computed: {
+			DsBaiBaoKhoaHoc: function () {
+				return this.dsbaibaokhoahoc.map((item, index) => {
+					return {
+						...item,
+						HoTenMaSV: `${item.Ho_SV} ${item.Ten_SV} ${item.Student_ID} ${item.Lop_ID}`
+					};
+				});
+			},
+			labelTable() {
+				return `Danh sách học viên (${this.DsBaiBaoKhoaHoc.length})`
+			},
+			NganhGiangDay() {
+				return this.nganhgiangday
+			},
+		},
+		watch: {},
+		methods: {
+			nganhName(nganhid) {
+				const nganh = this.NganhGiangDay.find((item) => item.NganhID === nganhid)
+				return nganh ? nganh.TenNganh?.toUpperCase() : ''
+			},
+			onPrintExcel() {
+				const dataArr = []
+				this.DsBaiBaoKhoaHoc.forEach((item, index) => {
+					const data = {
+						STT: index + 1,
+						MSHV: item.Student_ID,
+						HoHV: item.Ho_SV,
+						TenHV: item.Ten_SV,
+						LopID: item.Lop_ID,
+						NienKhoa: item.Nien_Khoa,
+						TenNganh: item.Ten_Nganh,
+						TenDeTai: item.Thesis_Name,
+						GVHD1: item.Thesises_Prof1,
+						GVHD2: item.Thesises_Prof2,
+						TenBaiBao: item.TenBaiBao,
+						TenTapChiHoiThao: item.TenTapChi_HoiThao,
+						ViTriTacGia: item.ViTriTacGia,
+						DiemHoiDongGS: isNaN(parseFloat(item.DiemHoiDongGS)) ? null : parseFloat(item.DiemHoiDongGS),
+					}
+					dataArr.push(data)
+				})
+	
+				const apiData = {
+					Nganh: this.nganhid === '0' ? '' : this.nganhName(this.nganhid),
+					SoLuong: this.DsBaiBaoKhoaHoc.length,
+					TrangThaiBaiBao: parseInt(this.trangthaibaibao),
+					DanhSach: dataArr,
+				}
+	
+				const myHeaders = new Headers()
+				myHeaders.append('Content-Type', 'application/json')
+				const requestOptions = {
+					method: 'POST',
+					headers: myHeaders,
+					body: JSON.stringify(apiData),
+					redirect: 'follow',
+				}
+				// https://gendocx.iotsoftvn.com
+				// http://localhost:5244
+				fetch('https://gendocx.iotsoftvn.com/api/generate-xlsx/thong-ke-bai-bao', requestOptions)
+					.then((response) => response.blob())
+					.then((blob) => {
+						var url = window.URL.createObjectURL(blob)
+						var a = document.createElement('a')
+						a.href = url
+						a.download = `Danh sách nộp bài báo.xlsx`
+						document.body.appendChild(a) // we need to append the element to the dom -> otherwise it will not work in firefox
+						a.click()
+						a.remove() //afterwards we remove the element again
+					})
+					.catch((error) => console.error(error))
+			},
+		},
+	}
+</script>

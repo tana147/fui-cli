@@ -1,0 +1,61 @@
+{
+  "data": [
+    {
+      "DSBaoCao": [],
+      "TableHeader": []
+    },
+    {
+      "API": "/eorder/PhanHieu_Select",
+      "OUT": "DSPhanHieu",
+      "CALLBACK": [
+        {
+          "EXE": "vueData.DSPhanHieu.unshift({PhanHieuID: 0, TenPhanHieu: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/KhuVuc_Select",
+      "OUT": "DSKhuVuc",
+      "CALLBACK": [
+        {
+          "EXE": "vueData.DSKhuVuc.unshift({KhuVucID: 0, TenKhuVuc: 'Tất cả'})"
+        }
+      ]
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "class='d-flex flex-column'",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Doanh thu của các sản phẩm trong các đơn hàng thoả điều kiện",
+                ":items": "DSBaoCao",
+                ":excel": true,
+                ":hide-default-footer": true,
+                ":items-per-page": -1,
+                ":headers": "TableHeader",
+                "sort-by": "TenNhomMuc"
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

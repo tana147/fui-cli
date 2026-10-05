@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/sys-danh-hieu",
+  "url": "//lms.lhbs.vn/sys-danh-hieu",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "sys-danh-hieu",
+  "ModuleName": "sys-danh-hieu",
+  "UpdateTime": "2026-06-02 17:27:49",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-06-18",
+  "LoadCount": 200,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

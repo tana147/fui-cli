@@ -1,0 +1,38 @@
+[
+  {
+    "comID": 11954,
+    "comName": "uc-dot-dexuat-manage"
+  },
+  {
+    "comID": 11921,
+    "comName": "uc-dotduyet-manage"
+  },
+  {
+    "comID": 11915,
+    "comName": "uc-form-an-pham"
+  },
+  {
+    "comID": 11917,
+    "comName": "uc-format-price-tac-gia"
+  },
+  {
+    "comID": 11922,
+    "comName": "uc-lichsu-modal"
+  },
+  {
+    "comID": 11918,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 11919,
+    "comName": "uc-main-view"
+  },
+  {
+    "comID": 11920,
+    "comName": "uc-modal-edit"
+  },
+  {
+    "comID": 11916,
+    "comName": "uc-table-tac-gia"
+  }
+]

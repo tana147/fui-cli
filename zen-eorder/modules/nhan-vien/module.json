@@ -1,0 +1,402 @@
+{
+  "data": [
+    {
+      "BoPhanID": 0,
+      "TenBoPhan": "Tất cả",
+      "CTNhanVien": null,
+      "IsShowDialogStore": false,
+      "IsShowDialogRole": false
+    },
+    {
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 1,
+          "text": "Tạm khóa"
+        }
+      ]
+    },
+    {
+      "DSGioiTinh": [
+        {
+          "value": 1,
+          "text": "Nam"
+        },
+        {
+          "value": 0,
+          "text": "Nữ"
+        }
+      ]
+    },
+    {
+      "DSDuocPhanNhieuCuaHang": [
+        {
+          "value": 1,
+          "text": "Có"
+        },
+        {
+          "value": 0,
+          "text": "Không"
+        }
+      ]
+    },
+    {
+      "getBoPhanSelect": {
+        "API": "/eorder/BoPhan_Select",
+        "OUT": "DSBoPhan"
+      }
+    },
+    {
+      "getNhanVien": {
+        "API": "/eorder/NhanVien_Select",
+        "IN": {
+          "BoPhanID": "BoPhanID"
+        },
+        "OUT": "DSNhanVien"
+      }
+    },
+    {
+      "CALL": "getBoPhanSelect"
+    },
+    {
+      "CALL": "getNhanVien"
+    }
+  ],
+  "watch": {
+    "BoPhanID": {
+      "CALL": "getNhanVien"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "w": 5,
+              "attr": {
+                "label": "Bộ phận",
+                ":excel": true,
+                ":items": "DSBoPhan",
+                "height": "calc(100vh - 63px)",
+                ":headers": [
+                  {
+                    "text": "Tên bộ phận",
+                    "value": "TenBoPhan",
+                    "el": "span",
+                    "innerHTML": "<b>{{item.TenBoPhan}}</b><span v-if='item.Is_NhieuCuaHang === 1'><br/>Nhiều cửa hàng</span>"
+                  },
+                  {
+                    "text": "Nhân viên",
+                    "align": "center",
+                    "value": "SoLuongNhanVien",
+                    "el": "v-chip",
+                    "attr": {
+                      ":color": "item.SoLuongNhanVien > 0 ? 'success': 'error'",
+                      ":small": true
+                    },
+                    "innerHTML": "{{item.SoLuongNhanVien}}"
+                  },
+                  {
+                    "text": "",
+                    "value": "right-button",
+                    "el": "t-button",
+                    "align": "center",
+                    "attr": {
+                      "color": "error",
+                      "label": "Quyền",
+                      ":action": {
+                        "CTBoPhan": "item",
+                        "IsShowDialogRole": true
+                      }
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "view-button",
+                    "el": "t-button",
+                    "align": "right",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Xem nhân viên",
+                      ":action": {
+                        "BoPhanID": "item.BoPhanID",
+                        "TenBoPhan": "item.TenBoPhan"
+                      }
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenBoPhan",
+                      "label": "Tên bộ phận",
+                      "maxlength": "50"
+                    },
+                    "w": 8
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "Is_NhieuCuaHang",
+                      "label": "Được phân nhiều cửa hàng",
+                      ":items": "vueData.DSDuocPhanNhieuCuaHang"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "MoTaNhiemVu",
+                      "label": "Mô tả nhiệm vụ",
+                      "maxlength": "50"
+                    },
+                    "w": 8
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "TinhTrang": 0
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm bộ phận",
+                    "API": "/eorder/BoPhan_Insert",
+                    "IN": {
+                      "BoPhanID": "item.BoPhanID",
+                      "TenBoPhan": "item.TenBoPhan",
+                      "MoTaNhiemVu": "item.MoTaNhiemVu",
+                      "TinhTrang": "item.TinhTrang",
+                      "Is_NhieuCuaHang": "item.Is_NhieuCuaHang"
+                    },
+                    "MESS": "Thêm mới thành công"
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật bộ phận <br/><b>{{item.TenBoPhan}}</b>",
+                    "API": "/eorder/BoPhan_Update",
+                    "IN": {
+                      "BoPhanID": "item.BoPhanID",
+                      "TenBoPhan": "item.TenBoPhan",
+                      "MoTaNhiemVu": "item.MoTaNhiemVu",
+                      "TinhTrang": "item.TinhTrang",
+                      "Is_NhieuCuaHang": "item.Is_NhieuCuaHang"
+                    },
+                    "MESS": "Cập nhật thành công"
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa bộ phận <br/><b>{{item.TenBoPhan}}</b>",
+                    "API": "/eorder/BoPhan_Delete",
+                    "IN": {
+                      "BoPhanID": "item.BoPhanID"
+                    },
+                    "MESS": "Xóa thành công"
+                  }
+                }
+              }
+            },
+            {
+              "el": "f-table",
+              "w": 7,
+              "attr": {
+                ":label": "`Danh sách nhân viên - ${TenBoPhan}`",
+                ":excel": true,
+                ":items": "DSNhanVien",
+                "height": "calc(100vh - 121px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Nhân viên",
+                    "value": "TenDangNhap",
+                    "el": "span",
+                    "innerHTML": "<b>{{item.TenDangNhap}}</b> <br/> {{item.MaNhanVien}}"
+                  },
+                  {
+                    "text": "Bộ Phận",
+                    "value": "TenBoPhan"
+                  },
+                  {
+                    "text": "Tạm khóa",
+                    "align": "center",
+                    "value": "TinhTrang",
+                    "el": "v-icon",
+                    "attr": {
+                      "color": "red",
+                      ":dense": true
+                    },
+                    "innerHTML": "{{item.TinhTrang == 0 ? '': 'mdi-lock'}}"
+                  },
+                  {
+                    "text": "Cửa hàng",
+                    "align": "center",
+                    "value": "SoLuongCuaHang",
+                    "el": "v-chip",
+                    "attr": {
+                      ":color": "item.SoLuongCuaHang > 0 ? 'success': 'error'",
+                      ":small": true
+                    },
+                    "innerHTML": "{{item.SoLuongCuaHang}}"
+                  },
+                  {
+                    "text": "",
+                    "value": "store-button",
+                    "el": "t-button",
+                    "align": "center",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Chọn cửa hàng",
+                      ":action": {
+                        "CTNhanVien": "item",
+                        "IsShowDialogStore": true
+                      }
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "MaNhanVien",
+                      "label": "Mã nhân viên",
+                      "maxlength": "9"
+                    },
+                    "w": 5
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenDangNhap",
+                      "label": "Tên đăng nhập"
+                    },
+                    "w": 7
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "BoPhanID",
+                      "label": "Bộ phận",
+                      ":items": "vueData.DSBoPhan",
+                      "item-value": "BoPhanID",
+                      "item-text": "TenBoPhan"
+                    },
+                    "w": 8
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "TinhTrang": 0,
+                    "NgayVaoLamViec": "new Date()"
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới nhân viên",
+                    "API": "/eorder/NhanVien_Insert",
+                    "IN": {
+                      "BoPhanID": "item.BoPhanID",
+                      "MaNhanVien": "item.MaNhanVien",
+                      "TenDangNhap": "item.TenDangNhap",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getBoPhanSelect"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhân viên <br/><b>{{item.MaNhanVien}} - {{item.TenDangNhap}}</b>",
+                    "API": "/eorder/NhanVien_Update",
+                    "IN": {
+                      "NhanVienID": "item.NhanVienID",
+                      "BoPhanID": "item.BoPhanID",
+                      "MaNhanVien": "item.MaNhanVien",
+                      "TenDangNhap": "item.TenDangNhap",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getBoPhanSelect"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa nhân viên <br/><b>{{item.MaNhanVien}} - {{item.TenDangNhap}}</b>",
+                    "API": "/eorder/NhanVien_Delete",
+                    "IN": {
+                      "NhanVienID": "item.NhanVienID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getBoPhanSelect"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "modal_store",
+              "attr": {
+                "v-if": "vueData.IsShowDialogStore && vueData.CTNhanVien?.NhanVienID > 0",
+                ":ct_nhanvien": "vueData.CTNhanVien"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "modal_role",
+              "attr": {
+                "v-if": "vueData.IsShowDialogRole && vueData.CTBoPhan?.BoPhanID > 0",
+                ":ct_bophan": "vueData.CTBoPhan"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

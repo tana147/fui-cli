@@ -1,0 +1,422 @@
+{
+  "data": [
+    {
+      "PhanHieuID": 0,
+      "KhuVucID": 0,
+      "HinhThucThoiGian": 2,
+      "Nam": null,
+      "Thang": null,
+      "TuNam": null,
+      "DenNam": null,
+      "Ngay": "moment().format('YYYY-MM-DD')",
+      "DSThang": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "DSNam": "GetDSNam()"
+    },
+    {
+      "DSHinhThucThanhToan": [
+        {
+          "value": 0,
+          "text": "Tất cả"
+        },
+        {
+          "value": 1,
+          "text": "Tiền mặt"
+        },
+        {
+          "value": 2,
+          "text": "Chuyển khoản"
+        },
+        {
+          "value": 4,
+          "text": "Quẹt thẻ"
+        },
+        {
+          "value": 3,
+          "text": "Shopee Food"
+        },
+        {
+          "value": 6,
+          "text": "Grab"
+        },
+        {
+          "value": 5,
+          "text": "ZEN"
+        },
+        {
+          "value": 6,
+          "text": "XSM"
+        }
+      ],
+      "DSHinhThucThoiGian": [
+        {
+          "value": 1,
+          "text": "Theo giờ"
+        },
+        {
+          "value": 2,
+          "text": "Theo ngày"
+        },
+        {
+          "value": 3,
+          "text": "Theo tuần"
+        },
+        {
+          "value": 4,
+          "text": "Theo quý"
+        },
+        {
+          "value": 5,
+          "text": "Theo tháng"
+        },
+        {
+          "value": 6,
+          "text": "Theo năm"
+        }
+      ],
+      "headers": [
+        {
+          "text": "Mã đơn hàng (POS)",
+          "value": "MaDonHang"
+        },
+        {
+          "text": "Trạng thái hóa đơn",
+          "value": "TrangThai_HoaDonDienTu",
+          "width": 200
+        },
+        {
+          "text": "Ngày đặt hàng",
+          "value": "NgayDatHang",
+          "align": "center"
+        },
+        {
+          "text": "Giờ đặt hàng",
+          "value": "GioDatHang",
+          "align": "center"
+        },
+        {
+          "text": "Mã sản phẩm",
+          "value": "MaSanPham"
+        },
+        {
+          "text": "Nhóm sản phẩm",
+          "value": "TenNhomSanPham",
+          "width": 250
+        },
+        {
+          "text": "Tên sản phẩm",
+          "value": "TenSanPham",
+          "width": 350
+        },
+        {
+          "text": "Đơn vị",
+          "value": "DonVi",
+          "align": "right"
+        },
+        {
+          "text": "Loại bán hàng",
+          "value": "LoaiBanHang",
+          "align": "center"
+        },
+        {
+          "text": "Số lượng",
+          "value": "SoLuong",
+          "align": "right"
+        },
+        {
+          "text": "Đơn giá",
+          "value": "DonGia",
+          "el": "span",
+          "innerHTML": "{{item.DonGia.toLocaleString('vi-vn')}}",
+          "align": "right"
+        },
+        {
+          "text": "Tiền hàng",
+          "value": "TienHang",
+          "el": "span",
+          "innerHTML": "{{item.TienHang.toLocaleString('vi-vn')}}",
+          "align": "right"
+        },
+        {
+          "text": "Khuyến mãi",
+          "value": "KhuyenMai",
+          "align": "right"
+        },
+        {
+          "text": "Tiền đổi điểm",
+          "value": "TienDoiDiem",
+          "align": "right"
+        },
+        {
+          "text": "Tổng tiền trước thuế",
+          "value": "TongTienTruocThue",
+          "el": "span",
+          "innerHTML": "{{item.TienTruocThue.toLocaleString('vi-vn')}}",
+          "align": "right"
+        },
+        {
+          "text": "Thuế",
+          "value": "Thue",
+          "el": "span",
+          "innerHTML": "{{item.TienThue.toLocaleString('vi-vn')}}",
+          "align": "right"
+        },
+        {
+          "text": "Tổng tiền sau thuế",
+          "value": "TongTien",
+          "el": "span",
+          "innerHTML": "{{item.TienSauThue.toLocaleString('vi-vn')}}",
+          "align": "right"
+        },
+        {
+          "text": "Loại sản phẩm",
+          "value": "LoaiSanPham",
+          "align": "center"
+        },
+        {
+          "text": "Trạng thái",
+          "value": "TrangThai",
+          "align": "center",
+          "width": 150
+        },
+        {
+          "text": "Cửa hàng",
+          "value": "CuaHang",
+          "width": 300
+        },
+        {
+          "text": "Địa chỉ",
+          "value": "DiaChi_CuaHang",
+          "width": 550
+        },
+        {
+          "text": "Ghi chú",
+          "value": "GhiChu",
+          "width": 300
+        },
+        {
+          "text": "Ghi chú món",
+          "value": "GhiChu_Mon",
+          "width": 300
+        },
+        {
+          "text": "Nhân viên thanh toán",
+          "value": "NhanVienThanhToan"
+        },
+        {
+          "text": "HTTT",
+          "value": "HinhThucThanhToan",
+          "align": "center"
+        },
+        {
+          "text": "HTTT HĐĐT",
+          "value": "HinhThucThanhToan_HoaDon",
+          "align": "center"
+        },
+        {
+          "text": "Mã đơn hàng (Mới)",
+          "value": "MaDonHang_Moi"
+        },
+        {
+          "text": "Ký hiệu hóa đơn",
+          "value": "KyHieuHoaDon",
+          "align": "center"
+        },
+        {
+          "text": "Số hóa đơn điện tử",
+          "value": "SoHoaDon"
+        },
+        {
+          "text": "Tên người mua",
+          "value": "TenNguoiMua",
+          "width": 350
+        },
+        {
+          "text": "Mã số thuế",
+          "value": "MaSoThue"
+        },
+        {
+          "text": "Địa chỉ",
+          "value": "DiaChiNguoiMua",
+          "width": 200
+        },
+        {
+          "text": "Mã cơ quan thuế",
+          "value": "MaCoQuanThue",
+          "width": 250
+        },
+        {
+          "text": "Mã số bí mật",
+          "value": "MaSoBiMat"
+        },
+        {
+          "text": "Mã tra cứu",
+          "value": "MaTraCuu"
+        },
+        {
+          "text": "Link tra cứu",
+          "value": "LinkTraCuu"
+        },
+        {
+          "text": "Ngày hóa đơn",
+          "value": "NgayXuatHoaDon",
+          "align": "right"
+        },
+        {
+          "text": "Loại hóa đơn",
+          "value": "LoaiHoaDon",
+          "width": 250
+        }
+      ]
+    },
+    {
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Tất cả"
+        },
+        {
+          "value": 1,
+          "text": "Đã gửi bếp/bar"
+        },
+        {
+          "value": 2,
+          "text": "Đã trả món"
+        },
+        {
+          "value": 3,
+          "text": "Đã đổi món"
+        },
+        {
+          "value": 4,
+          "text": "Chờ xử lý"
+        },
+        {
+          "value": 5,
+          "text": "Đang chế biến"
+        }
+      ]
+    },
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')",
+      "HinhThucThanhToan": 0,
+      "TrangThaiMon": 0
+    },
+    {
+      "API": "/eorder/KhuVuc_Select",
+      "OUT": "DSKhuVuc",
+      "CALLBACK": [
+        {
+          "EXE": "DSKhuVuc.unshift({'KhuVucID': 0, 'TenKhuVuc': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "EXE": " vueData.CuaHangID = (vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        },
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_HoaDon_DienTu",
+        "IN": {
+          "HinhThucThoiGian": "HinhThucThoiGian",
+          "Ngay": "Ngay ?? -1",
+          "TuNgay": "TuNgay ?? -1",
+          "DenNgay": "DenNgay ?? -1",
+          "Nam": "Nam ?? -1",
+          "TuNam": "TuNam ?? -1",
+          "DenNam": "DenNam ?? -1",
+          "Thang": "Thang ?? -1",
+          "CuaHangID": "CuaHangID",
+          "HinhThucThanhToan": "HinhThucThanhToan",
+          "TrangThaiMon": "TrangThaiMon"
+        },
+        "OUT": "DSChiTietHoaDon",
+        "CALLBACK": [
+          {
+            "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+          }
+        ]
+      }
+    },
+    {
+      "API": "/eorder/PhanHieu_Select",
+      "OUT": "DSPhanHieu",
+      "CALLBACK": [
+        {
+          "EXE": "DSPhanHieu.unshift({'PhanHieuID': 0, 'TenPhanHieu': 'Tất cả'})"
+        }
+      ]
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);",
+        "CALL": "getBaoCao"
+      }
+    ],
+    "HinhThucThoiGian": [
+      {
+        "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+      },
+      {
+        "EXE": "vueData.DSChiTietHoaDon = []"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo chi tiết hóa đơn điện tử",
+                ":items": "DSChiTietHoaDon",
+                ":excel": true,
+                "height": "calc(100vh - 226px)",
+                ":hide-default-footer": false,
+                ":headers": "headers"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

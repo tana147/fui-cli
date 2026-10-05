@@ -1,0 +1,30 @@
+[
+  {
+    "comID": 8131,
+    "comName": "uc-bao-sua-card"
+  },
+  {
+    "comID": 8129,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 8135,
+    "comName": "uc-modal-chi-tiet-bao-sua"
+  },
+  {
+    "comID": 8134,
+    "comName": "uc-modal-tiep-nhan-bao-sua"
+  },
+  {
+    "comID": 8130,
+    "comName": "uc-table"
+  },
+  {
+    "comID": 8142,
+    "comName": "uc-time-line"
+  },
+  {
+    "comID": 8167,
+    "comName": "uc-top-bar"
+  }
+]

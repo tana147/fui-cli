@@ -1,0 +1,158 @@
+{
+  "data": [
+    {
+      "ChuongTrinhID": 0,
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')"
+    },
+    {
+      "API": "/eorder/ChuongTrinh_Select",
+      "OUT": "DSChuongTrinh"
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_KhuyenMai_TyLeVoucher",
+        "IN": {
+          "ChuongTrinhID": "ChuongTrinhID",
+          "TuNgay": "TuNgay",
+          "DenNgay": "DenNgay"
+        },
+        "OUT": "DSChiTietKhuyenMai"
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 5,
+              "attr": {
+                "v-model": "ChuongTrinhID",
+                "label": "Chương trình khuyến mãi",
+                ":items": "vueData.DSChuongTrinh",
+                "item-value": "ChuongTrinhID",
+                "item-text": "MaTenChuongTrinh"
+              }
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "TuNgay",
+                "label": "Từ ngày",
+                "date-add": 0
+              },
+              "w": 3
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "DenNgay",
+                "label": "Đến ngày",
+                "date-add": 0
+              },
+              "w": 3
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getBaoCao"
+                }
+              },
+              "w": 3
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo tỉ lệ sử dụng voucher",
+                ":items": "DSChiTietKhuyenMai",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Mã chương trình",
+                    "value": "MaChuongTrinh",
+                    "width": 200
+                  },
+                  {
+                    "text": "Tên chương trình",
+                    "value": "TenChuongTrinh",
+                    "width": 500
+                  },
+                  {
+                    "text": "Thời gian từ",
+                    "value": "TuNgay_Display",
+                    "width": 100
+                  },
+                  {
+                    "text": "Thời gian tới",
+                    "value": "DenNgay_Display",
+                    "width": 100
+                  },
+                  {
+                    "text": "Loại chương trình",
+                    "value": "TenLoaiChuongTrinh",
+                    "el": "span",
+                    "width": 250,
+                    "innerHTML": "{{item.TenLoaiChuongTrinh}}"
+                  },
+                  {
+                    "text": "Điều kiện",
+                    "value": "DieuKien",
+                    "el": "span",
+                    "width": 400,
+                    "innerHTML": "{{renderDieuKien(item)}}"
+                  },
+                  {
+                    "text": "Giảm giá",
+                    "value": "KhuyenMai",
+                    "el": "span",
+                    "width": 600,
+                    "innerHTML": "{{renderKhuyenMai(item)}}"
+                  },
+                  {
+                    "text": "Trạng thái",
+                    "value": "TrangThai",
+                    "el": "span",
+                    "align": "center",
+                    "width": 150,
+                    "innerHTML": "{{item.TrangThai === 1 ? 'Đang diễn ra' : 'Đã kết thúc'}}"
+                  },
+                  {
+                    "text": "Tổng nhận",
+                    "value": "TongVoucher",
+                    "align": "center",
+                    "width": 100
+                  },
+                  {
+                    "text": "Tổng sử dụng",
+                    "value": "TongVoucher_DaSuDung",
+                    "align": "center",
+                    "width": 100
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

@@ -1,0 +1,68 @@
+.filter-bar .v-input {
+    flex: 0 0 auto;
+}
+
+.summary-bar {
+    min-height: 32px;
+}
+
+.table-host {
+    position: relative;
+}
+
+.empty-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.98);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 30;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.chip-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.chip-error {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.chip-grey {
+    background: #f5f5f5;
+    color: #757575;
+}
+
+.chip-blue-grey {
+    background: #eceff1;
+    color: #546e7a;
+}
+
+.tabulator-select {
+    width: 100%;
+    padding: 2px 4px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.tabulator-edit-input {
+    width: 100%;
+    padding: 2px 4px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 12px;
+}

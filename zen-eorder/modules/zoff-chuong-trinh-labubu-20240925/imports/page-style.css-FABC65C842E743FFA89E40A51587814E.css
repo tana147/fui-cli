@@ -1,0 +1,113 @@
+.container {
+    padding: 0;
+    margin: 0;
+}
+
+.container-page {
+    height: 100vh;
+}
+
+.bg-case {
+    height: 100vh;
+    width: 100vw;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+}
+
+.card-block {
+    text-align: center;
+    width: calc(100vw - 25px);
+    padding: 5px 0;
+    margin: 10px;
+    font-size: 18px;
+    border-radius: 25px !important;
+    box-shadow: 2px -3px 2px #4f540d !important;
+}
+
+.card-block-content {
+    font-weight: bold;
+}
+
+.card-block-pin {
+    font-weight: 900;
+    font-size: 32px;
+}
+
+.card-input {
+    text-align: center;
+    padding: 20px 5px;
+    margin: 5px;
+    height: 85px;
+    font-size: 20px;
+    border-radius: 25px !important;
+    box-shadow: 2px -3px 2px #4f540d !important;
+}
+
+.card-block-title {
+    font-weight: 900;
+    font-size: 24px;
+}
+
+.pin-input input {
+    font-size: 30px;
+    font-weight: bold !important;
+    text-align: center;
+    width: 40px;
+}
+
+.warning-2-3 {
+    position: absolute;
+    bottom: 0;
+}
+
+.mt-90 {
+    margin-top: 90px;
+}
+
+.mb-150 {
+    margin-bottom: 150px;
+}
+
+.label-number-position {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    font-size: 18px;
+}
+
+.qr-code-position {
+    padding: 10px 10px 3px 10px;
+    background-color: #fff;
+    margin-top: 100px;
+}
+
+.container-wheel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 2;
+    background-color: #fff;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    background-image: url("https://cdn.zentea.vn/filedata/zen-eorder/labubu/bg-wheel.jpg");
+    pointer-events: none !important
+}
+
+.lucky-wheel {
+    width: 100%;
+    height: 500px;
+}
+
+.bg-labubu-info {
+    background-image: url("https://cdn.zentea.vn/filedata/zen-eorder/labubu/bg-labubu.jpg");
+    height: 100vh;
+    width: 100vw;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+}

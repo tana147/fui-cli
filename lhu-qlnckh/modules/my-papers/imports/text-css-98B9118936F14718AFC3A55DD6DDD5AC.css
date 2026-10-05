@@ -1,0 +1,31 @@
+.div-window{
+    display: flex ;
+        flex-direction: row;
+        align-items: center;
+}
+
+@media only screen and (max-width: 600px) {
+    .div-mobile{
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start;
+
+
+    }
+    .margin-mobile{
+        margin-top: 14px;
+    }
+    .text-mobile{
+        font-size: 12px;
+    }
+    .v-data-table .v-data-table__mobile-row {
+            min-height: 48px !important;
+            height: fit-content !important;
+            padding-top: 5px !important;
+            padding-bottom: 5px !important;
+   }
+   .v-data-table .v-data-table__mobile-row .v-data-table__mobile-row__header {
+       width: 80%;
+   }
+
+}

@@ -1,0 +1,56 @@
+{
+  "data": [
+    {
+      "isDetailDialog": false,
+      "isDialogAdd": false,
+      "detailDecision": [],
+      "detailStudent": [],
+      "heDaoTao": [],
+      "heArr": [],
+      "heAddArr": [],
+      "getDecisionId": null,
+      "decisionArr": [],
+      "FileList": [],
+      "NganhGlobal": [],
+      "Tab_SoQuyetDinh": 0,
+      "tempValue": "",
+      "EditData": {
+        "Decision_TieuDe": "",
+        "Decision_Nganh": "",
+        "Decision_NienKhoa": "",
+        "Decision_Dot": "",
+        "Decision_MaSo": "",
+        "Decision_Type": "",
+        "Decision_Description": ""
+      },
+      "isEdit": false
+    },
+    {
+      "EXE": "getDecision()"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "parent-holder",
+              "col": {},
+              "attr": {
+                ":waitlist": "vueData.DS_WaitList",
+                ":majorlist": "vueData.DS_Majorlist",
+                ":decisionarr": "vueData.decisionArr",
+                ":decisionfilter": "vueData.decisionArr"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

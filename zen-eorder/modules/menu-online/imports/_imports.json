@@ -1,0 +1,36 @@
+[
+  {
+    "name": "https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap",
+    "type": ".css",
+    "contentType": "link",
+    "fileID": "262F104A353E4CED902C090230F96F8A",
+    "scope": "module",
+    "sort": 24
+  },
+  {
+    "name": "chon-cua-hang",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "ECA9EF3D778649F8BB386CE1834B4522",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/chon-cua-hang-ECA9EF3D778649F8BB386CE1834B4522.css"
+  },
+  {
+    "name": "styles",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "D3882FC8521D4BFC87493CDE8D93330B",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/styles-D3882FC8521D4BFC87493CDE8D93330B.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "CC926B2FC97243428FC1CDE5CE8722D8",
+    "scope": "module",
+    "sort": 26
+  }
+]

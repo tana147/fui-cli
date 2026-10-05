@@ -1,0 +1,172 @@
+/* .v-container {
+  min-height: 100vh;
+} */
+
+.container {
+    position: relative;
+    padding: 0;
+    max-width: unset;
+}
+
+.theme--light.v-card {
+    background-image: url("/_cdn/zen-eorder/bg-bill.jpg");
+    background-size: cover;
+}
+
+.v-card__title+.v-card__subtitle,
+.v-card__title+.v-card__text {
+    padding-top: 16px;
+}
+
+.v-card__title, .toast-text {
+
+    word-break: keep-all !important;
+}
+
+
+.img-bg {
+    background-image: url("/_cdn/zen-eorder/poster/poster-1.jpg");
+    background-size: contain;
+}
+
+.v-card__text {
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    overflow-y: scroll;
+    height: 350px;
+}
+
+.theme--light.v-btn--active:before,
+.theme--light.v-btn--active:hover:before {
+    opacity: 0;
+}
+
+.v-sheet.v-card {
+    position: absolute;
+    bottom: 0;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    width: 100%;
+
+}
+
+.v-card>:last-child:not(.v-btn):not(.v-chip):not(.v-avatar) {
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.custom-button-submit {
+    border-radius: 20px;
+}
+
+.v-btn-toggle .v-btn.v-btn.v-size--default {
+    min-width: 25px;
+    padding: 0;
+}
+
+.v-btn:not(.v-btn--round).v-size--default {
+    height: 0;
+}
+
+.selected-icon {
+    transform: scale(1.2);
+    transition: all 0.3s ease-in-out;
+}
+
+.v-btn__content {
+    gap: 10px;
+    justify-content: center;
+}
+
+.v-btn>.v-btn__content .v-icon {
+    bottom: 3px;
+}
+
+.xoay {
+    transform: rotate(-45deg);
+}
+
+.custom-1,
+.custom-2,
+.custom-3 {
+    border-bottom: solid 1px #80808026;
+}
+
+.theme--light.v-chip:not(.v-chip--active) {
+    color: #4caf50;
+    background-color: #fbfcee;
+}
+
+.v-chip-group .v-chip--active {
+    color: #fff;
+    background-color: #4caf50;
+}
+
+.v-chip-group .v-chip {
+    border: solid 1px;
+}
+
+.custom-back-icon {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-color: #4caf50;
+}
+
+.back-home {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.mdi-arrow-left::before {
+    color: #fff;
+}
+
+.v-icon.v-icon {
+    font-size: 27px;
+}
+
+.v-chip.v-size--default {
+    font-size: 16px;
+}
+
+.confirm-scroll {
+    max-height: 300px;
+    /* Bạn có thể tăng giảm */
+    overflow-y: auto !important;
+    overflow-x: hidden;
+}
+
+body {
+    overflow: hidden !important;
+}
+
+.confirm-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.confirm-items {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.confirm-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.confirm-title {
+    font-weight: bold;
+    font-size: 15px;
+    color: #333;
+}
+
+.confirm-detail {
+    font-style: italic;
+    color: #666;
+}

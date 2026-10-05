@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-khuyen-mai-nhan",
+  "url": "/zen-eorder/bao-cao-khuyen-mai-nhan",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-khuyen-mai-nhan",
+  "ModuleName": "Báo Cáo / Khuyến Mãi / Nhận Voucher",
+  "UpdateTime": "2026-03-29 13:56:31",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2026-03-09",
+  "LoadCount": 37,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

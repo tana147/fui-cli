@@ -1,0 +1,38 @@
+{
+  "data": [
+    {
+      "CongThuc_Id": null,
+      "TenHangHoa": null,
+      "MaNoiBo": null,
+      "openRecipeDetail": [
+        {
+          "FUN": "openWindow",
+          "IN": {
+            "id": "{{vueData.CongThuc_Id}}",
+            "title": "Công thức {{vueData.TenHangHoa}}",
+            "url": "/BCT-cong-thuc-che-bien?CongThuc_Id={{vueData.CongThuc_Id}}&TenHangHoa={{vueData.TenHangHoa}}"
+          }
+        }
+      ]
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false
+  }
+}

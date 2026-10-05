@@ -1,0 +1,60 @@
+[
+  {
+    "name": "customCss",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "5F8FDDECA2B145E7AF5568BEA45EE9AD",
+    "scope": "module",
+    "sort": 51,
+    "filePath": "imports/customCss-5F8FDDECA2B145E7AF5568BEA45EE9AD.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/qz-tray@2.2.5/qz-tray.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "8A4DDD879DF042DFB5EFC6AA259F8FB4",
+    "scope": "module",
+    "sort": 15
+  },
+  {
+    "name": "https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "692775EA43FA4BAD89CC77A925D9A618",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/jsrsasign/10.5.1/jsrsasign-all-min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "0B9E2604D56049FAAACADE34AE5D2E09",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "E07207423BCD4F7FA55E4639752457CD",
+    "scope": "module",
+    "sort": 52
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/printThis/1.15.0/printThis.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "E3ADADF6DC484C658CB99EC4D3E82B5B",
+    "scope": "module",
+    "sort": 52
+  },
+  {
+    "name": "jquery-qrcode-v0.18.0.js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "5E11F1303A324E759E0F48A8C9E16098",
+    "scope": "module",
+    "sort": 52,
+    "filePath": "imports/jquery-qrcode-v0.18.0.js-5E11F1303A324E759E0F48A8C9E16098.js"
+  }
+]

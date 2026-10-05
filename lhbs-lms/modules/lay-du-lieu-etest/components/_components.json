@@ -1,0 +1,30 @@
+[
+  {
+    "comID": 7955,
+    "comName": "uc-dialog-etest-exam"
+  },
+  {
+    "comID": 8145,
+    "comName": "uc-dialog-quan-li-ki-thi"
+  },
+  {
+    "comID": 8384,
+    "comName": "uc-dialog-quan-li-ki-thi-cap2"
+  },
+  {
+    "comID": 7961,
+    "comName": "uc-dialog-save"
+  },
+  {
+    "comID": 7962,
+    "comName": "uc-dialog-save-ielts"
+  },
+  {
+    "comID": 7919,
+    "comName": "uc-dialog-thiet-lap-ki-nang"
+  },
+  {
+    "comID": 7876,
+    "comName": "uc-main-layout"
+  }
+]

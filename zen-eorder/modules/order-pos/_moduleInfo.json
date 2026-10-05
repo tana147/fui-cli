@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/order-pos",
+  "url": "/zen-eorder/order-pos",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "order-pos",
+  "ModuleName": "Order mPOS (Mobile)",
+  "UpdateTime": "2026-03-29 13:56:28",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 382608,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

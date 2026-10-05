@@ -1,0 +1,100 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "DataReport": [],
+      "headers": [
+        {
+          "text": "Mã đơn hàng (POS)",
+          "value": "MaHoaDon"
+        },
+        {
+          "text": "Mã GRAB",
+          "value": "GrabOrderID"
+        },
+        {
+          "text": "Thời gian thanh toán",
+          "value": "NgayXuatHoaDon",
+          "align": "center"
+        },
+        {
+          "text": "Tổng tiền",
+          "value": "TienPhaiTra",
+          "el": "span",
+          "innerHTML": "{{ item.TienPhaiTra.toLocaleString('vi-vn')}}"
+        },
+        {
+          "text": "Trạng thái GRAB",
+          "value": "GrabOrderState",
+          "width": 150
+        },
+        {
+          "text": "Trạng thái",
+          "value": "GrabOrderState_Name",
+          "el": "span",
+          "innerHTML": "<v-chip small :color='item.GrabOrderState_Mau'>{{item.GrabOrderState_Name}}</v-chip>"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/PhanHieu_Select",
+      "OUT": "DSPhanHieu",
+      "CALLBACK": [
+        {
+          "EXE": "vueData.DSPhanHieu.unshift({PhanHieuID: 0, TenPhanHieu: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/KhuVuc_Select",
+      "OUT": "DSKhuVuc",
+      "CALLBACK": [
+        {
+          "EXE": "vueData.DSKhuVuc.unshift({KhuVucID: 0, TenKhuVuc: 'Tất cả'})"
+        }
+      ]
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Hóa đơn GRAB",
+                ":items": "DataReport",
+                ":excel": true,
+                "height": "calc(100dvh - 595px)",
+                ":hide-default-footer": false,
+                ":headers": "headers"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

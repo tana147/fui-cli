@@ -1,0 +1,30 @@
+{
+  "data": [
+    {
+      "filters": {
+        "name": "",
+        "age": "",
+        "city": ""
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false
+  }
+}

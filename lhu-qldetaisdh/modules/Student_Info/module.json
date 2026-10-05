@@ -1,0 +1,27 @@
+{
+  "data": [
+    {
+      "isUpdTask": false,
+      "hocVienObj": {},
+      "Panel": null
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page",
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

@@ -1,0 +1,755 @@
+{
+  "data": [
+    {
+      "bienClass": "`primary--text",
+      "NhomLienKetID": "id ?? null",
+      "MaNhomLienKet": null,
+      "NhomLienKetChiTiet_ParentID": 0,
+      "SanPhamID": null,
+      "IsShowDialogAddChild": false,
+      "IsShowDialogClone": false,
+      "CTNhomLienKet_Parent": [],
+      "NhomLienKetId_Clone": "",
+      "MaNhomLienKet_Clone": "",
+      "MoTa_Clone": "",
+      "SanPhamID_Clone": null
+    },
+    {
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 1,
+          "text": "Tạm khóa"
+        }
+      ],
+      "DSCachSapXep": [
+        {
+          "value": 0,
+          "text": "Theo chiều ngang"
+        },
+        {
+          "value": 1,
+          "text": "Theo chiều dọc"
+        }
+      ],
+      "DSMacDinh": [
+        {
+          "value": 0,
+          "text": "Không"
+        },
+        {
+          "value": 1,
+          "text": "Có"
+        }
+      ],
+      "DSPhaChe": [
+        {
+          "value": 0,
+          "text": "Không áp dụng"
+        },
+        {
+          "value": 1,
+          "text": "Nhiệt độ"
+        },
+        {
+          "value": 2,
+          "text": "Đường"
+        },
+        {
+          "value": 3,
+          "text": "Cup size"
+        }
+      ]
+    },
+    {
+      "getNhomLienKet": {
+        "API": "/eorder/NhomLienKet_Select",
+        "OUT": "DSNhomLienKet"
+      }
+    },
+    {
+      "CALL": "getNhomLienKet"
+    },
+    {
+      "getNhomLienKetChiTietById": {
+        "API": "/eorder/NhomLienKetChiTiet_Select_ByNhomLienKetId",
+        "IN": {
+          "NhomLienKetID": "vueData.NhomLienKetID"
+        },
+        "OUT": "DSNhomLienKetChiTiet",
+        "CALLBACK": {
+          "MaNhomLienKet": "DSNhomLienKetChiTiet[0]?.MaNhomLienKet ?? ''"
+        }
+      }
+    },
+    {
+      "IF": "vueData.NhomLienKetID > 0",
+      "THEN": {
+        "CALL": "getNhomLienKetChiTietById"
+      }
+    }
+  ],
+  "watch": {
+    "NhomLienKetID": {
+      "CALL": "getNhomLienKetChiTietById"
+    },
+    "IsShowDialogClone": {
+      "IF": "vueData.IsShowDialogClone === false",
+      "THEN": {
+        "NhomLienKetId_Clone": null,
+        "MaNhomLienKet_Clone": "",
+        "MoTa_Clone": "",
+        "SanPhamID_Clone": null
+      }
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container pt-1 grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "w": 4,
+              "attr": {
+                "label": "Nhóm liên kết",
+                ":excel": true,
+                ":items": "DSNhomLienKet",
+                "height": "calc(100vh - 125px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Nhóm liên kết",
+                    "el": "span",
+                    "value": "MaNhomLienKet",
+                    "innerHTML": "<b>{{item.MaNhomLienKet}}</b> <br/> <span >{{item.SoLuongSanPham}} sản phẩm</span>"
+                  },
+                  {
+                    "text": "",
+                    "value": "SaoChep",
+                    "el": "t-button",
+                    "align": "right",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Sao chép",
+                      ":action": {
+                        "NhomLienKetID": "item.NhomLienKetID",
+                        "MaNhomLienKet": "item.MaNhomLienKet",
+                        "IsShowDialogClone": true
+                      }
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "XemChiTiet",
+                    "el": "t-button",
+                    "align": "right",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Chi tiết",
+                      ":action": {
+                        "NhomLienKetID": "item.NhomLienKetID",
+                        "MaNhomLienKet": "item.MaNhomLienKet"
+                      }
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "MaNhomLienKet",
+                      "label": "Mã nhóm liên kết"
+                    },
+                    "w": 8
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "MoTa",
+                      "label": "Mô tả"
+                    },
+                    "w": 12
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "TinhTrang": 0
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới nhóm liên kết",
+                    "API": "/eorder/NhomLienKet_Insert",
+                    "IN": {
+                      "MaNhomLienKet": "item.MaNhomLienKet",
+                      "MoTa": "item.MoTa",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getNhomLienKet"
+                      },
+                      {
+                        "CALL": "getNhomLienKetById"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhóm liên kết <br/><b>{{item.MaNhomLienKet}}</b>",
+                    "API": "/eorder/NhomLienKet_Update",
+                    "IN": {
+                      "NhomLienKetID": "item.NhomLienKetID",
+                      "MaNhomLienKet": "item.MaNhomLienKet",
+                      "MoTa": "item.MoTa",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getNhomLienKet"
+                      },
+                      {
+                        "CALL": "getNhomLienKetById"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa nhóm liên kết <br/><b>{{item.MaNhomLienKet}}</b>",
+                    "API": "/eorder/NhomLienKet_Delete",
+                    "IN": {
+                      "NhomLienKetID": "item.NhomLienKetID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getNhomLienKet"
+                      },
+                      {
+                        "CALL": "getNhomLienKetById"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "el": "f-table",
+              "w": 8,
+              "attr": {
+                ":label": "`Chi tiết liên kết - ${MaNhomLienKet ?? ''}`",
+                ":excel": true,
+                ":items": "DSNhomLienKetChiTiet",
+                "height": "calc(100vh - 67px)",
+                ":headers": [
+                  {
+                    "text": "Tên hiển thị",
+                    "value": "TenHienThi",
+                    "el": "p",
+                    "attr": {
+                      ":class": "`${item.NhomLienKetChiTiet_ParentID === null ? 'font-weight-bold' : 'ml-5'} mb-0`"
+                    },
+                    "innerHTML": "{{item.ThuTu}}. {{item.TenHienThi}} <span class='success--text' v-if='item.SanPhamID > 0'><br/>{{item.MaSanPham}}</span>"
+                  },
+                  {
+                    "text": "Mã pha chế",
+                    "value": "MaPhaChe",
+                    "el": "span",
+                    "innerHTML": "<span class='primary--text'>{{item.MaPhaChe}}</span><span v-if='item.Is_NhietDo'> • Nhiệt độ</span><span v-if='item.Is_Duong'> • Đường</span><span v-if='item.Is_MaLy'> • Size</span>"
+                  },
+                  {
+                    "text": "Sản phẩm / Số lượng",
+                    "el": "span",
+                    "value": "SoLuongToiThieu",
+                    "innerHTML": "{{item.SoLuongToiThieu}} → {{item.SoLuongToiDa}}"
+                  },
+                  {
+                    "text": "Mặc định",
+                    "align": "center",
+                    "value": "MacDinh",
+                    "el": "v-chip",
+                    "attr": {
+                      "v-if": "item.MacDinh == 1",
+                      "color": "success",
+                      ":small": true
+                    },
+                    "innerHTML": "Có"
+                  },
+                  {
+                    "text": "Khóa",
+                    "align": "center",
+                    "value": "TinhTrang",
+                    "el": "v-icon",
+                    "attr": {
+                      "color": "red",
+                      ":dense": true
+                    },
+                    "innerHTML": "{{item.TinhTrang == 0 ? '': 'mdi-lock'}}"
+                  },
+                  {
+                    "text": "",
+                    "value": "TamKhoa",
+                    "el": "t-button",
+                    "width": 100,
+                    "attr": {
+                      "color": "error",
+                      ":label": "item.TinhTrang == 0 ? 'Tạm khóa' : 'Mở khóa'",
+                      ":action": {
+                        "FUN": "updateStatus",
+                        "IN": {
+                          "data": "{{item}}"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "ThemChiTiet",
+                    "el": "t-button",
+                    "align": "right",
+                    "width": 100,
+                    "attr": {
+                      "color": "primary",
+                      "label": "Thêm chi tiết",
+                      ":class": "`${item.NhomLienKetChiTiet_ParentID ? 'd-none' : ''}`",
+                      ":action": [
+                        {
+                          "CTNhomLienKet_Parent": "item",
+                          "IsShowDialogAddChild": true
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "f-search",
+                    "w": 12,
+                    "attr": {
+                      "label": "Sản phẩm",
+                      "v-if": "NhomLienKetChiTiet_ParentID && NhomLienKetChiTiet_ParentID > 0",
+                      "v-model": "SanPhamID",
+                      "item-text": "TenSanPham",
+                      "item-value": "SanPhamID",
+                      "api": "/eorder/SanPham_Select_Search",
+                      ":api-data": {
+                        "TuKhoa": "TEXT"
+                      }
+                    }
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenHienThi",
+                      "label": "Tên hiển thị"
+                    },
+                    "w": 6
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenNoiBo",
+                      "label": "Tên nội bộ"
+                    },
+                    "w": 6
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "SoLuongToiThieu",
+                      "label": "Số lượng tối thiểu"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "SoLuongToiDa",
+                      "label": "Số lượng tối đa"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "MacDinh",
+                      "v-if": "NhomLienKetChiTiet_ParentID && NhomLienKetChiTiet_ParentID > 0",
+                      "label": "Chọn mặc định",
+                      ":items": "vueData.DSMacDinh"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "ThuTu",
+                      "label": "Thứ tự trong nhóm"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "CachSapXep",
+                      "label": "Cách sắp xếp",
+                      ":items": "vueData.DSCachSapXep"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "MaPhaChe",
+                      "label": "Mã pha chế"
+                    },
+                    "w": 8
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "ApDungCho",
+                      "label": "Áp dụng cho",
+                      ":items": "vueData.DSPhaChe"
+                    },
+                    "w": 4
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "NhomLienKetChiTiet_ParentID": 0,
+                    "SoLuongToiThieu": 0,
+                    "SoLuongToiDa": 1,
+                    "ThuTu": 1,
+                    "CachSapXep": 1,
+                    "TinhTrang": 0,
+                    "ApDungCho": 0
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới chi tiết liên kết",
+                    "API": "/eorder/NhomLienKetChiTiet_Insert",
+                    "IN": {
+                      "NhomLienKetID": "vueData.NhomLienKetID",
+                      "NhomLienKetChiTiet_ParentID": "vueData.NhomLienKetChiTiet_ParentID",
+                      "SanPhamID": "item.SanPhamID ?? 0",
+                      "TenHienThi": "item.TenHienThi",
+                      "TenNoiBo": "item.TenNoiBo",
+                      "ThuTu": "item.ThuTu",
+                      "SoLuongToiThieu": "item.SoLuongToiThieu",
+                      "SoLuongToiDa": "item.SoLuongToiDa",
+                      "CachSapXep": "item.CachSapXep",
+                      "MacDinh": "item.MacDinh ?? 0",
+                      "TinhTrang": "item.TinhTrang",
+                      "MaPhaChe": "item.MaPhaChe",
+                      "ApDungCho": "item.ApDungCho"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getNhomLienKet"
+                      },
+                      {
+                        "CALL": "getNhomLienKetChiTietById"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập chi tiết nhóm liên kết <br/><b>{{item.MaNhomLienKet}} / {{item.TenHienThi}}</b>",
+                    "API": "/eorder/NhomLienKetChiTiet_Update",
+                    "IN": {
+                      "NhomLienKetChiTietID": "item.NhomLienKetChiTietID",
+                      "SanPhamID": "item.SanPhamID ?? 0",
+                      "TenHienThi": "item.TenHienThi",
+                      "TenNoiBo": "item.TenNoiBo",
+                      "ThuTu": "item.ThuTu",
+                      "SoLuongToiThieu": "item.SoLuongToiThieu",
+                      "SoLuongToiDa": "item.SoLuongToiDa",
+                      "CachSapXep": "item.CachSapXep",
+                      "MacDinh": "item.MacDinh ?? 0",
+                      "TinhTrang": "item.TinhTrang",
+                      "MaPhaChe": "item.MaPhaChe",
+                      "ApDungCho": "item.ApDungCho"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getNhomLienKet"
+                      },
+                      {
+                        "CALL": "getNhomLienKetChiTietById"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa chi tiết nhóm liên kết <br/><b>{{item.MaNhomLienKet}} / {{item.TenHienThi}}</b>",
+                    "API": "/eorder/NhomLienKetChiTiet_Delete",
+                    "IN": {
+                      "NhomLienKetChiTietID": "item.NhomLienKetChiTietID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getNhomLienKet"
+                      },
+                      {
+                        "CALL": "getNhomLienKetChiTietById"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "f-dialog",
+              "attr": {
+                "v-model": "IsShowDialogAddChild",
+                ":data.sync": "CTNhomLienKet_Parent",
+                ":title": "`Thêm mới chi tiết liên kết - ${CTNhomLienKet_Parent.MaNhomLienKet ?? ''} - ${CTNhomLienKet_Parent.TenHienThi ?? ''}`",
+                ":controls": [
+                  {
+                    "el": "f-search",
+                    "w": 12,
+                    "attr": {
+                      "label": "Sản phẩm",
+                      "v-model": "SanPhamID",
+                      "item-text": "TenSanPham",
+                      "item-value": "SanPhamID",
+                      "api": "/eorder/SanPham_Select_Search",
+                      ":api-data": {
+                        "TuKhoa": "TEXT"
+                      }
+                    }
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenHienThi_Child",
+                      "label": "Tên hiển thị"
+                    },
+                    "w": 6
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenNoiBo_Child",
+                      "label": "Tên nội bộ"
+                    },
+                    "w": 6
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "SoLuongToiThieu",
+                      "label": "Số lượng tối thiểu"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "SoLuongToiDa",
+                      "label": "Số lượng tối đa"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "MacDinh",
+                      "label": "Mặc định chọn",
+                      ":items": "vueData.DSMacDinh"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "ThuTu",
+                      "label": "Thứ tự trong nhóm"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "CachSapXep",
+                      "label": "Cách sắp xếp",
+                      ":items": "vueData.DSCachSapXep"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      ":rules": false,
+                      "v-model": "MaPhaChe",
+                      "label": "Mã pha chế"
+                    },
+                    "w": 8
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "ApDungCho",
+                      "label": "Áp dụng cho",
+                      ":items": "vueData.DSPhaChe"
+                    },
+                    "w": 4
+                  }
+                ],
+                ":button": [
+                  {
+                    "label": "Thêm mới",
+                    "action": [
+                      {
+                        "CONFIRM": "Bạn có muốn thêm mới chi tiết liên kết",
+                        "API": "/eorder/NhomLienKetChiTiet_Insert",
+                        "IN": {
+                          "NhomLienKetID": "NhomLienKetID",
+                          "NhomLienKetChiTiet_ParentID": "NhomLienKetChiTietID",
+                          "SanPhamID": "SanPhamID ?? 0",
+                          "TenHienThi": "TenHienThi_Child",
+                          "TenNoiBo": "TenNoiBo_Child",
+                          "ThuTu": "ThuTu",
+                          "SoLuongToiThieu": "SoLuongToiThieu",
+                          "SoLuongToiDa": "SoLuongToiDa",
+                          "CachSapXep": "CachSapXep",
+                          "TinhTrang": "TinhTrang",
+                          "MacDinh": "MacDinh ?? 0",
+                          "MaPhaChe": "MaPhaChe",
+                          "ApDungCho": "ApDungCho"
+                        },
+                        "MESS": "Thêm mới thành công",
+                        "CALLBACK": [
+                          {
+                            "CALL": "getNhomLienKetChiTietById"
+                          },
+                          {
+                            "IsShowDialogAddChild": false
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "f-dialog",
+              "attr": {
+                "v-model": "IsShowDialogClone",
+                "width": 600,
+                ":title": "`Sao chép liên kết - ${MaNhomLienKet ?? ''}`",
+                ":controls": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.MaNhomLienKet_Clone",
+                      "label": "Mã nhóm liên kết"
+                    }
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "vueData.MoTa_Clone",
+                      "label": "Mô tả"
+                    }
+                  },
+                  {
+                    "el": "f-search",
+                    "attr": {
+                      "label": "Sản phẩm áp dụng (nếu có)",
+                      "v-model": "vueData.SanPhamID_Clone",
+                      "item-text": "TenSanPham",
+                      "item-value": "SanPhamID",
+                      "api": "/eorder/SanPham_Select_Search",
+                      ":api-data": {
+                        "TuKhoa": "TEXT"
+                      }
+                    }
+                  }
+                ],
+                ":button": [
+                  {
+                    "label": "Sao chép",
+                    "action": [
+                      {
+                        "CONFIRM": "Bạn có muốn sao chép nhóm liên kết <br/><b>{{MaNhomLienKet}}</b>",
+                        "API": "/eorder/NhomLienKet_Clone",
+                        "IN": {
+                          "NhomLienKetID": "vueData.NhomLienKetID",
+                          "MaNhomLienKet_Clone": "vueData.MaNhomLienKet_Clone",
+                          "MoTa_Clone": "vueData.MoTa_Clone",
+                          "SanPhamID": "vueData.SanPhamID_Clone ?? 0"
+                        },
+                        "MESS": "Sao chép nhóm liên kết thành công",
+                        "CALLBACK": [
+                          {
+                            "IsShowDialogClone": false
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

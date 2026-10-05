@@ -1,0 +1,58 @@
+[
+  {
+    "comID": 575,
+    "comName": "dialog-upd-task"
+  },
+  {
+    "comID": 577,
+    "comName": "file-comp"
+  },
+  {
+    "comID": 4298,
+    "comName": "old-data-dialog"
+  },
+  {
+    "comID": 578,
+    "comName": "score-comp"
+  },
+  {
+    "comID": 580,
+    "comName": "similiar-topic-list"
+  },
+  {
+    "comID": 2258,
+    "comName": "table-chung"
+  },
+  {
+    "comID": 579,
+    "comName": "textarea-button-comp"
+  },
+  {
+    "comID": 576,
+    "comName": "textarea-comp"
+  },
+  {
+    "comID": 12104,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 12105,
+    "comName": "uc-main-view"
+  },
+  {
+    "comID": 12106,
+    "comName": "uc-modal-import-update-student"
+  },
+  {
+    "comID": 12107,
+    "comName": "uc-modal-reset-process"
+  },
+  {
+    "comID": 12108,
+    "comName": "uc-modal-sync-gvhd"
+  },
+  {
+    "comID": 12109,
+    "comName": "uc-modal-view-old-process"
+  }
+]

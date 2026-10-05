@@ -1,0 +1,230 @@
+{
+  "data": [
+    {
+      "CuaHangID_Local": "localStorage.getItem('CuaHangID')",
+      "ChuongTrinhID": 0,
+      "PhanHieuID": 0,
+      "KhuVucID": 0,
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')",
+      "Ngay": "moment().format('YYYY-MM-DD')",
+      "HinhThucThoiGian": 2,
+      "Nam": null,
+      "Thang": null,
+      "TuNam": null,
+      "DenNam": null,
+      "DSHinhThucThoiGian": [
+        {
+          "value": 2,
+          "text": "Theo ngày"
+        },
+        {
+          "value": 3,
+          "text": "Theo tuần"
+        },
+        {
+          "value": 4,
+          "text": "Theo quý"
+        },
+        {
+          "value": 5,
+          "text": "Theo tháng"
+        },
+        {
+          "value": 6,
+          "text": "Theo năm"
+        }
+      ],
+      "DSThang": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "DSNam": "GetDSNam()",
+      "headers": [
+        {
+          "text": "Mã chương trình",
+          "value": "MaChuongTrinh",
+          "width": 200
+        },
+        {
+          "text": "Tên chương trình",
+          "value": "TenChuongTrinh",
+          "width": 500
+        },
+        {
+          "text": "Thời gian từ",
+          "value": "TuNgay_Display",
+          "width": 100
+        },
+        {
+          "text": "Thời gian tới",
+          "value": "DenNgay_Display",
+          "width": 100
+        },
+        {
+          "text": "Loại chương trình",
+          "value": "TenLoaiChuongTrinh",
+          "el": "span",
+          "width": 250,
+          "innerHTML": "{{item.TenLoaiChuongTrinh}}"
+        },
+        {
+          "text": "Điều kiện",
+          "value": "DieuKien",
+          "el": "span",
+          "width": 400,
+          "innerHTML": "{{renderDieuKien(item)}}"
+        },
+        {
+          "text": "Giảm giá",
+          "value": "KhuyenMai",
+          "el": "span",
+          "width": 600,
+          "innerHTML": "{{renderKhuyenMai(item)}}"
+        },
+        {
+          "text": "Trạng thái",
+          "value": "TrangThai",
+          "el": "span",
+          "align": "center",
+          "width": 150,
+          "innerHTML": "{{item.TrangThai === 1 ? 'Đang diễn ra' : 'Đã kết thúc'}}"
+        },
+        {
+          "text": "Tổng voucher",
+          "value": "TongVoucher",
+          "align": "center",
+          "width": 100
+        },
+        {
+          "text": "Tổng sử dụng",
+          "value": "TongVoucher_DaSuDung",
+          "align": "center",
+          "width": 100
+        },
+        {
+          "text": "Tổng chưa sử dụng",
+          "value": "TongVoucher_ChuaSuDung",
+          "align": "center",
+          "width": 100
+        }
+      ]
+    },
+    {
+      "API": "/eorder/ChuongTrinh_Select",
+      "OUT": "DSChuongTrinh"
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+        },
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/KhuVuc_Select",
+      "OUT": "DSKhuVuc",
+      "CALLBACK": [
+        {
+          "EXE": "DSKhuVuc.unshift({'KhuVucID': 0, 'TenKhuVuc': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/PhanHieu_Select",
+      "OUT": "DSPhanHieu",
+      "CALLBACK": [
+        {
+          "EXE": "DSPhanHieu.unshift({'PhanHieuID': 0, 'TenPhanHieu': 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_KhuyenMai_TyLeVoucher_v2",
+        "IN": {
+          "ChuongTrinhID": "ChuongTrinhID",
+          "CuaHangID": "CuaHangID ?? 0",
+          "Ngay": "Ngay ?? -1",
+          "TuNgay": "TuNgay ?? -1",
+          "DenNgay": "DenNgay ?? -1",
+          "Nam": "Nam ?? -1",
+          "TuNam": "TuNam ?? -1",
+          "DenNam": "DenNam ?? -1",
+          "Thang": "Thang ?? -1",
+          "HinhThucThoiGian": "HinhThucThoiGian"
+        },
+        "OUT": "DSChiTietKhuyenMai",
+        "CALLBACK": [
+          {
+            "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+          }
+        ]
+      }
+    }
+  ],
+  "watch": {
+    "CuaHangID": [
+      {
+        "EXE": "localStorage.setItem('CuaHangID', CuaHangID);",
+        "CALL": "getBaoCao"
+      }
+    ],
+    "HinhThucThoiGian": [
+      {
+        "EXE": "handleColumnHinhThucThoiGian(HinhThucThoiGian)"
+      },
+      {
+        "EXE": "vueData.DSChiTietKhuyenMai = []"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo tỉ lệ sử dụng voucher",
+                ":items": "DSChiTietKhuyenMai",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": "headers"
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

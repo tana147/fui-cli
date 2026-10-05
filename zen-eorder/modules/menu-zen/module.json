@@ -1,0 +1,60 @@
+{
+  "data": [
+    {
+      "API": "/eorder/auth/PhanHieu_Select",
+      "OUT": "DSPhanHieu"
+    },
+    {
+      "API": "/eorder/auth/CuaHang_Select",
+      "OUT": "DSCuaHang"
+    },
+    {
+      "phanhieu": "phanhieu || 'All'"
+    },
+    {
+      "description": "Danh sach phan hieu",
+      "DSPhanHieu": null
+    },
+    {
+      "paramAdd": null,
+      "category_list": []
+    },
+    {
+      "description": "Biến theo dõi trạng thái tải, được truyền vào component.",
+      "v_loading": false
+    },
+    {
+      "description": "Biến lưu item đang được chọn (dùng cho modal chi tiết).",
+      "selectedItem": null
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-bookcase",
+              "w": 12,
+              "attr": {
+                "v-bind:category_list": "category_list",
+                "v-bind:loading": "v_loading",
+                "v-bind:href": "selectedItem ? '/view/' + selectedItem.id : ''",
+                ":phanhieu": "phanhieu"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "login": false,
+    "userInfo": "",
+    "menuLeft": false
+  }
+}

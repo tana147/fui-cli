@@ -1,0 +1,239 @@
+<template>
+	<v-dialog :model-value="isOpen" @update:model-value="val => { if (!val) CloseModal() }" max-width="900">
+		<v-card>
+			<v-card-title class="d-flex align-center">
+				{{ $t('message.CreateContent') }} - {{ $t('message.Grade') }} {{ khoiItem?.KhoiID
+				}}
+				<v-spacer />
+				<v-icon @click="CloseModal()">mdi-close</v-icon>
+			</v-card-title>
+			<v-card-text>
+				<v-form ref="form">
+					<v-row>
+						<v-col cols="12">
+							<!-- Thông tin Khối - Môn (bên trái) -->
+							<div class="d-flex align-center">
+								<v-avatar :color="getSubjectColor(khoiItem?.MonHocName)" size="40" class="mr-4">
+									<v-icon color="white">{{ getSubjectIcon(khoiItem?.MonHocName) }}</v-icon>
+								</v-avatar>
+								<div>
+									<div class="text-overline">{{ $t('message.Grade') }} {{ khoiItem?.KhoiID
+										}}</div>
+									<div class="text-h6">{{ $i18n.locale == 'en' && khoiItem?.MonHocName == 'Ngoại ngữ'
+										? 'English' : khoiItem?.MonHocName }}</div>
+								</div>
+							</div>
+						</v-col>
+						<v-col cols="12">
+							<v-row dense>
+								<v-col cols="12" md="7" class="d-flex flex-column" style="gap: 8px; align-self: flex-start">
+									<v-select density="compact" :items="typeItems" item-title='text' item-value='value' v-model="form.type"
+										:label="$t('message.ChooseContent')" />
+									<v-select density="compact" :items="DSTuan" item-title='Tuan_HienThi' item-value='TuanHocID'
+										v-model="form.TuanHocID" :label="$t('message.ChooseWeek')" />
+									<v-text-field density="compact" v-model="form.Chuong" :label="$t('message.Chapter')" />
+									<v-text-field density="compact" v-model="form.Title" :label="$t('message.Title')" required
+										:rules="[v => !!v || ($i18n.locale === 'en' ? 'Please enter title' : 'Vui lòng nhập tiêu đề')]" />
+									<v-text-field density="compact" v-if="form.type == 1" v-model="form.Description"
+										:label="$t('message.Decriptions')" />
+									<v-text-field density="compact" v-else v-model="form.Instructions" :label="$t('message.Instructions')" />
+								</v-col>
+								<v-col cols="12" md="5" class="ps-md-4">
+									<uc-hoclieu-resource-selector-dashboard v-model="hocLieuLink"
+										:khoi-id="khoiItem?.KhoiID" :mon-hoc-id="khoiItem?.MonHocID"
+										:resource-type="form.type == 1 ? 'LESSON' : 'ASSIGNMENT'" />
+								</v-col>
+							</v-row>
+						</v-col>
+
+					</v-row>
+				</v-form>
+			</v-card-text>
+			<v-card-actions>
+				<v-spacer />
+				<v-btn @click="CloseModal" :text="$t('message.Close')" />
+				<v-btn @click="handleSubmit()" color="primary" variant="elevated" :text="$t('message.Create')" />
+			</v-card-actions>
+		</v-card>
+	</v-dialog>
+</template>
+
+<script>
+	export default {
+		inject: ['snackbarRef', 'iframeRef', 'confirmRef'],
+	emits: ['update:isOpen'],
+	props: {
+		khoiItem: {
+			type: Object,
+			default: () => ({}),
+		},
+		isOpen: {
+			type: Boolean,
+			default: false,
+		},
+		tuanHocId: {
+			type: Number,
+			default: null,
+		},
+		defaultType: {
+			type: Number,
+			default: 0,
+		},
+	},
+	data() {
+		return {
+							form: {
+				Title: "",
+				Instructions: "",
+				Description: "",
+				TuanHocID: null,
+				Chuong: "",
+								type: this.defaultType ?? 0
+							},
+			hocLieuLink: {},
+			typeItems: [
+				{ text: this.$i18n.locale == 'en' ? 'Create lesson' : 'Tạo bài học', value: 1 },
+				{ text: this.$i18n.locale == 'en' ? 'Create assignment' : 'Tạo bài tập', value: 0 }
+			],
+			vueData,
+		}
+	},
+	mounted() { },
+	computed: {
+		DSTuan: function () {
+			this.form.TuanHocID = this.tuanHocId || vueData.DSTuanHoc.find(tuan => tuan.Is_Active)?.TuanHocID
+			return vueData.DSTuanHoc
+		}
+
+	},
+		methods: {
+		saveHocLieuLink(resourceType, resourceID, done) {
+			const link = this.hocLieuLink || {}
+			if (!link.HocLieuID || !link.NoiDungID) return done()
+			ajaxCALL('lms/EL_HocLieuResource_Save', {
+				ResourceType: resourceType,
+				ResourceID: resourceID,
+				HocLieuID: link.HocLieuID,
+				NoiDungID: link.NoiDungID,
+			}, () => done())
+		},
+		clearData() {
+
+			this.form.Title = ""
+			this.form.Instructions = ""
+			this.form.Description = ""
+			this.form.TuanHocID = null
+			this.form.Chuong = ""
+			this.hocLieuLink = {}
+		},
+		async handleSubmit() {
+
+			const { valid } = await this.$refs.form.validate()
+
+			if (!valid) {
+
+				Vue.$toast.error(this.$i18n.locale === 'en' ? "Please fill in all required fields" : "Vui lòng nhập đầy đủ thông tin", { position: "top" });
+				return;
+			}
+
+			if (valid) {
+				this.confirmMissingHocLieu(() => this.submitContent())
+			}
+		},
+		confirmMissingHocLieu(onConfirmed) {
+			const link = this.hocLieuLink || {}
+			if (link.HocLieuID && link.NoiDungID) return onConfirmed()
+			const isEn = this.$i18n.locale === 'en'
+			this.confirmRef.value.show({
+				title: isEn ? 'Unlinked to digital curriculum index' : 'Bài chưa gắn mục lục học liệu số',
+				text: isEn ? 'You can still save, but linking to digital curriculum index is recommended for future reuse.' : 'Bạn vẫn có thể lưu bài, nhưng nên gắn vào mục lục học liệu số để thuận tiện truy xuất ngược và tái sử dụng bài này ở các niên khóa sau.',
+				type: 'warning',
+				confirmText: isEn ? 'Save anyway' : 'Vẫn lưu bài',
+				cancelText: isEn ? 'Back to link' : 'Quay lại gắn học liệu',
+				maxWidth: 520
+			}).then(ok => { if (ok) onConfirmed() })
+		},
+		submitContent() {
+			if (this.form.type == 0) {
+					ajaxCALL('lms/EL_Assignment_Ins', {
+						...this.form,
+						MonHocID: this.khoiItem.MonHocID,
+						KhoiID: this.khoiItem.KhoiID,
+						NienKhoa: vueData.NienKhoa,
+					HocKi: vueData.NienKhoaItem?.HocKi ?? 1
+					}, res => {
+						const resourceID = res?.data?.[0]?.AssignmentID
+						this.saveHocLieuLink('ASSIGNMENT', resourceID, () => {
+							this.snackbarRef.value.showSnackbar({ message: 'Tạo bài tập thành công', color: 'success' })
+							this.clearData();
+							this.CloseModal();
+							vueData.apiCall3();
+							const isEn = this.$i18n?.locale === 'en' || localStorage.getItem('IsLanguage') === 'true'
+							this.iframeRef.value.openWindow({
+								title: isEn ? "Create assignment" : "Soạn bài tập",
+								url: `/lms_tc_asm_builder?AssignmentID=${resourceID}&_v=${Date.now()}`,
+								onclose: () => vueData.initPage()
+							});
+						})
+					},
+						err => {
+							// xử lý khi lỗi
+							Vue.$toast.error(err?.response?.data?.Message || 'Có lỗi xảy ra, vui lòng kiểm tra lại dữ liệu nhập vào!', { position: "top" });
+						}
+					)
+				}
+				else {
+					ajaxCALL('lms/EL_Lesson_Save', {
+						...this.form,
+						MonHocID: this.khoiItem.MonHocID,
+						KhoiID: this.khoiItem.KhoiID,
+						NienKhoa: vueData.NienKhoa,
+						HocKi: vueData.NienKhoaItem?.HocKi ?? 1,
+						Status: 1
+					}, res => {
+						const resourceID = res?.data?.[0]?.LessonID
+						this.saveHocLieuLink('LESSON', resourceID, () => {
+							Vue.$toast.success('Tạo bài học thành công', { position: "top" })
+							this.clearData();
+							this.CloseModal();
+							vueData.apiCall3();
+							this.iframeRef.value.openWindow({
+								title: "Soạn bài học",
+								url: `lms_tc_lesson_builder?LessonID=${resourceID}`,
+								id: "WinSoanBaiGiang",
+								onclose: () => vueData.initPage()
+							});
+						})
+					},
+						err => {
+							// xử lý khi lỗi
+							Vue.$toast.error(err?.response?.data?.Message || 'Có lỗi xảy ra, vui lòng kiểm tra lại dữ liệu nhập vào!', { position: "top" });
+						})
+			}
+		},
+		getSubjectIcon(subjectName) {
+			const name = (subjectName || '').toLowerCase();
+			if (name.includes('toán')) return 'mdi-calculator-variant';
+			if (name.includes('tin học') || name.includes('robotics')) return 'mdi-robot-industrial';
+			if (name.includes('văn') || name.includes('việt')) return 'mdi-book-open-page-variant';
+			if (name.includes('anh')) return 'mdi-translate';
+			if (name.includes('lý')) return 'mdi-atom';
+			if (name.includes('hóa')) return 'mdi-flask';
+			return 'mdi-school';
+		},
+		getSubjectColor(subjectName) {
+			const name = (subjectName || '').toLowerCase();
+			if (name.includes('toán')) return 'blue';
+			if (name.includes('tin học') || name.includes('robotics')) return 'teal';
+			if (name.includes('văn') || name.includes('việt')) return 'red';
+			if (name.includes('anh')) return 'purple';
+			if (name.includes('lý')) return 'indigo';
+			if (name.includes('hóa')) return 'green';
+			return 'grey';
+		},
+		CloseModal() {
+			this.$emit('update:isOpen', false);
+		}
+	},
+	}
+</script>

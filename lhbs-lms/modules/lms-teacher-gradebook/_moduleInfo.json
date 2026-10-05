@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-teacher-gradebook",
+  "url": "//lms.lhbs.vn/lms-teacher-gradebook",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-teacher-gradebook",
+  "ModuleName": "Sổ điểm LMS",
+  "UpdateTime": "2026-09-11 10:03:40",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 876,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

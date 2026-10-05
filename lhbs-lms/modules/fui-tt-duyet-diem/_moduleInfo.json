@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/fui-tt-duyet-diem",
+  "url": "//lms.lhbs.vn/fui-tt-duyet-diem",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "fui-tt-duyet-diem",
+  "ModuleName": "Tổ Trưởng Duyệt Điểm",
+  "UpdateTime": "2026-06-13 10:31:25",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-09-30",
+  "LoadCount": 1236,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

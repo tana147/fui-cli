@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/so-gvcn",
+  "url": "//lms.lhbs.vn/so-gvcn",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "so-gvcn",
+  "ModuleName": "Sổ GVCN",
+  "UpdateTime": "2026-09-29 20:38:46",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 5550,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": "Sổ GVCN"
+}

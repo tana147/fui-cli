@@ -1,0 +1,44 @@
+.tkb-iframe-host {
+  /* Chiều cao khung host iframe TKB, khóa scroll ngoài để chỉ iframe bên trong cuộn */
+  height: calc(100dvh - 212px) !important;
+  overflow: hidden !important;
+}
+.tkb-iframe-host > iframe {
+  height: 100% !important;
+}
+/* Đẩy nút đóng X của f-window sang góc phải cho thuận tay mobile */
+.v-overlay .v-toolbar__content,
+.v-dialog .v-toolbar__content,
+.v-card > .v-toolbar > .v-toolbar__content,
+.v-toolbar > .v-toolbar__content {
+  position: relative !important;
+  display: flex !important;
+  width: 100% !important;
+}
+.v-overlay .v-toolbar__content > .v-toolbar-title,
+.v-dialog .v-toolbar__content > .v-toolbar-title,
+.v-card > .v-toolbar .v-toolbar-title,
+.v-toolbar .v-toolbar-title {
+  flex: 1 1 auto !important;
+  max-width: calc(100% - 56px) !important;
+}
+.v-overlay .v-toolbar__content > .v-btn:last-child,
+.v-dialog .v-toolbar__content > .v-btn:last-child,
+.v-card > .v-toolbar .v-btn:last-child,
+.v-toolbar > .v-toolbar__content > .v-btn:last-child,
+.v-toolbar .v-toolbar-title + .v-btn,
+.v-toolbar .v-toolbar-title ~ .v-btn:last-child,
+.v-toolbar .v-btn.ml-4:last-child {
+  position: absolute !important;
+  right: 8px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  margin-left: auto !important;
+}
+.v-toolbar .v-btn:has(.mdi-close) {
+  position: absolute !important;
+  right: 8px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  margin-left: auto !important;
+}

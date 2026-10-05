@@ -1,0 +1,18 @@
+[
+  {
+    "comID": 6281,
+    "comName": "uc-main-cost-sp"
+  },
+  {
+    "comID": 6298,
+    "comName": "uc-modal-add-sp"
+  },
+  {
+    "comID": 6299,
+    "comName": "uc-modal-thanh-phan-sp"
+  },
+  {
+    "comID": 6314,
+    "comName": "uc-modal-update-sp"
+  }
+]

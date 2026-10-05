@@ -1,0 +1,178 @@
+{
+  "data": [
+    {
+      "Keyword": "",
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')"
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_KhuyenMai_KhachHang_Nhan",
+        "IN": {
+          "Search": "Keyword",
+          "TuNgay": "TuNgay",
+          "DenNgay": "DenNgay"
+        },
+        "OUT": "DSChiTietKhuyenMai"
+      }
+    },
+    {
+      "CALL": "getBaoCao"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-text-field",
+              "w": 4,
+              "attr": {
+                "v-model": "Keyword",
+                "label": "Tìm theo số điện thoại, mã khách hàng",
+                ":rules": false
+              }
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "TuNgay",
+                "label": "Từ ngày (Nhận Voucher)",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "DenNgay",
+                "label": "Đến ngày (Nhận voucher)",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getBaoCao"
+                }
+              },
+              "w": 3
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo khách hàng nhận voucher",
+                ":items": "DSChiTietKhuyenMai",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "SĐT khách hàng",
+                    "value": "DienThoai",
+                    "width": 150
+                  },
+                  {
+                    "text": "Tên khách hàng",
+                    "value": "HoTen",
+                    "width": 200
+                  },
+                  {
+                    "text": "Mã chương trình",
+                    "value": "MaChuongTrinh",
+                    "width": 200
+                  },
+                  {
+                    "text": "Tên chương trình",
+                    "value": "TenChuongTrinh",
+                    "width": 300
+                  },
+                  {
+                    "text": "Trạng thái",
+                    "align": "center",
+                    "value": "TenTrangThai",
+                    "width": 100
+                  },
+                  {
+                    "text": "Hình thức nhận",
+                    "align": "center",
+                    "value": "HinhThuc_Nhan",
+                    "width": 100
+                  },
+                  {
+                    "text": "Cửa hàng nhận",
+                    "value": "Nhan_TenCuaHang",
+                    "width": 300
+                  },
+                  {
+                    "text": "Mã hóa đơn nhận",
+                    "align": "center",
+                    "value": "Nhan_MaHoaDon",
+                    "width": 100
+                  },
+                  {
+                    "text": "Ngày nhận",
+                    "align": "center",
+                    "value": "NgayNhan",
+                    "width": 100
+                  },
+                  {
+                    "text": "Giờ nhận",
+                    "align": "center",
+                    "value": "GioNhan",
+                    "width": 100
+                  },
+                  {
+                    "text": "Hình thức sử dụng",
+                    "align": "center",
+                    "value": "HinhThuc_SuDung",
+                    "width": 100
+                  },
+                  {
+                    "text": "Cửa hàng sử dụng",
+                    "value": "SuDung_TenCuaHang",
+                    "width": 300
+                  },
+                  {
+                    "text": "Hóa đơn sử dụng",
+                    "align": "center",
+                    "value": "SuDung_MaHoaDon",
+                    "width": 100
+                  },
+                  {
+                    "text": "Ngày sử dụng",
+                    "align": "center",
+                    "value": "NgaySuDung",
+                    "width": 100
+                  },
+                  {
+                    "text": "Giờ sử dụng",
+                    "align": "center",
+                    "value": "GioSuDung",
+                    "width": 100
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

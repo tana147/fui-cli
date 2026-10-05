@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms_tc_dashboard",
+  "url": "//lms.lhbs.vn/lms_tc_dashboard",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms_tc_dashboard",
+  "ModuleName": "LMS Dashboard Teacher",
+  "UpdateTime": "2025-08-08 10:41:48",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-07-15",
+  "LoadCount": 180,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

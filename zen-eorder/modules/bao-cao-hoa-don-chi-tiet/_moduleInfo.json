@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-hoa-don-chi-tiet",
+  "url": "/zen-eorder/bao-cao-hoa-don-chi-tiet",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-hoa-don-chi-tiet",
+  "ModuleName": "Báo Cáo / Hóa Đơn / Chi Tiết Hóa Đơn",
+  "UpdateTime": "2026-03-20 16:19:56",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 8280,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

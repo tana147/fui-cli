@@ -1,0 +1,341 @@
+{
+  "data": [
+    {
+      "TenLoaiDanhGia": "",
+      "ThangDiem": []
+    },
+    {
+      "getDSDanhGia": {
+        "API": "/eorder/DanhGiaLoai_Select",
+        "OUT": "DSDanhGia"
+      }
+    },
+    {
+      "CALL": "getDSDanhGia"
+    },
+    {
+      "getDanhGiaChiTiet": {
+        "API": "/eorder/DanhGiaNoiDung_Select_ById",
+        "IN": {
+          "DanhGia_LoaiID": "vueData.DanhGia_LoaiID"
+        },
+        "OUT": "CTDanhGia"
+      }
+    },
+    {
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 1,
+          "text": "Tạm khóa"
+        }
+      ]
+    }
+  ],
+  "watch": {
+    "DanhGia_LoaiID": [
+      {
+        "ThangDiem": "Array.from({ length: vueData.DSDanhGia[vueData.DSDanhGia.findIndex(dg => dg.DanhGia_LoaiID == DanhGia_LoaiID)].ThangDiem }, (_, i) => ({ ThangDiem: i + 1 }))"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": []
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Loại đánh giá",
+                ":items": "DSDanhGia",
+                ":excel": true,
+                "height": "calc(100vh - 63px)",
+                ":headers": [
+                  {
+                    "text": "Tên loại đánh giá",
+                    "el": "span",
+                    "value": "TenLoaiDanhGia",
+                    "attr": {
+                      "style": "display: flex; align-items: center;"
+                    },
+                    "innerHTML": "<div><b>{{item.TenLoaiDanhGia}}</b></div>"
+                  },
+                  {
+                    "text": "Thang điểm",
+                    "align": "center",
+                    "el": "v-chip",
+                    "value": "ThangDiem",
+                    "attr": {
+                      "color": "success"
+                    },
+                    "innerHTML": "<span style='cursor:pointer'>{{item.ThangDiem}}</span>"
+                  },
+                  {
+                    "text": "",
+                    "el": "t-button",
+                    "align": "right",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Xem chi tiết",
+                      ":action": [
+                        {
+                          "DanhGia_LoaiID": "item.DanhGia_LoaiID",
+                          "TenLoaiDanhGia": "item.TenLoaiDanhGia"
+                        },
+                        {
+                          "CALL": "getDanhGiaChiTiet"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenLoaiDanhGia",
+                      "label": "Tên loại đánh giá"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "ThangDiem",
+                      "label": "Thang điểm"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "TinhTrang": 0
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới loại đánh giá",
+                    "API": "/eorder/DanhGiaLoai_Insert",
+                    "IN": {
+                      "TenLoaiDanhGia": "item.TenLoaiDanhGia",
+                      "ThangDiem": "item.ThangDiem",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getDSDanhGia"
+                      },
+                      {
+                        "CALL": "getDanhGiaChiTiet"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật loại đánh giá<b><i> {{item.TenLoaiDanhGia}} </i></b>?",
+                    "API": "/eorder/DanhGiaLoai_Update",
+                    "IN": {
+                      "DanhGia_LoaiID": "item.DanhGia_LoaiID",
+                      "TenLoaiDanhGia": "item.TenLoaiDanhGia",
+                      "ThangDiem": "item.ThangDiem",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getDSDanhGia"
+                      },
+                      {
+                        "CALL": "getDanhGiaChiTiet"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa loại đánh giá<span class='error--text'> {{item.TenLoaiDanhGia}} </i></span>?",
+                    "API": "/eorder/DanhGiaLoai_Delete",
+                    "IN": {
+                      "DanhGia_LoaiID": "item.DanhGia_LoaiID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getDSDanhGia"
+                      },
+                      {
+                        "CALL": "getDanhGiaChiTiet"
+                      }
+                    ]
+                  }
+                }
+              },
+              "w": "4"
+            },
+            {
+              "el": "f-table",
+              "attr": {
+                ":label": "`Chi tiết đánh giá <span class='red--text'>${vueData.TenLoaiDanhGia ?? ''}</span>`",
+                ":items": "CTDanhGia",
+                ":excel": true,
+                "height": "calc(100vh - 63px)",
+                ":headers": [
+                  {
+                    "text": "Nội dung đánh giá",
+                    "value": "NoiDung"
+                  },
+                  {
+                    "text": "Điểm đánh giá",
+                    "align": "center",
+                    "value": "DiemDanhGia"
+                  },
+                  {
+                    "text": "Tạm khóa",
+                    "align": "center",
+                    "value": "TinhTrang",
+                    "el": "v-icon",
+                    "attr": {
+                      "color": "red"
+                    },
+                    "innerHTML": "{{item.TinhTrang == 0 ? '': 'mdi-lock'}}"
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "DanhGia_LoaiID",
+                      "label": "Mục đánh giá",
+                      ":items": "vueData.DSDanhGia",
+                      "item-value": "DanhGia_LoaiID",
+                      "item-text": "TenLoaiDanhGia"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "DiemDanhGia",
+                      "label": "Điểm đánh giá",
+                      ":items": "Array.from({ length: vueData.DSDanhGia.find(dg => dg.DanhGia_LoaiID == DanhGia_LoaiID)?.ThangDiem }, (_, i) => ({ ThangDiem: i + 1 }))",
+                      "item-value": "ThangDiem",
+                      "item-text": "ThangDiem"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "NoiDung",
+                      "label": "Nội dung"
+                    },
+                    "w": 12
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "DanhGia_LoaiID": "vueData.DanhGia_LoaiID",
+                    "TinhTrang": 0
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới nội dung",
+                    "API": "/eorder/DanhGiaNoiDung_Insert",
+                    "IN": {
+                      "DanhGia_LoaiID": "item.DanhGia_LoaiID",
+                      "DiemDanhGia": "item.DiemDanhGia",
+                      "NoiDung": "item.NoiDung",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getDSDanhGia"
+                      },
+                      {
+                        "CALL": "getDanhGiaChiTiet"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật nội dung <b><i> {{item.TenLoaiDanhGia}} </i></b>?",
+                    "API": "/eorder/DanhGiaNoiDung_Update",
+                    "IN": {
+                      "DanhGia_NoiDungID": "item.DanhGia_NoiDungID",
+                      "DiemDanhGia": "item.DiemDanhGia",
+                      "NoiDung": "item.NoiDung",
+                      "TinhTrang": "item.TinhTrang"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getDSDanhGia"
+                      },
+                      {
+                        "CALL": "getDanhGiaChiTiet"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa nội dung <span class='error--text'> {{item.TenLoaiDanhGia}} </i></span>?",
+                    "API": "/eorder/DanhGiaNoiDung_Delete",
+                    "IN": {
+                      "DanhGia_NoiDungID": "item.DanhGia_NoiDungID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getDSDanhGia"
+                      },
+                      {
+                        "CALL": "getDanhGiaChiTiet"
+                      }
+                    ]
+                  }
+                }
+              },
+              "w": "8"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {},
+  "methods": {
+    "ThangDiem": {}
+  }
+}

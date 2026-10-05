@@ -1,0 +1,26 @@
+[
+  {
+    "name": "/include/vue-advanced-cropper/style.css\t",
+    "type": ".css",
+    "contentType": "comp-link",
+    "fileID": "91A100D05EDB48D3A76B784317A019DD",
+    "scope": "module",
+    "sort": 24
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js\t",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "A80BCDA4134143DDBBC2BB7B863F30A4",
+    "scope": "module",
+    "sort": 25
+  },
+  {
+    "name": "/include/vue-advanced-cropper/index.umd.js\t",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "DF91667A88284834BD3FE91C3EBE0AB0",
+    "scope": "module",
+    "sort": 26
+  }
+]

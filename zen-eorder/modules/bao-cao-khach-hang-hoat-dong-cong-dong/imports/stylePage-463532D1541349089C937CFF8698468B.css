@@ -1,0 +1,15 @@
+.v-data-table__wrapper table tbody tr:last-child{
+    background-color: #ebebeb;
+}
+
+.v-data-table__wrapper table tbody tr td:last-child{
+    background-color: #ebebeb;
+}
+
+.v-data-table__empty-wrapper{
+    background-color: white !important;
+}
+
+.v-data-table__empty-wrapper td{
+    background-color: white !important;
+}

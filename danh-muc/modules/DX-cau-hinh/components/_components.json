@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 8078,
+    "comName": "uc-main"
+  },
+  {
+    "comID": 8083,
+    "comName": "uc-modal-add-chinh-sach"
+  },
+  {
+    "comID": 8093,
+    "comName": "uc-modal-edit-chinh-sach"
+  },
+  {
+    "comID": 8086,
+    "comName": "uc-select-nhan-vien"
+  },
+  {
+    "comID": 8085,
+    "comName": "uc-select-nhom-nhan-vien"
+  }
+]

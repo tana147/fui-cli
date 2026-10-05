@@ -1,0 +1,66 @@
+[
+  {
+    "comID": 8660,
+    "comName": "uc-action-icon"
+  },
+  {
+    "comID": 4678,
+    "comName": "uc-activity-feed"
+  },
+  {
+    "comID": 4683,
+    "comName": "uc-assignment-class-detail-status"
+  },
+  {
+    "comID": 4680,
+    "comName": "uc-assignment-status-row"
+  },
+  {
+    "comID": 4684,
+    "comName": "uc-btn-with-dialog-add-bt"
+  },
+  {
+    "comID": 8661,
+    "comName": "uc-change-user"
+  },
+  {
+    "comID": 5404,
+    "comName": "uc-chon-ngon-ngu"
+  },
+  {
+    "comID": 4679,
+    "comName": "uc-content-library-item"
+  },
+  {
+    "comID": 4685,
+    "comName": "uc-dialog-edit-bt"
+  },
+  {
+    "comID": 8662,
+    "comName": "uc-focus-task"
+  },
+  {
+    "comID": 4709,
+    "comName": "uc-libery-details"
+  },
+  {
+    "comID": 4677,
+    "comName": "uc-lms-tc-dashboard-v2"
+  },
+  {
+    "comID": 8704,
+    "comName": "uc-main-layout"
+  },
+  {
+    "comID": 4896,
+    "comName": "uc-modal-grade-class"
+  },
+  {
+    "comID": 4694,
+    "comName": "uc-my-liberies"
+  },
+  {
+    "comID": 4682,
+    "comName": "uc-teacher-focus-card"
+  }
+]

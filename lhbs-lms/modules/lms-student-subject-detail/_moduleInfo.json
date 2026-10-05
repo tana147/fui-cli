@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-student-subject-detail",
+  "url": "//lms.lhbs.vn/lms-student-subject-detail",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-student-subject-detail",
+  "ModuleName": "Tiến độ Môn học",
+  "UpdateTime": "2025-10-31 08:22:16",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-09-10",
+  "LoadCount": 18622,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

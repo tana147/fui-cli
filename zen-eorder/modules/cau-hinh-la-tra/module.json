@@ -1,0 +1,85 @@
+{
+  "data": [
+    {
+      "DSCauHinh": [],
+      "IsEdit": false
+    },
+    {
+      "API": "/eorder/CauHinh_Select",
+      "OUT": "DSCauHinh"
+    },
+    {
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 1,
+          "text": "Tạm khóa"
+        }
+      ]
+    },
+    {
+      "getDSCauHinhLaTra": {
+        "API": "/eorder/CauHinhLaTra_Select",
+        "OUT": "DSCauHinhLaTra"
+      }
+    },
+    {
+      "CALL": "getDSCauHinhLaTra"
+    },
+    {
+      "getNhomSanPham": {
+        "API": "/eorder/NhomSanPham_Select_Tree",
+        "OUT": "DSNhomSanPham"
+      }
+    },
+    {
+      "CALL": "getNhomSanPham"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md pa-5",
+      "rows": [
+        {
+          "prop": "justify-center",
+          "cols": [
+            {
+              "el": "uc-config-voucher",
+              "w": 6,
+              "attr": {
+                "v-if": "vueData.DSCauHinh.length > 0"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "justify-center",
+          "cols": [
+            {
+              "el": "uc-setup-voucher",
+              "w": 6,
+              "attr": {}
+            }
+          ]
+        },
+        {
+          "prop": "justify-center",
+          "cols": [
+            {
+              "el": "uc-input-point",
+              "w": 6,
+              "attr": {
+                "v-if": "vueData.DSCauHinh.length > 0"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

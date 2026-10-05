@@ -1,0 +1,27 @@
+[
+  {
+    "name": "stylePage",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "FFD1D29B5CCA4CB1B3B073B4A72E7FD7",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/stylePage-FFD1D29B5CCA4CB1B3B073B4A72E7FD7.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/sortablejs@1.10.2/Sortable.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "BE34627148E843759632FB0BBE73EDBD",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://www.unpkg.com/vuedraggable@4.1.0/dist/vuedraggable.umd.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "79FCB934F12E4BCC9B24176C689EFD75",
+    "scope": "module",
+    "sort": 51
+  }
+]

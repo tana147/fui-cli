@@ -1,0 +1,37 @@
+{
+  "data": [],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-account-manager",
+              "col": {},
+              "attr": {
+                "label": "ZEN F&B",
+                ":info": "user",
+                "logo": "https://cdn.zentea.vn/filedata/iot-eorder/zen-tea-logo.jpg",
+                "logo-width": 100,
+                "logo-height": 100,
+                "redirect": "https://eorder.zenfoodcourt.vn/",
+                "api-domain": "https://api.zenfoodcourt.vn",
+                "alias": "/acc",
+                ":reset-sms": true,
+                ":reset-email": false
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false,
+    "login": false
+  }
+}

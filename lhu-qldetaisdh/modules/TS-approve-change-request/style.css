@@ -1,0 +1,45 @@
+/* Student info styling */
+.uc-student-info-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 2px;
+    padding: 10px 16px;
+}
+.uc-student-info-item {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #475569;
+}
+.uc-student-icon {
+    color: #64748b !important;
+}
+.uc-student-label {
+    font-weight: 500;
+    margin-right: 4px;
+    color: #64748b;
+}
+.uc-student-name {
+    font-weight: 700;
+    color: #1e293b;
+    text-transform: uppercase;
+}
+.uc-student-id {
+    font-weight: 600;
+    color: #0f172a;
+    background-color: #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-family: monospace;
+}
+.uc-student-class {
+    font-weight: 600;
+    color: #0f172a;
+    background-color: #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 2px;
+}

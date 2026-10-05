@@ -1,0 +1,58 @@
+{
+  "data": [
+    {
+      "FilterObject": {},
+      "headers": [],
+      "dataTable": [],
+      "DataExpanded": [],
+      "subHeaders": []
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": [
+        {
+          "EXE": "vueData.DSCuaHang.filter(e => e.PhanHieuID == 2)"
+        },
+        {
+          "EXE": "vueData.DSCuaHang.unshift({CuaHangID: 0, TenCuaHang: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/ChuongTrinh_Select",
+      "OUT": "DSChuongTrinh",
+      "CALLBACK": [
+        {
+          "EXE": "vueData.DSChuongTrinh.unshift({ChuongTrinhID: 0, TenChuongTrinh: 'Tất cả'})"
+        }
+      ]
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-table-voucher"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {},
+  "ModuleName": "[TEST] Báo Cáo / Chương Trình Quay Số / Voucher"
+}

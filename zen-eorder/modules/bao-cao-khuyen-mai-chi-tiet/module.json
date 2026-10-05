@@ -1,0 +1,189 @@
+{
+  "data": [
+    {
+      "ChuongTrinhID": 0,
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')"
+    },
+    {
+      "API": "/eorder/ChuongTrinh_Select",
+      "OUT": "DSChuongTrinh"
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_KhuyenMai_DonHang",
+        "IN": {
+          "ChuongTrinhID": "ChuongTrinhID",
+          "TuNgay": "TuNgay",
+          "DenNgay": "DenNgay"
+        },
+        "OUT": "DSChiTietKhuyenMai"
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 5,
+              "attr": {
+                "v-model": "ChuongTrinhID",
+                "label": "Chương trình khuyến mãi",
+                ":items": "vueData.DSChuongTrinh",
+                "item-value": "ChuongTrinhID",
+                "item-text": "MaTenChuongTrinh"
+              }
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "TuNgay",
+                "label": "Từ ngày (Đổi thưởng)",
+                "date-add": 0
+              },
+              "w": 3
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "DenNgay",
+                "label": "Đến ngày (Đổi thưởng)",
+                "date-add": 0
+              },
+              "w": 3
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getBaoCao"
+                }
+              },
+              "w": 3
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo đơn hàng đổi voucher",
+                ":items": "DSChiTietKhuyenMai",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":headers": [
+                  {
+                    "text": "Hóa đơn nhận",
+                    "value": "MaHoaDon_Nhan",
+                    "width": 100
+                  },
+                  {
+                    "text": "Cửa hàng nhận",
+                    "value": "TenCuaHang_Nhan",
+                    "width": 300
+                  },
+                  {
+                    "text": "Hóa đơn sử dụng",
+                    "value": "MaHoaDon_SuDung",
+                    "width": 100
+                  },
+                  {
+                    "text": "Cửa hàng sử dụng",
+                    "value": "TenCuaHang_SuDung",
+                    "width": 300
+                  },
+                  {
+                    "text": "SĐT khách hàng",
+                    "value": "DienThoai",
+                    "width": 100
+                  },
+                  {
+                    "text": "Tên khách hàng",
+                    "value": "HoTen",
+                    "width": 250
+                  },
+                  {
+                    "text": "Mã chương trình",
+                    "value": "MaChuongTrinh",
+                    "width": 200
+                  },
+                  {
+                    "text": "Tên chương trình",
+                    "value": "TenChuongTrinh",
+                    "width": 500
+                  },
+                  {
+                    "text": "Thời gian từ",
+                    "value": "TuNgay_Display",
+                    "width": 100
+                  },
+                  {
+                    "text": "Thời gian tới",
+                    "value": "DenNgay_Display",
+                    "width": 100
+                  },
+                  {
+                    "text": "Loại chương trình",
+                    "value": "TenLoaiChuongTrinh",
+                    "width": 250
+                  },
+                  {
+                    "text": "Điều kiện",
+                    "value": "DieuKien",
+                    "el": "span",
+                    "width": 400,
+                    "innerHTML": "{{renderDieuKien(item)}}"
+                  },
+                  {
+                    "text": "Quà tặng",
+                    "value": "KhuyenMai",
+                    "el": "span",
+                    "width": 600,
+                    "innerHTML": "{{renderKhuyenMai(item)}}"
+                  },
+                  {
+                    "text": "Trạng thái sử dụng",
+                    "value": "TenTrangThai",
+                    "align": "center",
+                    "width": 150
+                  },
+                  {
+                    "text": "Ngày nhận",
+                    "value": "NgayNhan",
+                    "align": "center",
+                    "width": 100
+                  },
+                  {
+                    "text": "Ngày hết hạn",
+                    "value": "NgayHetHan",
+                    "align": "center",
+                    "width": 100
+                  },
+                  {
+                    "text": "Ngày sử dụng",
+                    "value": "NgaySuDung",
+                    "align": "center",
+                    "width": 100
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

@@ -1,0 +1,32 @@
+{
+  "data": [
+    {
+      "API": "/eorder/auth/HoatDongCongDong_Insert_Log",
+      "IN": {
+        "HoaDonID": "hdid"
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid container grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false,
+    "login": false,
+    "userInfo": ""
+  }
+}

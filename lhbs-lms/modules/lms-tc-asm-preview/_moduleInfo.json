@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-tc-asm-preview",
+  "url": "//lms.lhbs.vn/lms-tc-asm-preview",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-tc-asm-preview",
+  "ModuleName": "lms-tc-asm-preview",
+  "UpdateTime": "2026-10-02 10:42:02",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 2743,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

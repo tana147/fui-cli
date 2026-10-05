@@ -1,0 +1,20 @@
+[
+  {
+    "name": "stylePage",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "1F5A2D6666764072BF52DA314B1C576F",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/stylePage-1F5A2D6666764072BF52DA314B1C576F.css"
+  },
+  {
+    "name": "teacher-dashboard",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "D286D35EF0974537BCC76BAFF1BAE3A7",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/teacher-dashboard-D286D35EF0974537BCC76BAFF1BAE3A7.css"
+  }
+]

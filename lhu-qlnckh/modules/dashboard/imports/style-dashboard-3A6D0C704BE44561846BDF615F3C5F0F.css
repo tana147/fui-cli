@@ -1,0 +1,71 @@
+.container {
+    padding: 0 !important;
+}
+
+.box {
+    display: flex;
+    flex-direction: row;
+}
+
+.boxItem {
+    width: 20%;
+    background-color: #f0f0f0;
+    margin: 5px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+@media only screen and (max-width: 919px) {
+    .reponsive--rightTitle-mobile {
+        margin-top: 10px;
+    }
+
+    .reponsive-button-rightTitle-mobile {
+        position: absolute;
+        top: 10px;
+        right: 0;
+        margin-right: 10px;
+    }
+
+    .reponsive-checkbox-rightTitle-mobile {
+        position: absolute;
+        top: 50px;
+        right: 0;
+        margin-right: 10px;
+    }
+
+    .title-mobile {
+        font-size: 15px;
+    }
+
+    .responsive-mobile-chip {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .v-data-table .v-data-table__mobile-row {
+        min-height: 0;
+        height: auto !important;
+    }
+
+    .box {
+        flex-direction: column;
+    }
+
+    .boxItem {
+        width: 100%;
+    }
+
+        .mobileColumn{
+            flex-direction: column;
+        }
+    .mobileFontsize{
+        font-size: 14px !important;
+    }
+        .v-application ol,
+        .v-application ul {
+            padding-left: 0px
+        }
+
+}

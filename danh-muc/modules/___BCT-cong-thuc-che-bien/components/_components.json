@@ -1,0 +1,18 @@
+[
+  {
+    "comID": 6275,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 6295,
+    "comName": "uc-modal-edit"
+  },
+  {
+    "comID": 6294,
+    "comName": "uc-modal-quy-doi"
+  },
+  {
+    "comID": 6637,
+    "comName": "uc-modal-them-dinh-luong"
+  }
+]

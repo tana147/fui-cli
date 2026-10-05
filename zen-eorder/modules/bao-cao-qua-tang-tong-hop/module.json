@@ -1,0 +1,94 @@
+{
+  "data": [
+    {
+      "Ngay": "moment().format('YYYY-MM-DD')"
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_QuaTang_TongHop",
+        "IN": {
+          "Ngay": "Ngay"
+        },
+        "OUT": "DSQuaTangTongHop"
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "Ngay",
+                "label": "Ngày",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getBaoCao"
+                }
+              },
+              "w": 3
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo quà tặng tổng hợp",
+                ":items": "DSQuaTangTongHop",
+                ":excel": true,
+                "height": "calc(100vh - 118px)",
+                ":headers": [
+                  {
+                    "text": "Cửa hàng",
+                    "value": "TenCuaHang"
+                  },
+                  {
+                    "text": "Ngày",
+                    "value": "NgayTao"
+                  },
+                  {
+                    "text": "Số mã dự tính dựa trên tỉ lệ (Tổng ly thỏa điều kiện/150)",
+                    "value": "TongQrCode",
+                    "el": "span",
+                    "innerHTML": "{{(item.TongQrCode/150)?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Tổng mã thưởng",
+                    "value": "TongQrCode_TrungThuong",
+                    "el": "span",
+                    "innerHTML": "{{item.TongQrCode_TrungThuong?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Tổng đã đổi",
+                    "value": "Tong_DaDoiThuong",
+                    "el": "span",
+                    "innerHTML": "{{item.Tong_DaDoiThuong?.toLocaleString('vi-vn')}}"
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

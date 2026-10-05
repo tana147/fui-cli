@@ -1,0 +1,521 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    /* ✅ thêm dòng này */
+    flex-direction: column;
+    /* ✅ thêm dòng này */
+}
+
+#app {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    position: relative;
+    padding: 0;
+    max-width: unset;
+    overflow-y: hidden !important;
+}
+
+.layout {
+    /* ✅ Giúp phần nội dung mở rộng đẩy footer xuống */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-y: hidden !important;
+}
+
+.control-prev-button,
+.control-next-button {
+    font-size: 30px !important;
+}
+
+/* Đẩy toàn bộ khu vực menu lên 20px */
+.shift-up-20 {
+    margin-top: -10px;
+}
+
+/* Caption tên Phân hiệu dưới mỗi menu */
+.menu-caption {
+    /* background-color: transparent !important; */
+    font-size: 9px;
+    /* ~10px theo yêu cầu */
+    line-height: 1.1;
+    margin-top: 1px;
+    /* khoảng cách nhỏ dưới ảnh */
+    color: white;
+    /* đồng bộ tông nâu */
+    text-shadow: 0 1px 0 #f3bb9b;
+    white-space: nowrap;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    max-width: 100px;
+    /* vừa với bìa 85x120 + khoảng đệm */
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Với hàng bìa lớn, cho caption rộng hơn chút nếu cần */
+.item-image--lg+.menu-caption {
+    max-width: 130px;
+}
+
+.item-image+.menu-caption {
+    margin-top: -3px !important;
+}
+
+.footer {
+    background: #18B76C;
+    padding: 43px 30px;
+    text-align: center;
+    margin-bottom: auto !important;
+    /* padding-bottom: 100px !important; */
+    margin: 0 !important;
+}
+
+.company-info h2 {
+    color: white;
+    font-size: 18px;
+    /* margin-bottom: 10px; */
+    font-weight: bold;
+}
+
+.company-info p {
+    color: white;
+    font-size: 14px;
+    /* margin: 5px 0; */
+    /* line-height: 1.4; */
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    width: 100%;
+    position: relative;
+    background-image: url('/_cdn/zen-eorder/menu-online/red-1.jpg');
+    background-repeat: repeat;
+    background-size: auto;
+    background-position: center;
+    padding: 0 16px;
+}
+
+.title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+    font-size: 25px;
+    color: #4d2f2f;
+    text-shadow: 1px 1px 0 #f3bb9b;
+}
+
+.item-card {
+    /* background: white; */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    /* Quan trọng: để dọc */
+    justify-content: flex-start;
+    align-items: center;
+    text-align: center;
+}
+
+.item-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.item-card .v-img {
+    border-radius: 4px;
+    object-fit: cover;
+    width: 100%;
+    max-height: 120px;
+}
+
+.item-title {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4d2f2f;
+    text-shadow: 0 1px 0 #f3bb9b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.v-sheet.v-card.full-width-card {
+    background-color: transparent !important;
+}
+
+.full-width-card {
+    width: fit-content;
+    height: auto;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    box-shadow: none;
+    border-radius: 0;
+    overflow: visible !important;
+    position: relative;
+}
+
+.item-image {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    line-height: 0;
+    width: auto;
+    height: 120px;
+    background: #fff;
+    display: inline-block;
+    border-radius: 4px;
+}
+
+/* .item-image--spine+.menu-caption {
+     margin-left: -3px;
+} */
+
+.menu-cover {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    /* Giữ nguyên tỉ lệ ảnh, fit vào khung */
+    display: block;
+}
+
+.item-image img {
+    display: block;
+    margin: 0;
+    padding: 0;
+    height: 120px;
+    width: auto;
+    object-fit: cover;
+}
+
+.case-row-big,
+.case-row {
+    background-size: contain;
+    background-repeat: repeat;
+
+    display: flex;
+    flex-direction: row !important;
+    /* hàng ngang */
+    justify-content: center !important;
+    /* gom vào giữa */
+    align-items: flex-end;
+    gap: 100px;
+    /* <-- khoảng cách giữa các menu */
+    padding: 0 8px;
+    margin: 0;
+}
+
+/* Không cộng thêm padding 2 bên cột để khỏi “đội” khoảng cách */
+.case-row>.v-col {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin: 0 !important;
+    flex: 0 0 auto;
+}
+
+.case-row-big {
+    background-image: url('/_cdn/zen-eorder/menu-online/red-2-big.png');
+    height: 200px;
+}
+
+.case-row {
+    background-image: url('/_cdn/zen-eorder/menu-online/red-2.png');
+    height: 157px;
+}
+
+.row {
+    /* flex: unset !important; */
+    margin-top: 0 !important;
+}
+
+.no-padding {
+    padding: 0 !important;
+}
+
+.pagination {
+    background-image: url('/_cdn/zen-eorder/menu-online/red-3.png');
+    background-repeat: repeat;
+    background-size: auto;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0 !important;
+}
+
+.control-button-pre,
+.control-button-next {
+    border: 1px solid gray;
+    border-radius: 20px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #442934;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 2px 3px rgba(0, 0, 0, 0.3);
+}
+
+.control-button-pre {
+    padding: 2px 9px 2px 0px;
+}
+
+.control-button-next {
+    padding: 2px 0px 2px 9px;
+}
+
+/* Khi bị disable */
+.control-button.disabled {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+    /* chặn tương tác khi bị disabled */
+}
+
+.page-info {
+    background: #4d2f2f;
+    border-color: #f3bb9b;
+    color: #f3bb9b;
+    /* box-shadow: inset 1px 1px 2px #4d2f2f, 0px 1px 3px #f3bb9b; */
+    box-shadow: inset 1px 2px 3px #1A1A1A, 0px 1px 3px #f3bb9b;
+    font-size: 16px;
+    line-height: 16px;
+    border-radius: 50px;
+    border: none;
+    text-align: center;
+    margin: 0 10px;
+    padding: 7px 10px;
+    position: center;
+    /* top: -10px; */
+}
+
+.select-center {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+    margin-bottom: 20px;
+}
+
+.category-select {
+    display: flex;
+    background: #4d2f2f;
+    border-color: #f3bb9b;
+    color: #f3bb9b;
+    box-shadow: inset 1px 2px 3px #1A1A1A, 0px 1px 3px #f3bb9b;
+    border-radius: 20px;
+    padding: 4px 12px;
+    max-width: 250px;
+    width: 100%;
+    font-weight: bold;
+
+}
+
+/* Style the ribbon */
+/* Bám đúng góc phải-trên của khung ảnh */
+.ribbon {
+    position: absolute;
+    top: 0px;
+    /* có thể chỉnh -1/-3 tùy mắt nhìn */
+    right: 0px;
+    /* đồng nhất cho mọi hàng */
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
+    z-index: 5;
+}
+
+/* Dải chéo */
+.ribbon__content {
+    position: absolute;
+    top: 10px;
+    right: -15px;
+    /* dùng right thay vì left để neo về bên phải */
+    left: auto;
+    width: 58px;
+    padding: 4px 0;
+    transform: rotate(45deg);
+    background-color: #52b700;
+    /* sẽ bị override bằng :style */
+    box-shadow: 0 0 6px rgba(0, 0, 0, .15);
+    color: #fff;
+    font-size: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+    border: 1px dotted #fff;
+    outline: 3px solid #f5cd79;
+    white-space: nowrap;
+}
+
+/* Riêng row 1 có “spine” → chừa 1 chút khoảng ở bên phải cho đẹp */
+.item-image--spine {
+    padding-right: 5px;
+}
+
+
+.ribbon::before,
+.ribbon::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    border-width: 1px;
+}
+
+.ribbon::before {
+    top: 0;
+    left: 0;
+    right: 0;
+    border-color: #f19066;
+    border-top-color: transparent;
+    border-right-color: transparent;
+}
+
+.ribbon::after {
+    bottom: 0;
+    right: 0;
+    border-color: #f19066;
+    border-top-color: transparent;
+    border-right-color: transparent;
+}
+
+.tag-menu {
+    position: absolute;
+    top: 10px;
+    right: 5px;
+    color: white;
+    padding: 5px 10px;
+    font-weight: bold;
+    font-size: 12px;
+    border-radius: 5px;
+    transform: rotate(25deg);
+    /* nghiêng nhẹ cho ấn tượng */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Tùy chỉnh dropdown của Vuetify */
+.v-select .v-input__control {
+    /* border-radius: 20px; */
+    /* background-color: #4b2e2e !important; */
+    color: #f3bb9b;
+}
+
+/* Tùy chỉnh icon dropdown */
+.v-select .v-input__append-inner {
+    color: #f3bb9b;
+}
+
+.sort-group {
+    display: flex;
+
+    margin-left: auto;
+}
+
+.sort-btn-name {
+    width: 77px;
+    height: 36px;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 18px 0px 0px 18px;
+    border: black solid 1px;
+    background-image: url('/_cdn/zen-eorder/menu-online/red-1.jpg');
+    /* Tùy chọn: làm góc bo tròn */
+}
+
+.sort-btn-date {
+    width: 77px;
+    height: 36px;
+    display: inline-block;
+    cursor: pointer;
+    background-image: url('/_cdn/zen-eorder/menu-online/red-1.jpg');
+    background-size: auto;
+    background-position: center;
+    border: black solid 1px;
+    border-radius: 0px 18px 18px 0px;
+    font-size: 20px;
+}
+
+.book-border-container {
+    position: absolute;
+    top: 0px;
+    height: 100%;
+}
+
+.mobile-toolbar {
+    background-image: url('/_cdn/zen-eorder/menu-online/red-1.jpg');
+    background-repeat: repeat;
+    background-size: auto;
+    background-position: center;
+    padding: 6px 8px;
+    gap: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0, 0, 0, .25);
+}
+
+/* Root của select */
+.category-select.v-input.v-input--outlined {
+    border-radius: 20px;
+}
+
+/* Slot bên trong v-text-field--outlined của Vuetify 2 */
+.category-select .v-input__slot {
+    background-color: #4d2f2f !important;
+    /* nâu sẫm */
+    border: 1px solid #2b1a1a !important;
+    /* viền nâu đậm */
+    border-radius: 20px !important;
+    min-height: 36px !important;
+    padding: 0 12px !important;
+    box-shadow: inset 1px 2px 3px #1A1A1A, 0 1px 3px #f3bb9b;
+}
+
+/* Màu chữ/label/selection/icon */
+.category-select .v-select__selections,
+.category-select .v-label,
+.category-select input,
+.category-select .v-input__append-inner,
+.category-select .v-icon {
+    color: #f3bb9b !important;
+    /* vàng kem */
+}
+
+/* Khi focus/hover giữ tông nâu */
+.theme--light .category-select.v-text-field--outlined:not(.v-input--is-disabled) .v-input__slot:hover,
+.category-select.v-input.v-input--is-focused .v-input__slot {
+    border-color: #6a3a3a !important;
+    box-shadow: inset 1px 2px 3px #111, 0 1px 3px #f5c6a3;
+}
+
+.mobile-toolbar__left {
+    flex: 1 1 auto;
+}
+
+.mobile-toolbar__right {
+    display: flex;
+    gap: 6px;
+}
+
+.mobile-toolbar hidden-lg-and-up {
+    background-color: black;
+}

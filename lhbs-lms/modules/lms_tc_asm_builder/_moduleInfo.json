@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms_tc_asm_builder",
+  "url": "//lms.lhbs.vn/lms_tc_asm_builder",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms_tc_asm_builder",
+  "ModuleName": "Soạn bài tập",
+  "UpdateTime": "2026-10-01 14:03:58",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 9981,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

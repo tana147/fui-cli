@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder",
+  "pDomain": "",
+  "ProjectID": "zen-eorder",
+  "ProjectName": "eOrder System",
+  "GroupName": "ZEN",
+  "Framework": "V2",
+  "ProjectText": "eOrder System @ zen-eorder ",
+  "Router": "",
+  "url": "/fp/module?pid=zen-eorder",
+  "UserRight": 8,
+  "UpdateUser": "DEV000007",
+  "UpdateTime": "2026-06-22T15:59:01.71",
+  "fetchedAt": "2026-10-05T07:20:21.106Z"
+}

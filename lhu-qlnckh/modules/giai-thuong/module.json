@@ -1,0 +1,637 @@
+{
+  "data": [
+    {
+      "CALL": "initFile()"
+    },
+    {
+      "LoaiGiaiThuongID": 0,
+      "TenLoaiGiaiThuong": "",
+      "CT_GiaiThuong": null,
+      "CT_QuyetDinh": null,
+      "FileID_Remove": null,
+      "DS_FileDecisionUpload": null,
+      "DS_TapTinDinhKem": [],
+      "DialogFile_Open": false,
+      "DialogDecision_Open": false,
+      "DialogAddReward": false,
+      "GiaiThuongObj": {
+        "MaLoaiGiaiThuong": "",
+        "TenLoaiGiaiThuong": ""
+      }
+    },
+    {
+      "APIAddReward": {
+        "API": "/LoaiGiaiThuong_Ins",
+        "IN": {
+          "MaLoaiGiaiThuong": "vueData.GiaiThuongObj.MaLoaiGiaiThuong",
+          "TenLoaiGiaiThuong": "vueData.GiaiThuongObj.TenLoaiGiaiThuong"
+        },
+        "MESS": "Thêm giải thưởng thành công",
+        "CALLBACK": [
+          {
+            "DialogAddReward": false,
+            "GiaiThuongObj": {
+              "MaLoaiGiaiThuong": "",
+              "TenLoaiGiaiThuong": ""
+            }
+          },
+          {
+            "CALL": "LoaiGiaiThuongGetAll"
+          }
+        ]
+      }
+    },
+    {
+      "API": "/GiaiThuong_QuyetDinh_Get_Dropdown",
+      "IN": {
+        "LoaiQD": 1
+      },
+      "OUT": "DS_QuyetDinh"
+    },
+    {
+      "LoaiGiaiThuongGetAll": {
+        "API": "/LoaiGiaiThuong_Get_All",
+        "OUT": "DS_LoaiGiaiThuong",
+        "CALLBACK": {
+          "LoaiGiaiThuongID": "DS_LoaiGiaiThuong[0].LoaiGiaiThuongID",
+          "TenLoaiGiaiThuong": "DS_LoaiGiaiThuong[0].TenLoaiGiaiThuong"
+        }
+      }
+    },
+    {
+      "getGiaiThuong": {
+        "API": "/GiaiThuong_Get_ByLoaiGiaiThuongID",
+        "IN": {
+          "LoaiGiaiThuongID": "LoaiGiaiThuongID"
+        },
+        "OUT": "DS_GiaiThuong"
+      }
+    },
+    {
+      "CALL": "getGiaiThuong"
+    },
+    {
+      "callApiRemoveFile": {
+        "CONFIRM": "Bạn có chắc muốn xóa tập tin minh chứng?",
+        "API": "/GiaiThuong_Upd_File",
+        "IN": {
+          "GiaiThuongID": "vueData.CT_GiaiThuong[0][0].GiaiThuongID",
+          "DS_FileID": "vueData.CT_GiaiThuong[1].filter(item => item.FILE_ID !== vueData.FileID_Remove).map(item => item.FILE_ID).join(',')"
+        },
+        "MESS": "Xóa tập tin thành công",
+        "CALLBACK": [
+          {
+            "FileID_Remove": null
+          },
+          {
+            "API": "/GiaiThuong_Get_ByID",
+            "IN": {
+              "GiaiThuongID": "vueData.CT_GiaiThuong[0][0].GiaiThuongID"
+            },
+            "OUT": "CT_GiaiThuong",
+            "CALLBACK": [
+              {
+                "CT_GiaiThuong": "CT_GiaiThuong",
+                "DS_FileDecisionUpload": null
+              }
+            ]
+          },
+          {
+            "CALL": "getGiaiThuong"
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "LoaiGiaiThuongGetAll"
+    }
+  ],
+  "watch": {
+    "LoaiGiaiThuongID": [
+      {
+        "CALL": "getGiaiThuong"
+      },
+      {
+        "TenLoaiGiaiThuong": "vueData.DS_LoaiGiaiThuong.filter(item => item.LoaiGiaiThuongID === vueData.LoaiGiaiThuongID)[0].TenLoaiGiaiThuong"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "col": {},
+              "attr": {
+                "v-model": "LoaiGiaiThuongID",
+                "label": "Loại giải thưởng",
+                ":items": "vueData.DS_LoaiGiaiThuong",
+                "item-value": "LoaiGiaiThuongID",
+                "item-text": "TenLoaiGiaiThuong"
+              }
+            },
+            {
+              "el": "div",
+              "w": 4,
+              "innerHTML": [
+                {
+                  "el": "v-btn",
+                  "w": 2,
+                  "innerHTML": "<v-icon left>mdi-plus</v-icon>Thêm loại giải thưởng",
+                  "attr": {
+                    "v-on:click": "vueData.DialogAddReward=true",
+                    "color": "success",
+                    "class": "mr-2"
+                  }
+                },
+                {
+                  "el": "v-btn",
+                  "w": 2,
+                  "innerHTML": "<v-icon left>mdi-file-document-edit-outline</v-icon>Nhập số quyết định",
+                  "attr": {
+                    "v-on:click": "window.location.href = '/giai-thuong-quyet-dinh'",
+                    "color": "primary"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "col": {},
+              "w": 12,
+              "attr": {
+                ":excel": true,
+                ":label": "`Danh sách giải thưởng: <span class='red--text'>${vueData.TenLoaiGiaiThuong ?? ''}</span>`",
+                ":fixed-header": true,
+                ":fixed-cols": 2,
+                ":show-select": false,
+                ":mobile-breakpoint": 600,
+                ":items": "DS_GiaiThuong",
+                ":headers": [
+                  {
+                    "text": "STT",
+                    "align": "center",
+                    "value": "SoThuTu"
+                  },
+                  {
+                    "text": "Đề tài / Tác giả",
+                    "el": "span",
+                    "value": "TenDeTai",
+                    "innerHTML": "<b>{{item.TenDeTai}}</b> <br/> Tác giả: {{item.TacGia}}"
+                  },
+                  {
+                    "text": "Đơn vị / Giải",
+                    "el": "span",
+                    "value": "DonVi",
+                    "innerHTML": "{{item.DonVi}} <br/> {{item.Giai}}"
+                  },
+                  {
+                    "text": "Năm đạt giải",
+                    "el": "span",
+                    "value": "NamDatGiai",
+                    "innerHTML": "<span>{{item.ThangDatGiai?item.ThangDatGiai:'--'}}/{{item.NamDatGiai}}</span>",
+                    "align": "center"
+                  },
+                  {
+                    "text": "Số quyết định",
+                    "value": "MaSoQD",
+                    "align": "center",
+                    "el": "t-button",
+                    "attr": {
+                      "v-if": "item.QDID > 0",
+                      "color": "green",
+                      ":label": "item.MaSoQD",
+                      ":action": {
+                        "API": "/GiaiThuong_QuyetDinh_Get_ByID",
+                        "IN": {
+                          "QDID": "item.QDID"
+                        },
+                        "OUT": "CT_QuyetDinh",
+                        "CALLBACK": [
+                          {
+                            "DialogFile_Open": true,
+                            "CT_QuyetDinh": "CT_QuyetDinh"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "text": "Minh chứng",
+                    "align": "center",
+                    "value": "SoTapTin",
+                    "el": "v-chip",
+                    "attr": {
+                      "color": "primary"
+                    },
+                    "innerHTML": "{{isNaN(parseInt(item.SoTapTin)) ? 0 : item.SoTapTin}}"
+                  },
+                  {
+                    "text": "",
+                    "value": "UploadFile",
+                    "align": "center",
+                    "el": "t-button",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Minh chứng",
+                      ":action": {
+                        "API": "/GiaiThuong_Get_ByID",
+                        "IN": {
+                          "GiaiThuongID": "item.GiaiThuongID"
+                        },
+                        "OUT": "CT_GiaiThuong",
+                        "CALLBACK": [
+                          {
+                            "DialogDecision_Open": true,
+                            "CT_GiaiThuong": "CT_GiaiThuong"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "text": "Chức năng",
+                    "value": "ctrl-update",
+                    "align": "center"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-select",
+                    "w": 10,
+                    "col": {},
+                    "attr": {
+                      "v-model": "LoaiGiaiThuongID",
+                      "label": "Loại giải thưởng",
+                      ":items": "vueData.DS_LoaiGiaiThuong",
+                      "item-value": "LoaiGiaiThuongID",
+                      "item-text": "TenLoaiGiaiThuong"
+                    }
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "SoThuTu",
+                      "label": "Số thứ tự"
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "v-textarea",
+                    "attr": {
+                      "v-model": "TenDeTai",
+                      "label": "Tên Đề tài/Cuộc thi",
+                      "rows": 2,
+                      "hide-details": true
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-textarea",
+                    "attr": {
+                      "v-model": "TacGia",
+                      "label": "Tác giả/Nhóm tác giả/Đội",
+                      "rows": 2,
+                      "hide-details": true
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "DonVi",
+                      "label": "Đơn vị"
+                    },
+                    "w": 12
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "Giai",
+                      "label": "Đạt giải"
+                    },
+                    "w": 6
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "ThangDatGiai",
+                      "label": "Tháng đạt giải"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "NamDatGiai",
+                      "label": "Năm đạt giải"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-select",
+                    "w": 12,
+                    "col": {},
+                    "attr": {
+                      "v-model": "QDID",
+                      "label": "Số quyết định",
+                      ":items": "vueData.DS_QuyetDinh",
+                      "item-value": "QDID",
+                      "item-text": "MaSoQD",
+                      ":rules": false
+                    }
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "LoaiGiaiThuongID": "vueData.LoaiGiaiThuongID",
+                    "SoThuTu": 0,
+                    "DonVi": "Trường Đại học Lạc Hồng",
+                    "QDID": 0
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới giải thưởng",
+                    "API": "/GiaiThuong_Ins",
+                    "IN": {
+                      "LoaiGiaiThuongID": "item.LoaiGiaiThuongID",
+                      "SoThuTu": "item.SoThuTu",
+                      "TenDeTai": "item.TenDeTai",
+                      "TacGia": "item.TacGia",
+                      "DonVi": "item.DonVi",
+                      "Giai": "item.Giai",
+                      "ThangDatGiai": "item.ThangDatGiai",
+                      "NamDatGiai": "item.NamDatGiai",
+                      "QDID": "item.QDID ?? 0"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "CALLBACK": {
+                      "CALL": "getGiaiThuong"
+                    }
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập nhật giải thưởng <b><i> {{item.TenDeTai}} </i></b>?",
+                    "API": "/GiaiThuong_Upd",
+                    "IN": {
+                      "GiaiThuongID": "item.GiaiThuongID",
+                      "LoaiGiaiThuongID": "item.LoaiGiaiThuongID",
+                      "SoThuTu": "item.SoThuTu",
+                      "TenDeTai": "item.TenDeTai",
+                      "TacGia": "item.TacGia",
+                      "DonVi": "item.DonVi",
+                      "Giai": "item.Giai",
+                      "ThangDatGiai": "item.ThangDatGiai",
+                      "NamDatGiai": "item.NamDatGiai",
+                      "QDID": "item.QDID ?? 0"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": {
+                      "CALL": "getGiaiThuong"
+                    }
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa giải thưởng <b><i> {{item.TenDeTai}} </i></b>?",
+                    "API": "/GiaiThuong_Del",
+                    "IN": {
+                      "GiaiThuongID": "item.GiaiThuongID"
+                    },
+                    "OUT": "ERRMSG",
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": {
+                      "CALL": "getGiaiThuong"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-dialog",
+              "attr": {
+                "v-model": "DialogDecision_Open",
+                "title": "Tập tin minh chứng",
+                ":controls": [
+                  {
+                    "el": "div",
+                    "attr": {
+                      "class": "text-left black--text"
+                    },
+                    "innerHTML": "<p class='mb-0'><b>Đề tài:</b> <span class='red--text'>{{vueData.CT_GiaiThuong[0][0].TenDeTai}}</span> <br/> <b>Tác giả:</b> <span>{{vueData.CT_GiaiThuong[0][0].TacGia}}</span> <br/> <b>Đơn vị:</b> <span>{{vueData.CT_GiaiThuong[0][0].DonVi}} - {{vueData.CT_GiaiThuong[0][0].Giai}} - {{vueData.CT_GiaiThuong[0][0].NamDatGiai}}</span></p>"
+                  },
+                  {
+                    "el": "div",
+                    "attr": {
+                      "class": "text-left"
+                    },
+                    "innerHTML": "<span class='title black--text'>Danh sách tập tin minh chứng</span>",
+                    "w": 9
+                  },
+                  {
+                    "el": "f-file-upload",
+                    "w": 3,
+                    "attr": {
+                      "v-model": "vueData.DS_FileDecisionUpload",
+                      "label": "Tải lên tập tin",
+                      ":filters": "vueData.fileEX",
+                      ":url": "vueData.v_Set.apiFile",
+                      ":onclose": [
+                        {
+                          "EXE": "vueData.CT_GiaiThuong[1].push(vueData.DS_FileDecisionUpload.Files[0])"
+                        },
+                        {
+                          "API": "/GiaiThuong_Upd_File",
+                          "IN": {
+                            "GiaiThuongID": "vueData.CT_GiaiThuong[0][0].GiaiThuongID",
+                            "DS_FileID": "vueData.CT_GiaiThuong[1].map(item => item.FILE_ID).join(',')"
+                          },
+                          "MESS": "Tải tập tin thành công",
+                          "CALLBACK": [
+                            {
+                              "DS_FileDecisionUpload": null
+                            },
+                            {
+                              "CALL": "getGiaiThuong"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "el": "f-table",
+                    "w": 12,
+                    "col": {},
+                    "attr": {
+                      ":excel": false,
+                      ":show-search": false,
+                      ":fixed-header": true,
+                      ":show-select": false,
+                      ":fixed-cols": 2,
+                      ":mobile-breakpoint": 600,
+                      ":items": "vueData.CT_GiaiThuong[1]",
+                      ":headers": [
+                        {
+                          "text": "Tập tin",
+                          "el": "span",
+                          "value": "FileName",
+                          "innerHTML": "<a :href='`${vueData.v_Set.urlReturnFile}/FileData/${item.FILE_ID}`' target='_blank'>{{item.FILE_NAME}}</a> ({{item.FILE_SIZE}}kb)"
+                        },
+                        {
+                          "text": "",
+                          "el": "t-button",
+                          "value": "Xoa",
+                          "align": "right",
+                          "attr": {
+                            "color": "red",
+                            "label": "Xóa",
+                            ":action": [
+                              {
+                                "FileID_Remove": "item.FILE_ID"
+                              },
+                              {
+                                "CALL": "callApiRemoveFile"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                ":button": [
+                  {
+                    "label": "Đóng",
+                    "action": [
+                      {
+                        "DialogDecision_Open": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "el": "f-dialog",
+              "attr": {
+                "v-model": "DialogFile_Open",
+                "title": "Thông tin quyết định",
+                ":controls": [
+                  {
+                    "el": "div",
+                    "attr": {
+                      "class": "text-left black--text"
+                    },
+                    "innerHTML": "<p class='mb-0'><b>Quyết định:</b> <span class='red--text'>{{vueData.CT_QuyetDinh[0][0].MaSoQD === '' ? 'Chưa có' : vueData.CT_QuyetDinh[0][0].MaSoQD}}</span> <br/> <b>Ngày/Tháng/Năm:</b> <span>{{vueData.CT_QuyetDinh[0][0].NgayQD}}/{{vueData.CT_QuyetDinh[0][0].ThangQD}}/{{vueData.CT_QuyetDinh[0][0].NamQD}}</span> <br/> <b>Mô tả:</b> <span>{{vueData.CT_QuyetDinh[0][0].MoTaQD}}</span></p>"
+                  },
+                  {
+                    "el": "div",
+                    "attr": {
+                      "class": "text-left"
+                    },
+                    "innerHTML": "<span class='title black--text'>Danh sách tập tin đính kèm</span>",
+                    "w": 12
+                  },
+                  {
+                    "el": "f-table",
+                    "w": 12,
+                    "col": {},
+                    "attr": {
+                      ":excel": false,
+                      ":show-search": false,
+                      ":fixed-header": true,
+                      ":show-select": false,
+                      ":fixed-cols": 2,
+                      ":mobile-breakpoint": 600,
+                      ":items": "vueData.CT_QuyetDinh[1]",
+                      ":headers": [
+                        {
+                          "text": "Tập tin",
+                          "el": "span",
+                          "value": "FileName",
+                          "innerHTML": "<a :href='`${vueData.v_Set.urlReturnFile}/FileData/${item.FILE_ID}`' target='_blank'>{{item.FILE_NAME}}</a> ({{item.FILE_SIZE}}kb)"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                ":button": [
+                  {
+                    "label": "Đóng",
+                    "action": [
+                      {
+                        "DialogFile_Open": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "el": "f-dialog",
+              "attr": {
+                "v-model": "DialogAddReward",
+                "title": "Thêm loại giải thưởng",
+                ":controls": [
+                  {
+                    "el": "v-text-field",
+                    "w": 12,
+                    "attr": {
+                      "v-model": "vueData.GiaiThuongObj.MaLoaiGiaiThuong",
+                      "label": "Mã loại giải thưởng",
+                      "outlined": true,
+                      "dense": true,
+                      "hide-details": true
+                    }
+                  },
+                  {
+                    "el": "v-text-field",
+                    "w": 12,
+                    "attr": {
+                      "v-model": "vueData.GiaiThuongObj.TenLoaiGiaiThuong",
+                      "label": "Tên loại giải thưởng",
+                      "outlined": true,
+                      "dense": true,
+                      "hide-details": true
+                    }
+                  }
+                ],
+                ":button": [
+                  {
+                    "label": "Đóng",
+                    "action": [
+                      {
+                        "DialogAddReward": false
+                      }
+                    ]
+                  },
+                  {
+                    "label": "Thêm mới",
+                    "action": [
+                      {
+                        "CALL": "APIAddReward"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

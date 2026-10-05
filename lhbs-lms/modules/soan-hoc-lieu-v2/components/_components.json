@@ -1,0 +1,42 @@
+[
+  {
+    "comID": 3611,
+    "comName": "uc-editable-treeview-v2"
+  },
+  {
+    "comID": 4208,
+    "comName": "uc-editor-chat-ai"
+  },
+  {
+    "comID": 3900,
+    "comName": "uc-editor-dialog"
+  },
+  {
+    "comID": 3962,
+    "comName": "uc-editor-dialog-quiz-composite"
+  },
+  {
+    "comID": 4224,
+    "comName": "uc-latex-edit"
+  },
+  {
+    "comID": 4046,
+    "comName": "uc-loading-page"
+  },
+  {
+    "comID": 10300,
+    "comName": "uc-main-layout"
+  },
+  {
+    "comID": 3612,
+    "comName": "uc-noi-dung-dialog"
+  },
+  {
+    "comID": 3719,
+    "comName": "uc-quiz-editor"
+  },
+  {
+    "comID": 11555,
+    "comName": "uc-thong-ke-xem-hoc-lieu-dialog"
+  }
+]

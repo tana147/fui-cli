@@ -1,0 +1,58 @@
+[
+  {
+    "comID": 12102,
+    "comName": "dialog-dong-bo-gvhd"
+  },
+  {
+    "comID": 12101,
+    "comName": "dialog-import-update-student"
+  },
+  {
+    "comID": 12099,
+    "comName": "dialog-reset-student-process"
+  },
+  {
+    "comID": 12089,
+    "comName": "dialog-upd-task"
+  },
+  {
+    "comID": 12100,
+    "comName": "dialog-view-old-reset-process"
+  },
+  {
+    "comID": 12091,
+    "comName": "file-comp"
+  },
+  {
+    "comID": 12095,
+    "comName": "info-table"
+  },
+  {
+    "comID": 12098,
+    "comName": "old-data-dialog"
+  },
+  {
+    "comID": 12092,
+    "comName": "score-comp"
+  },
+  {
+    "comID": 12094,
+    "comName": "similiar-topic-list"
+  },
+  {
+    "comID": 12096,
+    "comName": "student-container"
+  },
+  {
+    "comID": 12097,
+    "comName": "table-chung"
+  },
+  {
+    "comID": 12093,
+    "comName": "textarea-button-comp"
+  },
+  {
+    "comID": 12090,
+    "comName": "textarea-comp"
+  }
+]

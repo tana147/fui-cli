@@ -1,0 +1,56 @@
+{
+  "data": [
+    {
+      "IsLogOut": "out",
+      "IsDownload": "download"
+    },
+    {
+      "StartPrint": {
+        "API": "/eorder/KetCa_Select_Export_Pdf_V2",
+        "IN": {
+          "KetCaLogID": "id"
+        },
+        "OUT": "DTKetCa",
+        "CALLBACK": [
+          {
+            "IF": "IsLogOut === '1'",
+            "THEN": {
+              "EXE": "autoLogOut()"
+            }
+          },
+          {
+            "FUN": "InFileKetCa",
+            "IN": {
+              "DTKetCa": "DTKetCa"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "StartPrint"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row justify-center",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "id": "iframeContainer"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false
+  }
+}

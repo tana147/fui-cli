@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/convert-diem-ta-excel",
+  "url": "//lms.lhbs.vn/convert-diem-ta-excel",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "convert-diem-ta-excel",
+  "ModuleName": "convert-diem-ta-excel",
+  "UpdateTime": "2025-04-14 15:35:55",
+  "UpdateUser": "DEV000050",
+  "LastLoad": "2025-11-01",
+  "LoadCount": 94,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

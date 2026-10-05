@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-hoa-don-grab",
+  "url": "/zen-eorder/bao-cao-hoa-don-grab",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-hoa-don-grab",
+  "ModuleName": "Báo Cáo / Hóa Đơn / Grab",
+  "UpdateTime": "2026-03-20 16:20:25",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-06-02",
+  "LoadCount": 381,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

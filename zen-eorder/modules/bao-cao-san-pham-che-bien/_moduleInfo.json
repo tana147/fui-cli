@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-san-pham-che-bien",
+  "url": "/zen-eorder/bao-cao-san-pham-che-bien",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-san-pham-che-bien",
+  "ModuleName": "Báo Cáo / Sản Phẩm / Thời Gian Ra Bill, Món",
+  "UpdateTime": "2026-03-29 13:56:27",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2026-06-02",
+  "LoadCount": 148,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

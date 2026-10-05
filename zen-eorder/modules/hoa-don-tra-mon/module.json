@@ -1,0 +1,54 @@
+{
+  "data": [
+    {
+      "CuaHangID": "chid",
+      "webSocket_Hub_Waiting": "`waiting_{{CuaHangID}}",
+      "webSocket": "{[webSocket_Hub_Waiting]: null }"
+    },
+    {
+      "getHoaDonHoanThanh": {
+        "API": "/eorder/HoaDon_Select_ManHinhCho",
+        "IN": {
+          "CuaHangID": "CuaHangID"
+        },
+        "OUT": "DSHoaDon"
+      }
+    },
+    {
+      "CALL": "getHoaDonHoanThanh"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "bg-green py-1 px-2",
+          "cols": [
+            {
+              "el": "uc-navigation"
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-number",
+              "attr": {
+                ":ds_hd": "DSHoaDon",
+                ":cuahangid": "CuaHangID",
+                "class": "d-flex"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false
+  }
+}

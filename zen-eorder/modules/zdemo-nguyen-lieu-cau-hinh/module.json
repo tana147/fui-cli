@@ -1,0 +1,280 @@
+{
+  "data": [
+    {
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 1,
+          "text": "Tạm khóa"
+        }
+      ],
+      "DSNguyenLieu": [
+        {
+          "SoThuTu": "1",
+          "TenNguyenLieu": "Chân châu tươi",
+          "SoLuong": "30",
+          "ThoiGianCheBien": "11p20s",
+          "ThoiGianSuDung": "3 tiếng",
+          "ThoiGianCanhBao": "60 phút"
+        }
+      ]
+    },
+    {
+      "API": "/eordertest/CuaHang_Select",
+      "OUT": "DSCuaHang",
+      "CALLBACK": {
+        "CuaHangID": "(vueData.CuaHangID_Local > 0 && DSCuaHang.length > 1) ? parseInt(vueData.CuaHangID_Local) : DSCuaHang[0].CuaHangID"
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-select",
+              "w": 4,
+              "attr": {
+                "v-model": "CuaHangID",
+                "label": "Cửa hàng",
+                ":items": "vueData.DSCuaHang",
+                "item-value": "CuaHangID",
+                "item-text": "TenCuaHang"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "w": 12,
+              "attr": {
+                "label": "Danh sách chế biến",
+                ":items": "DSNguyenLieu",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Số thứ tự",
+                    "align": "center",
+                    "value": "SoThuTu",
+                    "width": 100
+                  },
+                  {
+                    "text": "Tên chế biến",
+                    "el": "span",
+                    "value": "TenNguyenLieu",
+                    "innerHTML": "{{item.TenNguyenLieu}}"
+                  },
+                  {
+                    "text": "Số lượng",
+                    "el": "span",
+                    "align": "center",
+                    "value": "SoLuong",
+                    "innerHTML": "{{item.SoLuong}}"
+                  },
+                  {
+                    "text": "Thời gian chế biến",
+                    "el": "span",
+                    "align": "center",
+                    "value": "ThoiGianCheBien",
+                    "innerHTML": "{{item.ThoiGianCheBien}}"
+                  },
+                  {
+                    "text": "Thời hạn sử dụng",
+                    "el": "span",
+                    "align": "center",
+                    "value": "ThoiGianSuDung",
+                    "innerHTML": "{{item.ThoiGianSuDung}}"
+                  },
+                  {
+                    "text": "Thời gian cảnh báo hết hạn sử dụng",
+                    "el": "span",
+                    "align": "center",
+                    "value": "ThoiGianCanhBao",
+                    "innerHTML": "{{item.ThoiGianCanhBao}}"
+                  },
+                  {
+                    "text": "",
+                    "el": "t-button",
+                    "align": "center",
+                    "attr": {
+                      "color": "primary",
+                      "label": "Cấu hình chi tiết",
+                      ":action": {
+                        "EXE": "window.location.href = `https://eorder.zentea.vn/nguyen-lieu-cau-hinh-chi-tiet?nlid=2849`"
+                      }
+                    }
+                  },
+                  {
+                    "text": "Tạm khóa",
+                    "align": "center",
+                    "value": "TinhTrang",
+                    "el": "v-icon",
+                    "attr": {
+                      "color": "red"
+                    },
+                    "innerHTML": "{{item.TinhTrang == 0 ? '': 'mdi-lock'}}"
+                  },
+                  {
+                    "text": "",
+                    "value": "ctrl-update",
+                    "align": "center",
+                    ":action": {
+                      "AnhSanPham_FileID": null
+                    }
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "TenNguyenLieu",
+                      "label": "Tên chế biến"
+                    },
+                    "w": 7
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "SoLuong",
+                      "label": "Số lượng"
+                    },
+                    "w": 2
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "ThoiGianCheBien",
+                      "label": "Thời gian chế biến"
+                    },
+                    "w": 3
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "ThoiGianSuDung",
+                      "label": "Thời gian sử dụng"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-text-field",
+                    "attr": {
+                      "v-model": "ThoiGianCanhBao",
+                      "label": "Thời gian cảnh báo hết hạn sử dụng"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "v-select",
+                    "attr": {
+                      "v-model": "TinhTrang",
+                      "label": "Tình trạng",
+                      ":items": "vueData.DSTinhTrang"
+                    },
+                    "w": 4
+                  },
+                  {
+                    "el": "div",
+                    "attr": {
+                      "style": "text-align: left; color: black"
+                    },
+                    "innerHTML": "<h3><b>Thông tin và lưu ý</h3></b>"
+                  },
+                  {
+                    "el": "f-editor",
+                    "attr": {
+                      "v-model": "x",
+                      ":height": "400",
+                      ":toolbar": [
+                        "bold",
+                        "italic",
+                        "underline",
+                        "|",
+                        "undo",
+                        "redo",
+                        "removeFormat",
+                        "alignment",
+                        "fontSize",
+                        "fontFamily",
+                        "fontColor",
+                        "|",
+                        "bulletedList",
+                        "numberedList",
+                        "|",
+                        "imageUpload"
+                      ]
+                    }
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "TinhTrang": 0
+                  },
+                  "new": {
+                    "CONFIRM": "Bạn có muốn thêm mới chế biến",
+                    "API": "/eordertest/",
+                    "IN": {
+                      "CuaHangID": "vueData.CuaHangID"
+                    },
+                    "MESS": "Thêm mới thành công",
+                    "OUT": "SanPhamID_New",
+                    "CALLBACK": [
+                      {
+                        "EXE": "window.location.href = `/san-pham-chi-tiet?spid=${vueData.SanPhamID_New[0].SanPhamID}`"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "CONFIRM": "Bạn có muốn cập chế biến <br/><b>{{item.TenSanPham}}</b>",
+                    "API": "/eordertest/SanPham_Update",
+                    "IN": {
+                      "SanPhamID": "item.SanPhamID",
+                      "AnhSanPham_FileID": "vueData.AnhSanPham_FileID",
+                      "MaSanPham": "item.MaSanPham",
+                      "TuDongTaoMa": "item.TuDongTaoMa ?? false",
+                      "TenSanPham": "item.TenSanPham",
+                      "TenNgan": "item.TenNgan",
+                      "MoTa": "item.MoTa"
+                    },
+                    "MESS": "Cập nhật thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getSanPham"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có muốn xóa chế biến <br/><b>{{item.TenSanPham}}</b>",
+                    "API": "/eordertest/SanPham_Delete",
+                    "IN": {
+                      "SanPhamID": "item.SanPhamID"
+                    },
+                    "MESS": "Xóa thành công",
+                    "CALLBACK": [
+                      {
+                        "CALL": "getSanPham"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

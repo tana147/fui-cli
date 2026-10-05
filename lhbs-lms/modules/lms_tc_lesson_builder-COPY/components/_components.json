@@ -1,0 +1,26 @@
+[
+  {
+    "comID": 5638,
+    "comName": "uc-latex-edit"
+  },
+  {
+    "comID": 5637,
+    "comName": "uc-lesson-builder"
+  },
+  {
+    "comID": 5635,
+    "comName": "uc-lesson-canvas"
+  },
+  {
+    "comID": 5634,
+    "comName": "uc-lesson-component-library"
+  },
+  {
+    "comID": 5639,
+    "comName": "uc-lesson-from-hoc-lieu"
+  },
+  {
+    "comID": 5636,
+    "comName": "uc-lesson-properties"
+  }
+]

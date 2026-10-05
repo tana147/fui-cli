@@ -1,0 +1,59 @@
+[
+  {
+    "name": "stylePage",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "556498899F484BDCA9F6632D118B92A6",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/stylePage-556498899F484BDCA9F6632D118B92A6.css"
+  },
+  {
+    "name": "/include/ckeditor5/build/ckeditor.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "29A99F5871754FA4962698F394997C4F",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "F51012BBC33C41CC9A10D5B607355B11",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/@calvinckho/mic-recorder-to-mp3@2.2.3/dist/index.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "6D1787A87F4E459EA059668F3F92F4E4",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "C44732AC995F4C62BC9B3C85CC99B283",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://fui.vn/include/audio/lamejs1.2.1.all.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "710976102A8E4BE49A39F592D347BECC",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://fui.vn/include/audio/vueaudio.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "0329A8AEF5DD4FF7AA428DB2D37E1F34",
+    "scope": "module",
+    "sort": 51
+  }
+]

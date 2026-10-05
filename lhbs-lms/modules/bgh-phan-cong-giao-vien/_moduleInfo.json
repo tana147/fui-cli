@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/bgh-phan-cong-giao-vien",
+  "url": "//lms.lhbs.vn/bgh-phan-cong-giao-vien",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "bgh-phan-cong-giao-vien",
+  "ModuleName": "Phân công giáo viên",
+  "UpdateTime": "2026-09-04 12:41:55",
+  "UpdateUser": "DEV000054",
+  "LastLoad": "2026-10-01",
+  "LoadCount": 4265,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

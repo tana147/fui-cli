@@ -1,0 +1,290 @@
+[
+  {
+    "name": "customStyleComponent",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "1A5D802D8AD1444FB0B251E237ECBE9C",
+    "scope": "project",
+    "sort": 0,
+    "filePath": "imports/customStyleComponent-1A5D802D8AD1444FB0B251E237ECBE9C.css"
+  },
+  {
+    "name": "customStyleVuetify",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "DB58E323B2A64D3EA8A6C6138484BEA8",
+    "scope": "project",
+    "sort": 0,
+    "filePath": "imports/customStyleVuetify-DB58E323B2A64D3EA8A6C6138484BEA8.css"
+  },
+  {
+    "name": "lms-styles",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "18341F3C17604FCD9C676FD43EF0813D",
+    "scope": "project",
+    "sort": 0,
+    "filePath": "imports/lms-styles-18341F3C17604FCD9C676FD43EF0813D.css"
+  },
+  {
+    "name": "https://bossanova.uk/jspreadsheet/v5/jspreadsheet.css",
+    "type": ".css",
+    "contentType": "link",
+    "fileID": "7BE73DB4B0AA4B36AABC9CF3BD35DD8A",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.bubble.css",
+    "type": ".css",
+    "contentType": "link",
+    "fileID": "F43C52C9CD5D47898887815CF73C2B07",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css",
+    "type": ".css",
+    "contentType": "link",
+    "fileID": "7A75B643BAAB492CBE652970267950EB",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://jsuites.net/v5/jsuites.css",
+    "type": ".css",
+    "contentType": "link",
+    "fileID": "F055AFE29D764BD4BFEC41395130015F",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "firebase-messaging",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "39CC3D38DB744D02B48876FEA89D4B6E",
+    "scope": "project",
+    "sort": 0,
+    "filePath": "imports/firebase-messaging-39CC3D38DB744D02B48876FEA89D4B6E.js"
+  },
+  {
+    "name": "helperUtil",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "E33C3EA7A48745CA8A3E2817406DC8C0",
+    "scope": "project",
+    "sort": 0,
+    "filePath": "imports/helperUtil-E33C3EA7A48745CA8A3E2817406DC8C0.js"
+  },
+  {
+    "name": "scriptApp",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "691016A4F5424BD3826F44DA3B864D66",
+    "scope": "project",
+    "sort": 0,
+    "filePath": "imports/scriptApp-691016A4F5424BD3826F44DA3B864D66.js"
+  },
+  {
+    "name": "service-function",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "56BBCFD13AD043109C2D451411E5675B",
+    "scope": "project",
+    "sort": 0,
+    "filePath": "imports/service-function-56BBCFD13AD043109C2D451411E5675B.js"
+  },
+  {
+    "name": "service-utility-js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "B749A9E8522A4F3A8E453F41A2F5B0F6",
+    "scope": "project",
+    "sort": 0,
+    "filePath": "imports/service-utility-js-B749A9E8522A4F3A8E453F41A2F5B0F6.js"
+  },
+  {
+    "name": "service-lop",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "CF1996FF45464D479C299FEAD690933E",
+    "scope": "project",
+    "sort": 2,
+    "filePath": "imports/service-lop-CF1996FF45464D479C299FEAD690933E.js"
+  },
+  {
+    "name": "service-nhap-diem",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "48D64A8EBD174FA68E33890C10995F20",
+    "scope": "project",
+    "sort": 2,
+    "filePath": "imports/service-nhap-diem-48D64A8EBD174FA68E33890C10995F20.js"
+  },
+  {
+    "name": "service-template-bang-diem",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "72E694C5B9A847CC8167EE63429529CD",
+    "scope": "project",
+    "sort": 2,
+    "filePath": "imports/service-template-bang-diem-72E694C5B9A847CC8167EE63429529CD.js"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/chart.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "BCD642A772344FE383E55011CB8B6753",
+    "scope": "project",
+    "sort": 19
+  },
+  {
+    "name": "https://bossanova.uk/jspreadsheet/v5/jspreadsheet.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "7E0C683E93CC49B99691CE578958566E",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/@jspreadsheet/formula/dist/index.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "8D0F96CE0CF94421AA440234B87BEE8E",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "3114EE42C2324C869F1DE492AB336EB2",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/vue3-excel-editor@1.0.59/src/VueExcelEditor.vue",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "C5836D43BD0E4ECA9C8A3E6416143880",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/vue-i18n@10.0.5/dist/vue-i18n.global.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "B3BE424F0BC94FDDAA5194EB73DBE67A",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "5C06F680D700411E82505A5DC3FFBD53",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "11D30A5372BF473FBA6CFBD62D9C94F4",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "1AA7EF54C2774D6B9B32D63BD679A375",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "751BE59ABB584B6D8E8879095093C9D1",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/2.0.4/wavesurfer.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "3B766A2124194A94A4CA6AEA1900B19E",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://jsuites.net/v5/jsuites.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "C081CA74EC0F4F01BF13DC0A17A05A49",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://unpkg.com/vuedraggable@4.1.0/dist/vuedraggable.umd.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "7056739352DF4B36854FAD8C7F9D3938",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "iframe-sync",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "C448DC9D72A84968998F8CE88EEBEE93",
+    "scope": "project",
+    "sort": 20,
+    "filePath": "imports/iframe-sync-C448DC9D72A84968998F8CE88EEBEE93.js"
+  },
+  {
+    "name": "midleware",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "DD4A842E865D4917BB04A93DC5C6B873",
+    "scope": "project",
+    "sort": 20,
+    "filePath": "imports/midleware-DD4A842E865D4917BB04A93DC5C6B873.js"
+  },
+  {
+    "name": "upload-manager",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "DAB49F430F3D4392A8BCABEB091411E2",
+    "scope": "project",
+    "sort": 20,
+    "filePath": "imports/upload-manager-DAB49F430F3D4392A8BCABEB091411E2.js"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "38E89EF4064F4886B7CA0CDC91C49ED8",
+    "scope": "project",
+    "sort": 40
+  },
+  {
+    "name": "rich-editor-plugins",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "C7335B1BF886424E8F9EABCCC1BC387C",
+    "scope": "project",
+    "sort": 40,
+    "filePath": "imports/rich-editor-plugins-C7335B1BF886424E8F9EABCCC1BC387C.js"
+  },
+  {
+    "name": "service-to-api",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "A6C536D39FF544988AEC7354B00B84AF",
+    "scope": "project",
+    "sort": 50,
+    "filePath": "imports/service-to-api-A6C536D39FF544988AEC7354B00B84AF.js"
+  }
+]

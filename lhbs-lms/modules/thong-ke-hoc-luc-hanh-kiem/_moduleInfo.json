@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/thong-ke-hoc-luc-hanh-kiem",
+  "url": "//lms.lhbs.vn/thong-ke-hoc-luc-hanh-kiem",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "thong-ke-hoc-luc-hanh-kiem",
+  "ModuleName": "Thống kê Học lực Hạnh Kiểm",
+  "UpdateTime": "2026-05-20 16:20:27",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-07-24",
+  "LoadCount": 1282,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "name": "page-style.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "933D27573FD0448A948B7A0EFDFE4199",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/page-style.css-933D27573FD0448A948B7A0EFDFE4199.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "802A3EA12BD04452B9821C14A56F42AF",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "F0640EA3D1C34358BCC5E6067E23207B",
+    "scope": "module",
+    "sort": 50
+  }
+]

@@ -1,0 +1,30 @@
+.v-btn:not(.v-btn--round).v-size--default {
+    height: 39px;
+}
+
+
+.custom-table .v-data-table__wrapper {
+    overflow-y: auto;
+    height: calc(100vh - 218px);
+    scrollbar-width: thin;
+    scroll-behavior: smooth;
+}
+
+.v-toast {
+    z-index: 3000 !important;
+}
+
+/* Custom underline search style for Vuetify v-text-field across all modules */
+.c-underline-search .v-input__control {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.42) !important;
+}
+
+.c-underline-search .v-input__slot::before,
+.c-underline-search .v-field__outline::before {
+    display: none !important;
+}
+
+.c-underline-search .v-input__slot::after,
+.c-underline-search .v-field__outline::after {
+    border-color: var(--v-primary-base) !important;
+}

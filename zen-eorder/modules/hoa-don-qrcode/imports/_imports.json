@@ -1,0 +1,35 @@
+[
+  {
+    "name": "page-style.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "431B31D2F71449C09A30D39ED910D6AF",
+    "scope": "module",
+    "sort": 24,
+    "filePath": "imports/page-style.css-431B31D2F71449C09A30D39ED910D6AF.css"
+  },
+  {
+    "name": "/include/qrcode/qrcode.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "36088A05E9AC43528479DFB5D40AC180",
+    "scope": "module",
+    "sort": 25
+  },
+  {
+    "name": "/include/qrcode/qrcode-reader.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "E1C415AA8A1E4FE6952F8BB5997E5B69",
+    "scope": "module",
+    "sort": 26
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "3F9A4685FE6D446AB3B1C8C76C385C59",
+    "scope": "module",
+    "sort": 27
+  }
+]

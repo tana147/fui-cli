@@ -1,0 +1,87 @@
+{
+  "data": [
+    {
+      "Keyword": ""
+    },
+    {
+      "getLichSuOtp": {
+        "API": "/eorder/LichSu_KhachHang_Opt",
+        "IN": {
+          "Search": "Keyword"
+        },
+        "OUT": "DSLichSu"
+      }
+    }
+  ],
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-text-field",
+              "w": 4,
+              "attr": {
+                "v-model": "Keyword",
+                "label": "Tìm theo số điện thoại khách hàng",
+                ":rules": false
+              }
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getLichSuOtp"
+                }
+              },
+              "w": 2
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Lịch sử gửi OPT",
+                ":excel": true,
+                ":items": "DSLichSu",
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "ID",
+                    "value": "StackID"
+                  },
+                  {
+                    "text": "Điện thoại",
+                    "value": "Phone"
+                  },
+                  {
+                    "text": "Ngày gửi",
+                    "value": "CreateDate"
+                  },
+                  {
+                    "text": "Nội dung",
+                    "value": "Message"
+                  },
+                  {
+                    "text": "Thông tin thiết bị",
+                    "value": "DeviceInfo"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

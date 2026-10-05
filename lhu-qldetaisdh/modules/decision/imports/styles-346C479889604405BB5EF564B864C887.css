@@ -1,0 +1,157 @@
+.uc-decision-scope .print-container {
+    font-family: "Times New Roman", Times, serif;
+}
+
+.uc-decision-scope .w-40 {
+    width: 40%;
+}
+
+.uc-decision-scope .colWrap {
+    width: 10%;
+}
+
+.uc-decision-scope .selectBoxWrap {
+    width: 40%;
+}
+
+.uc-decision-scope .selectWrap {
+    width: 20% !important;
+}
+
+.uc-decision-scope .sqdWrap {
+    width: 50% !important;
+}
+
+.uc-decision-scope table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.uc-decision-scope .formText {
+    font-size: 16px;
+    line-height: 2;
+    margin: 0;
+}
+
+.uc-decision-scope .fomrTitle {
+    font-size: 20px;
+}
+
+.uc-decision-scope .tableWrap {
+    font-size: 16px;
+    line-height: 2;
+    margin: 0;
+}
+
+.uc-decision-scope .center-title {
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+}
+
+.uc-decision-scope .v-application .d-flex {
+    display: flex !important;
+}
+
+.uc-decision-toolbar {
+    width: 100%;
+    height: 50px !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.uc-decision-toolbar .v-toolbar__content {
+    width: 100%;
+    height: 50px !important;
+}
+
+.uc-decision-scope .selectBoxCol {
+    width: 5%;
+    justify-content: center;
+    align-items: center;
+}
+
+.uc-decision-scope .otherCol {
+    width: 20%;
+}
+
+.uc-decision-scope .hocVienCol {
+    width: 20%;
+}
+
+.uc-decision-scope .detaiCol {
+    width: 70%;
+}
+
+.uc-decision-scope .checkboxArea {
+    width: 50px;
+}
+
+.uc-decision-scope .lopNienKhoa {
+    width: 10%;
+}
+
+.uc-decision-scope .hocVien {
+    width: 14%;
+}
+
+.uc-decision-scope .tenNganh {
+    width: 14%;
+}
+
+.uc-decision-select-nien-khoa-wrap {
+    width: 150px;
+}
+
+.uc-decision-scope .col,
+.uc-decision-scope [class*="col-"] {
+    padding: 8px;
+}
+
+/* Custom size overrides to avoid inline styles in components */
+.decision-modal-card-fullscreen {
+    height: 100vh;
+}
+
+.decision-modal-card-standard {
+    height: 90vh;
+}
+
+.uc-decision-scope .max-width-search {
+    max-width: 400px !important;
+    width: 100%;
+}
+
+.uc-decision-scope .max-width-search-small {
+    max-width: 250px !important;
+    width: 100%;
+}
+
+.uc-decision-scope .uc-decision-btn-small {
+    min-height: unset !important;
+    height: 28px !important;
+    padding: 0 8px !important;
+}
+
+/* Force underline visibility on search fields even when not selected */
+.uc-decision-scope .max-width-search-small .v-input__control,
+.uc-decision-scope .max-width-search .v-input__control,
+.uc-decision-scope .max-width-search-small .v-field,
+.uc-decision-scope .max-width-search .v-field {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.42) !important;
+}
+
+.uc-decision-scope .max-width-search-small .v-input__slot::before,
+.uc-decision-scope .max-width-search .v-input__slot::before,
+.uc-decision-scope .max-width-search-small .v-field__outline::before,
+.uc-decision-scope .max-width-search .v-field__outline::before {
+    display: none !important;
+}
+
+.uc-decision-scope .max-width-search-small .v-input__slot::after,
+.uc-decision-scope .max-width-search .v-input__slot::after,
+.uc-decision-scope .max-width-search-small .v-field__outline::after,
+.uc-decision-scope .max-width-search .v-field__outline::after {
+    border-color: var(--v-primary-base) !important;
+}

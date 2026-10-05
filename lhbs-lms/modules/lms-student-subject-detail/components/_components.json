@@ -1,0 +1,14 @@
+[
+  {
+    "comID": 4414,
+    "comName": "uc-resource-row"
+  },
+  {
+    "comID": 4422,
+    "comName": "uc-student-gradebook-dialog"
+  },
+  {
+    "comID": 4413,
+    "comName": "uc-subject-progress-detail"
+  }
+]

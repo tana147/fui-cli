@@ -1,0 +1,8 @@
+.gv-xuat-so-assignment-table :deep(th),
+.gv-xuat-so-assignment-table th {
+	font-weight: 700;
+	white-space: nowrap;
+}
+.cursor-pointer {
+	cursor: pointer;
+}

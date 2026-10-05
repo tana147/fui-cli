@@ -1,0 +1,163 @@
+{
+  "data": [
+    {
+      "Keyword": "",
+      "TuNgay": "moment().format('YYYY-MM-DD')",
+      "DenNgay": "moment().format('YYYY-MM-DD')"
+    },
+    {
+      "getBaoCao": {
+        "API": "/eorder/BaoCao_Diem_ThuCong",
+        "IN": {
+          "Search": "Keyword",
+          "TuNgay": "TuNgay",
+          "DenNgay": "DenNgay"
+        },
+        "OUT": "DSChiTietBaoCao"
+      }
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "v-text-field",
+              "w": 4,
+              "attr": {
+                "v-model": "Keyword",
+                "label": "Tìm theo số điện thoại, mã khách hàng",
+                ":rules": false
+              }
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "TuNgay",
+                "label": "Từ ngày",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-date",
+              "attr": {
+                "v-model": "DenNgay",
+                "label": "Đến ngày",
+                "date-add": 0
+              },
+              "w": 2
+            },
+            {
+              "el": "f-button",
+              "attr": {
+                "color": "primary",
+                "icon-text": "mdi-filter",
+                "label": "Tìm",
+                ":action": {
+                  "CALL": "getBaoCao"
+                }
+              },
+              "w": 3
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Báo cáo tích điểm thủ công",
+                ":items": "DSChiTietBaoCao",
+                ":excel": true,
+                "height": "calc(100vh - 176px)",
+                ":hide-default-footer": false,
+                ":headers": [
+                  {
+                    "text": "Mã khách hàng",
+                    "value": "KhachHangID"
+                  },
+                  {
+                    "text": "Tên khách hàng",
+                    "value": "HoTen"
+                  },
+                  {
+                    "text": "Điện thoại",
+                    "value": "DienThoai"
+                  },
+                  {
+                    "text": "Điểm hiện có",
+                    "value": "DiemHienCo",
+                    "align": "right",
+                    "el": "span",
+                    "innerHTML": "{{item.DiemHienCo?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Cửa hàng",
+                    "value": "TenCuaHang",
+                    "width": 300
+                  },
+                  {
+                    "text": "Mã hóa đơn",
+                    "value": "MaGiaoDich"
+                  },
+                  {
+                    "text": "Tổng tiền hóa đơn",
+                    "value": "TongTien",
+                    "align": "right",
+                    "el": "span",
+                    "innerHTML": "{{item.TongTien?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "ZEN trước GD",
+                    "value": "ZenTruocGiaoDich",
+                    "align": "right",
+                    "el": "span",
+                    "innerHTML": "{{item.ZenTruocGiaoDich?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "ZEN sử dụng",
+                    "value": "ZenSuDung",
+                    "align": "right",
+                    "el": "span",
+                    "innerHTML": "{{item.ZenSuDung?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "ZEN tích điểm",
+                    "value": "ZenTichDiem",
+                    "align": "right",
+                    "el": "span",
+                    "innerHTML": "{{item.ZenTichDiem?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "ZEN sau GD",
+                    "value": "ZenSauGiaoDich",
+                    "align": "right",
+                    "el": "span",
+                    "innerHTML": "{{item.ZenSauGiaoDich?.toLocaleString('vi-vn')}}"
+                  },
+                  {
+                    "text": "Thực hiện",
+                    "value": "NhanVienThucHien"
+                  },
+                  {
+                    "text": "Thời gian thực hiện",
+                    "value": "ThoiGianThucHien",
+                    "width": 170
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

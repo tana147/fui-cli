@@ -1,0 +1,84 @@
+[
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css",
+    "type": ".css",
+    "contentType": "link",
+    "fileID": "A85DE9336CE04980AABDAAD022FE9E4E",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "lhbs-components",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "9B95B8C491D3456CBA947868A039982D",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/lhbs-components-9B95B8C491D3456CBA947868A039982D.css"
+  },
+  {
+    "name": "slide",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "B68FAF88688542BB8ADCF63E60616246",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/slide-B68FAF88688542BB8ADCF63E60616246.css"
+  },
+  {
+    "name": "https://unpkg.com/jszip/dist/jszip.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "CEE2B843DFB64C28A01FE2C10D09819B",
+    "scope": "module",
+    "sort": 49
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/docx-preview@0.3.5/dist/docx-preview.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "B4AF2B729C32460C8CA6587DB420E1A8",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/docx-preview@0.3.5/dist/docx-preview.min.js.map",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "80B729E66DCC4FE2B97F984C0852BDFF",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "C2B7DE635C5D4662B03E30E5E8EBE05B",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "FAC385C9C0E3498A827ED2B92294F59E",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "31445C17F4EE4438BA1C55FA341329CD",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "8EE6749EA5374CF5AE8C9AEF586D86AF",
+    "scope": "module",
+    "sort": 50
+  }
+]

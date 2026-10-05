@@ -1,0 +1,84 @@
+{
+  "data": [
+    {
+      "DSBaoCao": [],
+      "TableHeader": [],
+      "DSQuaTang": [],
+      "TableHeaderQuaTang": []
+    },
+    {
+      "API": "/eorder/PhanHieu_Select",
+      "OUT": "DSPhanHieu",
+      "CALLBACK": [
+        {
+          "EXE": "vueData.DSPhanHieu.unshift({PhanHieuID: 0, TenPhanHieu: 'Tất cả'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/KhuVuc_Select",
+      "OUT": "DSKhuVuc",
+      "CALLBACK": [
+        {
+          "EXE": "vueData.DSKhuVuc.unshift({KhuVucID: 0, TenKhuVuc: 'Tất cả'})"
+        }
+      ]
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid page-container grid-list-md",
+      "rows": [
+        {
+          "prop": "page-navigation",
+          "cols": [
+            {
+              "el": "uc-filter"
+            }
+          ]
+        },
+        {
+          "prop": "class='d-flex flex-column '",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "__style": "height: calc(100vh - 170px);overflow: scroll",
+                "label": "Báo cáo khuyến mãi lá trà - Tổng hợp",
+                ":items": "DSBaoCao",
+                ":excel": true,
+                "class": "freezy-header freezy-column",
+                "__height": "calc(100vh - 168px)",
+                ":hide-default-footer": true,
+                ":items-per-page": -1,
+                ":headers": "TableHeader",
+                "sort-by": "TenNhomMuc",
+                "__template": "<template v-slot:item.TenNhomMuc='{ item }'><td :rowspan='item.Rowspan' class='v-data-table__divider' v-bind:class='{ isVisible: item.Rowspan == -1 }'>{{item.TenNhomMuc}}</td></template>"
+              },
+              "w": 12
+            },
+            {
+              "el": "f-table",
+              "attr": {
+                "__style": "height: calc(100vh - 170px);overflow: scroll",
+                "label": "Báo cáo khuyến mãi lá trà - Theo quà tặng",
+                ":items": "DSQuaTang",
+                ":excel": true,
+                "class": "freezy-header freezy-column",
+                "__height": "calc(100vh - 168px)",
+                ":hide-default-footer": true,
+                ":items-per-page": -1,
+                ":headers": "TableHeaderQuaTang",
+                "sort-by": "TenNhomMuc",
+                "__template": "<template v-slot:item.TenNhomMuc='{ item }'><td :rowspan='item.Rowspan' class='v-data-table__divider' v-bind:class='{ isVisible: item.Rowspan == -1 }'>{{item.TenNhomMuc}}</td></template>"
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

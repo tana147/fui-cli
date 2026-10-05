@@ -1,0 +1,18 @@
+[
+  {
+    "comID": 3821,
+    "comName": "uc-activity-feed"
+  },
+  {
+    "comID": 3822,
+    "comName": "uc-lms-tc-dashboard"
+  },
+  {
+    "comID": 3819,
+    "comName": "uc-stats-card"
+  },
+  {
+    "comID": 3820,
+    "comName": "uc-task-list"
+  }
+]

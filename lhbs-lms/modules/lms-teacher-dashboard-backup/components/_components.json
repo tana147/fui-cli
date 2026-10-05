@@ -1,0 +1,42 @@
+[
+  {
+    "comID": 4331,
+    "comName": "uc-activity-feed"
+  },
+  {
+    "comID": 4369,
+    "comName": "uc-assignment-class-detail-status"
+  },
+  {
+    "comID": 4333,
+    "comName": "uc-assignment-status-row"
+  },
+  {
+    "comID": 4407,
+    "comName": "uc-btn-with-dialog-add-bt"
+  },
+  {
+    "comID": 4332,
+    "comName": "uc-content-library-item"
+  },
+  {
+    "comID": 4409,
+    "comName": "uc-dialog-edit-bt"
+  },
+  {
+    "comID": 4334,
+    "comName": "uc-library-week-group"
+  },
+  {
+    "comID": 4330,
+    "comName": "uc-lms-tc-dashboard-v2"
+  },
+  {
+    "comID": 4351,
+    "comName": "uc-teacher-focus-card"
+  },
+  {
+    "comID": 4329,
+    "comName": "uc-teaching-group-card"
+  }
+]

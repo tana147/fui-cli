@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/nhan-vien",
+  "url": "/zen-eorder/nhan-vien",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "nhan-vien",
+  "ModuleName": "Nhân Viên",
+  "UpdateTime": "2026-03-20 16:28:54",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 2031,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

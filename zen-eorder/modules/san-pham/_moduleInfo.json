@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/san-pham",
+  "url": "/zen-eorder/san-pham",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "san-pham",
+  "ModuleName": "Sản Phẩm",
+  "UpdateTime": "2026-03-20 16:29:10",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 23101,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

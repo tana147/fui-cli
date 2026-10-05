@@ -1,0 +1,60 @@
+[
+  {
+    "name": "styles",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "5185F9876FD24012A57A75749F46A7F3",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/styles-5185F9876FD24012A57A75749F46A7F3.css"
+  },
+  {
+    "name": "htmlToPdfmake",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "F36B5F15A6B64B12A85608D8C255DA69",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/htmlToPdfmake-F36B5F15A6B64B12A85608D8C255DA69.js"
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "30A6000C199746A184032660C5ECD6F8",
+    "scope": "module",
+    "sort": 51
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "592420E6B3A94A76B93E9CC6572E85CA",
+    "scope": "module",
+    "sort": 51
+  },
+  {
+    "name": "/include/pdfmake/pdfmake.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "8B07D08F35A74C2EA96F88F3AA596FE6",
+    "scope": "module",
+    "sort": 52
+  },
+  {
+    "name": "/include/pdfmake/print.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "28A76DF0A4D8417D9AF0EF5ECEBE2D6A",
+    "scope": "module",
+    "sort": 53
+  },
+  {
+    "name": "/include/pdfmake/vfs_fonts.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "042D4BB0C5F54793ADDF15F454B1910C",
+    "scope": "module",
+    "sort": 54
+  }
+]

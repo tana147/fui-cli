@@ -1,0 +1,78 @@
+{
+  "data": [
+    {
+      "IsShowBanner": true,
+      "QRCode_Full": "code",
+      "QR": "qr",
+      "QRCode_Array": "QR ? QR.split('|') : QRCode_Full.split('|')",
+      "QRCode": "QRCode_Array[QRCode_Array.length - 1]",
+      "KhachHangID": "khid",
+      "OS_Device": "os",
+      "CTQuaTang": null,
+      "IsShake": false
+    },
+    {
+      "API": "/eorder/auth/QuaTang_Check_QrCode_V2",
+      "IN": {
+        "QRCode": "QRCode",
+        "KhachHangID": "KhachHangID"
+      },
+      "OUT": "CTQuaTang"
+    }
+  ],
+  "watch": {
+    "IsShowBanner": [
+      {
+        "FUN": "playMusic"
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-modal-banner",
+              "attr": {
+                "v-if": "vueData.IsShowBanner"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page",
+              "attr": {
+                "v-if": "!vueData.IsShowBanner && vueData.KhachHangID && vueData.QRCode && vueData.CTQuaTang"
+              }
+            }
+          ]
+        },
+        {
+          "prop": "prop-none",
+          "cols": [
+            {
+              "el": "audio",
+              "attr": {
+                "style": "display: hidden",
+                "id": "audio-bg"
+              },
+              "innerHTML": "<source src='/_cdn/zen-eorder/cuc-hoa-mi-2025/music-bg.MP3' type='audio/mpeg' />"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false,
+    "login": false,
+    "userInfo": ""
+  }
+}

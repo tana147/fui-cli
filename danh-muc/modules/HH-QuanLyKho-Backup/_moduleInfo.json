@@ -1,0 +1,15 @@
+{
+  "id": "danh-muc/HH-QuanLyKho-Backup",
+  "url": "/danh-muc/HH-QuanLyKho-Backup",
+  "mDomain": "",
+  "ProjectID": "danh-muc",
+  "ModuleID": "HH-QuanLyKho-Backup",
+  "ModuleName": "HH-Quản lý kho",
+  "UpdateTime": "2026-04-01 17:43:11",
+  "UpdateUser": "DEV000068",
+  "LastLoad": "2026-03-31",
+  "LoadCount": 1779,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

@@ -1,0 +1,52 @@
+[
+  {
+    "name": "https://cdn.jsdelivr.net/npm/handsontable@16.1.0/styles/handsontable.min.css",
+    "type": ".css",
+    "contentType": "link",
+    "fileID": "FA2C24B49FA945C1B1C8BE0D74F85C76",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/handsontable@16.1.0/styles/ht-theme-main.min.css",
+    "type": ".css",
+    "contentType": "link",
+    "fileID": "9E5A9CD4CB4C46678A9F1B3416DC5225",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "style",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "A8140FE3A3074F76BD9938A45F12459F",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/style-A8140FE3A3074F76BD9938A45F12459F.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/handsontable@16.1.0/dist/handsontable.full.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "F9DA9CA84659468FA017CE5EAEB5F8AA",
+    "scope": "module",
+    "sort": 15
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/@handsontable/vue3@16.1.0/dist/vue-handsontable.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "12B958FA7CAA42B7A73095403E79EA5E",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "jquery-qrcode-v0.18.0.js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "071FB6204FF64813B2DF46FB4FD73554",
+    "scope": "module",
+    "sort": 52,
+    "filePath": "imports/jquery-qrcode-v0.18.0.js-071FB6204FF64813B2DF46FB4FD73554.js"
+  }
+]

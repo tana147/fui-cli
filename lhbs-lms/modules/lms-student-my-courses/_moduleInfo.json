@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/lms-student-my-courses",
+  "url": "//lms.lhbs.vn/lms-student-my-courses",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "lms-student-my-courses",
+  "ModuleName": "Danh sách Bài học & Bài tập ",
+  "UpdateTime": "2025-08-27 18:06:27",
+  "UpdateUser": "DEV000050",
+  "LastLoad": "2025-08-28",
+  "LoadCount": 93,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

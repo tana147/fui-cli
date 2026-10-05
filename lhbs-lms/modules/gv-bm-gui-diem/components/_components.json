@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 2532,
+    "comName": "uc-dialog-approve"
+  },
+  {
+    "comID": 2533,
+    "comName": "uc-dialog-reject"
+  },
+  {
+    "comID": 3389,
+    "comName": "uc-filter"
+  },
+  {
+    "comID": 2534,
+    "comName": "uc-item-hoc-sinh"
+  },
+  {
+    "comID": 8557,
+    "comName": "uc-main-layout"
+  }
+]

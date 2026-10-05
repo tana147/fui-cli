@@ -1,0 +1,15 @@
+{
+  "id": "lhu-qldetaisdh",
+  "pDomain": "qldetaisdh.lhu.edu.vn",
+  "ProjectID": "lhu-qldetaisdh",
+  "ProjectName": "Quản lý đề tài sau đại học",
+  "GroupName": "LHU",
+  "Framework": "V2",
+  "ProjectText": "Quản lý đề tài sau đại học @ lhu-qldetaisdh qldetaisdh.lhu.edu.vn",
+  "Router": "dashboard",
+  "url": "/fp/module?pid=lhu-qldetaisdh",
+  "UserRight": 5,
+  "UpdateUser": "DEV000068",
+  "UpdateTime": "2026-09-30T14:52:10.607",
+  "fetchedAt": "2026-10-05T07:39:51.273Z"
+}

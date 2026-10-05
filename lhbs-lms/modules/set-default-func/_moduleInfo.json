@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/set-default-func",
+  "url": "//lms.lhbs.vn/set-default-func",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "set-default-func",
+  "ModuleName": "Set Default Func",
+  "UpdateTime": "2026-06-11 15:01:30",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-01",
+  "LoadCount": 68,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

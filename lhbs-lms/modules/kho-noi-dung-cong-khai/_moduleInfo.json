@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/kho-noi-dung-cong-khai",
+  "url": "//lms.lhbs.vn/kho-noi-dung-cong-khai",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "kho-noi-dung-cong-khai",
+  "ModuleName": "Kho Nội Dung Công Khai",
+  "UpdateTime": "2026-05-28 16:16:08",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-04",
+  "LoadCount": 1263,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

@@ -1,0 +1,31 @@
+{
+  "data": [
+    {
+      "IsShowBanner": true
+    }
+  ],
+  "controls": [
+    {
+      "prop": "container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-modal-banner",
+              "attr": {
+                "v-if": "vueData.IsShowBanner"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false,
+    "login": false,
+    "userInfo": ""
+  }
+}

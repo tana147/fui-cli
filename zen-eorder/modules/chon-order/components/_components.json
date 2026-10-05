@@ -1,0 +1,38 @@
+[
+  {
+    "comID": 3074,
+    "comName": "uc-button-action"
+  },
+  {
+    "comID": 3075,
+    "comName": "uc-modal-change-table"
+  },
+  {
+    "comID": 3076,
+    "comName": "uc-modal-merge-cancel-table"
+  },
+  {
+    "comID": 3077,
+    "comName": "uc-modal-merge-table"
+  },
+  {
+    "comID": 3078,
+    "comName": "uc-modal-split-table"
+  },
+  {
+    "comID": 3079,
+    "comName": "uc-modal-take-away"
+  },
+  {
+    "comID": 3080,
+    "comName": "uc-navigation"
+  },
+  {
+    "comID": 3082,
+    "comName": "uc-table"
+  },
+  {
+    "comID": 3081,
+    "comName": "uc-table-container"
+  }
+]

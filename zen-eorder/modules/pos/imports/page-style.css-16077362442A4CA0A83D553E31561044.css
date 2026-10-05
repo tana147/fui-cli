@@ -1,0 +1,537 @@
+/** Layout */
+html,
+body {
+    overflow-y: hidden;
+    overflow-x: hidden;
+    touch-action: none;
+}
+
+p {
+    margin-bottom: 0 !important;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.fs-13px {
+    font-size: 13px;
+}
+
+.fs-11px {
+    font-size: 11px;
+}
+
+.toast {
+    width: auto !important;
+}
+
+.v-expansion-panel-content__wrap {
+    padding: 0px !important;
+}
+
+.v-slide-group__wrapper {
+    margin-left: 100px;
+}
+
+.product {
+    border-width: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 5px;
+    min-height: fit-content;
+}
+
+.v-expansion-panel-content {
+    transition: none !important;
+}
+
+.v-expansion-panel-header {
+    transition: none !important;
+}
+
+.centered-input input {
+    text-align: center;
+}
+
+.v-text-field.v-text-field--solo.v-input--dense > .v-input__control {
+    min-height: 10px !important;
+}
+
+.fab {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    padding: 0;
+}
+
+.fab .v-icon {
+    font-size: 18px !important;
+}
+
+@media screen and (min-width: 600px) {
+    .product {
+        margin: 8px;
+    }
+}
+
+@media screen and (min-width: 960px) {
+    .product {
+        margin: 8px;
+    }
+}
+
+@media screen and (min-width: 1264px) {
+    .product {
+        margin: 11px;
+    }
+}
+
+@media screen and (min-width: 1904px) {
+    .product {
+        margin: 17px;
+    }
+}
+
+.container {
+    max-width: 100%;
+    width: 100%;
+    padding: 7px;
+}
+
+.container.grid-list-md .layout .flex {
+    padding: 0 !important;
+}
+
+.v-input--selection-controls {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.btn-plus {
+    box-shadow: unset !important;
+    border: 1px solid #ddd !important;
+}
+
+.div-product-list {
+    border-top: 1px solid #e5e5e5;
+    height: calc(100vh - 100px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 150px;
+}
+
+.div-item-product {
+    padding: 13px 5px;
+    border-bottom: 1px solid #d5d5d5;
+}
+
+.item-product {
+    position: relative;
+    background-color: #397744;
+    border-radius: 50%;
+    padding: 6px;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    color: #fff;
+    box-shadow: 2px 2px 1px #707070;
+}
+
+.flex-product-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.item-product-out {
+    position: absolute;
+}
+
+.product-item {
+    display: flex;
+    border-top: 1px solid #333;
+}
+
+.order-total {
+    display: inline-block;
+    margin-top: 6px;
+}
+
+.order-total-text {
+    padding: 15px 10px;
+    font-size: 16px;
+}
+
+.break-detail {
+    width: 100%;
+}
+
+.order-body {
+    height: calc(100vh - 100px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.order-detail-body {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.order-footer {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    border-top: 1px solid #e3e3e3;
+    background-color: #ffffff !important;
+}
+
+.order-send-body {
+    height: 35%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 50px;
+}
+
+.order-send-product {
+    border-top: 1px solid #e5e5e5;
+    height: calc(65% - 120px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 150px;
+}
+
+.btn-product {
+    height: 50px !important;
+    width: 50px !important;
+    color: #fff !important;
+    font-size: 22px !important;
+    box-shadow: unset !important;
+}
+
+.cancel-text {
+    text-decoration: line-through !important;
+}
+
+/* Customize the label (the container) */
+.checkbox-group {
+    display: block;
+    position: relative;
+    padding-left: 25px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.checkbox-group input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 16px;
+    width: 16px;
+    background-color: #eee;
+    border: 1px solid #397744;
+}
+
+/* On mouse-over, add a grey background color */
+.checkbox-group:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.checkbox-group input:checked ~ .checkmark {
+    background-color: #397744;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the checkmark when checked */
+.checkbox-group input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+.checkbox-group .checkmark:after {
+    left: 5px;
+    top: 0px;
+    width: 5px;
+    height: 11px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.card-order {
+    width: 100%;
+}
+
+.card-order .col {
+    padding-bottom: 5px !important;
+    padding-top: 5px !important;
+}
+
+.list-ban {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/** ORDER INFO */
+.order-info {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: white;
+    border-bottom: 1px solid;
+    border-radius: 0px !important;
+    border-color: #dfdfdf !important;
+}
+
+.customer-info {
+    line-height: 1.2;
+    margin-top: 3px;
+}
+
+/** TAB MÓN */
+.container .tab-mon {
+    padding: 0 !important;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 48px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/** COL DANH SÁCH MÓN */
+.col-product-list {
+    height: calc(100vh - 94px);
+    overflow: auto;
+    border-right: 1px solid #0505055e;
+    padding: 0;
+    background-color: #69cb6917;
+}
+
+/** COL DANH SÁCH ORDER */
+.col-order {
+    height: calc(100vh - 94px);
+    padding: 0;
+    background-color: #fff;
+}
+
+/** ẨN THANH SCOLL */
+
+.hide-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.hide-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+/** DANH SÁCH MÓN ORDER */
+.order-list {
+    min-width: 100%;
+    overflow-y: auto;
+    overflow-x: auto;
+    height: calc(100vh - 320px);
+    margin: 0px !important;
+    scroll-padding-top: 7em;
+}
+
+.order-list::-webkit-scrollbar {
+    display: none;
+}
+
+/** TIÊU DỀ DANH SÁCH ORDER */
+.order-title {
+    position: sticky;
+    top: 0px;
+    background-color: #4caf50 !important;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    height: 32px;
+}
+
+/** ICON SỐ LƯỢNG */
+.icon-sum {
+    display: flex;
+    align-items: center;
+    margin: 0 5px;
+    font-size: 15px;
+    gap: 3px;
+}
+
+/** TABLE ORDER */
+
+.tr-product {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.td-product-name {
+    width: 45%;
+    padding: 0px 0px 0px 7px;
+    line-height: 1.1;
+}
+
+.td-product-name .title {
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.td-product-price {
+    width: 20%;
+    padding: 0px 0px;
+    text-align: center;
+}
+
+.td-product-qty {
+    width: 10%;
+    min-width: 120px;
+    padding: 10px 0px;
+    text-align: center;
+}
+
+.td-product-zen {
+    width: 10%;
+    padding: 0;
+    text-align: center;
+}
+
+.td-product-cancel {
+    width: 5%;
+    text-align: center;
+    padding: 8px 8px 8px 0px;
+}
+
+/** ORDER FOOTER */
+.order-summary {
+    padding: 10px 10px 0px 10px;
+    border-top: 1px solid #9f9f9f;
+}
+
+.order-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 10px 5px 10px;
+    width: 100%;
+    background-color: #4caf50 !important;
+    align-items: center;
+}
+
+.gap-10px {
+    gap: 10px;
+}
+
+.tab-info {
+    position: absolute;
+    right: 15px;
+    top: 11px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.icon-merge-table {
+    font-size: 14px;
+    position: absolute;
+    top: -20px;
+    right: -10px;
+    background-color: #fff;
+    border: 1px solid;
+    border-radius: 3px;
+    padding: 1px;
+}
+
+.product-note {
+    width: 100%;
+    border-bottom: 1px solid rgb(57 119 68) !important;
+    font-size: 13px;
+}
+
+.product-status-name {
+    margin-bottom: 0;
+    color: #000000;
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+.product-price-main {
+    font-size: "16px";
+    color: "red";
+    font-weight: 500;
+    color: red;
+}
+
+.product-qty-button {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    padding: 0;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.input-note .v-input__slot {
+    box-shadow: unset !important;
+    border-top: 1px solid #e4e4e4;
+    border-radius: 0;
+    padding: 0 7px !important;
+}
+
+.border-bottom-primary {
+    border-bottom: 1px solid rgb(57, 119, 68);
+}
+
+.topping-checked {
+    color: red;
+    font-weight: bold;
+}
+
+.bg-white {
+    background-color: #ffffff;
+}
+
+.v-input--selection-controls .v-input__slot > .v-label,
+.v-input--selection-controls .v-radio > .v-label {
+    color: #000;
+}
+
+.v-input--selection-controls__input,
+.v-input--selection-controls__input .theme--light.v-icon {
+    color: rgb(76 175 80);
+}

@@ -1,0 +1,717 @@
+{
+  "data": {
+    "ProjectName": "ZEN E-Order System",
+    "title": "ZEN EORDER SYSTEM",
+    "apiDomain": "https://api.zenfoodcourt.vn",
+    "apiFile": "https://file.zenfoodcourt.vn/eorder/upload/FileData",
+    "apiImageAdapter": "https://file.zenfoodcourt.vn/eorder/upload/ImageAdapter/1000/1000/90",
+    "urlReadFile": "https://file.zenfoodcourt.vn/eorder/FileData/",
+    "urlReturnFile": "https://file.zenfoodcourt.vn/eorder/",
+    "hostUrl": "https://eorder.zenfoodcourt.vn",
+    "login": "https://login.zenfoodcourt.vn",
+    "authDomain": ".zenfoodcourt.vn",
+    "userInfo": "https://api.zenfoodcourt.vn/acc/userinfo/eorder",
+    "defaultImg": "https://cdn.fui.vn/filedata/iot-eorder/default-image.png",
+    "logo": "",
+    "themeStyle": {
+      "theme": {
+        "themes": {
+          "light": {
+            "primary": "#4caf50"
+          }
+        }
+      }
+    },
+    "menuStyle": {
+      "topmenu": {
+        "bgcolor": "green",
+        "textcolor": "white"
+      },
+      "leftmenu": {
+        "bgcolor": "green",
+        "textcolor": "white"
+      }
+    },
+    "menuComponent": [
+      {
+        "el": "el-authentication"
+      }
+    ],
+    "userProfile": {
+      "color": "white",
+      "url-signout": "https://login.zenfoodcourt.vn/signout",
+      "url-change-password": "https://login.zenfoodcourt.vn/ChangePassword",
+      "url-account": "https://login.zenfoodcourt.vn",
+      "url-avatar": null
+    },
+    "menu": false,
+    "menuLeft": [
+      {
+        "name": "POS",
+        "icon": "mdi-monitor-dashboard",
+        "groupId": "pos",
+        "rightId": "pos",
+        "url": "/chon-pos"
+      },
+      {
+        "name": "Order",
+        "icon": "mdi-pencil-box-outline",
+        "groupId": "order",
+        "rightId": "order",
+        "url": "/chon-order"
+      },
+      {
+        "name": "Hóa đơn",
+        "icon": "mdi-inbox-full",
+        "groupId": "hoa-don",
+        "rightId": "hoa-don",
+        "url": "/hoa-don"
+      },
+      {
+        "name": "Bar - Bếp",
+        "icon": "mdi-chef-hat",
+        "groupId": "bar-bep",
+        "rightId": "bar-bep",
+        "url": "/chon-bar-bep"
+      },
+      {
+        "name": "Sản phẩm",
+        "groupId": "san-pham",
+        "rightId": "",
+        "icon": "mdi-food",
+        "submenu": [
+          {
+            "name": "Sản phẩm",
+            "url": "/san-pham",
+            "groupId": "san-pham",
+            "rightId": "san-pham",
+            "funcId": "san-pham-khoa"
+          },
+          {
+            "name": "Sản phẩm chờ",
+            "url": "/san-pham-cho",
+            "groupId": "san-pham",
+            "rightId": "san-pham-cho"
+          },
+          {
+            "name": "Nhóm sản phẩm",
+            "url": "/nhom-san-pham",
+            "groupId": "san-pham",
+            "rightId": "nhom-san-pham"
+          },
+          {
+            "name": "Nhóm liên kết",
+            "url": "/nhom-lien-ket",
+            "groupId": "san-pham",
+            "rightId": "nhom-lien-ket"
+          },
+          {
+            "name": "Đơn vị tính",
+            "url": "/don-vi-tinh",
+            "groupId": "san-pham",
+            "rightId": "don-vi-tinh"
+          },
+          {
+            "name": "Nguyên liệu",
+            "url": "/nguyen-lieu",
+            "groupId": "san-pham",
+            "rightId": "nguyen-lieu"
+          },
+          {
+            "name": "Máy in tem",
+            "url": "/may-in-tem",
+            "groupId": "san-pham",
+            "rightId": "may-in-tem"
+          }
+        ]
+      },
+      {
+        "name": "Khu vực - Bàn",
+        "icon": "mdi-border-all",
+        "groupId": "khu-vuc-ban",
+        "rightId": "",
+        "submenu": [
+          {
+            "name": "Quản lý bàn",
+            "url": "/ban",
+            "groupId": "khu-vuc-ban",
+            "rightId": "quan-ly-ban",
+            "funcId": "khu-vuc-ban-khoa"
+          },
+          {
+            "name": "Khu vực bàn",
+            "url": "/khu-vuc-ban",
+            "groupId": "khu-vuc-ban",
+            "rightId": "khu-vuc-ban"
+          },
+          {
+            "name": "Khu chế biến",
+            "url": "/khu-che-bien",
+            "groupId": "khu-vuc-ban",
+            "rightId": "khu-che-bien"
+          }
+        ]
+      },
+      {
+        "name": "Quản lý",
+        "icon": "mdi-database-edit",
+        "groupId": "quan-ly",
+        "rightId": "",
+        "submenu": [
+          {
+            "name": "Cửa hàng",
+            "url": "/cua-hang",
+            "groupId": "quan-ly",
+            "rightId": "cua-hang"
+          },
+          {
+            "name": "Khách hàng",
+            "url": "/khach-hang",
+            "groupId": "quan-ly",
+            "rightId": "khach-hang"
+          },
+          {
+            "name": "Nhân viên",
+            "url": "/nhan-vien",
+            "groupId": "quan-ly",
+            "rightId": "nhan-vien"
+          },
+          {
+            "name": "Voucher (Khuyến mãi)",
+            "url": "/khuyen-mai",
+            "groupId": "quan-ly",
+            "rightId": "khuyen-mai"
+          },
+          {
+            "name": "Tài khoản ngân hàng",
+            "url": "/tai-khoan-ngan-hang",
+            "groupId": "quan-ly",
+            "rightId": "ngan-hang"
+          },
+          {
+            "name": "Ngày lễ",
+            "url": "/ngay-le",
+            "groupId": "quan-ly",
+            "rightId": "ngay-le"
+          }
+        ]
+      },
+      {
+        "name": "Thiết lập",
+        "icon": "mdi-cog",
+        "groupId": "thiet-lap",
+        "rightId": "",
+        "submenu": [
+          {
+            "name": "Cấu hình hệ thống",
+            "url": "/cau-hinh",
+            "groupId": "thiet-lap",
+            "rightId": "cau-hinh"
+          },
+          {
+            "name": "Tích điểm lá trà",
+            "url": "/cau-hinh-la-tra",
+            "groupId": "thiet-lap",
+            "rightId": "cau-hinh"
+          },
+          {
+            "name": "Hoạt động cộng đồng",
+            "url": "/hoat-dong-cong-dong-thiet-lap",
+            "groupId": "thiet-lap",
+            "rightId": "hoat-dong-cong-dong"
+          },
+          {
+            "name": "Menu Online/POS",
+            "url": "menu-admin",
+            "groupId": "thiet-lap",
+            "rightId": "menubook"
+          },
+          {
+            "name": "Loại ly",
+            "url": "loai-ly-danh-muc",
+            "groupId": "thiet-lap",
+            "rightId": "thiet-lap-loai-ly"
+          },
+          {
+            "name": "Thẻ chờ",
+            "url": "the-cho",
+            "groupId": "thiet-lap",
+            "rightId": "thiet-lap-the-cho"
+          },
+          {
+            "name": "Đánh giá",
+            "url": "danh-gia-thiet-lap",
+            "groupId": "thiet-lap",
+            "rightId": "thiet-lap-danh-gia"
+          }
+        ]
+      },
+      {
+        "name": "BC - Hóa Đơn",
+        "icon": "mdi-chart-box",
+        "groupId": "bao-cao-hoa-don",
+        "rightId": "",
+        "submenu": [
+          {
+            "name": "Chi tiết hóa đơn",
+            "url": "/bao-cao-hoa-don-chi-tiet",
+            "groupId": "bao-cao-hoa-don",
+            "rightId": "bao-cao-chi-tiet-hoa-don"
+          },
+          {
+            "name": "Chi tiết hóa đơn (V2)",
+            "url": "/bao-cao-hoa-don-chi-tiet-v2",
+            "groupId": "bao-cao-hoa-don",
+            "rightId": "bao-cao-chi-tiet-hoa-don"
+          },
+          {
+            "name": "Tổng quan đơn hàng",
+            "url": "/bao-cao-hoa-don-tong-quan",
+            "groupId": "bao-cao-hoa-don",
+            "rightId": "bao-cao-tong-quan-don-hang"
+          },
+          {
+            "name": "Tổng quan đơn hàng (V2)",
+            "url": "/bao-cao-hoa-don-tong-quan-v2",
+            "groupId": "bao-cao-hoa-don",
+            "rightId": "bao-cao-tong-quan-don-hang"
+          },
+          {
+            "name": "Báo cáo doanh thu",
+            "url": "/bao-cao-hoa-don-doanh-thu",
+            "groupId": "bao-cao-hoa-don",
+            "rightId": "bao-cao-doanh-thu"
+          },
+          {
+            "name": "Báo cáo doanh thu (V2)",
+            "url": "/bao-cao-hoa-don-doanh-thu-v2",
+            "groupId": "bao-cao-hoa-don",
+            "rightId": "bao-cao-doanh-thu"
+          },
+          {
+            "name": "Báo cáo chuyển khoản",
+            "url": "/bao-cao-hoa-don-chuyen-khoan",
+            "groupId": "bao-cao-hoa-don",
+            "rightId": "bao-cao-chuyen-khoan"
+          },
+          {
+            "name": "Báo cáo chuyển khoản (V2)",
+            "url": "/bao-cao-hoa-don-chuyen-khoan-v2",
+            "groupId": "bao-cao-hoa-don",
+            "rightId": "bao-cao-chuyen-khoan"
+          },
+          {
+            "name": "Báo cáo đơn Grab",
+            "url": "/bao-cao-hoa-don-grab",
+            "groupId": "bao-cao-hoa-don",
+            "rightId": "bao-cao-grab"
+          },
+          {
+            "name": "Hóa đơn điện tử",
+            "url": "/bao-cao-hoa-don-dien-tu",
+            "groupId": "bao-cao-hoa-don",
+            "rightId": "bao-cao-hoa-don-dien-tu"
+          },
+          {
+            "name": "Hóa đơn thay thế",
+            "url": "/bao-cao-hoa-don-thay-the",
+            "groupId": "bao-cao-hoa-don",
+            "rightId": "bao-cao-hoa-don-thay-the"
+          }
+        ]
+      },
+      {
+        "name": "BC - Sản Phẩm",
+        "icon": "mdi-archive",
+        "groupId": "bao-cao-san-pham",
+        "rightId": "",
+        "submenu": [
+          {
+            "name": "Sản phẩm bán",
+            "url": "/bao-cao-san-pham-chi-tiet",
+            "groupId": "bao-cao-san-pham",
+            "rightId": "bao-cao-thong-ke-san-pham-ban"
+          },
+          {
+            "name": "Sản phẩm bán (V2)",
+            "url": "/bao-cao-san-pham-chi-tiet-v2",
+            "groupId": "bao-cao-san-pham",
+            "rightId": "bao-cao-thong-ke-san-pham-ban"
+          },
+          {
+            "name": "Nhóm sản phẩm bán",
+            "url": "/bao-cao-san-pham-nhom-san-pham",
+            "groupId": "bao-cao-san-pham",
+            "rightId": "bao-cao-thong-ke-nhom-san-pham-ban"
+          },
+          {
+            "name": "Nhóm sản phẩm bán (V2)",
+            "url": "/bao-cao-san-pham-nhom-san-pham-v2",
+            "groupId": "bao-cao-san-pham",
+            "rightId": "bao-cao-thong-ke-nhom-san-pham-ban"
+          },
+          {
+            "name": "Thời gian chế biến",
+            "url": "/bao-cao-san-pham-che-bien",
+            "groupId": "bao-cao-san-pham",
+            "rightId": "bao-cao-thoi-gian-ra-bill-mon"
+          },
+          {
+            "name": "Thời gian chế biến (V2)",
+            "url": "/bao-cao-san-pham-che-bien-v2",
+            "groupId": "bao-cao-san-pham",
+            "rightId": "bao-cao-thoi-gian-ra-bill-mon"
+          },
+          {
+            "name": "Nguyên liệu bán",
+            "url": "/bao-cao-san-pham-nguyen-lieu",
+            "groupId": "bao-cao-san-pham",
+            "rightId": "bao-cao-nguyen-lieu-ban"
+          },
+          {
+            "name": "Nguyên liệu bán (V2)",
+            "url": "/bao-cao-san-pham-nguyen-lieu-v2",
+            "groupId": "bao-cao-san-pham",
+            "rightId": "bao-cao-nguyen-lieu-ban"
+          },
+          {
+            "name": "Số lần in tem",
+            "url": "/bao-cao-san-pham-in-lai-tem",
+            "groupId": "bao-cao-san-pham",
+            "rightId": "bao-cao-in-lai-tem"
+          },
+          {
+            "name": "Số lượng ly sử dụng",
+            "url": "/bao-cao-so-luong-ly",
+            "groupId": "bao-cao-san-pham",
+            "rightId": "bao-cao-san-pham-ly"
+          }
+        ]
+      },
+      {
+        "name": "BC - Khách Hàng",
+        "icon": "mdi-account-group",
+        "groupId": "bao-cao-khach-hang",
+        "rightId": "",
+        "submenu": [
+          {
+            "name": "Tần suất sử dụng ZEN",
+            "url": "/bao-cao-khach-hang-su-dung-diem",
+            "groupId": "bao-cao-khach-hang",
+            "rightId": "bao-cao-su-dung-zen"
+          },
+          {
+            "name": "Tích điểm thủ công",
+            "url": "/bao-cao-khach-hang-tich-diem-thu-cong",
+            "groupId": "bao-cao-khach-hang",
+            "rightId": "bao-cao-tich-diem-thu-cong"
+          },
+          {
+            "name": "Hoạt động cộng đồng",
+            "url": "/bao-cao-khach-hang-hoat-dong-cong-dong",
+            "groupId": "bao-cao-khach-hang",
+            "rightId": "bao-cao-hoat-dong-cong-dong"
+          },
+          {
+            "name": "Truy cập Banner/Poster",
+            "url": "/bao-cao-luot-xem-banner",
+            "groupId": "bao-cao-khach-hang",
+            "rightId": "bao-cao-truy-cap-banner-poster"
+          }
+        ]
+      },
+      {
+        "name": "BC - Voucher",
+        "icon": "mdi-ticket",
+        "groupId": "bao-cao-voucher",
+        "rightId": "",
+        "submenu": [
+          {
+            "name": "Tỷ lệ sử dụng voucher",
+            "url": "/bao-cao-khuyen-mai-ty-le",
+            "groupId": "bao-cao-voucher",
+            "rightId": "bao-cao-khuyen-mai-ty-le-voucher"
+          },
+          {
+            "name": "Tỷ lệ sử dụng voucher (V2)",
+            "url": "/bao-cao-khuyen-mai-ty-le-v2",
+            "groupId": "bao-cao-voucher",
+            "rightId": "bao-cao-khuyen-mai-ty-le-voucher"
+          },
+          {
+            "name": "Đơn hàng đổi voucher",
+            "url": "/bao-cao-khuyen-mai-chi-tiet",
+            "groupId": "bao-cao-voucher",
+            "rightId": "bao-cao-khuyen-mai-don-hang"
+          },
+          {
+            "name": "Đơn hàng đổi voucher (V2)",
+            "url": "/bao-cao-khuyen-mai-nhan-v2",
+            "groupId": "bao-cao-voucher",
+            "rightId": "bao-cao-khuyen-mai-don-hang"
+          },
+          {
+            "name": "Khách hàng đổi voucher",
+            "url": "/bao-cao-khuyen-mai-su-dung",
+            "groupId": "bao-cao-voucher",
+            "rightId": "bao-cao-khuyen-mai-khach-hang"
+          },
+          {
+            "name": "Khách hàng đổi voucher (V2)",
+            "url": "/bao-cao-khuyen-mai-su-dung-v2",
+            "groupId": "bao-cao-voucher",
+            "rightId": "bao-cao-khuyen-mai-khach-hang"
+          },
+          {
+            "name": "Khách hàng nhận voucher",
+            "url": "/bao-cao-khuyen-mai-nhan",
+            "groupId": "bao-cao-voucher",
+            "rightId": "bao-cao-khuyen-mai-khach-hang-nhan"
+          },
+          {
+            "name": "Tích voucher thủ công",
+            "url": "/bao-cao-khuyen-mai-thu-cong",
+            "groupId": "bao-cao-voucher",
+            "rightId": "bao-cao-khuyen-mai-thu-cong"
+          },
+          {
+            "name": "Tích voucher thủ công (V2)",
+            "url": "/bao-cao-khuyen-mai-thu-cong-v2",
+            "groupId": "bao-cao-voucher",
+            "rightId": "bao-cao-khuyen-mai-thu-cong"
+          },
+          {
+            "name": "Chương trình tổng quan",
+            "url": "/bao-cao-ct-quay-so-tong-quan",
+            "groupId": "bao-cao-voucher",
+            "rightId": "bao-cao-khuyen-mai-voucher"
+          },
+          {
+            "name": "Tổng hợp theo voucher",
+            "url": "/bao-cao-ct-quay-so-voucher",
+            "groupId": "bao-cao-voucher",
+            "rightId": "bao-cao-khuyen-mai-voucher"
+          },
+          {
+            "name": "Tổng hợp theo cửa hàng",
+            "url": "/bao-cao-ct-quay-so-cua-hang",
+            "groupId": "bao-cao-voucher",
+            "rightId": "bao-cao-khuyen-mai-cua-hang"
+          }
+        ]
+      },
+      {
+        "name": "BC - Quà tặng",
+        "icon": "mdi-gift",
+        "groupId": "bao-cao-qua-tang",
+        "rightId": "",
+        "submenu": [
+          {
+            "name": "Quà tặng chi tiết",
+            "url": "/bao-cao-qua-tang-chi-tiet",
+            "groupId": "bao-cao-qua-tang",
+            "rightId": "bao-cao-qua-tang-chi-tiet"
+          },
+          {
+            "name": "Quà tặng chi tiết (V2)",
+            "url": "/bao-cao-qua-tang-chi-tiet-v2",
+            "groupId": "bao-cao-qua-tang",
+            "rightId": "bao-cao-qua-tang-chi-tiet"
+          },
+          {
+            "name": "Danh sách mã thưởng",
+            "url": "/bao-cao-qua-tang-trung-thuong",
+            "groupId": "bao-cao-qua-tang",
+            "rightId": "bao-cao-qua-tang-trung-thuong"
+          },
+          {
+            "name": "Quà tặng tổng hợp",
+            "url": "/bao-cao-qua-tang-tong-hop",
+            "groupId": "bao-cao-qua-tang",
+            "rightId": "bao-cao-qua-tang-tong-hop"
+          },
+          {
+            "name": "Quà tặng tổng hợp (V2)",
+            "url": "/bao-cao-qua-tang-tong-hop-v2",
+            "groupId": "bao-cao-qua-tang",
+            "rightId": "bao-cao-qua-tang-tong-hop"
+          },
+          {
+            "name": "Cửa hàng đổi thưởng",
+            "url": "/bao-cao-qua-tang-doi-thuong",
+            "groupId": "bao-cao-qua-tang",
+            "rightId": "bao-cao-qua-tang-nhan-vien"
+          },
+          {
+            "name": "Cửa hàng đổi thưởng (V2)",
+            "url": "/bao-cao-qua-tang-doi-thuong-v2",
+            "groupId": "bao-cao-qua-tang",
+            "rightId": "bao-cao-qua-tang-nhan-vien"
+          },
+          {
+            "name": "Số lượng quà tặng",
+            "url": "/bao-cao-qua-tang-so-luong",
+            "groupId": "bao-cao-qua-tang",
+            "rightId": "bao-cao-qua-tang-so-luong"
+          },
+          {
+            "name": "Số lượng quà tặng (V2)",
+            "url": "/bao-cao-qua-tang-so-luong-v2",
+            "groupId": "bao-cao-qua-tang",
+            "rightId": "bao-cao-qua-tang-so-luong"
+          },
+          {
+            "name": "Số lần quét mã",
+            "url": "/bao-cao-qua-tang-so-lan-quet-ma",
+            "groupId": "bao-cao-qua-tang",
+            "rightId": "bao-cao-qua-tang-lan-quet"
+          }
+        ]
+      },
+      {
+        "name": "BC - Lá trà",
+        "icon": "mdi-leaf",
+        "groupId": "bao-cao-la-tra",
+        "rightId": "",
+        "submenu": [
+          {
+            "name": "Báo cáo tổng hợp",
+            "url": "/bao-cao-la-tra-tong-hop",
+            "groupId": "bao-cao-la-tra",
+            "rightId": "bao-cao-la-tra-tong-quan"
+          },
+          {
+            "name": "Báo cáo doanh thu",
+            "url": "/bao-cao-la-tra-doanh-thu",
+            "groupId": "bao-cao-la-tra",
+            "rightId": "bao-cao-la-tra-doanh-thu"
+          },
+          {
+            "name": "Số lượng thỏa điều kiện",
+            "url": "/bao-cao-la-tra-so-luong",
+            "groupId": "bao-cao-la-tra",
+            "rightId": "bao-cao-la-tra-so-luong"
+          },
+          {
+            "name": "Số lượng thu hoạch",
+            "url": "/bao-cao-la-tra-thu-hoach",
+            "groupId": "bao-cao-la-tra",
+            "rightId": "bao-cao-la-tra-thu-hoach"
+          }
+        ]
+      },
+      {
+        "name": "BC - Doanh thu",
+        "icon": "mdi-cash-edit",
+        "groupId": "bao-cao-doanh-thu",
+        "rightId": "",
+        "submenu": [
+          {
+            "name": "Theo phân loại ly",
+            "url": "/bao-cao-doanh-thu-phan-loai-ly",
+            "rightId": "bao-cao-doanh-thu-loai-ly",
+            "groupId": "bao-cao-doanh-thu"
+          },
+          {
+            "name": "Theo thương hiệu",
+            "url": "/bao-cao-doanh-thu-thuong-hieu",
+            "rightId": "bao-cao-doanh-thu-thuong-hieu",
+            "groupId": "bao-cao-doanh-thu"
+          },
+          {
+            "name": "Theo cửa hàng",
+            "url": "/bao-cao-doanh-thu-cua-hang",
+            "rightId": "bao-cao-doanh-thu-cua-hang",
+            "groupId": "bao-cao-doanh-thu"
+          },
+          {
+            "name": "Theo sản phẩm",
+            "url": "/bao-cao-doanh-thu-san-pham",
+            "rightId": "bao-cao-doanh-thu-san-pham",
+            "groupId": "bao-cao-doanh-thu"
+          },
+          {
+            "name": "Theo nhóm sản phẩm",
+            "url": "/bao-cao-doanh-thu-nhom-san-pham",
+            "rightId": "bao-cao-doanh-thu-nhom-san-pham",
+            "groupId": "bao-cao-doanh-thu"
+          },
+          {
+            "name": "Hình thức thanh toán",
+            "url": "/bao-cao-doanh-thu-hinh-thuc-thanh-toan",
+            "rightId": "bao-cao-doanh-thu-httt",
+            "groupId": "bao-cao-doanh-thu"
+          },
+          {
+            "name": "Giá trị đơn hàng",
+            "url": "/bao-cao-doanh-thu-gia-tri-don-hang",
+            "rightId": "bao-cao-doanh-thu-gia-tri",
+            "groupId": "bao-cao-doanh-thu"
+          },
+          {
+            "name": "Hình thức mua hàng",
+            "url": "/bao-cao-doanh-thu-hinh-thuc-mua-hang",
+            "rightId": "bao-cao-doanh-thu-mua-hang",
+            "groupId": "bao-cao-doanh-thu"
+          }
+        ]
+      },
+      {
+        "name": "Lịch sử",
+        "icon": "mdi-history",
+        "groupId": "lich-su",
+        "rightId": "",
+        "submenu": [
+          {
+            "name": "Lịch sử kết ca",
+            "url": "/lich-su-ket-ca",
+            "groupId": "lich-su",
+            "rightId": "lich-su-ket-ca"
+          },
+          {
+            "name": "Tích điểm khách hàng",
+            "url": "/lich-su-tich-diem",
+            "groupId": "lich-su",
+            "rightId": "lich-su-tich-diem"
+          },
+          {
+            "name": "Gửi OTP khách hàng",
+            "url": "/lich-su-otp",
+            "groupId": "lich-su",
+            "rightId": "lich-su-otp"
+          },
+          {
+            "name": "Cập nhật sản phẩm",
+            "url": "/lich-su-san-pham",
+            "groupId": "lich-su",
+            "rightId": "lich-su-san-pham"
+          },
+          {
+            "name": "Lịch sử đơn hàng",
+            "url": "/lich-su-hoa-don",
+            "groupId": "lich-su",
+            "rightId": "lich-su-hoa-don"
+          },
+          {
+            "name": "Đối soát doanh thu",
+            "url": "/doi-soat-doanh-thu",
+            "groupId": "lich-su",
+            "rightId": "doi-soat-doanh-thu"
+          },
+          {
+            "name": "Lịch sử chuyển khoản",
+            "url": "/lich-su-chuyen-khoan",
+            "groupId": "lich-su",
+            "rightId": "lich-su-chuyen-khoan"
+          },
+          {
+            "name": "Lịch sử đánh giá",
+            "url": "/danh-gia-danh-sach",
+            "groupId": "lich-su",
+            "rightId": "lich-su-danh-gia"
+          }
+        ]
+      }
+    ]
+  }
+}

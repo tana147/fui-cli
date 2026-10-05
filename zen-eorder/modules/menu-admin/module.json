@@ -1,0 +1,63 @@
+{
+  "data": [
+    {
+      "API": "/eorder/PhanHieu_Select",
+      "OUT": "DSPhanHieu",
+      "CALLBACK": [
+        {
+          "EXE": "vueData.DSPhanHieu.unshift({PhanHieuID: 0, TenPhanHieu: 'Không'})"
+        }
+      ]
+    },
+    {
+      "API": "/eorder/CuaHang_Select",
+      "OUT": "DSCuaHang"
+    },
+    {
+      "phanhieu": "phanhieu || 'All'"
+    },
+    {
+      "apiGetList": {
+        "API": "/eorder/MenuBook_Select",
+        "OUT": "category_list"
+      }
+    },
+    {
+      "paramAdd": null,
+      "category_list": []
+    },
+    {
+      "description": "Biến theo dõi trạng thái tải, được truyền vào component.",
+      "v_loading": false
+    },
+    {
+      "description": "Biến lưu item đang được chọn (dùng cho modal chi tiết).",
+      "selectedItem": null
+    },
+    {
+      "CALL": "apiGetList"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page",
+              "attr": {
+                ":category_list": "category_list",
+                ":loading": "v_loading",
+                ":phanhieu": "phanhieu"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

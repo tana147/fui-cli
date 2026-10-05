@@ -1,0 +1,19 @@
+[
+  {
+    "name": "text-css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "98B9118936F14718AFC3A55DD6DDD5AC",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/text-css-98B9118936F14718AFC3A55DD6DDD5AC.css"
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "9F3F406E6A62412E97428E49EFF9FD11",
+    "scope": "module",
+    "sort": 51
+  }
+]

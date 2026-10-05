@@ -1,0 +1,86 @@
+[
+  {
+    "comID": 5491,
+    "comName": "uc-activity-feed"
+  },
+  {
+    "comID": 5496,
+    "comName": "uc-assignment-class-detail-status"
+  },
+  {
+    "comID": 9301,
+    "comName": "uc-assignment-status-row"
+  },
+  {
+    "comID": 9302,
+    "comName": "uc-assignment-status-row-assign-to-student"
+  },
+  {
+    "comID": 9315,
+    "comName": "uc-btn-with-dialog-add-bt"
+  },
+  {
+    "comID": 9324,
+    "comName": "uc-change-user"
+  },
+  {
+    "comID": 5502,
+    "comName": "uc-chon-ngon-ngu"
+  },
+  {
+    "comID": 5492,
+    "comName": "uc-content-library-item"
+  },
+  {
+    "comID": 5498,
+    "comName": "uc-dialog-edit-bt"
+  },
+  {
+    "comID": 9303,
+    "comName": "uc-focus-task"
+  },
+  {
+    "comID": 11023,
+    "comName": "uc-hoclieu-resource-selector-dashboard"
+  },
+  {
+    "comID": 5500,
+    "comName": "uc-libery-details"
+  },
+  {
+    "comID": 5494,
+    "comName": "uc-library-week-group"
+  },
+  {
+    "comID": 9298,
+    "comName": "uc-lms-tc-dashboard-v2"
+  },
+  {
+    "comID": 9297,
+    "comName": "uc-main-layout"
+  },
+  {
+    "comID": 5501,
+    "comName": "uc-modal-grade-class"
+  },
+  {
+    "comID": 9304,
+    "comName": "uc-my-liberies"
+  },
+  {
+    "comID": 9300,
+    "comName": "uc-onboarding"
+  },
+  {
+    "comID": 9305,
+    "comName": "uc-teacher-focus-card"
+  },
+  {
+    "comID": 9314,
+    "comName": "uc-teaching-group-card"
+  },
+  {
+    "comID": 9299,
+    "comName": "uc-tour-overlay"
+  }
+]

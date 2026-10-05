@@ -1,0 +1,18 @@
+[
+  {
+    "comID": 4641,
+    "comName": "uc-filter-column"
+  },
+  {
+    "comID": 9556,
+    "comName": "uc-main-layout"
+  },
+  {
+    "comID": 2071,
+    "comName": "uc-nhap-diem"
+  },
+  {
+    "comID": 2074,
+    "comName": "uc-stepper"
+  }
+]

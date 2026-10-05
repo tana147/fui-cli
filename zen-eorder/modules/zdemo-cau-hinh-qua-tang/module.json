@@ -1,0 +1,56 @@
+{
+  "data": [
+    {
+      "IsEdit": false
+    },
+    {
+      "DSTinhTrang": [
+        {
+          "value": 0,
+          "text": "Hoạt động"
+        },
+        {
+          "value": 1,
+          "text": "Tạm khóa"
+        }
+      ]
+    },
+    {
+      "getNhomSanPhamMon": {
+        "API": "/eorder/NhomSanPhamMon_Select",
+        "OUT": "DSNhomSanPhamMon"
+      }
+    },
+    {
+      "getCauHinh": {
+        "API": "/eorder/CauHinh_Select_MonTang",
+        "OUT": "DSCauHinh"
+      }
+    },
+    {
+      "CALL": "getNhomSanPhamMon"
+    },
+    {
+      "CALL": "getCauHinh"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "page-container grid-list-md pa-5",
+      "rows": [
+        {
+          "prop": "justify-center",
+          "cols": [
+            {
+              "el": "uc-main-page",
+              "w": 6,
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/giao-an",
+  "url": "//lms.lhbs.vn/giao-an",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "giao-an",
+  "ModuleName": "Giáo Án",
+  "UpdateTime": "2025-04-14 15:40:23",
+  "UpdateUser": "DEV000050",
+  "LastLoad": "2026-07-22",
+  "LoadCount": 115,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

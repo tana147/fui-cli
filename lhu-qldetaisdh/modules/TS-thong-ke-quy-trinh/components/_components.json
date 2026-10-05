@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 12121,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 12117,
+    "comName": "uc-modal-detail-doi-dieu-chinh"
+  },
+  {
+    "comID": 12118,
+    "comName": "uc-thong-ke-bai-bao"
+  },
+  {
+    "comID": 12119,
+    "comName": "uc-thong-ke-doi-dieu-chinh"
+  },
+  {
+    "comID": 12120,
+    "comName": "uc-thong-ke-hoan-thanh-sau-bao-ve"
+  }
+]

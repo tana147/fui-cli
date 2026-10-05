@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-ct-quay-so-voucher",
+  "url": "/zen-eorder/bao-cao-ct-quay-so-voucher",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-ct-quay-so-voucher",
+  "ModuleName": "Báo Cáo / Chương Trình Quay Số / Voucher",
+  "UpdateTime": "2026-03-20 16:19:10",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-04-14",
+  "LoadCount": 63,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

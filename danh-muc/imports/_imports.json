@@ -1,0 +1,103 @@
+[
+  {
+    "name": "utility.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "A3D6CB58E2974F2890387AE7400A7143",
+    "scope": "project",
+    "sort": 1,
+    "filePath": "imports/utility.css-A3D6CB58E2974F2890387AE7400A7143.css"
+  },
+  {
+    "name": "tabulator.min.css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "85CDD0EF3B6F403E87A06B7F07F2FD1B",
+    "scope": "project",
+    "sort": 21,
+    "filePath": "imports/tabulator.min.css-85CDD0EF3B6F403E87A06B7F07F2FD1B.css"
+  },
+  {
+    "name": "utility.js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "B8F9AB308C3F4266AE362A88A733E36A",
+    "scope": "project",
+    "sort": 2,
+    "filePath": "imports/utility.js-B8F9AB308C3F4266AE362A88A733E36A.js"
+  },
+  {
+    "name": "enum.js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "B1A429C7129B4521AE79147910E7F37D",
+    "scope": "project",
+    "sort": 3,
+    "filePath": "imports/enum.js-B1A429C7129B4521AE79147910E7F37D.js"
+  },
+  {
+    "name": "/_cdn/danh-muc/chart.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "2BFBEE2548A9429399CE7C44DB92C534",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "/include/pdfmake/pdfmake.min.js\t",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "1FBA02CEFE4840819B602BC2C2D9CF7E",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "/include/pdfmake/vfs_fonts.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "2382618837254E31823363307F2EFB06",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "8A55D9D8EF2E4BDF9BB3ADF866449F45",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "utility_backup",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "795BD24EFEC84754B65611C2A555F291",
+    "scope": "project",
+    "sort": 20,
+    "filePath": "imports/utility_backup-795BD24EFEC84754B65611C2A555F291.js"
+  },
+  {
+    "name": "/include/pdfmake/print.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "ADD88BB2D4EE4E06B02249477489BDA7",
+    "scope": "project",
+    "sort": 21
+  },
+  {
+    "name": "https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "608D12217F154809ACC718FFCBD5854F",
+    "scope": "project",
+    "sort": 22
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "EC073171A8BF43AB975F25E829324477",
+    "scope": "project",
+    "sort": 52
+  }
+]

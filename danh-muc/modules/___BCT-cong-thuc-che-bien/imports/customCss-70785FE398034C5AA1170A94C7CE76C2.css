@@ -1,0 +1,7 @@
+.italic-text {
+    font-style: italic;
+}
+
+.number-field .v-field__input {
+    text-align: right !important;
+}

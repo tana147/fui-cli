@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-so-luong-ly",
+  "url": "/zen-eorder/bao-cao-so-luong-ly",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-so-luong-ly",
+  "ModuleName": "Báo Cáo / Số Lượng  Ly",
+  "UpdateTime": "2026-03-20 16:23:59",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-03-24",
+  "LoadCount": 40,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

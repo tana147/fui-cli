@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/bao-cao-hoa-don-doanh-thu",
+  "url": "/zen-eorder/bao-cao-hoa-don-doanh-thu",
+  "mDomain": "",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "bao-cao-hoa-don-doanh-thu",
+  "ModuleName": "Báo Cáo / Hóa Đơn / Doanh Thu",
+  "UpdateTime": "2026-03-20 16:20:29",
+  "UpdateUser": "DEV000034",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 23783,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

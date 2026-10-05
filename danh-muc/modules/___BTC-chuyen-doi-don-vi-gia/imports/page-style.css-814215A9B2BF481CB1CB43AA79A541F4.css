@@ -1,0 +1,43 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.back-link-hover:hover {
+    text-decoration: underline;
+}
+
+.chip-fixed-width {
+    min-width: 110px;
+    justify-content: center;
+}
+
+.drag-drop-zone {
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    padding: 40px 20px;
+    max-width: 600px;
+    transition: all 0.3s ease;
+    background-color: rgba(0, 0, 0, 0.02);
+    cursor: pointer;
+}
+
+.drag-drop-zone.drag-over {
+    border-color: #4caf50;
+    background-color: rgba(76, 175, 80, 0.1);
+    transform: scale(1.02);
+}
+
+.drag-drop-zone.has-file {
+    border-color: #4caf50;
+    background-color: rgba(76, 175, 80, 0.05);
+}
+
+.drag-drop-zone:hover {
+    border-color: #1976d2;
+    background-color: rgba(25, 118, 210, 0.05);
+}
+
+.stat-col {
+    width: 20% !important;
+    /* bắt buộc chia 5 phần */
+}

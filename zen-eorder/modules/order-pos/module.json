@@ -1,0 +1,118 @@
+{
+  "data": [
+    {
+      "webSocket": "{}",
+      "CuaHangID": "chid",
+      "BanID": "baid",
+      "HoaDonID": "hdid",
+      "DSSanPham": [],
+      "DSChiTietLienKet": [],
+      "DSNhomLoaiLy": [],
+      "IsShowDialogDetailProduct": false,
+      "IsShowDialogOrder": false,
+      "IsShowDialogHistory": false,
+      "IsShowDialogKhuyenMai": false,
+      "SearchKeyword": "",
+      "DSOrder": [],
+      "ItemProduct": null,
+      "SanPhamGuid_Active": null,
+      "CTBan": "`${[][]}"
+    },
+    {
+      "getBanById": {
+        "API": "/eorder/SanPham_Select_Mpos",
+        "IN": {
+          "CuaHangID": "CuaHangID",
+          "BanID": "BanID",
+          "HoaDonID": "HoaDonID"
+        },
+        "OUT": "CTBan",
+        "CALLBACK": [
+          {
+            "DSSanPham": "vueData.CTBan[1].map(sp => ({...sp, Is_MangVe: sp.Is_MangVe ? sp.Is_MangVe : false}))",
+            "DSChiTietLienKet": "vueData.CTBan[2]",
+            "HoaDonID": "vueData.CTBan[0][0]?.HoaDonID",
+            "DSNhomLoaiLy": "vueData.CTBan[4]",
+            "webSocket_Hub_Bep": "`bep_{{vueData.CTBan[0][0]?.CuaHangID}}",
+            "webSocket_Hub_Order": "`order_{{vueData.CTBan[0][0]?.CuaHangID}}"
+          },
+          {
+            "EXE": "webSocketJoinGroup({[webSocket_Hub_Bep]: null, [webSocket_Hub_Order]: null})"
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "getBanById"
+    },
+    {
+      "API": "/eorder/NganHang_Select_ByCuaHangId",
+      "IN": {
+        "CuaHangID": "vueData.chid"
+      },
+      "OUT": "TKNganHang"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "grid-list-md mobile-view",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "uc-navigation",
+              "w": 12,
+              "attr": {
+                ":info": "CTBan[0][0]"
+              }
+            },
+            {
+              "el": "uc-product-list",
+              "w": 12,
+              "attr": {
+                "class": "div-product-list",
+                "v-if": "CTBan[0].length > 0"
+              }
+            },
+            {
+              "el": "uc-modal-product",
+              "attr": {
+                "class": "div-product-list",
+                ":sanpham": "vueData.ItemProduct",
+                "v-if": "vueData.ItemProduct && CTBan[0].length > 0"
+              }
+            },
+            {
+              "el": "uc-modal-order",
+              "attr": {
+                "class": "div-product-list",
+                "v-if": "CTBan[0].length > 0"
+              }
+            },
+            {
+              "el": "uc-modal-history",
+              "attr": {
+                "class": "div-product-list",
+                "v-if": "CTBan[0].length > 0",
+                ":is_show_dialog": "IsShowDialogHistory"
+              }
+            },
+            {
+              "el": "uc-empty",
+              "attr": {
+                "v-if": "CTBan[0].length === 0"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false,
+    "userInfo": ""
+  }
+}

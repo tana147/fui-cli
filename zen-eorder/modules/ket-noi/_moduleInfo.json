@@ -1,0 +1,15 @@
+{
+  "id": "zen-eorder/ket-noi",
+  "url": "//zentea.vn/ketnoi",
+  "mDomain": "zentea.vn/ketnoi",
+  "ProjectID": "zen-eorder",
+  "ModuleID": "ket-noi",
+  "ModuleName": "ZENTEA - Kết Nối",
+  "UpdateTime": "2026-03-29 13:56:26",
+  "UpdateUser": "DEV000053",
+  "LastLoad": "2026-06-12",
+  "LoadCount": 342,
+  "HTMLOnly": false,
+  "Framework": "V2",
+  "mTitle": ""
+}

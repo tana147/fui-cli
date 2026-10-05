@@ -1,0 +1,60 @@
+[
+  {
+    "name": "quiz-matching-css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "93E92B0B165E4D5E8C2AC53102C0D06E",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/quiz-matching-css-93E92B0B165E4D5E8C2AC53102C0D06E.css"
+  },
+  {
+    "name": "stylePage",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "E7953E609C0C4E7EA162923B64D1922A",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/stylePage-E7953E609C0C4E7EA162923B64D1922A.css"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "34A5123C9F514E45A3D49E7E331D053E",
+    "scope": "module",
+    "sort": 49
+  },
+  {
+    "name": "/include/ckeditor5/build/ckeditor.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "7A5939553B2D48F1A124ED4921D965D8",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "5A6255FE2510412189EB89E69BDDAC6C",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/@calvinckho/mic-recorder-to-mp3@2.2.3/dist/index.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "5A2EA2574EB447E09B87628475D18334",
+    "scope": "module",
+    "sort": 50
+  },
+  {
+    "name": "https://unpkg.com/vuedraggable@4.1.0/dist/vuedraggable.umd.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "F0EE3937117A4DACBA1AD13235E58840",
+    "scope": "module",
+    "sort": 50
+  }
+]

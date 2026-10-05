@@ -1,0 +1,130 @@
+.selectBox {
+    width: 12%;
+}
+
+.inputContainer {
+    width: 100%;
+    margin-bottom: 2%;
+}
+
+.teacherTitle {
+    margin-bottom: 0.5%;
+}
+
+.titleTxt {
+    text-align: center;
+    line-height: 1.5;
+    display: block;
+    font-weight: bold;
+}
+
+.wrapDataInfo {
+    width: 30%;
+}
+
+.infoCardWrap {
+    width: 600px;
+}
+
+.infoTitle {
+    text-align: center;
+    line-height: 1.5;
+    display: block;
+    font-weight: bold;
+}
+
+.textScore {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    line-height: 1.5;
+}
+
+.stepperStep {
+    color: white;
+    font-weight: bold;
+}
+
+.inputContainer {
+    width: 100%;
+    margin-bottom: 2%;
+}
+
+.namePadding {
+    padding: 5px 0 5px 0;
+}
+
+.checkboxDes {
+    transform: scale(1.2);
+
+}
+
+.passColumn {
+    border-bottom: none !important;
+}
+
+.limitText{
+    text-align: right;
+    font-size: 14px;
+    color: gray;
+}
+
+.txtTopicDes {
+    font-size: 14px;
+    font-weight: bold;
+    /* display: flex; */
+    /* align-items: center; */
+    /* justify-content: center; */
+}
+
+.custom-chip {
+    height: 130px;
+}
+
+.v-application--is-ltr .v-stepper--vertical .v-stepper__content {
+    margin: 0 !important;
+    /* padding: 0 !important; */
+}
+
+.v-application--is-ltr .v-stepper--vertical .v-stepper__content {
+    padding: 16px 23px 16px 23px
+}
+
+.v-input--selection-controls {
+    margin-top: 0px;
+    padding-top: 0px;
+}
+
+.v-application--is-ltr .v-input--selection-controls__input {
+    margin-right: 0px;
+}
+
+.v-expansion-panel-content__wrap {
+    padding: 0 16px 16px;
+}
+
+.renderCol {
+    width: 80px;
+}
+
+.scoreField {
+    width: 68px;
+}
+
+.theme--light.v-data-table thead tr th {
+    font-size: 0.9rem !important;
+}
+
+.v-data-table>.v-data-table__wrapper>table>tbody>tr>td,
+.v-data-table>.v-data-table__wrapper>table>tfoot>tr>td,
+.v-data-table>.v-data-table__wrapper>table>thead>tr>td {
+    height: 40px;
+}
+
+.justifyCol {
+    justify-content: center !important;
+}
+
+.deCuongWrap{
+    width: 230px;
+}

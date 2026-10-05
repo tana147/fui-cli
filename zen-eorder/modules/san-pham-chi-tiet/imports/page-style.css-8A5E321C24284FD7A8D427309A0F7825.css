@@ -1,0 +1,9 @@
+.custom-button-close {
+    position: absolute;
+    top: 25px;
+    right: 225px;
+    color: white;
+    border-radius: 50%;
+    padding: 5px;
+    cursor: pointer;
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "comID": 8237,
+    "comName": "___uc-modal-phieu-kiem-ke"
+  },
+  {
+    "comID": 8243,
+    "comName": "___uc-modal-qr"
+  },
+  {
+    "comID": 8630,
+    "comName": "uc-filter-bar"
+  },
+  {
+    "comID": 8631,
+    "comName": "uc-kiem-ke-desktop"
+  },
+  {
+    "comID": 8632,
+    "comName": "uc-kiem-ke-mobile"
+  },
+  {
+    "comID": 8236,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 6859,
+    "comName": "uc-table-kiem-ke"
+  }
+]

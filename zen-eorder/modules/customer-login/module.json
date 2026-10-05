@@ -1,0 +1,31 @@
+{
+  "data": [],
+  "watch": {
+    "Phone": {
+      "USER": {},
+      "daLoadData": false
+    }
+  },
+  "controls": [
+    {
+      "prop": "",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-customer-login",
+              "col": {},
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "login": false,
+    "userInfo": false,
+    "menu": false
+  }
+}

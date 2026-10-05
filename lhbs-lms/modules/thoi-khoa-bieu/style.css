@@ -1,0 +1,69 @@
+.ph-lich-page,
+.tkb-page {
+  width: 100%;
+}
+/*
+ * Khi người dùng chọn Desktop trên điện thoại, bảng vẫn giữ bố cục nhiều cột.
+ * Vùng bọc riêng phải nhận cả scroll ngang và dọc để không phụ thuộc vào layout
+ * cha của FUI, vốn có thể khóa overflow của trang trên màn hình nhỏ.
+ */
+.tkb-page .tkb-desktop-scroll {
+  width: 100%;
+  max-width: 100%;
+  max-height: calc(100dvh - 170px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+  overscroll-behavior: contain;
+}
+/* Luồng dialog fullscreen có thêm không gian hiển thị so với màn hình inline. */
+.tkb-page .tkb-desktop-scroll--dialog {
+  max-height: calc(100dvh - 80px);
+}
+/* Giữ độ rộng tối thiểu của các cột desktop; wrapper sẽ xử lý việc cuộn ngang. */
+.tkb-page .tkb-desktop-scroll .tkb-table {
+  min-width: 700px;
+}
+/*
+ * Phân biệt nền theo buổi trên bảng desktop để phụ huynh quét lịch nhanh hơn.
+ * Selector dùng `.td-tiet` làm mốc nên áp dụng được cho cả dòng đầu (có ô Buổi
+ * gộp hàng) và các dòng tiếp theo, đồng thời không ảnh hưởng giao diện mobile.
+ */
+.tkb-page .tkb-table tbody td.td-tiet.tiet-sang ~ td.td-cell {
+  background: #fffdf2;
+}
+.tkb-page .tkb-table tbody td.td-tiet.tiet-chieu ~ td.td-cell {
+  background: #f4faff;
+}
+.tkb-page .tkb-table tbody td.td-tiet.tiet-toi ~ td.td-cell {
+  background: #faf7ff;
+}
+/* Ô Buổi gộp hàng dùng màu đậm hơn để làm mốc thị giác giống thiết kế mẫu. */
+.tkb-page .tkb-table tbody td.td-buoi.buoi-sang {
+  background: #fff0b3;
+  color: #8a5a00;
+  border-left: 3px solid #f6c344;
+}
+.tkb-page .tkb-table tbody td.td-buoi.buoi-chieu {
+  background: #b9def7;
+  color: #145a86;
+  border-left: 3px solid #5aa9d6;
+}
+.tkb-page .tkb-table tbody td.td-buoi.buoi-toi {
+  background: #ded2f2;
+  color: #4527a0;
+  border-left: 3px solid #7e57c2;
+}
+/* Ngày hiện tại luôn được ưu tiên màu xanh nhạt trên nền của từng buổi.
+ * `!important` là có chủ đích: nền buổi có selector chi tiết hơn, nếu không
+ * dùng ưu tiên này thì màu vàng/xanh của buổi sẽ lấn át cột ngày hiện tại. */
+.tkb-page .tkb-table tbody td.current-day-cell {
+  background: #e3f3e9 !important;
+  box-shadow: inset 2px 0 0 #78bd96, inset -2px 0 0 #78bd96;
+}
+/* Header ngày hiện tại dùng cùng dải màu và viền dọc với phần thân bảng. */
+.tkb-page .tkb-table thead th.current-day-header {
+  background: #d5ecdf !important;
+  color: #28724b !important;
+  box-shadow: inset 2px 0 0 #78bd96, inset -2px 0 0 #78bd96;
+}

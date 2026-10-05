@@ -1,0 +1,22 @@
+{
+  "data": [
+    {}
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid pa-0",
+      "rows": [
+        {
+          "cols": [
+            {
+              "w": 12,
+              "el": "uc-main-page"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}
