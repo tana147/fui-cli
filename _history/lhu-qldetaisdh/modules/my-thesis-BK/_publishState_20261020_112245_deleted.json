@@ -1,0 +1,21 @@
+{
+  "module.json": "sha1:7b8b29b8e65e398cbfbd893c6650750c1971ad34",
+  "script.js": "sha1:a771bab0df499117d59b80c53b9e589b7eb9ac0e",
+  "style.css": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "header.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "body.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "components/file-comp.vue": "sha1:9812de5b3c6801c0d36a6d57af684cc1cd475e1f",
+  "components/file-view-comp.vue": "sha1:0c9c50df9f9bcb8ee4b2e41794608ed1cb7d5c0d",
+  "components/graduate-route.vue": "sha1:6631f6bcf0563f5ab9c6505a8627780e3b0863bc",
+  "components/master-route.vue": "sha1:2271b1034a3cf30c799c4ba40b43e6b4e60c6524",
+  "components/my-topic.vue": "sha1:923e49f63c9c45ddd205d858b1fd40af58e8db85",
+  "components/score-comp.vue": "sha1:d7136330bf72eda97debd76e51ac2a208d144c10",
+  "components/similiar-topic-list.vue": "sha1:115d5efbf7d202a6ae2b6970b2682e68db8cb7cb",
+  "components/student-container.vue": "sha1:a4d222a9daf37f3f5f6466e51feeb92c22076589",
+  "components/table-chung.vue": "sha1:e1cd7ae88c8deb0688966f9e601d3985218ec528",
+  "components/table-view.vue": "sha1:2ecf84d4ba6a0158b546e2bb00d93afb706b29d7",
+  "components/text-comp.vue": "sha1:83bb432ba97df2c26878c9e7e882e3055b97fcd1",
+  "components/textarea-button-comp.vue": "sha1:171ef2076e3ec7b9124b3b33ca469331cf45dc19",
+  "components/textarea-comp.vue": "sha1:cf619a29e26137ebbcafb977bdafc1ebcf1cbd4e",
+  "imports/styles-C791685B93024CDB882BB7A1E4AAFA78.css": "sha1:4852995fb9018ef3334f0f490250e418898c7150"
+}

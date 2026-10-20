@@ -291,6 +291,7 @@
     "CREATE PROCEDURE spAPI_ToTrinh_Ins (@ToTrinhObj nvarchar(max),@AnPhamObjArr nvarchar(max),@SYS_UserID varchar(9));",
     "CREATE PROCEDURE spAPI_ToTrinh_Udp (@ToTrinhObj nvarchar(max),@AnPhamObjArr nvarchar(max),@SYS_UserID varchar(9));",
     "CREATE PROCEDURE spAPI_ToTrinhAnPham_Get ();",
+    "CREATE PROCEDURE spAPIFILE_UPLOAD_FileData (@sys_UserID varchar(9),@sys_FileContent varbinary(max),@sys_FileName nvarchar(200),@sys_FileContentType varchar(100),@sys_FileSize int(4));",
     "CREATE PROCEDURE spAPIFILE_FileData (@FileID char(32));",
     "CREATE PROCEDURE spCalculate_APIndex (@AnPhamID int(4));"
   ]

@@ -1,0 +1,12 @@
+{
+  "module.json": "sha1:ba7a1ce19e97e99161b962842498ff801ec8e6e7",
+  "script.js": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "style.css": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "header.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "body.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "components/input-comment-dialog.vue": "sha1:a9cac672fbc9ef93348ea43ad8816093ce1e8dd2",
+  "components/input-report-dialog.vue": "sha1:1b6180a9e95d79e017a86c5c73af0f13f291cb2e",
+  "components/input-score-dialog.vue": "sha1:47ff61e0965e5f04f23859544ea30dd7252f936d",
+  "components/parent-container.vue": "sha1:376ac636c6033ebca47922e8bc28b873634ac556",
+  "imports/styles-297F89E4EC974DCBA41C978BBE7493C5.css": "sha1:b13d77bdb09cc2973ab681da40ccb5aab5e3b733"
+}

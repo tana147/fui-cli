@@ -1,0 +1,18 @@
+{
+  "module.json": "sha1:ead74743bdae0c4edc45d46aa3ba8d184201f0d1",
+  "script.js": "sha1:42a6044150738be6a7a7822fe106656cf31eab01",
+  "style.css": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "header.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "body.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "components/dialog-add-sqd.vue": "sha1:a16615cd8f5df0f3a00812569b226d83657df413",
+  "components/dialog-give-sqd.vue": "sha1:0950e8ff6d8a904c44ced96e841e6c0146fd2737",
+  "components/parent-holder.vue": "sha1:7362c425110eddc77ab22b814edb24cfdbb56c4b",
+  "components/sqd-list.vue": "sha1:ddd317a2554c3b08a4f5ece7f61dd6985b8f6a6c",
+  "components/student-detail-table.vue": "sha1:2fb7eef7a613dc79866883bce7079ae109748090",
+  "components/student-edit-dialog.vue": "sha1:5437a439d3d953cfe4fd0e081322c734db7bf80c",
+  "components/student-edit-table.vue": "sha1:59f75e3609de422849b28505a5244be7c9c06334",
+  "components/student-list-add.vue": "sha1:a92424dcd02fd4e2f562c4f5db719b5dfadc454b",
+  "components/text-comp.vue": "sha1:3f4680d73343405c614f9e779f2ac1e1cfecf259",
+  "imports/styles-5185F9876FD24012A57A75749F46A7F3.css": "sha1:9a9562c14118c27656be79bd997bb5c1b5821bd7",
+  "imports/htmlToPdfmake-F36B5F15A6B64B12A85608D8C255DA69.js": "sha1:1f47f926a40e9c1c9382f28545036516c65eb6ea"
+}

@@ -1,0 +1,22 @@
+{
+  "module.json": "sha1:6e536ac5caaed629ff18685a618d04c18a57c0cb",
+  "script.js": "sha1:b15a056b52bea86f7bc96a8e7463aba778d6416f",
+  "style.css": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "header.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "body.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "components/dialog-dong-bo-gvhd.vue": "sha1:964e6c12c231c0697490ea8b3eb0a4d7b93fad24",
+  "components/dialog-import-update-student.vue": "sha1:574bd339f5f71542dbd0206b62a79426bc9b3cf4",
+  "components/dialog-reset-student-process.vue": "sha1:8a25b9fca5a04bcbc2bbea88d3737fcae30abc0c",
+  "components/dialog-upd-task.vue": "sha1:a6ae0bbe701aced79285bb003cbc7a5cd7062263",
+  "components/dialog-view-old-reset-process.vue": "sha1:37147ef491cbfd9a9dbbccd7841ac9e5afecb46b",
+  "components/file-comp.vue": "sha1:1e477cf1c41938791d68fdc5192286c90bb3d40c",
+  "components/info-table.vue": "sha1:1482af2b9c214cc32f981c06b37e58e1952ac159",
+  "components/old-data-dialog.vue": "sha1:18e68e557e41daad7fe16eb0aa680c8c9e4198f2",
+  "components/score-comp.vue": "sha1:cb0345410141e08614aac89d01335c61a440d5ad",
+  "components/similiar-topic-list.vue": "sha1:94f9f7fec59bb832a2ee52ea677f8ce8aeeaa116",
+  "components/student-container.vue": "sha1:200045649622b206b0058c681ad89733c657bffc",
+  "components/table-chung.vue": "sha1:b48275b35201db8107b06b8b14e9410a1af08409",
+  "components/textarea-button-comp.vue": "sha1:a41e17fc57aa176fe98c54720e74753197de116b",
+  "components/textarea-comp.vue": "sha1:0e2f31cb75bfe1c70007d0fa7c311d0ca601d3d1",
+  "imports/styles-8AB3DD6DC8CC4D269D0405D899AE879D.css": "sha1:573a61efb353f066c87076e984fef2f7bf06ecc8"
+}

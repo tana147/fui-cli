@@ -1,0 +1,8 @@
+{
+  "module.json": "sha1:9fe6935929c8854576eae985f9ecab8872e190ee",
+  "script.js": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "style.css": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "header.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "body.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "components/info-manager-container.vue": "sha1:072a689ab9f8d8a918b9022f55acb00809f4ecde"
+}

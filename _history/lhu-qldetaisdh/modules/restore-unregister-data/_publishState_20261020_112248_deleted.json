@@ -1,0 +1,10 @@
+{
+  "module.json": "sha1:a3d3f34c6cb6a9a121f6feefc1d42843d7bf4334",
+  "script.js": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "style.css": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "header.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "body.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "components/dialog-restore-change-topic.vue": "sha1:f8cc973f68ee0cd149739126d2e691d523c4413b",
+  "components/restore-container.vue": "sha1:222c0c725c36f3a187f3935ae254e7d04ade5666",
+  "imports/styles-36F8AF3303B84605A11DDE08EADD7178.css": "sha1:f8b442f5ba6283ca21f21b8621225ef56609da5a"
+}

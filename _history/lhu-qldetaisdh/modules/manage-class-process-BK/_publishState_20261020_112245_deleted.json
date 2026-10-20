@@ -1,0 +1,9 @@
+{
+  "module.json": "sha1:67ea9e65880c6787baa6e705175dbb4f86ecc083",
+  "script.js": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "style.css": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "header.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "body.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "components/define-new-class-modal.vue": "sha1:bf9e7af2aad89664945f66efa2c641b0d805e02a",
+  "components/manage-container.vue": "sha1:ee6217f53644363436160b9538136c78c203dc83"
+}

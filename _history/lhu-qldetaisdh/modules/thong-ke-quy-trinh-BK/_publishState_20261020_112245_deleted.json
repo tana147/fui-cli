@@ -1,0 +1,13 @@
+{
+  "module.json": "sha1:24c4317612d8d4cf5f1bec5219de859660a51d62",
+  "script.js": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "style.css": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "header.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "body.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "components/detail-doi-dieu-chinh-dialog.vue": "sha1:e87fc52f9ea0878e5ef76629d43deeb5560a3254",
+  "components/thong-ke-bai-bao.vue": "sha1:90f5a6809756cfdcd69bbdd39f30be64c700f01b",
+  "components/thong-ke-container.vue": "sha1:1974583d85ad336a1929576ab78c969a6f10951e",
+  "components/thong-ke-doi-dieu-chinh-de-tai.vue": "sha1:0409c9539b3440db2cb50532f514bbfbb2b76350",
+  "components/thong-ke-hoan-thanh-sau-bao-ve.vue": "sha1:16835c318b8351494372a5eb3bf490868dd16439",
+  "imports/styles-AB145EE1D14548D6B57B26FEF3F2C0B9.css": "sha1:5e7a9947f586849440041940cd14e8604ce2c3fc"
+}

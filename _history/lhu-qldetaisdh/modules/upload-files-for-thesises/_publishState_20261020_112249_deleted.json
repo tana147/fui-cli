@@ -1,0 +1,8 @@
+{
+  "module.json": "sha1:235f9f21df1882d4f4d6097c3a06621a1ff66a70",
+  "script.js": "sha1:7625aac7757387ea0526ac1df71d910e719acdf4",
+  "style.css": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "header.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "body.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "components/upload-container.vue": "sha1:31bfa6593f5a7f049025cc2c9d828f82a8e82165"
+}

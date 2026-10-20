@@ -1,0 +1,94 @@
+[
+  {
+    "table": "Decision2026_06_02_11_23_36",
+    "rows": 753
+  },
+  {
+    "table": "Flow_2026_06_02_11_23_36",
+    "rows": 7863
+  },
+  {
+    "table": "Flow_Detail_2026_06_02_11_23_36",
+    "rows": 60556
+  },
+  {
+    "table": "HoiDong2026_06_02_11_23_36",
+    "rows": 373
+  },
+  {
+    "table": "Process_Student2026_06_02_11_23_36",
+    "rows": 953
+  },
+  {
+    "table": "StudentInfo2026_06_02_11_23_36",
+    "rows": 755
+  },
+  {
+    "table": "Task_Detail_2026_06_02_11_23_36",
+    "rows": 156
+  },
+  {
+    "table": "Task_Task_2026_06_02_11_23_36",
+    "rows": 28
+  },
+  {
+    "table": "Tasks_2026_06_02_11_23_36",
+    "rows": 35
+  },
+  {
+    "table": "Decision2026_05_26_10_38_17",
+    "rows": 752
+  },
+  {
+    "table": "Flow_2026_05_26_10_38_17",
+    "rows": 7859
+  },
+  {
+    "table": "Flow_Detail_2026_05_26_10_38_17",
+    "rows": 58942
+  },
+  {
+    "table": "HoiDong2026_05_26_10_38_17",
+    "rows": 373
+  },
+  {
+    "table": "Process_Student2026_05_26_10_38_17",
+    "rows": 951
+  },
+  {
+    "table": "StudentInfo2026_05_26_10_38_17",
+    "rows": 755
+  },
+  {
+    "table": "Task_Detail_2026_05_26_10_38_17",
+    "rows": 161
+  },
+  {
+    "table": "Task_Task_2026_05_26_10_38_17",
+    "rows": 28
+  },
+  {
+    "table": "Tasks_2026_05_26_10_38_17",
+    "rows": 35
+  },
+  {
+    "table": "Flow_BK20240524",
+    "rows": 557
+  },
+  {
+    "table": "Flow_Detail_BK20240524",
+    "rows": 2883
+  },
+  {
+    "table": "Task_Detail_BK",
+    "rows": 54
+  },
+  {
+    "table": "Task_Task_BK",
+    "rows": 11
+  },
+  {
+    "table": "Tasks_BK",
+    "rows": 14
+  }
+]
