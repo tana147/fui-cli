@@ -1,0 +1,29 @@
+[
+  {
+    "GiaiThuongFileID": 1,
+    "GiaiThuongID": 166,
+    "FileIDList": "202631EFA20B41248E8CF12D469E49F7,ACF7338A3D614124995453D5B04A3F8E",
+    "MoTa": null,
+    "NhanVienCapNhat": "922000041",
+    "ThoiGianCapNhat": "2024-01-09T13:42:53.977",
+    "Is_Xoa": false
+  },
+  {
+    "GiaiThuongFileID": 2,
+    "GiaiThuongID": 167,
+    "FileIDList": "202631EFA20B41248E8CF12D469E49F7,ACF7338A3D614124995453D5B04A3F8E",
+    "MoTa": null,
+    "NhanVienCapNhat": "922000041",
+    "ThoiGianCapNhat": "2024-01-09T13:42:53.977",
+    "Is_Xoa": false
+  },
+  {
+    "GiaiThuongFileID": 3,
+    "GiaiThuongID": 168,
+    "FileIDList": "202631EFA20B41248E8CF12D469E49F7,ACF7338A3D614124995453D5B04A3F8E",
+    "MoTa": null,
+    "NhanVienCapNhat": "922000041",
+    "ThoiGianCapNhat": "2024-01-09T13:42:53.977",
+    "Is_Xoa": false
+  }
+]

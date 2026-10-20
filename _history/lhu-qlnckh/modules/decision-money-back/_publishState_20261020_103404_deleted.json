@@ -1,0 +1,8 @@
+{
+  "module.json": "sha1:20806c6a846f6e84cf3441afc99230acc92cb385",
+  "script.js": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "style.css": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "header.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "body.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "components/danh-sach-quyet-dinh.vue": "sha1:fb03e2c3dfd943e3259f47a5e3b875e8a0054a6c"
+}

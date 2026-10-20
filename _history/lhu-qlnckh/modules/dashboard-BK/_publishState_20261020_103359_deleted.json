@@ -1,0 +1,21 @@
+{
+  "module.json": "sha1:fb20507275d514e67c4547bf9c1371111206da8e",
+  "script.js": "sha1:30d69536c27c52ddd3733169471fe7d425355e90",
+  "style.css": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "header.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "body.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "components/uc-btn.vue": "sha1:cfd5bc3c6edfa50862d127950d21da881c1391fa",
+  "components/uc-card-item.vue": "sha1:f9f211abf4c0981d2aba8bd9d229ef4569625adf",
+  "components/uc-card-list.vue": "sha1:b4617697a24d87632e7afead0377b0c237a50d23",
+  "components/uc-chart.vue": "sha1:121b9bb844d7bffd037e75ad361e2eecfa536a5d",
+  "components/uc-chart-line.vue": "sha1:b6d030c0968a026dd35be24786a44ee22cf85093",
+  "components/uc-dcard.vue": "sha1:31c909ed33595ae2f0f7c15847e35c053b8bd39a",
+  "components/uc-dchart-card.vue": "sha1:da3e09c8af2b9270ee56abe77f7568e7e1f87742",
+  "components/uc-dialog.vue": "sha1:412e11198ffc3daadd3b4ae330f9feaf227bde95",
+  "components/uc-dtable.vue": "sha1:0aa54912028e67e7a940542cf6bb0f4baf4d4f0c",
+  "components/uc-excel-btn.vue": "sha1:8c686e2c6b5ec0e8852992a9bdff28cfb9d696db",
+  "components/uc-hoat-dong-khoa-hoc.vue": "sha1:50076c9fcbe665a5bbdcb6c7b399fed3dd16203e",
+  "components/uc-main-component.vue": "sha1:ea4d4c339cc31de4cbf45ebeb04fb4145e3bf86e",
+  "components/uc-phan-loai-an-pham.vue": "sha1:32443c9a5bf161ab962c9a50050dcacdc498620a",
+  "imports/style-dashboard-11834B8C1F5649AF9C58A84FE50FB8F6.css": "sha1:a21a59fbe3052acf448345b2625a45bee85d5d23"
+}

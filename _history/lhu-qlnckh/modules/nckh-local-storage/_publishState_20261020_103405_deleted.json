@@ -1,0 +1,12 @@
+{
+  "module.json": "sha1:d35f69aa067415039774051725de812229a9e282",
+  "script.js": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "style.css": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "header.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "body.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "components/uc-an-pham.vue": "sha1:b3899f37f09a2695da8c7e223c308775ab0c6c31",
+  "components/uc-anpham-trangthai.vue": "sha1:b4e1fba02f8757a6a687b96b861d1f46bca5f724",
+  "components/uc-format-price-tac-gia.vue": "sha1:e1438cac64f2a1cae26b5551c1243499fbbdbba0",
+  "components/uc-table-tac-gia.vue": "sha1:060c6629c1d5772b7903c4976bf87de7eace0a0a",
+  "imports/style-3D6563E7F2B3436F9D25DE6CB523E0D6.css": "sha1:fea7d525b55de27930986f0479af94178936c67c"
+}

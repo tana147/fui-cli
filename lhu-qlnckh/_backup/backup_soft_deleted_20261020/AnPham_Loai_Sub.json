@@ -1,0 +1,98 @@
+[
+  {
+    "LoaiSubAnPhamID": 3,
+    "LoaiAnPhamID": 2,
+    "TenLoaiSubAnPham": "Được các trường đại học uy tín (Các trường trong Bảng Xếp Hạng SCImago THE, QS, ARWU) tổ chức hoặc là đồng tổ chức, đồng bảo trợ",
+    "Sort": 2,
+    "MoTa": null,
+    "TenNhomHienThiExcel": "3. Hội thảo Quốc tế",
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": null,
+    "Is_Xoa": true
+  },
+  {
+    "LoaiSubAnPhamID": 4,
+    "LoaiAnPhamID": 2,
+    "TenLoaiSubAnPham": "Được các tạp chí nằm trong danh mục ISI, Scopus tổ chức hoặc là đồng tổ chức",
+    "Sort": 3,
+    "MoTa": null,
+    "TenNhomHienThiExcel": "3. Hội thảo Quốc tế",
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": null,
+    "Is_Xoa": true
+  },
+  {
+    "LoaiSubAnPhamID": 5,
+    "LoaiAnPhamID": 2,
+    "TenLoaiSubAnPham": "Được chính phủ các nước tổ chức hoặc là đồng tổ chức, đồng bảo trợ",
+    "Sort": 4,
+    "MoTa": null,
+    "TenNhomHienThiExcel": "3. Hội thảo Quốc tế",
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": null,
+    "Is_Xoa": true
+  },
+  {
+    "LoaiSubAnPhamID": 6,
+    "LoaiAnPhamID": 2,
+    "TenLoaiSubAnPham": "Được Hội đồng chức danh giáo sư nhà nước chấp nhận",
+    "Sort": 5,
+    "MoTa": null,
+    "TenNhomHienThiExcel": "3. Hội thảo Quốc tế",
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": null,
+    "Is_Xoa": true
+  },
+  {
+    "LoaiSubAnPhamID": 10,
+    "LoaiAnPhamID": 4,
+    "TenLoaiSubAnPham": "Thuộc danh mục CSSCI, CHSSCD, CSTPC, THCI, TSSCI, TSCI, KCI, CJP, SciELO, RSCI",
+    "Sort": 5,
+    "MoTa": null,
+    "TenNhomHienThiExcel": "4. Tạp Chí Khoa học quốc tế thuộc CSSCI, CHSSCD, CSTPC, THCI, TSSCI, TSCI, KCI, CJP, SciELO, RSCI",
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": null,
+    "Is_Xoa": true
+  },
+  {
+    "LoaiSubAnPhamID": 11,
+    "LoaiAnPhamID": 4,
+    "TenLoaiSubAnPham": "Thuộc danh mục EI, Econlit, IEEE Xplore",
+    "Sort": 4,
+    "MoTa": null,
+    "TenNhomHienThiExcel": "5. Tạp chí khoa học quốc tế thuộc EI, Econlit, IEEE explore",
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": null,
+    "Is_Xoa": true
+  },
+  {
+    "LoaiSubAnPhamID": 13,
+    "LoaiAnPhamID": 4,
+    "TenLoaiSubAnPham": "Thuộc danh mục SCI, SCIE, SSCI, A&HCI, ESCI",
+    "Sort": 2,
+    "MoTa": null,
+    "TenNhomHienThiExcel": "7. Tạp chí khoa học quốc tế  thuộc WoS",
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": null,
+    "Is_Xoa": true
+  },
+  {
+    "LoaiSubAnPhamID": 35,
+    "LoaiAnPhamID": 11,
+    "TenLoaiSubAnPham": "Hướng dẫn cao học",
+    "Sort": 1,
+    "MoTa": null,
+    "TenNhomHienThiExcel": "Hướng dẫn cao học",
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": null,
+    "Is_Xoa": true
+  }
+]

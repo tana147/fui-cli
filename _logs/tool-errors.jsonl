@@ -184,3 +184,7 @@
 {"ts":"2026-10-20T03:00:34.608Z","pid":38106,"tool":"fui db alias list","message":"❌ no userToken for zone \"lhbs.vn\" in the workspace; pass --user-token-env VAR, or save one on a connection in that zone"}
 {"ts":"2026-10-20T03:05:35.255Z","pid":46814,"tool":"fui module get","message":"❌ FUI API network error: /fp/FUI_Dev_File/select — fetch failed"}
 {"ts":"2026-10-20T03:06:38.881Z","pid":49833,"tool":"fui module get","message":"❌ FUI API network error: /fp/FUI_Dev_File/select — fetch failed"}
+{"ts":"2026-10-20T03:20:15.612Z","pid":60191,"tool":"fui query","message":"❌ tAPI HTTP 400: Invalid column name 'ThiKHCN_ID'.\r\nInvalid column name 'TenCongTrinh'.\r\nInvalid column name 'TenNhanVienDaiDien'."}
+{"ts":"2026-10-20T03:20:46.598Z","pid":60542,"tool":"fui query","message":"❌ tAPI HTTP 400: Invalid column name 'NhanVienKeKhai'.\r\nInvalid column name 'NhanVienKeKhai'.\r\nInvalid column name 'TrangThai'."}
+{"ts":"2026-10-20T03:31:56.881Z","pid":65106,"tool":"fui query","message":"❌ DROP TABLE\nblocked: no flag unlocks this; the user must run it by hand\n---\nDROP TABLE AnPham_Loai_BK","kind":"guard"}
+{"ts":"2026-10-20T04:00:12.956Z","pid":85548,"tool":"fui query","message":"❌ tAPI HTTP 400: The DELETE statement conflicted with the REFERENCE constraint \"FK__tblHDKH_K__Submi__09E968C4\". The conflict occurred in database \"QLNCKH\", table \"dbo.tblHDKH_KeKhai_ThanhVien\", column 'SubmissionID'.\r\nThe statement has been terminated."}

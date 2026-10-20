@@ -1,0 +1,82 @@
+[
+  {
+    "SanPhamKHCNID": 95,
+    "DeTaiKHCNID": 20,
+    "TenSanPhamDuKien": "Sản phẩm ứng dụng",
+    "SoLuong": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": "922000041",
+    "ThoiGianCapNhat": "2024-04-03T09:45:59.497",
+    "Is_Xoa": true
+  },
+  {
+    "SanPhamKHCNID": 96,
+    "DeTaiKHCNID": 20,
+    "TenSanPhamDuKien": "Sản phẩm ứng dụng",
+    "SoLuong": 2,
+    "TrangThai": 0,
+    "NhanVienCapNhat": "922000041",
+    "ThoiGianCapNhat": "2024-04-03T09:46:19.407",
+    "Is_Xoa": true
+  },
+  {
+    "SanPhamKHCNID": 103,
+    "DeTaiKHCNID": 20,
+    "TenSanPhamDuKien": "Sản phẩm ứng dụng",
+    "SoLuong": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": "922000041",
+    "ThoiGianCapNhat": "2024-04-03T10:00:56.783",
+    "Is_Xoa": true
+  },
+  {
+    "SanPhamKHCNID": 105,
+    "DeTaiKHCNID": 20,
+    "TenSanPhamDuKien": "Sản phẩm A",
+    "SoLuong": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": "922000041",
+    "ThoiGianCapNhat": "2024-04-03T10:35:41.44",
+    "Is_Xoa": true
+  },
+  {
+    "SanPhamKHCNID": 106,
+    "DeTaiKHCNID": 20,
+    "TenSanPhamDuKien": "Quốc tế",
+    "SoLuong": 2,
+    "TrangThai": 0,
+    "NhanVienCapNhat": "922000041",
+    "ThoiGianCapNhat": "2024-04-03T10:35:46.063",
+    "Is_Xoa": true
+  },
+  {
+    "SanPhamKHCNID": 107,
+    "DeTaiKHCNID": 20,
+    "TenSanPhamDuKien": "Sản phẩm B",
+    "SoLuong": 3,
+    "TrangThai": 0,
+    "NhanVienCapNhat": "922000041",
+    "ThoiGianCapNhat": "2024-04-03T10:35:57.143",
+    "Is_Xoa": true
+  },
+  {
+    "SanPhamKHCNID": 1134,
+    "DeTaiKHCNID": 1074,
+    "TenSanPhamDuKien": "Quốc tế (ISI/Scopus)",
+    "SoLuong": 1,
+    "TrangThai": 0,
+    "NhanVienCapNhat": "NV0000602",
+    "ThoiGianCapNhat": "2026-08-20T15:00:32.91",
+    "Is_Xoa": true
+  },
+  {
+    "SanPhamKHCNID": 1135,
+    "DeTaiKHCNID": 1074,
+    "TenSanPhamDuKien": "Tạp chí Lạc Hồng",
+    "SoLuong": 1,
+    "TrangThai": 0,
+    "NhanVienCapNhat": "NV0000602",
+    "ThoiGianCapNhat": "2026-08-20T15:00:32.91",
+    "Is_Xoa": true
+  }
+]

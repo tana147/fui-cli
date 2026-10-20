@@ -1,0 +1,17 @@
+[
+  {
+    "AnPham_DotID": 5,
+    "AnPham_DotTen": "TEST",
+    "AnPham_DotTinhTrang": 0,
+    "NienKhoa": "2026-2027",
+    "ThoiGianBatDau": "2025-03-01T00:00:00",
+    "ThoiGianKetThuc": "2025-03-31T00:00:00",
+    "ThongBao": "Test THONG BAO",
+    "FileHuongDan": "FB2E4B5AF18E4B38824B9FBB460FFD98",
+    "CreateUser": "GV0000611",
+    "CreateTime": "2025-03-01T16:53:00",
+    "UpdateUser": "GV0000611",
+    "UpdateTime": "2025-03-01T17:03:00",
+    "Is_Xoa": 1
+  }
+]

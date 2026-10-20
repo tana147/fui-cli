@@ -1,0 +1,372 @@
+[
+  {
+    "TableName": "AnPham",
+    "Total": 1505,
+    "SoftDeleted": 406
+  },
+  {
+    "TableName": "AnPham_Dot",
+    "Total": 6,
+    "SoftDeleted": 1
+  },
+  {
+    "TableName": "AnPham_DotDuyet",
+    "Total": 4,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "AnPham_File",
+    "Total": 1507,
+    "SoftDeleted": 182
+  },
+  {
+    "TableName": "AnPham_LichSu",
+    "Total": 660,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "AnPham_Loai",
+    "Total": 16,
+    "SoftDeleted": 8
+  },
+  {
+    "TableName": "AnPham_Loai_Sub",
+    "Total": 41,
+    "SoftDeleted": 8
+  },
+  {
+    "TableName": "AnPham_TacGia",
+    "Total": 4432,
+    "SoftDeleted": 548
+  },
+  {
+    "TableName": "AnPham2025_03_01_12_13_47",
+    "Total": 678,
+    "SoftDeleted": 114
+  },
+  {
+    "TableName": "BaiBaoKhoaHoc",
+    "Total": 1573,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "BaiBaoKhoaHoc2025_03_01_12_13_24",
+    "Total": 1371,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "ChuyenGiaoCongNghe",
+    "Total": 219,
+    "SoftDeleted": 16
+  },
+  {
+    "TableName": "ChuyenGiaoCongNghe_AUN",
+    "Total": 144,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "ChuyenGiaoCongNghe_DEV",
+    "Total": 222,
+    "SoftDeleted": 16
+  },
+  {
+    "TableName": "CongThucKhenThuong",
+    "Total": 75,
+    "SoftDeleted": 45
+  },
+  {
+    "TableName": "DonVi",
+    "Total": 41,
+    "SoftDeleted": 1
+  },
+  {
+    "TableName": "FileData",
+    "Total": 4854,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "GiaiThuong",
+    "Total": 336,
+    "SoftDeleted": 1
+  },
+  {
+    "TableName": "HeSoChatLuong",
+    "Total": 11,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "KHCN_DeTai",
+    "Total": 101,
+    "SoftDeleted": 1
+  },
+  {
+    "TableName": "KHCN_NhomDM",
+    "Total": 5,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "KHCN_SanPham",
+    "Total": 143,
+    "SoftDeleted": 8
+  },
+  {
+    "TableName": "KHCN_ThanhVien",
+    "Total": 233,
+    "SoftDeleted": 3
+  },
+  {
+    "TableName": "KHCN_TienDoCapKinhPhi",
+    "Total": 15,
+    "SoftDeleted": 5
+  },
+  {
+    "TableName": "LoaiDanhMucTapChi",
+    "Total": 46,
+    "SoftDeleted": 6
+  },
+  {
+    "TableName": "LoaiGiaiThuong",
+    "Total": 18,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "NCKH_DeTai",
+    "Total": 302,
+    "SoftDeleted": 11
+  },
+  {
+    "TableName": "NCKH_Dot",
+    "Total": 17,
+    "SoftDeleted": 3
+  },
+  {
+    "TableName": "NCKH_LoaiHoiDong",
+    "Total": 2,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "NCKH_ThanhVien",
+    "Total": 840,
+    "SoftDeleted": 38
+  },
+  {
+    "TableName": "NhanVien",
+    "Total": 400,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "QuyetDinh",
+    "Total": 208,
+    "SoftDeleted": 138
+  },
+  {
+    "TableName": "TaiKhoan",
+    "Total": 712,
+    "SoftDeleted": 2
+  },
+  {
+    "TableName": "TaiKhoan_2026_09_02_18_45_06",
+    "Total": 562,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_BacDaoTao",
+    "Total": 3,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_CapCuocThi",
+    "Total": 4,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_CapDeTai",
+    "Total": 4,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_CapHoiThao",
+    "Total": 3,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_ChucDanhHocVi",
+    "Total": 8,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_DanhMucTapChi",
+    "Total": 23,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_KetQuaGiai",
+    "Total": 5,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_LoaiHinhPhanBien",
+    "Total": 13,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_LoaiHinhSHTT",
+    "Total": 3,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_NgonNgu",
+    "Total": 16,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_NhiemVuHoiDong",
+    "Total": 3,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_PhamVi",
+    "Total": 2,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_TheLoaiBienSoan",
+    "Total": 8,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_TheLoaiSach",
+    "Total": 8,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_ThoiLuong",
+    "Total": 7,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_DM_VaiTro",
+    "Total": 12,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_Field_Definition",
+    "Total": 55,
+    "SoftDeleted": 4
+  },
+  {
+    "TableName": "tblHDKH_Form_Definition",
+    "Total": 14,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_KeKhai_FieldValue",
+    "Total": 7167,
+    "SoftDeleted": 3084
+  },
+  {
+    "TableName": "tblHDKH_KeKhai_KetQua_CaNhan",
+    "Total": 2141,
+    "SoftDeleted": 861
+  },
+  {
+    "TableName": "tblHDKH_KeKhai_Submission",
+    "Total": 1213,
+    "SoftDeleted": 118
+  },
+  {
+    "TableName": "tblHDKH_KeKhai_Submission_MinhChung",
+    "Total": 2172,
+    "SoftDeleted": 759
+  },
+  {
+    "TableName": "tblHDKH_KeKhai_ThanhVien",
+    "Total": 2799,
+    "SoftDeleted": 1056
+  },
+  {
+    "TableName": "tblHDKH_MienGiam",
+    "Total": 260,
+    "SoftDeleted": 6
+  },
+  {
+    "TableName": "tblHDKH_Profile_CaNhan",
+    "Total": 7,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_Profile_CongTac",
+    "Total": 12,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_Profile_CongTrinhDaCongBo",
+    "Total": 13,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_Profile_DaoTao",
+    "Total": 8,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_Profile_DeTaiDaThamGia",
+    "Total": 9,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "tblHDKH_Rule_Condition",
+    "Total": 214,
+    "SoftDeleted": 30
+  },
+  {
+    "TableName": "tblHDKH_Rule_Definition",
+    "Total": 134,
+    "SoftDeleted": 22
+  },
+  {
+    "TableName": "tblHDKH_TongHop_KetQua_NamHoc",
+    "Total": 383,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "ThiKHCN_CongThucKhenThuong",
+    "Total": 55,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "ThiKHCN_Dot",
+    "Total": 2,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "ThiKHCN_DotDuyet",
+    "Total": 2,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "ThiKHCN_File",
+    "Total": 12,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "ThiKHCN_KhenThuong",
+    "Total": 10,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "ThiKHCN_LichSu",
+    "Total": 0,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "ThiKHCN_ThanhVien",
+    "Total": 25,
+    "SoftDeleted": 0
+  },
+  {
+    "TableName": "ToTrinh",
+    "Total": 2,
+    "SoftDeleted": 2
+  }
+]

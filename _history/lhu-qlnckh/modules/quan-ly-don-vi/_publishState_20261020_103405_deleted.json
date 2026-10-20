@@ -1,0 +1,10 @@
+{
+  "module.json": "sha1:e497d4903e6575425340426cada6824b9cee42d4",
+  "script.js": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "style.css": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "header.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "body.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "components/uc-main-page.vue": "sha1:8edc88b9f9dddcd5d4ff626f50412116c4c90f4c",
+  "components/uc-modal-add-don-vi.vue": "sha1:0fdce48c300d070c686045d1a5c133bcaf6d5c53",
+  "components/uc-modal-edit-don-vi.vue": "sha1:f37fa3b6e55677497582976e1a2a4e90fe3d53dd"
+}

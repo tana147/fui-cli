@@ -1,0 +1,102 @@
+[
+  {
+    "LoaiAnPhamID": 1,
+    "TenLoaiAnPham": "Kỷ yếu hội thảo Khoa học trong nước được HĐCDGSNN công nhận",
+    "Sort": 1,
+    "MoTa": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": "2024-02-27T14:10:16.59",
+    "Is_Xoa": false
+  },
+  {
+    "LoaiAnPhamID": 2,
+    "TenLoaiAnPham": "Kỷ yếu hội thảo Khoa học quốc tế",
+    "Sort": 2,
+    "MoTa": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": "2024-02-27T14:10:24.007",
+    "Is_Xoa": false
+  },
+  {
+    "LoaiAnPhamID": 3,
+    "TenLoaiAnPham": "Tạp chí Khoa học trong nước được HĐCDGSNN công nhận",
+    "Sort": 3,
+    "MoTa": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": "2024-02-27T14:10:51.387",
+    "Is_Xoa": false
+  },
+  {
+    "LoaiAnPhamID": 4,
+    "TenLoaiAnPham": "Tạp chí Khoa học Quốc tế WoS",
+    "Sort": 4,
+    "MoTa": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": "2024-02-27T14:11:02.61",
+    "Is_Xoa": false
+  },
+  {
+    "LoaiAnPhamID": 5,
+    "TenLoaiAnPham": "Tạp chí Khoa học Quốc tế Scopus",
+    "Sort": 5,
+    "MoTa": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": "2024-02-27T14:11:12.26",
+    "Is_Xoa": false
+  },
+  {
+    "LoaiAnPhamID": 6,
+    "TenLoaiAnPham": "Sách xuất bản",
+    "Sort": 6,
+    "MoTa": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": "2024-02-27T14:11:18.577",
+    "Is_Xoa": false
+  },
+  {
+    "LoaiAnPhamID": 7,
+    "TenLoaiAnPham": "Bằng độc quyền sáng chế",
+    "Sort": 7,
+    "MoTa": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": "2024-02-27T14:41:56.407",
+    "Is_Xoa": false
+  },
+  {
+    "LoaiAnPhamID": 8,
+    "TenLoaiAnPham": "Bằng giải pháp hữu ích",
+    "Sort": 8,
+    "MoTa": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": "2024-02-27T14:42:11.6",
+    "Is_Xoa": false
+  },
+  {
+    "LoaiAnPhamID": 9,
+    "TenLoaiAnPham": "Sản phẩm hữu ích",
+    "Sort": 9,
+    "MoTa": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": "2024-02-27T14:54:57.987",
+    "Is_Xoa": false
+  },
+  {
+    "LoaiAnPhamID": 10,
+    "TenLoaiAnPham": "Tạp chí Khoa học LHU",
+    "Sort": 10,
+    "MoTa": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": null,
+    "ThoiGianCapNhat": "2024-03-08T14:38:02.277",
+    "Is_Xoa": false
+  }
+]

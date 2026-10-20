@@ -1,0 +1,35 @@
+[
+  {
+    "name": "style-dashboard",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "11834B8C1F5649AF9C58A84FE50FB8F6",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/style-dashboard-11834B8C1F5649AF9C58A84FE50FB8F6.css"
+  },
+  {
+    "name": "https://fastly.jsdelivr.net/npm/chart.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "B11626BFE05A46F0BA3BB9FA6BCA11F0",
+    "scope": "module",
+    "sort": 21
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "1A7582BFC34E495FB1B8C704ED55AEFF",
+    "scope": "module",
+    "sort": 22
+  },
+  {
+    "name": "https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "C48E6DA3E62D492A8C5D4D8A8550D63B",
+    "scope": "module",
+    "sort": 50
+  }
+]

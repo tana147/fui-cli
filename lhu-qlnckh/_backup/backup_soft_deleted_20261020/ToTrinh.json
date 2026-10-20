@@ -1,0 +1,42 @@
+[
+  {
+    "ToTrinhID": 57,
+    "Ngay": null,
+    "Thang": null,
+    "Nam": null,
+    "SoQD": null,
+    "TieuDeQuyetDinh": "Về việc hỗ trợ kinh phí và khen thưởng tác giả có ấn phẩm khoa học được công bố trên các tạp chí, kỷ yếu hội thảo, nhà xuất bản khoa học",
+    "NamHocKhenThuong": "2023",
+    "DotKhenThuong": "1",
+    "ToTrinhFileID": null,
+    "ToTrinhFileUrl": null,
+    "ToTrinhFileName": null,
+    "ToTrinhLoai": 1,
+    "ToTrinhTrangThai": 0,
+    "Is_Xoa": true,
+    "Created_By": "NV0000401",
+    "Created_At": "2024-05-11T09:36:52.557",
+    "Updated_By": "GV0000611",
+    "Updated_At": "2024-05-22T09:33:16.187"
+  },
+  {
+    "ToTrinhID": 58,
+    "Ngay": null,
+    "Thang": null,
+    "Nam": null,
+    "SoQD": null,
+    "TieuDeQuyetDinh": "Về việc hỗ trợ kinh phí và khen thưởng tác giả có ấn phẩm khoa học được công bố trên các tạp chí, kỷ yếu hội thảo, nhà xuất bản khoa học",
+    "NamHocKhenThuong": "2019",
+    "DotKhenThuong": "1",
+    "ToTrinhFileID": null,
+    "ToTrinhFileUrl": null,
+    "ToTrinhFileName": null,
+    "ToTrinhLoai": 1,
+    "ToTrinhTrangThai": 0,
+    "Is_Xoa": true,
+    "Created_By": "GV0000611",
+    "Created_At": "2024-06-07T09:50:20.38",
+    "Updated_By": "GV0000611",
+    "Updated_At": "2024-06-07T14:55:31.35"
+  }
+]

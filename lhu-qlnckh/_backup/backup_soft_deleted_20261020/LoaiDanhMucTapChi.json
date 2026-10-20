@@ -1,0 +1,74 @@
+[
+  {
+    "DanhMucLoaiTapChiID": 7,
+    "LoaiSubAnPhamID": 2,
+    "TenVietTatLoaiDanhMucTapChi": "EI",
+    "TenLoaiDanhMucTapChi": "Compendex: Engineering Index - Elsevier",
+    "Sort": 3,
+    "MoTa": "",
+    "TrangThai": 0,
+    "NhanVienCapNhat": "         ",
+    "ThoiGianCapNhat": "2023-12-27T15:03:20.283",
+    "Is_Xoa": true
+  },
+  {
+    "DanhMucLoaiTapChiID": 8,
+    "LoaiSubAnPhamID": 2,
+    "TenVietTatLoaiDanhMucTapChi": "Scopus",
+    "TenLoaiDanhMucTapChi": "Elservier's Scopus Index - Elsevier",
+    "Sort": 4,
+    "MoTa": "",
+    "TrangThai": 0,
+    "NhanVienCapNhat": "         ",
+    "ThoiGianCapNhat": "2023-12-27T15:03:20.49",
+    "Is_Xoa": true
+  },
+  {
+    "DanhMucLoaiTapChiID": 21,
+    "LoaiSubAnPhamID": 2,
+    "TenVietTatLoaiDanhMucTapChi": "CPCI-S",
+    "TenLoaiDanhMucTapChi": "Conference Proceeding Citation Index- Sciences - Clarivate Analytics",
+    "Sort": 1,
+    "MoTa": "",
+    "TrangThai": 0,
+    "NhanVienCapNhat": "         ",
+    "ThoiGianCapNhat": "2023-12-27T15:03:36.07",
+    "Is_Xoa": true
+  },
+  {
+    "DanhMucLoaiTapChiID": 22,
+    "LoaiSubAnPhamID": 2,
+    "TenVietTatLoaiDanhMucTapChi": "CPCI-SSH",
+    "TenLoaiDanhMucTapChi": "Conference Proceeding Citation Index- Social Sciences & Humanities - Clarivate",
+    "Sort": 2,
+    "MoTa": "",
+    "TrangThai": 0,
+    "NhanVienCapNhat": "         ",
+    "ThoiGianCapNhat": "2023-12-27T15:03:36.363",
+    "Is_Xoa": true
+  },
+  {
+    "DanhMucLoaiTapChiID": 34,
+    "LoaiSubAnPhamID": 9,
+    "TenVietTatLoaiDanhMucTapChi": "Tạp chí Khoa học Lạc Hồng",
+    "TenLoaiDanhMucTapChi": "Tạp chí Khoa học Lạc Hồng",
+    "Sort": 1,
+    "MoTa": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": "SYS      ",
+    "ThoiGianCapNhat": "2024-02-27T00:00:00",
+    "Is_Xoa": true
+  },
+  {
+    "DanhMucLoaiTapChiID": 37,
+    "LoaiSubAnPhamID": 2,
+    "TenVietTatLoaiDanhMucTapChi": "IEEE Xplore",
+    "TenLoaiDanhMucTapChi": "IEEE Xplore Digital Library - IEEE",
+    "Sort": 5,
+    "MoTa": null,
+    "TrangThai": 0,
+    "NhanVienCapNhat": "SYS      ",
+    "ThoiGianCapNhat": "2024-04-23T00:00:00",
+    "Is_Xoa": true
+  }
+]

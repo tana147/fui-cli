@@ -1,0 +1,32 @@
+[
+  {
+    "MaNV": "NV0001041",
+    "HoNV": "Tất Gia",
+    "TenNV": "Thanh",
+    "TenThe": "TAT GIA THANH",
+    "BankIDVietQR": 35,
+    "BankCodeVietQR": "SHB",
+    "BankNameVietQR": "Ngân hàng TMCP Sài Gòn - Hà Nội",
+    "TaiKhoan": "1014261892",
+    "Thang": 8,
+    "Nam": 2022,
+    "NhanVienCapNhat": "         ",
+    "ThoiGianCapNhat": "2024-01-25T14:49:55.503",
+    "Is_Xoa": true
+  },
+  {
+    "MaNV": "NV0001060",
+    "HoNV": "Nguyễn Quang",
+    "TenNV": "Huy",
+    "TenThe": "NGUYEN QUANG HUY",
+    "BankIDVietQR": 35,
+    "BankCodeVietQR": "SHB",
+    "BankNameVietQR": "Ngân hàng TMCP Sài Gòn - Hà Nội",
+    "TaiKhoan": "1015635919",
+    "Thang": 8,
+    "Nam": 2022,
+    "NhanVienCapNhat": "         ",
+    "ThoiGianCapNhat": "2024-01-25T14:49:22.007",
+    "Is_Xoa": true
+  }
+]

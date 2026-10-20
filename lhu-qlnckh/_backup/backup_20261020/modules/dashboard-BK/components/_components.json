@@ -1,0 +1,54 @@
+[
+  {
+    "comID": 11888,
+    "comName": "uc-btn"
+  },
+  {
+    "comID": 11881,
+    "comName": "uc-card-item"
+  },
+  {
+    "comID": 11882,
+    "comName": "uc-card-list"
+  },
+  {
+    "comID": 11880,
+    "comName": "uc-chart"
+  },
+  {
+    "comID": 11889,
+    "comName": "uc-chart-line"
+  },
+  {
+    "comID": 11883,
+    "comName": "uc-dcard"
+  },
+  {
+    "comID": 11887,
+    "comName": "uc-dchart-card"
+  },
+  {
+    "comID": 11885,
+    "comName": "uc-dialog"
+  },
+  {
+    "comID": 11886,
+    "comName": "uc-dtable"
+  },
+  {
+    "comID": 11884,
+    "comName": "uc-excel-btn"
+  },
+  {
+    "comID": 11892,
+    "comName": "uc-hoat-dong-khoa-hoc"
+  },
+  {
+    "comID": 11890,
+    "comName": "uc-main-component"
+  },
+  {
+    "comID": 11891,
+    "comName": "uc-phan-loai-an-pham"
+  }
+]

@@ -1,0 +1,191 @@
+{
+  "data": [
+    {
+      "EXE": "initMode()"
+    },
+    {
+      "mode": false,
+      "IsLoadingAnPhamSummary": true,
+      "IsLoadingCGCNSummary": true,
+      "IsLoadingGiaiThuongSummary": true,
+      "colorMode.dark.primary": "vueData.v_Set.themeStyle.theme.themes.dark.primary",
+      "colorMode.dark.secondary": "vueData.v_Set.themeStyle.theme.themes.dark.secondary",
+      "colorMode.dark.tertiary": "vueData.v_Set.themeStyle.theme.themes.dark.tertiary",
+      "SoBaiDangTrongNuoc": {},
+      "SoBaiDangQuocTe": {},
+      "TongSoBaiDang": {},
+      "SoBaiDangHDGSNN": {},
+      "SoBaiDangTCLH": {},
+      "SoBaiDangKYHTTN": {},
+      "SoBaiDangKYHTQT": {},
+      "SoBaiDangKYHT": {},
+      "SoBaiDangQT": {},
+      "SoBaiDangSach": {},
+      "SoBaiDangTapChiKHLH_GSNN": {},
+      "keyComp": 1,
+      "isLoadingChartLoaiAnPham": true,
+      "years": [
+        2025,
+        2026
+      ]
+    },
+    {
+      "loadSummaryAnPham": {
+        "API": "/RPT_BBKH_Summary",
+        "OUT": "DSAnPham",
+        "CALLBACK": {
+          "DSAnPhamSummary": "DSAnPham[0][0]",
+          "DSAnPhamQuocTeDetailSummary": "DSAnPham[1].map((item,index) => ({...item,  TenLoaiAnPham: item.LoaiAnPhamID === 6 ? item.TenLoaiAnPham + ' quốc tế' : item.TenLoaiAnPham }))",
+          "DSAnPhamTrongNuocDetailSummary": "DSAnPham[2].map((item,index) => ({...item,  TenLoaiAnPham: item.LoaiAnPhamID === 6 ? item.TenLoaiAnPham + ' trong nước' : item.TenLoaiAnPham }))",
+          "DSAnPhamColumnDetailSummary": "DSAnPham[3]",
+          "DSAnPhamDetailSummary": "DSAnPham[4].map((item, index) => ({...item, STT : index +1}))",
+          "IsLoadingAnPhamSummary": false
+        }
+      }
+    },
+    {
+      "loadSummaryCGCN": {
+        "API": "/RPT_CGCN_Summary",
+        "OUT": "DSCGCN",
+        "CALLBACK": {
+          "DSHopDong": "DSCGCN[0]",
+          "DSDonViTiepNhan": "DSCGCN[1]",
+          "IsLoadingCGCNSummary": false
+        }
+      }
+    },
+    {
+      "loadSummaryGiaiThuong": {
+        "API": "/RPT_GiaiThuong_Summary",
+        "OUT": "DSGiaiThuong",
+        "CALLBACK": {
+          "DSGiaiThuongSummary": "vueData.DSGiaiThuong[0].map((item,index) => ({...item, STT : index + 1}))",
+          "DSGiaiThuongNamSummary": "DSGiaiThuong[1].map((item,index) => ({...item, STT : index + 1}))",
+          "IsLoadingGiaiThuongSummary": false
+        }
+      }
+    },
+    {
+      "APIRPTTemp": {
+        "API": "/RPT_Temp",
+        "OUT": "DSRPTTemp",
+        "CALLBACK": {
+          "AnPhamTheoNam": "DSRPTTemp[0]",
+          "LoaiAnPhamTheoNam": "DSRPTTemp[1]",
+          "AnPhamTheoNamCT1": "DSRPTTemp[2]",
+          "AnPhamTheoNamCT2": "DSRPTTemp[3]"
+        }
+      }
+    },
+    {
+      "RPT_AnPham_NamDang": {
+        "API": "/RPT_AnPham_NamDang",
+        "IN": {
+          "NamDang": "years.join(',')"
+        },
+        "OUT": "DSRPT_AnPham",
+        "CALLBACK": [
+          {
+            "SoBaiDangTrongNuoc": "DSRPT_AnPham.filter(item => item.NoiDangBai === 'Trong nước').reduce((result,item) =>{  if(!result[item.NamDangBai]){     result[item.NamDangBai]=[item]   }else{ result[item.NamDangBai].push(item)  } return result},Object.fromEntries(years.map(y => [y, []])))",
+            "SoBaiDangQuocTe": "DSRPT_AnPham.filter(item => item.NoiDangBai === 'Quốc tế').reduce((result,item) =>{  if(!result[item.NamDangBai]){     result[item.NamDangBai]=[item]   }else{ result[item.NamDangBai].push(item)  } return result},Object.fromEntries(years.map(y => [y, []])))",
+            "TongSoBaiDang": "DSRPT_AnPham.reduce((result,item) =>{  if(!result[item.NamDangBai]){     result[item.NamDangBai]=[item]   }else{ result[item.NamDangBai].push(item)  } return result},Object.fromEntries(years.map(y => [y, []])))",
+            "SoBaiDangHDGSNN": "DSRPT_AnPham.filter(item => item.GroupAnPham_Edit == 2).reduce((result,item) =>{  if(!result[item.NamDangBai]){     result[item.NamDangBai]=[item]   }else{ result[item.NamDangBai].push(item)  } return result},Object.fromEntries(years.map(y => [y, []])))",
+            "SoBaiDangTCLH": "DSRPT_AnPham.filter(item => item.GroupAnPham_Edit == 4).reduce((result,item) =>{  if(!result[item.NamDangBai]){     result[item.NamDangBai]=[item]   }else{ result[item.NamDangBai].push(item)  } return result},Object.fromEntries(years.map(y => [y, []])))",
+            "SoBaiDangKYHTTN": "DSRPT_AnPham.filter(item => item.GroupAnPham_Edit == 3 && item.LoaiAnPhamID == 1).reduce((result,item) =>{  if(!result[item.NamDangBai]){     result[item.NamDangBai]=[item]   }else{ result[item.NamDangBai].push(item)  } return result},Object.fromEntries(years.map(y => [y, []])))",
+            "SoBaiDangKYHTQT": "DSRPT_AnPham.filter(item => item.GroupAnPham_Edit == 3 && item.LoaiAnPhamID == 2).reduce((result,item) =>{  if(!result[item.NamDangBai]){     result[item.NamDangBai]=[item]   }else{ result[item.NamDangBai].push(item)  } return result},Object.fromEntries(years.map(y => [y, []])))",
+            "SoBaiDangKYHT": "DSRPT_AnPham.filter(item => item.GroupAnPham_Edit == 3).reduce((result,item) =>{  if(!result[item.NamDangBai]){     result[item.NamDangBai]=[item]   }else{ result[item.NamDangBai].push(item)  } return result},Object.fromEntries(years.map(y => [y, []])))",
+            "SoBaiDangQT": "DSRPT_AnPham.filter(item => item.GroupAnPham_Edit == 1).reduce((result,item) =>{  if(!result[item.NamDangBai]){     result[item.NamDangBai]=[item]   }else{ result[item.NamDangBai].push(item)  } return result},Object.fromEntries(years.map(y => [y, []])))",
+            "SoBaiDangSach": "DSRPT_AnPham.filter(item => item.GroupAnPham_Edit == 5).reduce((result,item) =>{  if(!result[item.NamDangBai]){     result[item.NamDangBai]=[item]   }else{ result[item.NamDangBai].push(item)  } return result},Object.fromEntries(years.map(y => [y, []])))",
+            "SoBaiDangTapChiKHLH_GSNN": "DSRPT_AnPham.filter(item => item.GroupAnPham_Edit == 6).reduce((result,item) =>{  if(!result[item.NamDangBai]){     result[item.NamDangBai]=[item]   }else{ result[item.NamDangBai].push(item)  } return result},Object.fromEntries(years.map(y => [y, []])))"
+          },
+          {
+            "EXE": "vueData.keyComp++"
+          },
+          {
+            "EXE": "vueData.isLoadingChartLoaiAnPham = false;"
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "loadSummaryAnPham"
+    },
+    {
+      "CALL": "loadSummaryCGCN"
+    },
+    {
+      "CALL": "loadSummaryGiaiThuong"
+    },
+    {
+      "CALL": "APIRPTTemp"
+    },
+    {
+      "CALL": "RPT_AnPham_NamDang"
+    },
+    {
+      "GET_HSCL": {
+        "API": "/HSCL_Get",
+        "OUT": "DSHeSoChatLuong"
+      }
+    },
+    {
+      "GET_RPT_LoaiSubAnPham_DacThu_Get": {
+        "API": "/RPT_LoaiSubAnPham_DacThu_Get",
+        "OUT": "DSHeSoChatLuongDacThu"
+      }
+    },
+    {
+      "CALL": "GET_HSCL"
+    },
+    {
+      "CALL": "GET_RPT_LoaiSubAnPham_DacThu_Get"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid ",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-card",
+              "attr": {
+                "flat": true,
+                ":dark": "vueData.mode",
+                "style": "border-radius: 0; border: none; min-height: calc(100vh - 48px);",
+                ":style": "{'background-color': vueData.mode ? vueData.colorMode.dark.primary : 'white'}"
+              },
+              "innerHTML": [
+                {
+                  "el": "uc-main-component",
+                  "attr": {
+                    ":mode": "vueData.mode",
+                    ":anphamsummary": "vueData.DSAnPhamSummary",
+                    ":anphamdetailsummary": "vueData.DSAnPhamDetailSummary",
+                    ":anphamtrongnuocdetailsummary": "vueData.DSAnPhamTrongNuocDetailSummary",
+                    ":anphamquoctedetailsummary": "vueData.DSAnPhamQuocTeDetailSummary",
+                    ":anphamcolumndetailsummary": "vueData.DSAnPhamColumnDetailSummary",
+                    ":cgcnhopdong": "vueData.DSHopDong",
+                    ":cgcndonvitiepnhan": "vueData.DSDonViTiepNhan",
+                    ":giaithuongsummary": "vueData.DSGiaiThuongSummary",
+                    ":giaithuongnamsummary": "vueData.DSGiaiThuongNamSummary",
+                    ":anphamtheonam": "vueData.AnPhamTheoNam",
+                    ":loaianphamtheonam": "vueData.LoaiAnPhamTheoNam",
+                    ":anphamtheonamct1": "vueData.AnPhamTheoNamCT1",
+                    ":anphamtheonamct2": "vueData.AnPhamTheoNamCT2",
+                    ":sobaidangquocte": "vueData.SoBaiDangQT"
+                  },
+                  "w": 12
+                }
+              ]
+            }
+          ],
+          "w": 12
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "GiaiThuongID": 227,
+    "LoaiGiaiThuongID": 1,
+    "SoThuTu": 0,
+    "TenDeTai": "IOT test",
+    "TacGia": "IOT",
+    "DonVi": "Trường Đại học Lạc Hồng",
+    "Giai": "Giải Khuyến Khích",
+    "ThangDatGiai": 8,
+    "NamDatGiai": 2024,
+    "QDID": 45,
+    "FileID_List": "",
+    "NamHoc": "2024-2025",
+    "NhanVienCapNhat": "GV0000611",
+    "ThoiGianCapNhat": "2024-06-27T10:36:30.007",
+    "Is_Xoa": true,
+    "CountCommit": 0,
+    "LastCommit": null,
+    "UserCommit": null
+  }
+]

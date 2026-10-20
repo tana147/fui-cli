@@ -1,0 +1,8 @@
+{
+  "module.json": "sha1:81e85bcd684594f46b5fc677f7162db9262d40af",
+  "script.js": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "style.css": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "header.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "body.html": "sha1:da39a3ee5e6b4b0d3255bfef95601890afd80709",
+  "components/uc-table-cbgvnv.vue": "sha1:b27c9a751cfc7d79ccbc96c92d63035a1c1a5243"
+}
