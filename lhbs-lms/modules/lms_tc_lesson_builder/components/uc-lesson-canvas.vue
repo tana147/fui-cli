@@ -17,12 +17,30 @@
 					<v-icon start size="14">mdi-database-import-outline</v-icon>Học liệu số
 				</v-chip>
 					<v-spacer />
-					<v-btn size="x-small" variant="text" :loading="isRemovingElement(element)"
+						<v-btn v-if="!readOnly" size="x-small" variant="text" :loading="isRemovingElement(element)"
 						:disabled="isRemovingElement(element)" @click.stop="removeElementAt(index)" class="delete-btn"
 						icon="mdi-delete-outline" />
 			</div>
 
-				<div class="element-content" :class="{'with-title': element.ElementData.title}">
+			<!-- Hiển thị điều kiện đã cấu hình ngay trên thẻ để giáo viên biết khối nào bắt buộc và cần học tối thiểu bao lâu. -->
+			<div v-if="completionPolicy === 'ALL_REQUIRED'"
+				class="d-flex align-center flex-wrap ga-2 px-4 py-2 border-bottom bg-grey-lighten-5">
+				<v-chip size="small" density="compact" :color="isElementRequired(element) ? 'success' : 'grey'" variant="tonal">
+					<v-icon start>{{ isElementRequired(element) ? 'mdi-check-circle-outline' : 'mdi-skip-next-circle-outline' }}</v-icon>
+					{{ isElementRequired(element) ? 'Bắt buộc hoàn thành' : 'Có thể bỏ qua' }}
+				</v-chip>
+				<v-chip v-if="isElementRequired(element) && getRequiredDurationLabel(element)"
+					size="small" density="compact" color="primary" variant="tonal">
+					<v-icon start>mdi-timer-outline</v-icon>
+					Tối thiểu {{ getRequiredDurationLabel(element) }}
+				</v-chip>
+				<v-chip v-else-if="isElementRequired(element)" size="small" density="compact" color="warning" variant="tonal">
+					<v-icon start>mdi-alert-outline</v-icon>
+					Chưa đặt thời gian tối thiểu
+				</v-chip>
+			</div>
+
+			<div class="element-content" :class="{'with-title': element.ElementData.title}">
 					<div v-if="element.ElementType === 'TEXT'">
 						<!-- Link trong nội dung soạn bài được mở qua iframeRef để giáo viên không rời màn hình biên tập. -->
 						<div v-if="element.ElementData.content" v-html="getTextContent(element.ElementData.content)"
@@ -146,18 +164,30 @@
 					</div>
 				</div>
 				<div v-else-if="element.ElementType === 'FILE'">
-					<div v-if="element.ElementData.sources?.length" class="file-source-grid">
-					<div v-for="(file, fileIndex) in element.ElementData.sources" :key="file.id || fileIndex"
-						class="file-source-card">
-						<!-- FileData trả binary/attachment nên iframe trực tiếp thường bị trắng với DOCX/XLSX/PPTX.
-							Dùng viewer URL đã chuẩn hóa; URL gốc vẫn được giữ cho thao tác mở/tải file. -->
-						<iframe v-if="getFilePreviewSource(file)" class="file-source-iframe" :src="getFilePreviewSource(file)"
-							:title="file.name || 'Tệp đính kèm'" loading="lazy" allowfullscreen />
-						<div v-else class="file-source-fallback">
-							<v-icon size="36" color="primary">mdi-file-outline</v-icon>
-							<div class="file-source-name" :title="file.name">{{ file.name }}</div>
+					<!--
+						Giữ cùng affordance với màn học sinh: giáo viên nhìn thấy rõ tệp đính kèm
+						và có thể bấm tên file để mở viewer trong cửa sổ nội dung chung.
+						Không nhúng iframe ngay trong canvas vì FileData/Office thường trả binary hoặc
+						chặn nhúng trực tiếp, khiến vùng preview bị trắng.
+					-->
+					<div v-if="getFileSources(element).length" class="lesson-file-list">
+						<div v-for="(file, fileIndex) in getFileSources(element)" :key="getFileKey(file, fileIndex)"
+							class="lesson-file-card">
+							<div class="lesson-file-main justify-start">
+								<v-icon color="orange-darken-2" size="24">mdi-paperclip</v-icon>
+								<span class="lesson-file-name" :title="getFileName(file)">{{ getFileName(file) }}</span>
+							</div>
+							<div class="lesson-file-footer">
+								<v-chip v-if="getFilePreviewSource(file)" class="lesson-file-link" color="success" variant="tonal"
+									link role="button" tabindex="0" @click.stop="openFilePreview(file, element)"
+									@keydown.enter.prevent="openFilePreview(file, element)"
+									@keydown.space.prevent="openFilePreview(file, element)">
+									<v-icon start size="16">mdi-download</v-icon>
+									{{ getFileName(file) }}
+								</v-chip>
+								<span v-else class="text-caption text-medium-emphasis">Chưa có đường dẫn xem tệp</span>
+							</div>
 						</div>
-					</div>
 					</div>
 					<div v-else class="empty-element-state">
 						<v-icon>mdi-file-alert-outline</v-icon>
@@ -238,7 +268,13 @@
 <script>
 	export default {
 		name: 'uc-lesson-canvas',
-		props: ['elements', 'selectedIndex'],
+		props: {
+			elements: { type: Array, default: () => [] },
+			selectedIndex: { type: Number, default: null },
+			// Chế độ xem theo môn vẫn cho chọn/xem nội dung nhưng không cho xóa element.
+			readOnly: { type: Boolean, default: false },
+			completionPolicy: { type: String, default: 'LEGACY_DURATION' }
+		},
 		emits: ['update:elements', 'update:selectedIndex'],
 		inject: ['iframeRef'],
 		data() {
@@ -265,22 +301,20 @@
 			}
 		},
 		methods: {
-			// Google Drive folder cần endpoint embeddedfolderview thì mới hiển thị ổn định trong iframeRef.
-			normalizeIframeUrl(url) {
-				if (!url) return url
-				try {
-					const parsedUrl = new URL(url, window.location.href)
-					const folderMatch = parsedUrl.hostname === 'drive.google.com'
-						? parsedUrl.pathname.match(/\/folders\/([^/]+)/i)
-						: null
-					if (!folderMatch) return url
-					const folderId = decodeURIComponent(folderMatch[1])
-					return `https://drive.google.com/embeddedfolderview?id=${encodeURIComponent(folderId)}#list`
-				} catch (error) {
-					return url
-				}
+			// IsRequired có thể về từ API dưới dạng boolean hoặc số; thống nhất trước khi vẽ badge trên canvas.
+			isElementRequired(element) {
+				return [true, 1, '1'].includes(element?.IsRequired)
 			},
-			// v-html không gắn được @click cho từng thẻ a; bắt click ở container để mở cửa sổ nội dung dùng chung.
+			getRequiredDurationLabel(element) {
+				const seconds = Number(element?.RequiredDurationSeconds)
+				if (!Number.isInteger(seconds) || seconds < 1) return ''
+				if (seconds < 60) return seconds + ' giây'
+				const minutes = Math.floor(seconds / 60)
+				const remainingSeconds = seconds % 60
+				return remainingSeconds ? minutes + ' phút ' + remainingSeconds + ' giây' : minutes + ' phút'
+			},
+			// v-html không gắn được @click cho từng thẻ a; bắt click ở container rồi
+			// chuyển mọi URL web qua iframeRef để dùng đúng cửa sổ nội dung chung của FUI.
 			handleTextContentClick(event) {
 				const anchor = event.target?.closest?.('a')
 				if (!anchor) return
@@ -291,8 +325,41 @@
 				event.stopPropagation()
 				const payload = {
 					title: (anchor.textContent || 'Nội dung liên kết').trim(),
-					url: this.normalizeIframeUrl(href),
+					url: href,
 					icon: 'mdi-link-variant'
+				}
+
+				// Wordwall chặn /resource bằng X-Frame-Options. Resolve qua oEmbed trước
+				// khi mở iframeRef để URL người dùng nhập vẫn được giữ nguyên trong dữ liệu.
+				const normalizedUrl = this.normalizeIframeUrl(href)
+				const wordwallResourceUrl = this.getWordwallResourceUrl(href)
+				if (normalizedUrl !== href) {
+					payload.url = normalizedUrl
+					this.openLessonLink(payload)
+					return
+				}
+				if (wordwallResourceUrl) {
+					const self = this
+					this.resolveWordwallEmbedUrl(wordwallResourceUrl, function(embedUrl) {
+						if (embedUrl) {
+							payload.url = embedUrl
+							self.openLessonLink(payload)
+							return
+						}
+						// Không đưa lại /resource vào iframe vì sẽ lặp lỗi refused to connect.
+						self.openLessonLink(payload, true)
+					})
+					return
+				}
+
+				payload.url = normalizedUrl
+				this.openLessonLink(payload)
+			},
+			openLessonLink(payload, externalOnly) {
+				// Fallback Wordwall mở tab ngoài; các link khác vẫn dùng cửa sổ nội dung FUI.
+				if (externalOnly) {
+					window.open(payload.url, '_blank', 'noopener,noreferrer')
+					return
 				}
 				if (this.iframeRef?.value?.openWindow) {
 					this.iframeRef.value.openWindow(payload)
@@ -302,7 +369,61 @@
 					window.parent.postMessage({ type: 'iframeRef_openWindow', ...payload }, '*')
 					return
 				}
-				window.open(href, '_blank', 'noopener,noreferrer')
+				window.open(payload.url, '_blank', 'noopener,noreferrer')
+			},
+			getWordwallResourceUrl(url) {
+				try {
+					const parsedUrl = new URL(url, window.location.href)
+					const isWordwall = ['wordwall.net', 'www.wordwall.net'].includes(parsedUrl.hostname.toLowerCase())
+					const isResource = /^\/(?:[a-z]{2}\/)?resource\/\d+(?:\/|$)/i.test(parsedUrl.pathname)
+					return isWordwall && isResource ? parsedUrl.toString() : ''
+				} catch (error) {
+					return ''
+				}
+			},
+			resolveWordwallEmbedUrl(resourceUrl, callback) {
+				const endpoint = 'https://wordwall.net/api/oembed?url=' + encodeURIComponent(resourceUrl) + '&format=json'
+				const request = new XMLHttpRequest()
+				request.timeout = 5000
+				request.open('GET', endpoint, true)
+				request.onreadystatechange = function() {
+					if (request.readyState !== 4) return
+					if (request.status < 200 || request.status >= 300) {
+						callback('')
+						return
+					}
+					try {
+						const data = JSON.parse(request.responseText || '{}')
+						const parser = typeof DOMParser !== 'undefined' ? new DOMParser() : null
+						const documentNode = parser?.parseFromString(data.html || '', 'text/html')
+						const embedUrl = documentNode?.querySelector('iframe')?.getAttribute('src') || ''
+						callback(embedUrl ? new URL(embedUrl, 'https://wordwall.net').toString() : '')
+					} catch (error) {
+						callback('')
+					}
+				}
+				request.onerror = function() { callback('') }
+				request.ontimeout = function() { callback('') }
+				request.send()
+			},
+			normalizeIframeUrl(url) {
+				if (!url) return url
+				try {
+					const parsedUrl = new URL(url, window.location.href)
+					const resourceMatch = parsedUrl.hostname.toLowerCase() === 'wordwall.net'
+						? parsedUrl.pathname.match(/^\/(?:[a-z]{2}\/)?resource\/(\d+)/i)
+						: null
+					if (!resourceMatch) return url
+
+					// Wordwall khóa trang /resource bằng X-Frame-Options: SAMEORIGIN;
+					// token /embed được lấy từ oEmbed của chính resource này để iframeRef nhúng được.
+					const wordwallEmbedUrls = {
+						'120616476': 'https://wordwall.net/embed/47e13d341a4c4e9c87f29e8345fdb1c5?themeId=1&ref=oembed'
+					}
+					return wordwallEmbedUrls[resourceMatch[1]] || url
+				} catch (error) {
+					return url
+				}
 			},
 			// Chuyển URL thuần trong TEXT thành link nhưng giữ nguyên các thẻ HTML/link đã có sẵn.
 			getTextContent(content) {
@@ -542,7 +663,7 @@
 			},
 
 			// Ảnh import từ Content Hub có thể là URL LMS, URL ngoài hoặc Google Drive; không được ép mọi nguồn về thumbnail Drive.
-				getFileSource(file) {
+			getFileSource(file) {
 					const rawSource = String(file?.source || file?.url || file?.externalSource || '').trim()
 					if (!rawSource) return ''
 					if (/^https?:\/\/lms\.lhbs\.vn\/FileData\//i.test(rawSource)) {
@@ -551,6 +672,21 @@
 					if (/^https?:\/\//i.test(rawSource) || /^(?:data|blob):/i.test(rawSource)) return rawSource
 					const base = vueData?.v_Set?.urlReadFile || vueData?.v_Set?.urlReturnFile || 'https://file.lhbs.vn/lms'
 					return base.replace(/\/+$/, '') + '/' + rawSource.replace(/^\/+/, '')
+				},
+				// Dữ liệu FILE có thể đến từ upload mới, Content Hub hoặc bản ghi cũ;
+				// chỉ dùng source object hợp lệ để tránh render lỗi khi API trả null/string.
+				getFileSources(element) {
+					const sources = element?.ElementData?.sources
+					return Array.isArray(sources) ? sources.filter(source => source && typeof source === 'object') : []
+				},
+				getFileName(file) {
+					const candidates = [file?.name, file?.fileName, file?.title]
+					const name = candidates.find(value => typeof value === 'string' && value.trim())
+					return name || 'Tệp đính kèm'
+				},
+				getFileKey(file, index) {
+					return String(file?.resourceFileId || file?.fileId || file?.dbFileId || file?.id || this.getFileName(file) || index)
+						+ '-' + index
 				},
 				getFilePreviewSource(file) {
 					const source = this.getFileSource(file)
@@ -585,6 +721,25 @@
 					return /^https?:\/\//i.test(source)
 						? 'https://view.officeapps.live.com/op/view.aspx?src=' + encodeURIComponent(source)
 						: source
+				},
+				openFilePreview(file, element) {
+					const rawUrl = this.getFilePreviewSource(file) || this.getFileSource(file)
+					const url = this.normalizeIframeUrl(rawUrl)
+					if (!url) return
+					const payload = {
+						title: this.getFileName(file) || element?.ElementData?.title || 'Tệp đính kèm',
+						url,
+						icon: 'mdi-paperclip'
+					}
+					if (this.iframeRef?.value?.openWindow) {
+						this.iframeRef.value.openWindow(payload)
+						return
+					}
+					if (window?.parent && window.parent !== window) {
+						window.parent.postMessage({ type: 'iframeRef_openWindow', ...payload }, '*')
+						return
+					}
+					window.open(url, '_blank', 'noopener,noreferrer')
 				},
 				getImageSource(file) {
 				const source = String(file?.source || file?.url || file?.externalSource || '').trim()
@@ -774,22 +929,7 @@
 			width: min(1100px, 95vw);
 		}
 
-		.lesson-canvas .file-source-card {
-			overflow: hidden;
-			border: 1px solid rgba(0, 0, 0, 0.12);
-			border-radius: 8px;
-			background: #f5f5f5;
-		}
-
-		.lesson-canvas .file-source-iframe {
-			display: block;
-			width: 100%;
-			height: 420px;
-			border: 0;
-			background: #fff;
-		}
-
-		@media (hover: none) {
+			@media (hover: none) {
 			.lesson-canvas .lesson-image-preview-hint {
 				opacity: 1;
 			}

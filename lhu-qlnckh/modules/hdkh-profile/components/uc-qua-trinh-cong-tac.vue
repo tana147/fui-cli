@@ -1,104 +1,44 @@
 <template>
-	<div>
-		<h3 class="text-primary mb-2 mt-2 font-weight-bold">
-			III. Quá trình công tác chuyên môn kể từ khi tốt nghiệp đại học:
-		</h3>
-		<f-table :items="QuaTrinhCongTac" :headers="headers" :update-form="updateForm" :update-api="updateApi"
-			:excel="false" dense></f-table>
-	</div>
+	<uc-llkh-muc title="III. Quá trình công tác" nguon="HRM" anchor="coban-III"
+		:actions="[{ label: 'Thêm công tác ngoài LHU', icon: 'mdi-plus' }, { label: 'Lịch sử', icon: 'mdi-history' }]">
+		<div class="text-subtitle-2 text-medium-emphasis mb-1">
+			Tại Trường Đại học Lạc Hồng
+			<v-icon size="x-small" v-tooltip="'Do Phòng TCNS quản lý'">mdi-lock-outline</v-icon>
+		</div>
+		<f-table :items="rows" :headers="headers" :excel="false"></f-table>
+		<div class="text-subtitle-2 text-medium-emphasis mt-4 mb-1">Trước khi về LHU</div>
+		<uc-llkh-info :items="[{ label: 'Quá trình công tác ngoài LHU', value: null, why: lyDo, cols: 12 }]"></uc-llkh-info>
+	</uc-llkh-muc>
 </template>
 
 <script>
 	export default {
-		props: [],
-		data() {
+		props: {
+			d: { type: Object, default: function () { return { congTac: [] } } }
+		},
+		data: function () {
 			return {
-				vueData,
-				QuaTrinhCongTac: vueData.userProfile[2] ?? {},
+				lyDo: window.LLKH.LY_DO.noStore,
 				headers: [
-					{ "title": "Thời gian", "value": "ThoiGian", "align": "left" },
-					{ "title": "Nơi công tác", "value": "NoiCongTac", "align": "left" },
-					{ "title": "Công việc đảm nhận", "value": "CongViecDamNhiem", "align": "left" },
-					{ "title": "Chức năng", "value": "ctrl-update", "align": "center" }
-				],
-				updateForm: [
-					{
-						el: "v-text-field",
-						attr: {
-							"v-model": "ThoiGian",
-							"label": "Thời gian",
-							":rules": "[vueData.rules.required]"
-						},
-						w: 4,
-					},
-					{
-						el: "v-text-field",
-						attr: {
-							"v-model": "NoiCongTac",
-							"label": "Nơi công tác",
-							":rules": "[vueData.rules.required]"
-						},
-						w: 4,
-					},
-					{
-						el: "v-text-field",
-						attr: {
-							"v-model": "CongViecDamNhiem",
-							"label": "Công việc đảm nhận",
-							":rules": "[vueData.rules.required]"
-						},
-						w: 4,
-					}
-				],
-				updateApi: {
-					new: {
-						API: "/HDKH_Profile_CongTac_Save",
-						IN: {
-							CongTacID: 0,
-							ThoiGian: "item.ThoiGian",
-							NoiCongTac: "item.NoiCongTac",
-							CongViecDamNhiem: "item.CongViecDamNhiem"
-						},
-						MESS: "Thêm mới quá trình thành công",
-						CALLBACK: [
-							{
-								CALL: "getUserProfile",
-							},
-						],
-					},
-					edit: {
-						API: "/HDKH_Profile_CongTac_Save",
-						IN: {
-							CongTacID: "item.CongTacID",
-							ThoiGian: "item.ThoiGian",
-							NoiCongTac: "item.NoiCongTac",
-							CongViecDamNhiem: "item.CongViecDamNhiem"
-						},
-						MESS: "Cập nhật quá trình thành công",
-						CALLBACK: [
-							{
-								CALL: "getUserProfile",
-							},
-						],
-					},
-					delete: {
-						CONFIRM: "Bạn có muốn xóa nơi công tác <br /><b>{{item.NoiCongTac}}</b>",
-						API: "",
-						IN: {
-						},
-						MESS: "CHUA CO API",
-						CALLBACK: [
-							{
-								CALL: "getUserProfile",
-							},
-						],
-					},
-				},
+					{ title: "Thời gian", key: "ThoiGian" },
+					{ title: "Đơn vị", key: "TenPB" },
+					{ title: "Chức vụ", key: "TenChucVu" },
+					{ title: "Hình thức", key: "TenTrangThaiNVPB" },
+					{ title: "Công việc đảm nhiệm", key: "CongViec" }
+				]
 			}
 		},
-		mounted() { },
-		computed: {},
-		watch: {},
-		methods: {},
+		computed: {
+			rows: function () {
+				var L = window.LLKH
+				return this.d.congTac.map(function (c) {
+					return Object.assign({}, c, {
+						ThoiGian: L.my(c.NgayLamViec) + " – " + (c.NgayNghiViec ? L.my(c.NgayNghiViec) : "nay"),
+						TenChucVu: L.show(c.TenChucVu),
+						CongViec: L.CHUA_CO
+					})
+				})
+			}
+		}
 	}
 </script>

@@ -1,10 +1,10 @@
 <template>
 	<v-dialog :value="value" max-width="1650px" width="96vw" persistent scrollable :retain-focus="false">
-		<v-card class="rounded-xs d-flex flex-column" style="min-height: 680px;">
+		<v-card class="rounded-xs d-flex flex-column article-modal-card">
 			<!-- Tiêu đề Dialog -->
 			<v-card-title class="pa-3 d-flex align-center justify-space-between primary white--text flex-grow-0">
 				<span class="text-subtitle-1 font-weight-bold">
-					{{ editedIndex === -1 ? 'Thêm mới hồ sơ đề xuất khen thưởng' : 'Chỉnh sửa hồ sơ đề xuất' }}
+					{{ !canEdit ? 'Chi tiết hồ sơ đề xuất khen thưởng' : (editedIndex === -1 ? 'Thêm mới hồ sơ đề xuất khen thưởng' : 'Chỉnh sửa hồ sơ đề xuất') }}
 				</span>
 				<v-btn icon dark small @click="close">
 					<v-icon small>mdi-close</v-icon>
@@ -34,7 +34,7 @@
 			</v-tabs>
 
 			<!-- Nội dung cuộn chính theo Tab -->
-			<v-card-text class="pa-4 flex-grow-1" style="max-height: calc(85vh - 150px); overflow-y: auto;">
+			<v-card-text class="pa-4 flex-grow-1 article-modal-body">
 				<!-- Thông báo lý do từ chối hồ sơ (nếu có) -->
 				<v-alert v-if="editedItem.KhenThuongObj && editedItem.KhenThuongObj.TrangThai === 4 && editedItem.KhenThuongObj.LyDoReject"
 					type="error" text dense class="mb-3 rounded-xs font-weight-medium">
@@ -42,11 +42,25 @@
 					<strong>Hồ sơ bị từ chối với lý do:</strong> {{ editedItem.KhenThuongObj.LyDoReject }}
 				</v-alert>
 
+				<!-- Thông báo khi đang chờ duyệt -->
+				<v-alert v-if="editedItem.KhenThuongObj && editedItem.KhenThuongObj.TrangThai === 2"
+					type="info" text dense class="mb-3 rounded-xs font-weight-medium">
+					<v-icon left small color="info">mdi-information</v-icon>
+					Hồ sơ đang trong quá trình thẩm định / xét duyệt (Chế độ chỉ xem).
+				</v-alert>
+
+				<!-- Thông báo khi đã duyệt -->
+				<v-alert v-if="editedItem.KhenThuongObj && editedItem.KhenThuongObj.TrangThai === 3"
+					type="success" text dense class="mb-3 rounded-xs font-weight-medium">
+					<v-icon left small color="success">mdi-check-circle</v-icon>
+					Hồ sơ đã được Quản trị phê duyệt chính thức (Chế độ chỉ xem).
+				</v-alert>
+
 				<v-tabs-items v-model="activeTab" class="bg-transparent">
 					<!-- Tab 1: Form thông tin đề xuất -->
 					<v-tab-item>
 						<uc-form-an-pham ref="formAnPham" v-model="editedItem" :api-file="apiFile"
-							:url-return-file="urlReturnFile"></uc-form-an-pham>
+							:url-return-file="urlReturnFile" :readonly="!canEdit"></uc-form-an-pham>
 						<div class="d-flex justify-end mt-4 pt-3 border-top">
 							<v-btn small color="primary" elevation="0" class="text-capitalize px-3 font-weight-medium"
 								@click="goToNextFromTab1">
@@ -59,18 +73,21 @@
 					<!-- Tab 2: File minh chứng (.docx / .pdf) -->
 					<v-tab-item>
 						<v-card outlined class="pa-3 rounded-xs mb-3">
-							<div class="d-flex flex-wrap align-center justify-space-between mb-3 px-1" style="gap: 10px;">
+							<div class="d-flex flex-wrap align-center justify-space-between mb-3 px-1 gap-10">
 								<div>
 									<div class="font-weight-bold text-subtitle-2 primary--text d-flex align-center">
 										<v-icon small color="primary" class="mr-1">mdi-file-upload-outline</v-icon>
 										Đính kèm file minh chứng
+										<v-chip x-small color="blue lighten-5" text-color="primary" class="ml-2 font-weight-medium">
+											Chỉ nhận .docx, .pdf
+										</v-chip>
 									</div>
 									<div class="caption grey--text text--darken-2 mt-1">
-										Quy định: Chỉ chấp nhận định dạng <strong>.docx</strong> hoặc <strong>.pdf</strong> (có chữ ký xác nhận, tối đa 25MB).
+										Quy định bắt buộc: Chỉ chấp nhận định dạng <strong>.docx</strong> hoặc <strong>.pdf</strong> (có chữ ký xác nhận, dung lượng tối đa 25MB).
 									</div>
 								</div>
 								<div class="compact-upload-wrapper">
-									<f-file-upload v-model="tempFileID" :filters="filtersFile" label="Chọn tệp minh chứng"
+									<f-file-upload v-if="canEdit" v-model="tempFileID" :filters="filtersFile" label="Chọn tệp minh chứng"
 										:url="apiFileUploadUrl" color="primary" @input="onFileUploadSuccess" />
 								</div>
 							</div>
@@ -91,16 +108,20 @@
 								</template>
 								<template v-slot:item.LoaiMinhChung="{ item }">
 									<v-select v-model="item.LoaiMinhChung" :items="loaiMinhChungList" item-text="text"
-										item-value="value" dense outlined hide-details class="my-1"></v-select>
+										item-value="value" dense outlined hide-details :disabled="!canEdit" class="my-1"></v-select>
 								</template>
 								<template v-slot:item.MoTa="{ item }">
 									<v-text-field v-model="item.MoTa" placeholder="Ghi chú minh chứng..." dense outlined
-										hide-details class="my-1"></v-text-field>
+										hide-details :readonly="!canEdit" class="my-1"></v-text-field>
 								</template>
 								<template v-slot:item.actions="{ item, index }">
-									<v-btn icon small color="red darken-2" title="Xóa file minh chứng này"
+									<v-btn v-if="canEdit" icon small color="red darken-2" title="Xóa file minh chứng này"
 										@click="deleteFile(item, index)">
 										<v-icon small>mdi-trash-can-outline</v-icon>
+									</v-btn>
+									<v-btn v-else icon small color="primary" :href="getFileUrl(item.FileID)" target="_blank"
+										title="Tải về / Xem tập tin">
+										<v-icon small>mdi-download</v-icon>
 									</v-btn>
 								</template>
 							</v-data-table>
@@ -124,6 +145,7 @@
 						<uc-table-tac-gia ref="tableTacGia" v-model="editedItem.MembersObjArr"
 							:khen-thuong-obj="editedItem.KhenThuongObj"
 							:ds-ngan-hang="dsNganHang"
+							:readonly="!canEdit"
 							@update:hinh-thuc-thanh-toan="editedItem.KhenThuongObj.HinhThucThanhToan = $event"></uc-table-tac-gia>
 						<div class="d-flex justify-start mt-4 pt-3 border-top">
 							<v-btn small text color="grey darken-2" class="text-capitalize px-3" @click="activeTab = 1">
@@ -182,13 +204,6 @@
 			return {
 				activeTab: 0,
 				tempFileID: '',
-				fileHeaders: [
-					{ text: '#', value: 'STT', width: 50, align: 'center', sortable: false },
-					{ text: 'Tên tệp tin', value: 'FileName', width: 320 },
-					{ text: 'Loại minh chứng', value: 'LoaiMinhChung', width: 220 },
-					{ text: 'Ghi chú / Mô tả', value: 'MoTa' },
-					{ text: 'Xóa', value: 'actions', width: 70, align: 'center', sortable: false },
-				],
 				loaiMinhChungList: [
 					{ text: 'Minh chứng giải / Văn bằng', value: 1 },
 					{ text: 'QĐ / Tờ trình phân công GVHD', value: 2 },
@@ -210,13 +225,29 @@
 					this.activeTab = 0
 					this.uploadedFileIDs = []
 					this.pendingDeleteFileIDs = []
+				} else {
+					if (this.uploadedFileIDs && this.uploadedFileIDs.length > 0) {
+						ajaxCALL('/FILE_FileDeleteMulti', { FileIDs: this.uploadedFileIDs.join(',') }, () => {})
+						this.uploadedFileIDs = []
+					}
+					this.pendingDeleteFileIDs = []
 				}
 			},
 		},
 		computed: {
 			canEdit() {
 				const status = this.editedItem.KhenThuongObj?.TrangThai
-				return !status || status === 1 || status === 2 || status === 4
+				// TrangThai = 2 (Chờ duyệt) hoặc 3 (Đã duyệt) thì chỉ xem, không được sửa
+				return !status || status === 1 || status === 4
+			},
+			fileHeaders() {
+				return [
+					{ text: '#', value: 'STT', width: 50, align: 'center', sortable: false },
+					{ text: 'Tên tệp tin', value: 'FileName', width: 320 },
+					{ text: 'Loại minh chứng', value: 'LoaiMinhChung', width: 220 },
+					{ text: 'Ghi chú / Mô tả', value: 'MoTa' },
+					{ text: this.canEdit ? 'Xóa' : 'Tải về', value: 'actions', width: 70, align: 'center', sortable: false },
+				]
 			},
 			filesList() {
 				return this.editedItem.FilesObjArr || []
@@ -234,10 +265,10 @@
 				return (this.editedItem.MembersObjArr || []).length
 			},
 			apiFileUploadUrl() {
-				return this.apiFile || (window.vueData && window.vueData.v_Set && window.vueData.v_Set.apiFile) || ''
+				return this.apiFile || (window.vueData && window.vueData.v_Set && window.vueData.v_Set.apiFile) || 'https://file.lhu.edu.vn/qlnckh/upload/FileData'
 			},
 			fileReturnUrl() {
-				return this.urlReturnFile || (window.vueData && window.vueData.v_Set && window.vueData.v_Set.urlReturnFile) || ''
+				return this.urlReturnFile || (window.vueData && window.vueData.v_Set && window.vueData.v_Set.urlReturnFile) || 'https://file.lhu.edu.vn/qlnckh'
 			},
 		},
 		methods: {
@@ -254,36 +285,54 @@
 				return this.fileReturnUrl ? this.fileReturnUrl + '/FileData/' + fileId : '#'
 			},
 			onFileUploadSuccess(res) {
-				if (!res || !res.Files || !res.Files[0]) return
-				const file = res.Files[0]
-				const fileName = (file.FILE_NAME || '').trim()
-				const lowerName = fileName.toLowerCase()
-
-				// Ràng buộc chỉ nhận file .docx và .pdf
-				if (!lowerName.endsWith('.docx') && !lowerName.endsWith('.pdf')) {
-					Vue.$toast.error('Định dạng tệp không hợp lệ! Chỉ chấp nhận file .docx hoặc .pdf (có chữ ký xác nhận).', { position: 'top' })
-					if (file.FILE_ID) {
-						ajaxCALL('/FILE_FileDelete', { FileID: file.FILE_ID }, () => {})
+				if (!res) return
+				let payload = res
+				if (typeof res === 'string') {
+					try {
+						payload = JSON.parse(res)
+					} catch (e) {
+						payload = { FILE_ID: res, FILE_NAME: res }
 					}
-					return
 				}
+				const fileList = Array.isArray(payload.Files)
+					? payload.Files
+					: (Array.isArray(payload) ? payload : [payload])
 
-				if (file.FILE_ID) {
-					this.uploadedFileIDs.push(file.FILE_ID)
-				}
+				fileList.forEach(file => {
+					if (!file) return
+					const fileId = file.FILE_ID || file.FileID || (typeof file === 'string' ? file : '')
+					const fileName = (file.FILE_NAME || file.FileName || file.FileTitle || file.name || '').trim()
+					const lowerName = fileName.toLowerCase()
 
-				const ext = lowerName.endsWith('.docx') ? '.docx' : '.pdf'
-				if (!this.editedItem.FilesObjArr) {
-					this.$set(this.editedItem, 'FilesObjArr', [])
-				}
-				this.editedItem.FilesObjArr.push({
-					FileID: file.FILE_ID,
-					FileName: fileName,
-					DinhDangFile: ext,
-					LoaiMinhChung: 1,
-					MoTa: '',
+					// Ràng buộc chỉ nhận file .docx và .pdf
+					if (fileName && !lowerName.endsWith('.docx') && !lowerName.endsWith('.pdf')) {
+						Vue.$toast.error('Chỉ chấp nhận file định dạng .docx hoặc .pdf! File không hợp lệ: ' + fileName, { position: 'top' })
+						if (fileId) {
+							ajaxCALL('/FILE_FileDelete', { FileID: fileId }, () => {})
+						}
+						return
+					}
+
+					if (fileId) {
+						this.uploadedFileIDs.push(fileId)
+					}
+
+					const ext = lowerName.endsWith('.docx') ? '.docx' : '.pdf'
+					if (!this.editedItem.FilesObjArr) {
+						this.$set(this.editedItem, 'FilesObjArr', [])
+					}
+					this.editedItem.FilesObjArr.push({
+						FileID: fileId,
+						FileName: fileName || (fileId ? fileId + ext : 'minh-chung' + ext),
+						DinhDangFile: ext,
+						LoaiMinhChung: 1,
+						MoTa: '',
+					})
+					Vue.$toast.success('Đã tải lên tệp minh chứng: ' + (fileName || 'thành công'), { position: 'top' })
 				})
-				Vue.$toast.success('Đã tải lên tệp minh chứng: ' + fileName, { position: 'top' })
+				this.$nextTick(() => {
+					this.tempFileID = ''
+				})
 			},
 			deleteFile(item, index) {
 				const $this = this

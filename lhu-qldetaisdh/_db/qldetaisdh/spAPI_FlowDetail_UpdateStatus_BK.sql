@@ -1,7 +1,7 @@
 
 --SELECT * FROM FLOW_DETAIL where flow
 
-CREATE PROCEDURE [dbo].[spAPI_FlowDetail_UpdateStatus_BK] -- '922000123', 2, 24396, 13, 124, 'C', 'GV0000611', 9
+CREATE PROCEDURE [dbo].[spAPI_FlowDetail_UpdateStatus] -- '922000123', 2, 24396, 13, 124, 'C', 'GV0000611', 9
     @Student_ID VARCHAR(20),
     @Process_ID INT,
     @Flow_ID INT,

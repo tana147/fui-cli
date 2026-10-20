@@ -148,3 +148,39 @@
 {"ts":"2026-10-05T07:50:08.831Z","pid":1928757,"tool":"fui sp get","message":"❌ object \"ThiKHCN_LichSu\" not found or has no definition in the database"}
 {"ts":"2026-10-05T07:50:09.016Z","pid":1928770,"tool":"fui sp get","message":"❌ object \"ThiKHCN_ThanhVien\" not found or has no definition in the database"}
 {"ts":"2026-10-05T07:50:09.205Z","pid":1928835,"tool":"fui sp get","message":"❌ object \"ToTrinh\" not found or has no definition in the database"}
+{"ts":"2026-10-05T08:28:21.182Z","pid":2158497,"tool":"fui sp deploy","message":"❌ tAPI does not support parameter default values; remove \"= ...\" and save before deploying:\n  - @NienKhoa VARCHAR(10) = NULL"}
+{"ts":"2026-10-05T09:07:28.254Z","pid":2387874,"tool":"fui query","message":"❌ tAPI HTTP 400: Invalid column name 'File_Content'."}
+{"ts":"2026-10-05T09:11:47.120Z","pid":2412738,"tool":"fui query","message":"❌ tAPI HTTP 400: All queries combined using a UNION, INTERSECT or EXCEPT operator must have an equal number of expressions in their target lists."}
+{"ts":"2026-10-05T09:21:56.077Z","pid":2471427,"tool":"fui query","message":"❌ tAPI HTTP 400: Cannot perform an aggregate function on an expression containing an aggregate or a subquery.\r\nCannot perform an aggregate function on an expression containing an aggregate or a subquery."}
+{"ts":"2026-10-05T09:23:01.944Z","pid":2477771,"tool":"fui query","message":"❌ tAPI HTTP 400: Invalid object name 'Flow_Master'."}
+{"ts":"2026-10-05T09:23:09.057Z","pid":2478449,"tool":"fui query","message":"❌ tAPI HTTP 400: Invalid column name 'Process_Name'."}
+{"ts":"2026-10-05T09:23:36.223Z","pid":2481143,"tool":"fui query","message":"❌ tAPI HTTP 400: Conversion failed when converting the varchar value 'Y' to data type bit."}
+{"ts":"2026-10-05T09:27:33.811Z","pid":2501254,"tool":"fui query","message":"❌ tAPI timed out after 30s; narrow the query with TOP/WHERE"}
+{"ts":"2026-10-07T02:45:48.557Z","pid":255905,"tool":"fui module get","message":"❌ target \"xet-tot-nghiep\" must look like /projectId/moduleId"}
+{"ts":"2026-10-07T02:45:51.940Z","pid":256276,"tool":"fui module get","message":"❌ pass both -p and -m, or a target"}
+{"ts":"2026-10-07T03:03:05.854Z","pid":355828,"tool":"fui query","message":"❌ tAPI HTTP 400: Invalid object name 'tblStudent'."}
+{"ts":"2026-10-07T03:59:23.810Z","pid":680566,"tool":"fui use","message":"❌ target \"lhu-qlnckh\" must look like /projectId/moduleId"}
+{"ts":"2026-10-07T04:05:18.437Z","pid":715478,"tool":"fui query","message":"❌ tAPI HTTP 400: Invalid column name 'SoTihouKhenThuong'."}
+{"ts":"2026-10-07T04:10:42.628Z","pid":746572,"tool":"fui query","message":"❌ tAPI HTTP 400: Invalid column name 'TenNV'.\r\nInvalid column name 'TenNV'.\r\nInvalid column name 'TenNV'.\r\nInvalid column name 'HoNV'.\r\nInvalid column name 'TenNV'.\r\nInvalid column name 'TenDonVi'."}
+{"ts":"2026-10-12T02:13:47.171Z","pid":74948,"tool":"fui query","message":"❌ tAPI HTTP 400: An object or column name is missing or empty. For SELECT INTO statements, verify each column has a name. For other statements, look for empty alias names. Aliases defined as \"\" or [] are not allowed. Change the alias to a valid name.\r\nAn object or column name is missing or empty. For SELECT INTO statements, verify each column has a name. For other statements, look for empty alias names. Aliases de"}
+{"ts":"2026-10-12T02:24:41.372Z","pid":138738,"tool":"fui component update","message":"❌ extend-time-topic.vue.vue not found in /home/iot/CODE/fui-cli/lhu-qldetaisdh/modules/extend-time-topic/components/"}
+{"ts":"2026-10-12T02:48:05.945Z","pid":285011,"tool":"fui module get","message":"❌ target \"to-trinh\" must look like /projectId/moduleId"}
+{"ts":"2026-10-12T02:48:10.390Z","pid":285450,"tool":"fui module get","message":"❌ pass both -p and -m, or a target"}
+{"ts":"2026-10-12T02:59:47.187Z","pid":354853,"tool":"fui query","message":"❌ tAPI HTTP 400: Invalid object name 'tblCGCN'."}
+{"ts":"2026-10-13T03:30:24.038Z","pid":505264,"tool":"fui remote diff","message":"❌ module commands need both -p <project> and -m <module>"}
+{"ts":"2026-10-14T02:24:10.910Z","pid":178430,"tool":"fui module get","message":"❌ target \"to-trinh\" must look like /projectId/moduleId"}
+{"ts":"2026-10-14T02:24:13.799Z","pid":178717,"tool":"fui module get","message":"❌ pass both -p and -m, or a target"}
+{"ts":"2026-10-14T02:31:39.673Z","pid":222555,"tool":"fui remote diff","message":"❌ /lhu-qlnckh/___cgcn is not inside a project of workspace /home/iot/CODE/fui-cli"}
+{"ts":"2026-10-14T02:32:48.403Z","pid":229163,"tool":"fui query","message":"❌ tAPI HTTP 400: Procedure or function 'spAPI_ThiKHCN_Get_ByTrangThai' expects parameter '@SYS_UserID', which was not supplied."}
+{"ts":"2026-10-14T02:32:52.299Z","pid":229517,"tool":"fui query","message":"❌ tAPI HTTP 400: Procedure or function 'spAPI_ThiKHCN_Get_ByTrangThai' expects parameter '@sys_SystemRight', which was not supplied."}
+{"ts":"2026-10-19T02:26:52.765Z","pid":22188,"tool":"fui file status","message":"❌ module commands need both -p <project> and -m <module>"}
+{"ts":"2026-10-19T02:57:43.562Z","pid":42158,"tool":"fui query","message":"❌ tAPI HTTP 400: VIEW SERVER STATE permission was denied on object 'server', database 'master'.\r\nThe user does not have permission to perform this action."}
+{"ts":"2026-10-19T03:05:51.547Z","pid":45489,"tool":"fui query","message":"❌ tAPI HTTP 400: Cannot use an aggregate or a subquery in an expression used for the group by list of a GROUP BY clause."}
+{"ts":"2026-10-19T03:33:00.788Z","pid":55735,"tool":"fui component preview","message":"❌ rendering needs Playwright (optional, not installed). Install once:\n  bun add -g playwright\n  bunx playwright install chromium\n(module simulate without --render works without Playwright.)"}
+{"ts":"2026-10-20T02:43:39.661Z","pid":27833,"tool":"fui query","message":"❌ tAPI HTTP 400: Invalid column name 'Decision_Obj'."}
+{"ts":"2026-10-20T02:43:54.404Z","pid":27994,"tool":"fui query","message":"❌ tAPI HTTP 400: Procedure or function 'spAPI_Decision_Get_ByDecisionID' expects parameter '@sys_SystemRight', which was not supplied."}
+{"ts":"2026-10-20T02:58:32.758Z","pid":36517,"tool":"fui skill ref","message":"❌ missing <path>; see references/INDEX.md"}
+{"ts":"2026-10-20T03:00:30.881Z","pid":38052,"tool":"fui db alias list","message":"❌ no userToken for zone \"zentea.vn\" in the workspace; pass --user-token-env VAR, or save one on a connection in that zone"}
+{"ts":"2026-10-20T03:00:34.608Z","pid":38106,"tool":"fui db alias list","message":"❌ no userToken for zone \"lhbs.vn\" in the workspace; pass --user-token-env VAR, or save one on a connection in that zone"}
+{"ts":"2026-10-20T03:05:35.255Z","pid":46814,"tool":"fui module get","message":"❌ FUI API network error: /fp/FUI_Dev_File/select — fetch failed"}
+{"ts":"2026-10-20T03:06:38.881Z","pid":49833,"tool":"fui module get","message":"❌ FUI API network error: /fp/FUI_Dev_File/select — fetch failed"}

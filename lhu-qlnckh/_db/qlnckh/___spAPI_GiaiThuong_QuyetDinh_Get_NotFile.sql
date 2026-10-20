@@ -1,4 +1,4 @@
-CREATE PROC [dbo].[___spAPI_GiaiThuong_QuyetDinh_Get_NotFile]
+CREATE PROC [dbo].[spAPI_GiaiThuong_QuyetDinh_Get_NotFile]
 AS
 BEGIN
 	SELECT DISTINCT LGT.LoaiGiaiThuongID, GT.SoQuyetDinh, LGT.TenLoaiGiaiThuong, GT.NamDatGiai, COUNT(GT.SoQuyetDinh) AS SLDETAI

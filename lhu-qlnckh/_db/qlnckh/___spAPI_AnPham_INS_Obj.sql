@@ -1,4 +1,4 @@
-CREATE PROCEDURE [dbo].[___spAPI_AnPham_INS_Obj]
+CREATE PROCEDURE [dbo].[spAPI_AnPham_INS_Obj]
     @AnPhamObj NVARCHAR(MAX),
 	@AuthorsObjArr NVARCHAR(MAX),  
 	@ProofSObjArr NVARCHAR(MAX),

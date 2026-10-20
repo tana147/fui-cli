@@ -1,32 +1,81 @@
 <template>
 	<div class="properties-panel">
-		<v-tabs v-model="tab" bg-color="white" color="primary" grow sticky>
+		<!-- Thanh tab không được giãn theo chiều cao panel; nếu flex-grow mặc định còn bật, form bị đẩy xuống dưới. -->
+		<v-tabs class="flex-grow-0 flex-shrink-0" v-model="tab" bg-color="white" color="primary" grow>
 			<v-tab value="header">{{ $t('message.GeneralInfo') }}</v-tab>
 			<v-tab value="element" :disabled="!element">{{ $t('message.Content') }}</v-tab>
 		</v-tabs>
-		<v-window v-model="tab" class="pa-4 properties-content">
-			<v-window-item value="header" eager>
+		<!-- Chỉ dựng tab đang mở và căn nội dung từ đầu vùng cuộn để tab trước không giữ lại khoảng trống. -->
+		<div :key="'properties-' + tab + '-' + index" ref="propertiesScroll" class="pa-4 properties-content fpScrollbar d-flex flex-column justify-start align-stretch">
+			<div v-if="tab === 'header'" class="d-flex flex-column justify-start align-stretch flex-shrink-0">
 				<v-text-field :label="$t('message.LessonTitle')" :model-value="lessonHeader.Title"
 					@update:modelValue="$emit('update:lessonHeader', { ...lessonHeader, Title: $event })"
 					variant="outlined" density="compact" />
 				<v-textarea :label="$t('message.DescriptionGuide')" :model-value="lessonHeader.Description"
 					@update:modelValue="$emit('update:lessonHeader', { ...lessonHeader, Description: $event })"
 					variant="outlined" density="compact" rows="3" />
+				<v-select label="Cách tính hoàn thành" :items="completionPolicyOptions"
+					item-title="title" item-value="value"
+					:model-value="lessonHeader.CompletionPolicy || 'LEGACY_DURATION'"
+					@update:modelValue="updateCompletionPolicy" variant="outlined" density="compact" />
 				<!-- Tuần và Chương/Chủ đề được quản lý ở màn thông tin bên ngoài, không lặp lại trong trình soạn bài học. -->
-				<!-- Thời gian này được lưu vào EstimatedDuration theo đơn vị phút và được backend dùng để tính hoàn thành bài học. -->
-				<v-text-field label="Thời gian hoàn thành (phút)" :model-value="lessonHeader.EstimatedDuration"
+				<!-- EstimatedDuration giữ ý nghĩa ngưỡng tổng ở mode cũ và chỉ là thời lượng dự kiến ở mode theo element. -->
+				<v-text-field :label="lessonHeader.CompletionPolicy === 'ALL_REQUIRED' ? 'Thời lượng dự kiến (phút)' : 'Thời gian hoàn thành (phút)'"
+					:model-value="lessonHeader.EstimatedDuration"
 					@update:modelValue="updateLessonDuration" @keydown="allowOnlyDigits" type="number"
 					inputmode="numeric" min="1" step="1"
 					variant="outlined" density="compact" suffix="phút"
-					hint="Thời gian học sinh cần tích lũy để được đánh dấu hoàn thành." persistent-hint />
-			</v-window-item>
+					:hint="lessonHeader.CompletionPolicy === 'ALL_REQUIRED' ? 'Chỉ dùng để ước lượng, không quyết định hoàn thành.' : 'Tổng thời gian học sinh cần tích lũy để hoàn thành bài.'"
+					persistent-hint />
+				<v-switch v-if="lessonHeader.CompletionPolicy === 'ALL_REQUIRED'"
+					:model-value="isSequentialRequired" @update:modelValue="updateRequireSequential"
+					label="Bắt học sinh học tuần tự" color="primary" hide-details />
+				<!-- Panel bên phải có thể hẹp; cố định vùng chữ cho phép xuống dòng để tránh alert chỉ hiện một đoạn. -->
+				<v-alert v-if="lessonHeader.CompletionPolicy === 'ALL_REQUIRED'" type="info" variant="tonal" density="compact"
+					class="mt-2 completion-policy-alert"
+					style="height:auto !important; min-height:42px !important; max-height:none !important; flex:0 0 auto !important; align-self:stretch !important; overflow:visible !important;">
+					<span style="display:block; min-width:0; white-space:normal !important; overflow-wrap:anywhere; line-height:1.4;">
+						Học sinh hoàn thành bài khi hoàn thành các nội dung được đánh dấu bắt buộc.
+					</span>
+				</v-alert>
+			</div>
 
-			<v-window-item value="element" eager>
+			<div v-else class="d-flex flex-column justify-start align-stretch flex-shrink-0">
 				<div v-if="!element" class="text-center pa-10 text-grey">
 					<v-icon size="48" class="mb-2">mdi-cursor-default-click-outline</v-icon>
 					<div>{{ $t('message.SelectComponentToEdit') }}</div>
 				</div>
 				<div v-else>
+					<!-- Mode theo từng khối tách rõ ngưỡng giáo viên đặt với thời lượng hệ thống chỉ ước tính. -->
+					<div v-if="lessonHeader.CompletionPolicy === 'ALL_REQUIRED'" class="mb-4 pa-3 rounded border">
+						<div class="text-subtitle-2 font-weight-medium mb-1">Hoàn thành nội dung</div>
+						<v-switch :model-value="isElementRequired" @update:modelValue="updateElementCompletion('IsRequired', $event)"
+							label="Bắt buộc hoàn thành khối này" color="primary" hide-details class="mt-0" />
+						<!-- Ngưỡng chỉ có ý nghĩa với khối bắt buộc; input chiếm trọn hàng để đơn vị và giá trị dễ đọc. -->
+						<v-text-field v-if="isElementRequired" class="mt-3"
+							label="Thời gian học tối thiểu" :model-value="element.RequiredDurationSeconds"
+							@update:modelValue="updateElementCompletion('RequiredDurationSeconds', $event)"
+							type="number" min="1" step="1" inputmode="numeric" variant="outlined"
+							density="compact" suffix="giây" hint="Học sinh cần học đủ thời lượng này để hoàn thành khối."
+							persistent-hint />
+						<div v-else class="mt-3 pa-3 rounded bg-grey-lighten-4 text-body-2 text-medium-emphasis">
+							Học sinh có thể bỏ qua khối nội dung này.
+						</div>
+						<v-divider class="my-3" />
+						<div class="d-flex align-start ga-3">
+							<v-icon color="primary" class="mt-1">mdi-timer-sand</v-icon>
+							<div class="flex-grow-1">
+								<div class="text-body-2 font-weight-medium">Thời lượng dự kiến</div>
+								<div class="text-caption text-medium-emphasis">Văn bản: 200 từ/phút; link ngoài: khoảng 1 phút/link; media dùng thời lượng có sẵn.</div>
+								<!-- Đặt chip dưới mô tả để nhãn dài không bị co và cắt ở panel hẹp. -->
+								<div class="d-flex justify-end mt-2">
+									<v-chip color="primary" variant="tonal" density="compact">
+										{{ formatDurationText(element.ExpectedDurationSeconds) }}
+									</v-chip>
+								</div>
+							</div>
+						</div>
+					</div>
 					<v-text-field :label="$t('message.BlockTitleOptional')" :model-value="element.ElementData.title"
 						@update:modelValue="updateElementData({ title: $event })" variant="outlined" density="compact"
 						clearable />
@@ -181,9 +230,39 @@
 							@handleSave="handleChangeFile(fileRecordAudio, element.ElementType)" />
 					</div>
 					<div v-else-if="element.ElementType === 'HTML'" class="d-flex flex-column ga-2">
-						<v-checkbox v-model="element.ElementData.IsHTML" label="HTML" />
-						<v-textarea v-model="element.ElementData.source" :placeholder="$t('message.PasteHTML')" />
-						<!-- <f-editor v-model="element.ElementData.source" /> -->
+						<!-- IsHTML điều khiển canvas dùng srcdoc cho mã nhúng hay src cho URL trang. -->
+						<div class="text-subtitle-2 font-weight-medium">Dạng nội dung</div>
+						<v-btn-toggle :model-value="isHtmlSource ? 'html' : 'url'" mandatory density="compact"
+							color="primary" variant="outlined" divided @update:modelValue="updateHtmlSourceMode">
+							<v-btn value="html" size="small"><v-icon start>mdi-code-tags</v-icon>Mã HTML</v-btn>
+							<v-btn value="url" size="small"><v-icon start>mdi-link</v-icon>URL trang</v-btn>
+						</v-btn-toggle>
+						<div v-if="isHtmlSource" class="d-flex flex-column ga-2">
+							<div class="text-caption text-medium-emphasis">Chọn file .html hoặc .htm để thêm nội dung vào bài giảng.</div>
+							<v-btn size="small" variant="outlined" color="primary" prepend-icon="mdi-upload"
+								@click="$refs.inputHtmlFile.click()">
+								{{ element.ElementData.source ? 'Thay file HTML' : 'Chọn file HTML' }}
+							</v-btn>
+							<input ref="inputHtmlFile" type="file" accept=".html,.htm,text/html" class="d-none"
+								@change="handleHtmlFileChange" />
+							<div class="d-flex align-center ga-2 pa-3 rounded bg-grey-lighten-4">
+								<v-icon color="primary">mdi-file-code-outline</v-icon>
+								<div class="min-width-0">
+									<div class="text-body-2 font-weight-medium text-truncate">
+										{{ element.ElementData.htmlFileName || (element.ElementData.source ? 'Mã HTML đã nạp' : 'Chưa chọn file HTML') }}
+									</div>
+									<div class="text-caption text-medium-emphasis">
+										{{ element.ElementData.source ? 'Nội dung sẽ lưu cùng bài giảng.' : 'Chọn file để nạp nội dung.' }}
+									</div>
+								</div>
+							</div>
+						</div>
+						<div v-else class="d-flex flex-column ga-2">
+							<v-text-field label="URL trang HTML" placeholder="https://..."
+								:model-value="element.ElementData.source"
+								@update:modelValue="updateElementData({ source: $event })" />
+							<div class="text-caption text-medium-emphasis">Dán địa chỉ trang web cần nhúng vào bài giảng.</div>
+						</div>
 					</div>
 					<!-- QUIZ -->
 					<div v-else-if="element.ElementType.includes('QUIZ')">
@@ -194,7 +273,7 @@
 						</div>
 						<div class="mb-2">
 							<p class="mt-4 mb-2 font-weight-medium">{{ $t('message.QuestionContentLabel') }}</p>
-							<f-editor :model-value="element.ElementData.config.questionText"
+							<uc-rich-text-editor :model-value="element.ElementData.config.questionText"
 								@update:model-value="updateQuestionConfig('questionText', $event)" />
 						</div>
 
@@ -299,15 +378,14 @@
 						</div>
 					</div>
 				</div>
-			</v-window-item>
-		</v-window>
+			</div>
+		</div>
 		<uc-loading-page v-model="loadingPage.isLoading" v-model:text="loadingPage.text" />
 	</div>
 </template>
 
 <script>
 	export default {
-		name: 'uc-lesson-properties',
 		props: {
 			lessonHeader: { type: Object, required: true },
 			element: { type: Object, default: null },
@@ -318,6 +396,10 @@
 			this.$i18n.locale = (localStorage.getItem('IsLanguage') && localStorage.getItem('IsLanguage') == 'true') ? 'en' : 'vi'
 			return {
 				tab: 'header',
+				completionPolicyOptions: [
+					{ title: 'Thời gian tổng', value: 'LEGACY_DURATION' },
+					{ title: 'Thời gian theo từng khối nội dung', value: 'ALL_REQUIRED' }
+				],
 				fileRecordAudio: null,
 				loadingPage: {
 					isLoading: false,
@@ -326,14 +408,55 @@
 				vueData,
 			}
 		},
-		mounted() {},
+		mounted() {
+			this.resetPropertiesScroll()
+		},
 		watch: {
+			tab() {
+				this.resetPropertiesScroll()
+			},
 			index(newIndex, oldIndex) {
 				if (newIndex !== null && newIndex !== oldIndex) this.tab = 'element';
 				else if (newIndex === null) this.tab = 'header';
+				this.resetPropertiesScroll()
+			},
+			'lessonHeader.CompletionPolicy'() {
+				this.resetPropertiesScroll()
 			},
 		},
+		computed: {
+			isHtmlSource() {
+				return [true, 1, '1', 'true'].includes(this.element?.ElementData?.IsHTML)
+			},
+			isSequentialRequired() {
+				return [true, 1, '1'].includes(this.lessonHeader?.RequireSequential)
+			},
+			isElementRequired() {
+				return this.element?.IsRequired === undefined || this.element?.IsRequired === null
+					? true
+					: [true, 1, '1'].includes(this.element.IsRequired)
+			}
+		},
 		methods: {
+			// Mỗi lần đổi tab/khối/chế độ đưa vùng cuộn về đầu để form luôn bắt đầu từ trên.
+			resetPropertiesScroll() {
+				this.$nextTick(() => {
+					const scrollRef = this.$refs.propertiesScroll
+					const scrollElement = scrollRef && (scrollRef.$el || scrollRef)
+					if (scrollElement) scrollElement.scrollTop = 0
+				})
+			},
+			formatDurationText(value) {
+				// Number(null) thành 0, nên phải phân biệt rõ thời lượng chưa có với thời lượng bằng 0.
+				if (value === null || value === undefined || value === '') return 'Chưa có dữ liệu'
+				const seconds = Number(value)
+				if (!Number.isFinite(seconds) || seconds < 0) return 'Chưa có dữ liệu'
+				const roundedSeconds = Math.round(seconds)
+				if (roundedSeconds < 60) return '~' + roundedSeconds + ' giây'
+				const minutes = Math.floor(roundedSeconds / 60)
+				const remainder = roundedSeconds % 60
+				return remainder ? '~' + minutes + ' phút ' + remainder + ' giây' : '~' + minutes + ' phút'
+			},
 			// Chặn ký tự không phải số ngay khi gõ; dữ liệu dán vào sẽ tiếp tục được làm sạch ở updateLessonDuration.
 			allowOnlyDigits(event) {
 				const navigationKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
@@ -349,16 +472,42 @@
 					EstimatedDuration: Number.isFinite(minutes) && minutes >= 1 ? minutes : 1,
 				});
 			},
+			updateCompletionPolicy(value) {
+				this.$emit('update:lessonHeader', {
+					...this.lessonHeader,
+					CompletionPolicy: value === 'ALL_REQUIRED' ? 'ALL_REQUIRED' : 'LEGACY_DURATION'
+				});
+			},
+			updateRequireSequential(value) {
+				this.$emit('update:lessonHeader', {
+					...this.lessonHeader,
+					RequireSequential: value ? 1 : 0
+				});
+			},
+			updateElementCompletion(field, value) {
+				const updatedElement = { ...this.element };
+				if (field === 'IsRequired') {
+					updatedElement.IsRequired = value ? 1 : 0;
+				} else {
+					const digits = String(value ?? '').replace(/\D/g, '');
+					updatedElement[field] = digits === '' ? null : Number.parseInt(digits, 10);
+				}
+				this.$emit('update:element', { index: this.index, element: updatedElement });
+			},
 			async saveElement() {
 				const lessonID = Number(this.element?.LessonID || this.lessonHeader?.LessonID || vueData?.LessonID || 0)
 				if (!lessonID) throw new Error('Vui lòng lưu bài học lần đầu trước khi tải tệp.')
-				return await this.ajaxCALLPromise('lms/EL_Element_Save', {
-					ElementID: this.element.ElementID,
+				return await this.ajaxCALLPromise('lms/EL_Element_Save_V2', {
+					ElementID: Number(this.element.ElementID) || 0,
 					LessonID: lessonID,
 					ElementType: this.element.ElementType,
 					// Stored procedure yêu cầu ElementData là chuỗi JSON; gửi object trực tiếp có thể bị biến thành [object Object].
 					ElementData: JSON.stringify(this.element.ElementData || {}),
 					SortOrder: this.element.SortOrder,
+					IsRequired: [true, 1, '1'].includes(this.element.IsRequired) ? 1 : 0,
+					CompletionMode: this.element.CompletionMode || 'TIME_REQUIRED',
+					ExpectedDurationSeconds: this.element.ExpectedDurationSeconds ?? null,
+					RequiredDurationSeconds: this.element.RequiredDurationSeconds ?? null,
 				})
 			},
 			getUploadManager() {
@@ -979,6 +1128,30 @@
 				const updatedElement = JSON.parse(JSON.stringify(this.element));
 				updatedElement.ElementData = { ...updatedElement.ElementData, ...newData };
 				this.$emit('update:element', { index: this.index, element: updatedElement });
+			},
+			updateHtmlSourceMode(mode) {
+				this.updateElementData({ IsHTML: mode === 'html' })
+			},
+			async handleHtmlFileChange(event) {
+				const input = event?.target
+				const file = input?.files?.[0]
+				if (!file) return
+
+				try {
+					if (!/\.html?$/i.test(file.name || '')) {
+						throw new Error('Chỉ hỗ trợ file .html hoặc .htm.')
+					}
+					const source = await file.text()
+					if (!source.trim()) throw new Error('File HTML đang trống.')
+
+					// Lưu cả nội dung và tên file trong ElementData để trạng thái đã chọn còn rõ sau khi mở lại bài.
+					this.updateElementData({ source, IsHTML: true, htmlFileName: file.name })
+					Vue.$toast.success('Đã nạp file HTML. Hãy lưu bài giảng để lưu nội dung.', { position: 'top' })
+				} catch (error) {
+					Vue.$toast.error(error?.message || 'Không đọc được file HTML.', { position: 'top' })
+				} finally {
+					if (input) input.value = ''
+				}
 			},
 			formatInteractionTime(seconds) {
 				const s = Math.floor(Number(seconds) || 0);

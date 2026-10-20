@@ -68,14 +68,11 @@
 			</v-card>
 		</v-tabs-window-item>
 	</v-tabs-window>
-
 </template>
 
-
-
 <script>
-export default {
-	props: [],
+	export default {
+		props: [],
 	data() {
 		return {
 			tab: 10,
@@ -320,7 +317,9 @@ export default {
 			return new Promise(resolve => {
 				ajaxCALL('lms/HocSinhLop_Get_ByLopID',
 					{
-						LopID: LopID
+						LopID: LopID,
+					// Mã LopID có thể lặp qua các năm nên luôn truyền niên khóa đang xem.
+					NienKhoa: vueData.NienKhoa
 					},
 					res => {
 						this.DSHocSinh = res.data
@@ -539,5 +538,5 @@ export default {
 			await this.DashboardDiemTrungBinhTheoTheme_Get()
 		}
 	},
-}
+	}
 </script>

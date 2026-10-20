@@ -229,6 +229,9 @@ function tinhNgayTuThuKey(thuKey) {
 function normalizeLookupText(value) {
 	let text = String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/&/g, ' va ').replace(/[^a-z0-9]+/g, ' ').trim().replace(/\s+/g, ' ')
 	const aliases = {
+		// TKB ghi "TA tích hợp...", còn danh mục môn LMS dùng tên chuẩn "Ngoại ngữ".
+		'ta tich hop gvnn': 'ngoai ngu',
+		'ta tich hop gvvn': 'ngoai ngu',
 		'gd kt va pl': 'giao duc kinh te va phap luat',
 		'gdkt va pl': 'giao duc kinh te va phap luat',
 		'gdcd': 'giao duc cong dan',
@@ -322,6 +325,46 @@ function dienFormTuTiet(item) {
 				IsLopGop: true,
 				DSLopThanhPhan: nhomCungLopCungMon,
 			})
+		}
+	}
+	// Lớp thay có thể có trong TKB nhưng chưa có phân công GiaoVienLop.
+	// Chỉ tự tra nhóm khi tên lớp khớp duy nhất; nếu trùng nhóm/môn thì chặn để không dùng nhầm NhomID.
+	if (!found) {
+		const seenGroups = new Set()
+		const groupCandidates = (vueData.DSNhomAV || []).filter(group => {
+			const nhomID = group.NhomID || group.LopID
+			if (!nhomID || normalizeClassLookupKey(group.TenNhom || group.TenLop) !== tenLop) return false
+			const key = String(nhomID) + '_' + String(group.MonHocID || '')
+			if (seenGroups.has(key)) return false
+			seenGroups.add(key)
+			return true
+		}).map(group => ({
+			NhomID: group.NhomID || group.LopID,
+			MonHocID: group.MonHocID,
+			KhoiID: group.KhoiID,
+			TenMonHoc: group.TenMonHoc_HienThi || group.TenMonHoc || '',
+		}))
+		const subjectMatches = groupCandidates.filter(group =>
+			normalizeLookupText(group.TenMonHoc) === tenMon || isMonHocTuongThich(tenMon, group.TenMonHoc)
+		)
+		const matchedGroup = subjectMatches.length === 1
+			? subjectMatches[0]
+			: (!tenMon && groupCandidates.length === 1 ? groupCandidates[0] : null)
+		if (matchedGroup) {
+			found = {
+				LopID: matchedGroup.NhomID,
+				NhomID: matchedGroup.NhomID,
+				IsLopNhom: true,
+				IsScheduleFallback: true,
+				TenLop: item.TenLop,
+				KhoiID: matchedGroup.KhoiID,
+				MonHocID: matchedGroup.MonHocID,
+				TenMonHoc: matchedGroup.TenMonHoc || item.TenMon,
+				TenHienThi: item.TenLop + (item.TenMon ? ' - ' + item.TenMon : '')
+			}
+		} else if (groupCandidates.length) {
+			showModuleSnackbarDKLT(`Không xác định duy nhất được nhóm và môn của lớp "${item.TenLop}" từ thời khóa biểu`, 'warning')
+			return false
 		}
 	}
 	if (found) {

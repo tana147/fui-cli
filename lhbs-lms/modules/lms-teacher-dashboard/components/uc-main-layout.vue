@@ -52,7 +52,8 @@
 				}
 			},
 			async apiCall2() {
-				const res = await fetchPromise('lms/EL_Teacher_GetRecentActivities', { NienKhoa: vueData.NienKhoa, PageSize: 10, HocKi: vueData.NienKhoaItem?.HocKi }, { cache: false })
+				// Gửi đủ bộ lọc theo hợp đồng tAPI; LopID/MonHocID rỗng nghĩa là lấy mọi lớp/môn trong đúng niên khóa.
+				const res = await fetchPromise('lms/EL_Teacher_GetRecentActivities', { NienKhoa: vueData.NienKhoa, LopID: null, MonHocID: null, PageSize: 10, HocKi: vueData.NienKhoaItem?.HocKi }, { cache: false })
 				vueData.activities = res
 			},
 			async apiCall3() {

@@ -3,9 +3,14 @@
 		<v-alert v-if="selectedLopID === '__ALL__'" type="info" variant="tonal" density="compact" class="ma-2">
 			Chọn một lớp ở thanh trên để theo dõi sĩ số học sinh theo từng tháng.
 		</v-alert>
-		<div v-else class="w-100 flex-grow-1 overflow-hidden so-gvcn-theo-doi-si-so-sheet" style="min-height: 0;">
+		<div v-else class="w-100 flex-grow-1 overflow-hidden so-gvcn-theo-doi-si-so-sheet so-gvcn-c1-desktop-only" style="min-height: 0;">
 			<div ref="sheetRef" class="w-100 overflow-hidden" style="min-height: 0;"></div>
 		</div>
+		<!-- Compact month cards keep every field editable and preserve the sheet row order for saving. -->
+		<uc-so-gvcn-mobile-sheet-editor v-if="selectedLopID !== '__ALL__'" ref="mobileEditorRef"
+			class="so-gvcn-c1-mobile-editor flex-column flex-grow-1" :rows="mobileEditorRows"
+			:columns="mobileEditorColumns" :numeric-indices="mobileNumericIndices" :title-index="0" empty-title="Tháng"
+			empty-text="Chưa có số liệu theo dõi sĩ số." />
 	</v-card-text>
 </template>
 
@@ -21,6 +26,8 @@
 		data() {
 			return {
 				instance: null,
+				isMobileViewport: false,
+				resizeTimer: null,
 				defaultMonths: [
 					'Tháng 8',
 					'Tháng 9',
@@ -53,12 +60,50 @@
 			}
 		},
 		mounted() {
+			this.isMobileViewport = window.matchMedia('(max-width: 959.98px)').matches
+			window.addEventListener('resize', this.onWindowResize)
 			this.initSheet()
 		},
 		beforeUnmount() {
+			window.removeEventListener('resize', this.onWindowResize)
+			clearTimeout(this.resizeTimer)
 			this.destroySheet()
 		},
+		computed: {
+			mobileEditorColumns() {
+				return this.buildColumnsAndHeaders().columns
+			},
+			mobileNumericIndices() {
+				return this.mobileEditorColumns.map((column, index) => index)
+					.filter(index => index > 0 && index < this.mobileEditorColumns.length - 1)
+			},
+			mobileEditorRows() {
+				const { ethnicList } = this.buildColumnsAndHeaders()
+				return this.buildRows(ethnicList)
+			}
+		},
 		methods: {
+			onWindowResize() {
+				clearTimeout(this.resizeTimer)
+				this.resizeTimer = setTimeout(() => {
+					const isMobile = window.matchMedia('(max-width: 959.98px)').matches
+					if (isMobile === this.isMobileViewport) return
+					this.isMobileViewport = isMobile
+					this.initSheet()
+				}, 120)
+			},
+			// Keep values readable in cards when server rows contain arrays or objects instead of plain strings.
+			displayMobileValue(value) {
+				if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) return '—'
+				if (Array.isArray(value)) {
+					const items = value.map(item => this.displayMobileValue(item)).filter(item => item !== '—')
+					return items.length ? items.join(', ') : '—'
+				}
+				if (typeof value === 'object') {
+					try { return JSON.stringify(value) || '—' } catch (error) { return '—' }
+				}
+				return String(value)
+			},
 			// Chỉ cấp chiều cao cần cho 10 dòng tháng; nếu số dòng tăng vượt viewport,
 			// phần dư vẫn được giữ trong scrollbar của JSpreadsheet.
 			getContentTableHeight(container, rowCount, nestedHeaderCount = 0) {
@@ -77,6 +122,9 @@
 				return this.instance
 			},
 			getRows() {
+				if (typeof window !== 'undefined' && window.matchMedia('(max-width: 959.98px)').matches) {
+					return this.$refs.mobileEditorRef?.getRows?.() || this.buildRows(this.getEthnicList())
+				}
 				const sheet = Array.isArray(this.instance) ? this.instance[0] : this.instance
 				return sheet && typeof sheet.getData === 'function' ? sheet.getData() : []
 			},
@@ -205,8 +253,12 @@
 				this.instance = null
 			},
 
-			initSheet() {
+			initSheet(initialRows) {
 				if (this.selectedLopID === '__ALL__') {
+					this.destroySheet()
+					return
+				}
+				if (this.isMobileViewport) {
 					this.destroySheet()
 					return
 				}
@@ -217,7 +269,7 @@
 					container.innerHTML = ''
 
 					const { columns, nestedHeaders, ethnicList } = this.buildColumnsAndHeaders()
-					const data = this.buildRows(ethnicList)
+					const data = Array.isArray(initialRows) ? initialRows : this.buildRows(ethnicList)
 
 					if (typeof jspreadsheet === 'function') {
 						this.instance = soGvcnJspreadsheet.create(container, {

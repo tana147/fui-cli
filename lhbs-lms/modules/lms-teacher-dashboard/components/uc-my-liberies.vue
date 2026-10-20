@@ -28,18 +28,30 @@
 			</div>
 
 			<!-- Khoi filter pills -->
-					<div class="lib-filter-row lib-filter-row--khoi" v-if="availableKhois.length > 1">
-						<v-chip size="small" :variant="selectedKhoi === null ? 'flat' : 'outlined'"
-							:color="selectedKhoi === null ? 'primary' : undefined" @click="selectedKhoi = null">
-							{{ $t('message.All') }}
-						</v-chip>
-						<v-chip v-for="k in availableKhois" :key="k.id" size="small"
-							:variant="selectedKhoi === k.id ? 'flat' : 'outlined'"
-							:color="k.hasShared ? 'warning' : (selectedKhoi === k.id ? 'primary' : undefined)"
-							:prepend-icon="k.hasShared ? 'mdi-account-arrow-left-outline' : undefined"
-							@click="selectedKhoi = k.id">
-							{{ $t('message.Grade') }} {{ k.id }}
-						</v-chip>
+			<div class="lib-filter-row lib-filter-row--khoi" v-if="availableKhois.length > 1">
+				<v-chip size="small" :variant="selectedKhoi === null ? 'flat' : 'outlined'"
+					:color="selectedKhoi === null ? 'primary' : undefined" @click="selectedKhoi = null">
+					{{ $t('message.All') }}
+				</v-chip>
+				<v-chip v-for="k in availableKhois" :key="k.id" size="small"
+					:variant="selectedKhoi === k.id ? 'flat' : 'outlined'"
+					:color="gradeChipColor(k)"
+					:class="{ 'font-weight-bold': selectedKhoi === k.id }"
+					:style="gradeChipStyle(k)"
+					@click="selectedKhoi = k.id">
+					<!-- Trạng thái của khối thể hiện bằng viền xanh/cam; không lặp icon trong từng chip. -->
+					{{ $t('message.Grade') }} {{ k.id }}
+				</v-chip>
+			</div>
+			<div v-if="gradeLegendVisible" class="px-3 pb-1 d-flex flex-wrap align-center ga-2 text-caption text-medium-emphasis">
+				<span v-if="hasTeachingGrade" class="d-inline-flex align-center">
+					<v-icon size="13" color="success" class="mr-1">mdi-school-outline</v-icon>
+					{{ $i18n.locale === 'en' ? 'Currently teaching' : 'Đang dạy' }}
+				</span>
+				<span v-if="hasSharedGrade" class="d-inline-flex align-center">
+					<v-icon size="13" color="warning" class="mr-1">mdi-account-arrow-left-outline</v-icon>
+					{{ $i18n.locale === 'en' ? 'Has shared content' : 'Có tài liệu chia sẻ' }}
+				</span>
 			</div>
 
 			<!-- Owner filter -->
@@ -55,6 +67,18 @@
 					:color="libraryOwnerFilter === 'shared' ? 'warning' : undefined"
 					prepend-icon="mdi-account-arrow-left-outline"
 					@click="libraryOwnerFilter = 'shared'">{{ $i18n.locale === 'en' ? 'Shared with me' : 'Được chia sẻ' }}</v-chip>
+			</div>
+
+			<!--
+				Lọc theo giáo viên tạo nội dung. contentLibrary đã được API nạp theo
+				NienKhoa hiện tại (ở case này là 2026), nên danh sách giáo viên chỉ
+				được suy ra từ đúng tập dữ liệu năm học đang xem, không lẫn năm cũ.
+			-->
+			<div class="lib-filter-row" v-if="showTeacherFilter">
+				<!-- Clear về null để hiển thị lại tất cả giáo viên và khôi phục bộ lọc ban đầu. -->
+				<v-select v-model="libraryTeacherFilter" :items="teacherFilterItems" item-title="name" item-value="id"
+					:label="$i18n.locale === 'en' ? 'Created by teacher' : 'Giáo viên tạo'" density="compact"
+					variant="outlined" clearable hide-details />
 			</div>
 
 			<!-- Actions -->
@@ -243,9 +267,68 @@
 			return this.selectedLibraries.reduce((result, khoi) => {
 				if (result.some(k => k.id === khoi.KhoiID)) return result
 				const items = khoi.weeks?.flatMap(w => w.flatItems || []) || []
-				result.push({ id: khoi.KhoiID, hasShared: items.some(item => this.isDelegatedItem(item)) })
+				const teacherItems = this.libraryTeacherFilter == null
+					? items
+					: items.filter(item => String(item.NguoiUploadID) === String(this.libraryTeacherFilter))
+				// Màu chip mô tả toàn bộ trạng thái của khối, không phụ thuộc tab đang
+				// lọc danh sách bên dưới; vì vậy khối vẫn hiện nửa cam nếu có tài liệu
+				// chia sẻ dù người dùng đang xem riêng nhóm "Tôi tạo".
+				const hasShared = teacherItems.some(item => this.isDelegatedItem(item))
+				// Chỉ đánh dấu "Đang dạy" từ dòng phân công trực tiếp thật sự.
+				// Các lớp được mở rộng bởi quyền SUBJECT có IsDirectTeacher = 0 và không được tính.
+				const isTeaching = this.teachingGroups.some(group =>
+					String(group.MonHocName) === String(this.selected.MonHocName) &&
+					String(group.KhoiID) === String(khoi.KhoiID) &&
+					Number(group.IsDirectTeacher) === 1
+				)
+				result.push({ id: khoi.KhoiID, hasShared, isTeaching })
 				return result
 			}, [])
+		},
+		hasTeachingGrade() {
+			return this.availableKhois.some(k => k.isTeaching)
+		},
+		hasSharedGrade() {
+			return this.availableKhois.some(k => k.hasShared)
+		},
+		gradeLegendVisible() {
+			return this.availableKhois.length > 1 && (this.hasTeachingGrade || this.hasSharedGrade)
+		},
+		availableTeachers() {
+			// Bám theo owner filter hiện tại: ở "Tôi tạo" chỉ còn giáo viên tạo
+			// các tài liệu đang hiển thị, tránh hiện dropdown thừa vì quyền SUBJECT.
+			// API EL_Teacher_GetMyContentLibrary đã lọc theo NienKhoa trước khi tới đây.
+			const teachersById = {}
+			this.selectedLibraries.forEach(khoi => {
+				(khoi.weeks || []).forEach(week => {
+					(week.flatItems || []).forEach(item => {
+						const ownerMatch = this.libraryOwnerFilter === 'all'
+							|| (this.libraryOwnerFilter === 'shared' && this.isDelegatedItem(item))
+							|| (this.libraryOwnerFilter === 'mine' && !this.isDelegatedItem(item))
+						if (!ownerMatch) return
+						if (item.NguoiUploadID == null || item.NguoiUploadID === '') return
+						const id = String(item.NguoiUploadID)
+						if (!teachersById[id]) {
+							teachersById[id] = {
+								id: item.NguoiUploadID,
+								name: item.NguoiUploadName || id
+							}
+						}
+					})
+				})
+			})
+			return Object.values(teachersById).sort((a, b) => a.name.localeCompare(b.name, 'vi'))
+		},
+		showTeacherFilter() {
+			// Sau khi đã chọn giáo viên vẫn giữ control để người dùng có thể
+			// quay về "Tất cả giáo viên" thay vì làm mất bộ lọc giữa chừng.
+			return this.libraryTeacherFilter != null || this.availableTeachers.length > 1
+		},
+		teacherFilterItems() {
+			return [
+				{ id: null, name: this.$i18n.locale === 'en' ? 'All teachers' : 'Tất cả giáo viên' },
+				...this.availableTeachers
+			]
 		},
 		flatLibraryItems() {
 			const s = this.librarySearch.toLowerCase()
@@ -261,7 +344,9 @@
 				const ownerMatch = this.libraryOwnerFilter === 'all'
 					|| (this.libraryOwnerFilter === 'shared' && this.isDelegatedItem(item))
 					|| (this.libraryOwnerFilter === 'mine' && !this.isDelegatedItem(item))
-				return ownerMatch && (!s || item.Title.toLowerCase().includes(s))
+				const teacherMatch = this.libraryTeacherFilter == null
+					|| String(item.NguoiUploadID) === String(this.libraryTeacherFilter)
+				return ownerMatch && teacherMatch && (!s || item.Title.toLowerCase().includes(s))
 			})
 		},
 	},
@@ -276,6 +361,12 @@
 		},
 		contentLibrary: function (newVal) {
 			this.$nextTick(() => {
+				// Khi API reload sau khi xóa/cập nhật nội dung, giáo viên đã chọn có thể không còn tài liệu.
+				// Trả về "Tất cả giáo viên" để drawer không rơi vào trạng thái danh sách rỗng giả.
+				if (this.libraryTeacherFilter != null && !this.availableTeachers.some(item =>
+					String(item.id) === String(this.libraryTeacherFilter))) {
+					this.libraryTeacherFilter = null
+				}
 				this.loadHocLieuMappings(this.flatLibraryItems)
 				if (this.isShowModalLiberyDetails && this.selectedLibery) {
 					const id = this.selectedLibery.ResourceID || this.selectedLibery.AssignmentID
@@ -289,7 +380,26 @@
 		},
 		selected() {
 			this.selectedKhoi = null
+			this.libraryTeacherFilter = null
 			this.$nextTick(() => this.loadHocLieuMappings(this.flatLibraryItems))
+		},
+		selectedKhoi(value) {
+			// Khi khối chỉ có một loại nội dung, tự chuyển đúng tab tương ứng để
+			// lần chọn khối đầu tiên không ra danh sách rỗng; khối có cả hai loại
+			// hoặc đang ở "Tất cả" thì giữ nguyên lựa chọn của người dùng.
+			if (value == null || this.libraryOwnerFilter === 'all' || this.libraryTeacherFilter != null) return
+			const selectedGrade = this.selectedLibraries.find(k => String(k.KhoiID) === String(value))
+			if (!selectedGrade) return
+			const items = (selectedGrade.weeks || []).flatMap(week => week.flatItems || [])
+			const hasMine = items.some(item => !this.isDelegatedItem(item))
+			const hasShared = items.some(item => this.isDelegatedItem(item))
+			if (!hasMine && hasShared) this.libraryOwnerFilter = 'shared'
+			if (hasMine && !hasShared) this.libraryOwnerFilter = 'mine'
+		},
+		libraryTeacherFilter(value) {
+			// Đã chọn một giáo viên cụ thể thì bỏ giới hạn "Tôi tạo/Được chia sẻ";
+			// nếu giữ chip "Tôi tạo" mặc định, chọn giáo viên khác sẽ cho danh sách rỗng giả.
+			if (value != null) this.libraryOwnerFilter = 'all'
 		},
 	},
 	data() {
@@ -299,6 +409,7 @@
 			isLibraryLoading: false,
 			selectedKhoi: null,
 			libraryOwnerFilter: 'mine',
+			libraryTeacherFilter: null,
 			indentLines: 'default',
 			separateRoots: false,
 			actionIcons: false,
@@ -364,6 +475,39 @@
 			if (!isAssigned) return
 			if (!this.isDeletedItemInSelectedWeek(item)) return
 			await Promise.resolve(vueData.reloadFocusApis?.())
+		},
+		// Chip không dùng icon để giữ đúng kiểu cũ; trạng thái đơn dùng viền xanh/cam,
+		// còn trạng thái kép dùng gradient để nhận biết ngay vừa dạy vừa được chia sẻ.
+		gradeChipStyle(k) {
+			const isSelected = this.selectedKhoi === k.id
+			const isTeaching = !!k.isTeaching
+			const hasShared = !!k.hasShared
+			if (!(isTeaching || hasShared)) return isSelected
+				? { boxShadow: '0 0 0 2px rgba(25, 118, 210, 0.25)' }
+				: {}
+			if (!(isTeaching && hasShared)) {
+				const statusColor = isTeaching ? '#2e7d32' : '#ef6c00'
+				return isSelected
+					? { boxShadow: '0 0 0 2px rgba(25, 118, 210, 0.25)' }
+					: { border: '1px solid ' + statusColor, color: statusColor }
+			}
+			const splitGradient = 'linear-gradient(90deg, #2e7d32 0%, #2e7d32 50%, #ef6c00 50%, #ef6c00 100%)'
+			return {
+				background: isSelected
+					? splitGradient
+					: 'linear-gradient(#ffffff, #ffffff) padding-box, ' + splitGradient + ' border-box',
+				border: isSelected ? '1px solid transparent' : '2px solid transparent',
+				color: isSelected ? '#ffffff' : '#374151',
+				boxShadow: this.selectedKhoi === k.id ? '0 0 0 2px rgba(25, 118, 210, 0.35)' : undefined
+			}
+		},
+		// Chỉ chip đang chọn nhận màu trạng thái; chip chưa chọn giống outline owner filter.
+		gradeChipColor(k) {
+			if (this.selectedKhoi !== k.id) return undefined
+			if (k.isTeaching && k.hasShared) return undefined
+			if (k.isTeaching) return 'success'
+			if (k.hasShared) return 'warning'
+			return 'primary'
 		},
 		getStatusStyle(color) {
 			const m = { grey: { bg: '#F3F4F6', text: '#6B7280' }, orange: { bg: '#FAEEDA', text: '#BA7517' }, success: { bg: '#EAF3DE', text: '#3B6D11' } }

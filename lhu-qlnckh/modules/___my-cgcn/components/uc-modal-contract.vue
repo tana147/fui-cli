@@ -1,9 +1,9 @@
 <template>
-	<v-dialog v-model="dialog" max-width="850" persistent>
-		<v-card>
+	<v-dialog v-model="dialog" max-width="1050" persistent>
+		<v-card class="rounded-xs d-flex flex-column">
 			<v-card-title class="py-2 px-4 d-flex align-center">
 				<span class="primary--text font-weight-bold text-subtitle-1">
-					{{ isEdit ? "Chi tiết / Cập nhật hồ sơ chuyển giao công nghệ" : "Kê khai hồ sơ chuyển giao công nghệ mới" }}
+					{{ isEdit ? (isReadOnly ? "Chi tiết hồ sơ chuyển giao công nghệ" : "Chi tiết / Cập nhật hồ sơ chuyển giao công nghệ") : "Kê khai hồ sơ chuyển giao công nghệ mới" }}
 				</span>
 				<v-spacer />
 				<v-btn icon small @click="closeModal">
@@ -145,13 +145,14 @@
 					</v-col>
 
 					<v-col cols="6" md="2">
-						<v-text-field
+						<v-select
 							v-model="form.NamHoc"
+							:items="namHocOptions"
 							label="Năm học"
-							placeholder="VD: 2024-2025"
 							outlined
 							dense
 							:readonly="isReadOnly"
+							:disabled="isReadOnly"
 							hide-details="auto"
 							class="mb-2"
 						/>
@@ -175,17 +176,25 @@
 				<v-divider class="my-3" />
 
 				<div class="d-flex align-center justify-space-between mb-2">
-					<span class="font-weight-bold text-body-2">
-						Tập tin minh chứng (Hợp đồng, Biên bản nghiệm thu, Thanh lý...)
-					</span>
-					<f-file-upload
-						v-if="!isReadOnly"
-						v-model="uploadResult"
-						label="Tải lên tập tin"
-						:filters="fileFilters"
-						:url="vSet.apiFile"
-						@input="handleFileUploaded"
-					/>
+					<div>
+						<span class="font-weight-bold text-body-2">
+							Tập tin minh chứng (Hợp đồng, Biên bản nghiệm thu, Thanh lý...)
+						</span>
+						<div class="caption grey--text text--darken-2 mt-1">
+							Định dạng cho phép: <strong>.pdf, .doc, .docx, .xls, .xlsx, .png, .jpg, .zip, .rar</strong> (tối đa 20MB).
+						</div>
+					</div>
+					<div class="compact-upload-wrapper">
+						<f-file-upload
+							v-if="!isReadOnly"
+							v-model="uploadResult"
+							label="Tải lên tập tin"
+							color="primary"
+							:filters="fileFilters"
+							:url="vSet.apiFile"
+							@input="handleFileUploaded"
+						/>
+					</div>
 				</div>
 
 				<v-data-table
@@ -238,37 +247,37 @@
 				</v-data-table>
 			</v-card-text>
 
-			<v-divider />
-
-			<v-card-actions class="py-2 px-4">
+			<v-card-actions class="pa-3 flex-grow-0 border-top">
 				<v-spacer />
-				<v-btn text small @click="closeModal">Đóng</v-btn>
+				<v-btn small text color="grey darken-2" class="text-capitalize px-3 rounded-xs" @click="closeModal">
+					Đóng
+				</v-btn>
 
 				<!-- Nút Lưu dự thảo: chỉ hiển thị khi tạo mới hoặc đang là Dự thảo (1) -->
 				<v-btn
 					v-if="!isReadOnly && (form.TrangThai === 1 || !form.CGCNID)"
-					color="grey darken-2"
-					dark
 					small
-					depressed
+					color="amber darken-3"
+					outlined
+					class="text-capitalize px-3 ml-2 font-weight-medium rounded-xs"
 					:loading="saving"
-					class="mr-2"
 					@click="saveItem(1)"
 				>
-					<v-icon left small>mdi-content-save-outline</v-icon>
+					<v-icon left small>mdi-file-document-edit-outline</v-icon>
 					Lưu dự thảo
 				</v-btn>
 
 				<!-- Nút Gửi thẩm định: Tạo mới, hoặc Dự thảo (1), hoặc Cần bổ sung (4) -->
 				<v-btn
 					v-if="!isReadOnly"
-					color="primary"
 					small
-					depressed
+					color="primary"
+					elevation="0"
+					class="text-capitalize px-4 ml-2 font-weight-medium rounded-xs"
 					:loading="saving"
 					@click="saveItem(2)"
 				>
-					<v-icon left small>mdi-send</v-icon>
+					<v-icon left small>mdi-send-outline</v-icon>
 					{{ form.TrangThai === 4 ? "Gửi thẩm định lại" : "Lưu & Gửi thẩm định" }}
 				</v-btn>
 			</v-card-actions>
@@ -302,6 +311,8 @@
 				saving: false,
 				uploadResult: null,
 				attachedFiles: [],
+				uploadedFileIDs: [],
+				pendingDeleteFileIDs: [],
 				fileHeaders: [
 					{ text: "Tập tin minh chứng", value: "FILE_NAME" },
 					{ text: "Thao tác", value: "actions", align: "right", sortable: false, width: 80 }
@@ -342,6 +353,17 @@
 			isReadOnly() {
 				// TrangThai = 2 (Chờ duyệt) hoặc 3 (Đã duyệt) thì chỉ xem, không được sửa
 				return this.form.TrangThai === 2 || this.form.TrangThai === 3
+			},
+			namHocOptions() {
+				const currentYear = new Date().getFullYear()
+				const list = []
+				for (let y = currentYear + 1; y >= currentYear - 7; y--) {
+					list.push(`${y - 1}-${y}`)
+				}
+				if (this.form && this.form.NamHoc && !list.includes(this.form.NamHoc)) {
+					list.unshift(this.form.NamHoc)
+				}
+				return list
 			}
 		},
 		watch: {
@@ -352,6 +374,12 @@
 					} else {
 						this.resetForm()
 					}
+				} else {
+					if (this.uploadedFileIDs && this.uploadedFileIDs.length > 0) {
+						ajaxCALL('/FILE_FileDeleteMulti', { FileIDs: this.uploadedFileIDs.join(',') }, () => {})
+						this.uploadedFileIDs = []
+					}
+					this.pendingDeleteFileIDs = []
 				}
 			}
 		},
@@ -378,6 +406,8 @@
 					LyDoReject: ""
 				}
 				this.attachedFiles = []
+				this.uploadedFileIDs = []
+				this.pendingDeleteFileIDs = []
 				this.uploadResult = null
 			},
 			parseFileData(rawFileData) {
@@ -410,6 +440,8 @@
 					LyDoReject: item.LyDoReject || ""
 				}
 				this.attachedFiles = this.parseFileData(item.FileData)
+				this.uploadedFileIDs = []
+				this.pendingDeleteFileIDs = []
 				this.uploadResult = null
 			},
 			getFileUrl(file) {
@@ -420,18 +452,34 @@
 				const result = payload || this.uploadResult
 				if (result && Array.isArray(result.Files) && result.Files.length > 0) {
 					result.Files.forEach(file => {
-						const exists = this.attachedFiles.some(item => item.FILE_ID === file.FILE_ID)
-						if (!exists) {
-							this.attachedFiles.push(file)
+						if (file && file.FILE_ID) {
+							const exists = this.attachedFiles.some(item => item.FILE_ID === file.FILE_ID)
+							if (!exists) {
+								this.attachedFiles.push(file)
+								this.uploadedFileIDs.push(file.FILE_ID)
+							}
 						}
 					})
 					this.uploadResult = null
 				}
 			},
 			removeAttachedFile(file) {
+				if (file && file.FILE_ID) {
+					if (this.uploadedFileIDs.includes(file.FILE_ID)) {
+						ajaxCALL('/FILE_FileDelete', { FileID: file.FILE_ID }, () => {})
+						this.uploadedFileIDs = this.uploadedFileIDs.filter(id => id !== file.FILE_ID)
+					} else {
+						this.pendingDeleteFileIDs.push(file.FILE_ID)
+					}
+				}
 				this.attachedFiles = this.attachedFiles.filter(item => item.FILE_ID !== file.FILE_ID)
 			},
 			closeModal() {
+				if (this.uploadedFileIDs && this.uploadedFileIDs.length > 0) {
+					ajaxCALL('/FILE_FileDeleteMulti', { FileIDs: this.uploadedFileIDs.join(',') }, () => {})
+				}
+				this.uploadedFileIDs = []
+				this.pendingDeleteFileIDs = []
 				this.dialog = false
 			},
 			formatMoney(val) {
@@ -503,6 +551,11 @@
 								)
 							}
 
+							if (this.pendingDeleteFileIDs && this.pendingDeleteFileIDs.length > 0) {
+								ajaxCALL('/FILE_FileDeleteMulti', { FileIDs: this.pendingDeleteFileIDs.join(',') }, () => {})
+							}
+							this.uploadedFileIDs = []
+							this.pendingDeleteFileIDs = []
 							this.$emit("on-reload")
 							this.closeModal()
 						} finally {

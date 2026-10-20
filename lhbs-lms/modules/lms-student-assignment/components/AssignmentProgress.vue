@@ -11,7 +11,9 @@
 				<v-chip v-if="!isSubmitted" :color="saveStatusColor" size="small" label>
 					<v-icon start size="16">{{ saveStatusIcon }}</v-icon>{{ saveStatus }}
 				</v-chip>
-				<v-btn v-if="!isSubmitted" color="success" variant="outlined" size="small" @click="$emit('submit')">
+				<!-- Chỉ cho nộp khi request auto-save cuối cùng đã hoàn tất thành công. -->
+				<v-btn v-if="!isSubmitted" color="success" variant="outlined" size="small"
+					:disabled="!canSubmit" @click="$emit('submit')">
 					<v-icon start size="16">mdi-check-all</v-icon>Nộp bài
 				</v-btn>
 				<v-chip v-else color="success" size="small" label>
@@ -58,6 +60,10 @@
 			isGraded: {
 				type: Boolean,
 				default: false
+			},
+			canSubmit: {
+				type: Boolean,
+				default: true
 			}
 		},
 		emits: ['submit']

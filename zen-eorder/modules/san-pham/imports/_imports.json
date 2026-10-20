@@ -1,13 +1,5 @@
 [
   {
-    "name": "/include/vue-advanced-cropper/style.css",
-    "type": ".css",
-    "contentType": "comp-link",
-    "fileID": "E1F428BBD0F94A299EEE95E947C30383",
-    "scope": "module",
-    "sort": 50
-  },
-  {
     "name": "https://ws.fui.vn/Scripts/jquery.signalR-2.4.1.min.js\t",
     "type": ".js",
     "contentType": "link",
@@ -32,7 +24,7 @@
     "sort": 50
   },
   {
-    "name": "/include/vue-advanced-cropper/index.umd.js",
+    "name": "/include/vue-advanced-cropper/fui-custom.js",
     "type": ".js",
     "contentType": "comp-link",
     "fileID": "3646C5978CB74CFA8F749FDF50880F6E",

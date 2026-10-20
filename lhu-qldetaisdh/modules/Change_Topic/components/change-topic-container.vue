@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+	<v-container>
         <div class="d-flex align-center justify-end mb-3">
             <v-btn color="teal" dark @click="changeThesisAgain">Đổi/Điều chỉnh đề tài</v-btn>
         </div>
@@ -76,8 +76,8 @@
 </template>
 
 <script>
-export default {
-    props: ['defaultfLow', 'rootflow'],
+	export default {
+		props: ['defaultfLow', 'rootflow'],
     data() {
         return {
             student_id: null,
@@ -222,7 +222,7 @@ export default {
             return upperCaseRatio > 0.9
         },
 
-        onSave(FLOW_ID, root) {
+        async onSave(FLOW_ID, root) {
             let validationPassed = true
             this.dataDetailFlow.forEach((item) => {
                 if (
@@ -262,44 +262,31 @@ export default {
             console.log('validationPassed', validationPassed)
 
             if (validationPassed) {
-                let promises = this.dataDetailFlow.map((item) => {
-                    return new Promise((resolve, reject) => {
-                        ajaxCALL(
-                            '/FlowDetail_UpdateData',
-                            {
-                                Student_ID: vueData.user.UserID,
-                                Process_ID: root.PROCESS_ID,
-                                Flow_ID: item.Flow_ID,
-                                Task_ID: item.Task_ID,
-                                Task_Detail_ID: item.Task_Detail_ID,
-                                Text_Content: item.Text_Content,
-                                File_Name: item.Task_Detail_Type === 'FILE' ? (item.FILE_UPLOAD?.File_Name ?? null) : null,
-                                File_Type: item.Task_Detail_Type === 'FILE' ? (item.FILE_UPLOAD?.File_Type ?? null) : null,
-                                File_URL: item.Task_Detail_Type === 'FILE' ? (item.FILE_UPLOAD?.File_URL ?? null) : null,
-                                File_ID: item.Task_Detail_Type === 'FILE' ? (item.FILE_UPLOAD?.File_ID ?? null) : null,
-                            },
-                            (res) => {
-                                console.log('Upload success: ', this.dataDetailFlow)
-                                resolve('success')
-                            },
-                            (error) => {
-                                console.log('Error upload: ', error)
-                                reject('fail')
-                            },
-                        )
+                const payloadDetails = this.dataDetailFlow.map((item) => ({
+                    Task_Detail_ID: item.Task_Detail_ID,
+                    Text_Content: typeof item.Text_Content === 'string' && item.Text_Content ? item.Text_Content.trim() : (item.Text_Content ?? ''),
+                    File_Name: item.Task_Detail_Type === 'FILE' ? (item.FILE_UPLOAD?.File_Name ?? item.File_Name ?? null) : null,
+                    File_Type: item.Task_Detail_Type === 'FILE' ? (item.FILE_UPLOAD?.File_Type ?? item.File_Type ?? null) : null,
+                    File_URL: item.Task_Detail_Type === 'FILE' ? (item.FILE_UPLOAD?.File_URL ?? item.File_URL ?? null) : null,
+                    File_ID: item.Task_Detail_Type === 'FILE' ? (item.FILE_UPLOAD?.File_ID ?? item.File_ID ?? null) : null,
+                    Flow_Detail_Status: 'P'
+                }))
+
+                try {
+                    await ajaxCALLPromise('/FlowDetail_UpdateMulti', {
+                        Student_ID: this.student_id || vueData.studentId || vueData.user.UserID,
+                        Process_ID: root.PROCESS_ID,
+                        Flow_ID: root.Flow_ID || this.dataDetailFlow[0]?.Flow_ID || FLOW_ID,
+                        Task_ID: root.Children_Task_ID || root.TASK_ID || this.dataDetailFlow[0]?.Task_ID,
+                        JsonDetails: JSON.stringify(payloadDetails),
+                        IsApproveAll: 0
                     })
-                })
-                Promise.all(promises)
-                    .then((results) => {
-                        if (results.includes('fail')) {
-                            Vue.$toast.error(`Cập nhật ${root.TASK_NAME} thất bại`, { position: 'top' })
-                        } else {
-                            Vue.$toast.success(`Cập nhật ${root.TASK_NAME} thành công`, { position: 'top' })
-                        }
-                    })
-                    .catch((err) => {
-                        Vue.$toast.error(`Đã xảy ra lỗi`, { position: 'top' })
-                    })
+                    Vue.$toast.success(`Cập nhật ${root.TASK_NAME} thành công`, { position: 'top' })
+                    this.onLoadDetailFlow(FLOW_ID, root.LOCK_STATUS)
+                } catch (err) {
+                    console.error('Fail to save', err)
+                    Vue.$toast.error(err?.responseJSON?.Message || `Cập nhật ${root.TASK_NAME} thất bại`, { position: 'top' })
+                }
             }
         },
         getStepColor(name, lock) {
@@ -354,5 +341,5 @@ export default {
             }
         },
     },
-}
+	}
 </script>

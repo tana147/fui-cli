@@ -39,11 +39,17 @@
         display: block;
         flex: 0 0 280px;
         order: -1;
+        /* Giữ mục lục đứng yên theo viewport khi phần nội dung chính cuộn dài. */
+        position: sticky;
+        /* Header FUI đã chiếm vùng riêng; chỉ giữ khoảng đệm 16px để thẳng hàng với content. */
+        top: 16px;
+        align-self: flex-start;
+        z-index: 10;
     }
 
     .sidebar-sticky-content {
-        position: sticky;
-        top: 80px;
+        /* Sticky đặt ở sidebar cha để không bị giới hạn bởi chiều cao của chính card mục lục. */
+        position: static;
         background-color: #ffffff;
         border-radius: 12px;
         padding: 20px;

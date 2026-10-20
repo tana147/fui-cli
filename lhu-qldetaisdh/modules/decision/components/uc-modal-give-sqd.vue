@@ -37,9 +37,8 @@
 
           <v-row>
             <v-col>
-              <c-file-comp :item-des="decisionFileWrapper"
-                :lock="localDecision.Decision_Status === HasSQDStatus ? 0 : 1" :api-file="apiFileUploadUrl"
-                :url-read-file="fileReadUrl" :allow-upload="localDecision.Decision_Status !== HasSQDStatus" />
+              <c-file-comp :item-des="decisionFileWrapper" :api-file="apiFileUploadUrl"
+                :url-read-file="fileReadUrl" :allow-upload="true" @on-file-change="onFileChange" />
             </v-col>
           </v-row>
 
@@ -65,7 +64,7 @@
 
         <!-- Student list detail table -->
         <div class="flex-grow-1 flex-shrink-1 d-flex flex-column overflow-hidden mt-4">
-          <uc-student-detail-table :studentlist="detailStudent" />
+          <uc-student-detail-table :studentlist="detailStudent" class="flex-grow-1 d-flex flex-column" />
         </div>
       </v-card-text>
 
@@ -106,6 +105,7 @@
       localDecision: {},
       fileName: "",
       HasSQDStatus: 3,
+      tempUploadedFileIds: [],
       fileRules: {
         max_file_size: "100mb",
         mime_types: [
@@ -133,10 +133,10 @@
       },
     },
     fileReadUrl() {
-      return window.vueData?.v_Set?.urlReadFile || "";
+      return window.vueData?.v_Set?.urlReadFile || "https://file.lhu.edu.vn/qldetaisdh/";
     },
     apiFileUploadUrl() {
-      return window.vueData?.v_Set?.apiFile || "";
+      return window.vueData?.v_Set?.apiFile || "https://file.lhu.edu.vn/qldetaisdh/upload/FileData";
     },
     previousFilesList() {
       return this.fileList.filter(
@@ -147,50 +147,81 @@
   watch: {
     value(val) {
       if (val) {
+        this.tempUploadedFileIds = [];
         this.localDecision = JSON.parse(JSON.stringify(this.detailDecision));
         this.fileName = this.localDecision.DecisionFile_Name || "";
+        this.resetDecisionFile();
+      } else {
+        this.cleanupTempFiles();
       }
-    },
-    localDecision: {
-      handler(val) {
-        if (val) {
-          this.decisionFileWrapper.File_ID = val.DecisionFile_ID;
-          this.decisionFileWrapper.File_URL = val.DecisionFile_Url;
-          this.decisionFileWrapper.File_Name = val.DecisionFile_Name;
-        }
-      },
-      immediate: true,
-      deep: true,
-    },
-    decisionFileWrapper: {
-      handler(val) {
-        if (val) {
-          this.localDecision.DecisionFile_ID = val.File_ID;
-          this.localDecision.DecisionFile_Url = val.File_URL;
-          this.localDecision.DecisionFile_Name = val.File_Name;
-        }
-      },
-      deep: true,
     },
   },
+  beforeDestroy() {
+    this.cleanupTempFiles();
+  },
   methods: {
-    close() {
+    resetDecisionFile() {
+      const d = this.detailDecision || {};
+      this.decisionFileWrapper = {
+        File_ID: d.DecisionFile_ID || null,
+        File_URL: d.DecisionFile_Url || null,
+        File_Name: d.DecisionFile_Name || null,
+        FILE_UPLOAD: null,
+      };
+    },
+    async cleanupTempFiles() {
+      if (this.tempUploadedFileIds.length > 0) {
+        const fileIds = [...this.tempUploadedFileIds];
+        this.tempUploadedFileIds = [];
+        try {
+          await ajaxCALLPromise("/FILE_FileDeleteMulti", { FileIDs: fileIds.join(",") });
+        } catch (e) {
+          console.error("Lỗi xóa file rác:", e);
+        }
+        if (window.unsavedUploadedFiles) {
+          window.unsavedUploadedFiles = window.unsavedUploadedFiles.filter((id) => !fileIds.includes(id));
+        }
+      }
+      this.resetDecisionFile();
+      if (this.localDecision) {
+        this.localDecision.DecisionFile_ID = this.detailDecision?.DecisionFile_ID || null;
+        this.localDecision.DecisionFile_Url = this.detailDecision?.DecisionFile_Url || null;
+        this.localDecision.DecisionFile_Name = this.detailDecision?.DecisionFile_Name || null;
+        this.fileName = this.detailDecision?.DecisionFile_Name || "";
+      }
+    },
+    async close() {
+      await this.cleanupTempFiles();
       this.dialog = false;
     },
-    deleteFile() {
-      this.localDecision.DecisionFile_ID = null;
-      this.localDecision.DecisionFile_Url = null;
-      this.localDecision.DecisionFile_Name = null;
-      this.fileName = "";
-    },
-    uploadFile(val) {
-      if (val && val.Files && val.Files.length > 0) {
-        const file = val.Files[0];
-        this.localDecision.DecisionFile_ID = file.FILE_ID;
-        this.localDecision.DecisionFile_Url = file.FILE_URL;
-        this.localDecision.DecisionFile_Name = file.FILE_NAME;
-        this.fileName = file.FILE_NAME;
+    async onFileChange(fileDes) {
+      const newFileId = fileDes?.File_ID || null;
+      const oldFileId = this.localDecision.DecisionFile_ID;
+
+      // Nếu trước đó trong phiên này đã tải một file tạm khác mà giờ thay thế bằng file mới:
+      if (oldFileId && oldFileId !== newFileId && this.tempUploadedFileIds.includes(oldFileId)) {
+        try {
+          await ajaxCALLPromise("/FILE_FileDelete", { FileID: oldFileId });
+        } catch (e) {
+          console.error("Lỗi xóa file tạm thay thế:", e);
+        }
+        this.tempUploadedFileIds = this.tempUploadedFileIds.filter((id) => id !== oldFileId);
+        if (window.unsavedUploadedFiles) {
+          window.unsavedUploadedFiles = window.unsavedUploadedFiles.filter((id) => id !== oldFileId);
+        }
       }
+
+      // Ghi nhận file tạm mới nếu khác với file ban đầu trong DB
+      if (newFileId && !this.tempUploadedFileIds.includes(newFileId)) {
+        if (newFileId !== this.detailDecision?.DecisionFile_ID) {
+          this.tempUploadedFileIds.push(newFileId);
+        }
+      }
+
+      this.localDecision.DecisionFile_ID = newFileId;
+      this.localDecision.DecisionFile_Url = fileDes?.File_URL || null;
+      this.localDecision.DecisionFile_Name = fileDes?.File_Name || null;
+      this.fileName = fileDes?.File_Name || "";
     },
     handleSave() {
       if (!this.localDecision.Decision_SoQD) {
@@ -205,6 +236,17 @@
         Vue.$toast.error("Không được bỏ trống Ngày cấp SQĐ", { position: "top" });
         return;
       }
+
+      // File mới được lưu chính thức, gỡ khỏi danh sách tạm cần dọn
+      const savedFileId = this.localDecision.DecisionFile_ID;
+      if (savedFileId) {
+        this.tempUploadedFileIds = this.tempUploadedFileIds.filter((id) => id !== savedFileId);
+        if (window.unsavedUploadedFiles) {
+          window.unsavedUploadedFiles = window.unsavedUploadedFiles.filter((id) => id !== savedFileId);
+        }
+      }
+
+      this.cleanupTempFiles();
       this.$emit("on-save", this.localDecision);
     },
   },

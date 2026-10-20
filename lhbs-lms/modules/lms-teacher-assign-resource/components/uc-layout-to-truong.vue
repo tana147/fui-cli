@@ -941,9 +941,11 @@
 		},
 		async GET_BaoCaoLMS_DiemTrungVi_By_LopID() {
 			if (!this.LopID || !this.MonHocID) return
+			// Luôn gửi cặp LopID và NienKhoa để lấy đúng dữ liệu lớp của năm đang chọn.
 			const params = {
 				LopID: this.LopID,
-				MonHocID: this.MonHocID
+				MonHocID: this.MonHocID,
+				NienKhoa: vueData.NienKhoa
 			}
 			const response = await new Promise((rs, rj) => {
 				ajaxCALL('lms/BaoCaoLMS_DiemTrungVi_By_LopID', params, res => {

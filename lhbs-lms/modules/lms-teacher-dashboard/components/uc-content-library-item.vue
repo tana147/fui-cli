@@ -29,19 +29,20 @@
 						v-tooltip="$i18n.locale === 'en' ? 'Digital curriculum index not linked' : 'Bài này chưa gán mục lục học liệu số'">
 						{{ $i18n.locale === 'en' ? 'Digital curriculum not linked' : 'Chưa gán mục lục học liệu số' }}
 					</v-chip>
-					<v-menu location="bottom">
+					<v-menu v-if="canEditResource || canGradeResource" location="bottom">
 						<template v-slot:activator="{ props }">
 							<v-btn color="primary" v-bind="props" icon="mdi-dots-vertical" variant="tonal"
 								size="small" />
 						</template>
 						<v-list>
-							<v-list-item :title="$i18n.locale === 'en' ? 'Edit' : 'Sửa'" @click="isDialogEditBT = true" />
-							<v-list-item :title="item.ResourceType === 'ASSIGNMENT'
+							<!-- Quyền SUBJECT mặc định chỉ xem; chỉ hiện thao tác quản lý khi API cấp CanEdit. -->
+							<v-list-item v-if="canEditResource" :title="$i18n.locale === 'en' ? 'Edit' : 'Sửa'" @click="isDialogEditBT = true" />
+							<v-list-item v-if="canEditResource" :title="item.ResourceType === 'ASSIGNMENT'
 								? ($i18n.locale === 'en' ? 'Edit & assign assignment' : 'Sửa và giao bài tập')
 								: ($i18n.locale === 'en' ? 'Edit & assign lesson' : 'Sửa và giao bài học')
 								" @click="onRedirectToASM" />
-							<v-list-item :title="$i18n.locale === 'en' ? 'View report' : 'Xem báo cáo'" @click="goToClassDetail(item)" />
-							<v-list-item :title="$i18n.locale === 'en' ? 'Delete' : 'Xóa'" @click="onDelete" />
+							<v-list-item v-if="canGradeResource" :title="$i18n.locale === 'en' ? 'View report' : 'Xem báo cáo'" @click="goToClassDetail(item)" />
+							<v-list-item v-if="canEditResource" :title="$i18n.locale === 'en' ? 'Delete' : 'Xóa'" @click="onDelete" />
 						</v-list>
 					</v-menu>
 				</div>
@@ -149,8 +150,8 @@
 							<th>Trạng Thái</th>
 							<th>Hạn nộp</th>
 							<th>Điểm tối đa</th>
-							<th>Sửa hạn nộp</th>
-							<th>Sửa nội dung</th>
+							<th v-if="canEditResource">Sửa hạn nộp</th>
+							<th v-if="canEditResource">Sửa nội dung</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -162,16 +163,16 @@
 											</v-chip> -->
 								<v-switch v-model="cls.Status" :true-value="1" :false-value="0"
 									:label="cls.Status === 1 ? 'Đã mở' : 'Đang khóa'" inset
-									:loading="cls._loading === true" :disabled="cls._loading === true"
+									:loading="cls._loading === true" :disabled="!canEditResource || cls._loading === true"
 									@change="onToggleStatus(cls)" />
 							</td>
 							<td class="text-center">{{ formatDate(cls.DueDate) }}</td>
 							<td class="text-center">{{ cls.MaxScore ?? '—' }}</td>
-							<td class="text-center">
+							<td v-if="canEditResource" class="text-center">
 								<v-btn icon="mdi-pencil" size="x-small" variant="tonal" color="primary"
 									@click="openEditAssignedDialog(cls, i)" />
 							</td>
-							<td class="text-center">
+							<td v-if="canEditResource" class="text-center">
 								<v-btn icon="mdi-pencil" size="x-small" variant="tonal" color="primary"
 									@click="editGiaoBaiTapDialog(cls, i)" />
 							</td>
@@ -264,6 +265,13 @@
 		},
 		mounted() { this.loadHocLieuMapping() },
 		computed: {
+			// Backend trả cờ quyền; giữ fallback cho cache/API cũ để không làm mất thao tác của dữ liệu chưa có cờ.
+			canEditResource() {
+				return this.item?.CanEdit === undefined || Number(this.item.CanEdit) === 1;
+			},
+			canGradeResource() {
+				return this.item?.CanGrade === undefined || Number(this.item.CanGrade) === 1;
+			},
 			itemInfo() {
 				return this.item.ResourceType === 'ASSIGNMENT'
 					? { icon: 'mdi-notebook-edit-outline', color: 'blue' }

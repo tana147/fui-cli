@@ -86,6 +86,43 @@
     box-sizing: border-box !important;
     scrollbar-gutter: stable;
 }
+/* Keep the six-column monthly plan editable on phones: the outer tab owns vertical scrolling,
+   while the spreadsheet viewport provides touch-friendly horizontal scrolling. */
+@media (max-width: 959.98px) {
+    .so-gvcn-c1-weekly-sheet-wrap,
+    .so-gvcn-c1-weekly-sheet-wrap .so-gvcn-cong-tac-thang-sheet,
+    .so-gvcn-c1-weekly-sheet-wrap .jexcel_container,
+    .so-gvcn-c1-weekly-sheet-wrap .jspreadsheet_container,
+    .so-gvcn-c1-weekly-sheet-wrap .jss_container {
+        flex: 0 0 auto !important;
+        height: auto !important;
+        max-height: none !important;
+        min-height: 0 !important;
+    }
+    .so-gvcn-c1-weekly-sheet-wrap .so-gvcn-cong-tac-thang-sheet {
+        overflow: visible !important;
+    }
+    .so-gvcn-c1-weekly-sheet-wrap .jexcel_container,
+    .so-gvcn-c1-weekly-sheet-wrap .jspreadsheet_container,
+    .so-gvcn-c1-weekly-sheet-wrap .jss_container {
+        overflow: hidden !important;
+    }
+    .so-gvcn-c1-weekly-sheet-wrap .jexcel_content,
+    .so-gvcn-c1-weekly-sheet-wrap .jspreadsheet_content,
+    .so-gvcn-c1-weekly-sheet-wrap .jss_content {
+        height: auto !important;
+        max-height: none !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    .so-gvcn-c1-weekly-sheet-wrap table.jss_worksheet,
+    .so-gvcn-c1-weekly-sheet-wrap table.jspreadsheet,
+    .so-gvcn-c1-weekly-sheet-wrap table.jexcel {
+        width: max-content !important;
+        min-width: 100% !important;
+    }
+}
 /* Tab Dữ liệu HS, Theo dõi thành tích và Theo dõi PH đi họp: chỉ để jss_content giữ scroll, tránh hai lớp scroll
    và vừa khít chiều cao vùng tab trong viewport. */
 .so-gvcn-student-sheet .jss_container,
@@ -249,6 +286,51 @@ table.jexcel {
 .so-gvcn-theo-doi-ph-hop-sheet .jspreadsheet_content {
     scrollbar-width: auto;
     scrollbar-color: #9e9e9e #f5f5f5;
+}
+/* Phone layouts use compact form rows; desktop keeps the full JSpreadsheet grid. */
+.so-gvcn-c1-mobile-editor {
+    display: none !important;
+}
+@media (max-width: 959.98px) {
+    .so-gvcn-c1-desktop-only {
+		display: none !important;
+	}
+	.so-gvcn-c1-mobile-editor {
+		display: flex !important;
+    }
+    .so-gvcn-c1-desktop-only .jexcel_content,
+    .so-gvcn-c1-desktop-only .jspreadsheet_content,
+    .so-gvcn-c1-desktop-only .jss_content {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        touch-action: pan-x pan-y;
+    }
+    .so-gvcn-c1-desktop-only table.jexcel,
+    .so-gvcn-c1-desktop-only table.jspreadsheet,
+    .so-gvcn-c1-desktop-only table.jss_worksheet {
+        width: max-content !important;
+        min-width: 100% !important;
+    }
+    .so-gvcn-organization-sheet .jexcel_content,
+    .so-gvcn-organization-sheet .jspreadsheet_content,
+    .so-gvcn-organization-sheet .jss_content {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        touch-action: pan-x pan-y;
+    }
+    .so-gvcn-organization-sheet table.jexcel,
+    .so-gvcn-organization-sheet table.jspreadsheet,
+    .so-gvcn-organization-sheet table.jss_worksheet {
+        width: max-content !important;
+        min-width: 100% !important;
+    }
+}
+@media (min-width: 960px) {
+    .so-gvcn-c1-desktop-only {
+        display: flex !important;
+    }
 }
 .jss_content::-webkit-scrollbar,
 .jspreadsheet_content::-webkit-scrollbar,
@@ -574,4 +656,30 @@ table td,
 .jss_worksheet td,
 .jexcel tbody td {
 	white-space: pre-wrap !important;
+}
+/* Tab kế hoạch: chỉ wrapper ngoài được cuộn. Khi tableOverflow của CE tắt,
+   editor không còn làm viewport nội bộ bị co/reflow rồi đóng ngay sau double-click. */
+.so-gvcn-plan-tab .so-gvcn-sheet-wrap {
+	overflow: auto !important;
+	height: 100% !important;
+	max-height: 100% !important;
+}
+.so-gvcn-plan-tab .so-gvcn-sheet-wrap .wrapper-jexcel {
+	width: max-content !important;
+	min-width: 100% !important;
+	min-height: 100% !important;
+	height: auto !important;
+	flex: 0 0 auto !important;
+	overflow: visible !important;
+}
+.so-gvcn-plan-tab .so-gvcn-sheet-wrap .jss_container,
+.so-gvcn-plan-tab .so-gvcn-sheet-wrap .jspreadsheet_container,
+.so-gvcn-plan-tab .so-gvcn-sheet-wrap .jexcel_container,
+.so-gvcn-plan-tab .so-gvcn-sheet-wrap .jss_content,
+.so-gvcn-plan-tab .so-gvcn-sheet-wrap .jspreadsheet_content,
+.so-gvcn-plan-tab .so-gvcn-sheet-wrap .jexcel_content {
+	height: auto !important;
+	max-height: none !important;
+	min-height: 100% !important;
+	overflow: visible !important;
 }

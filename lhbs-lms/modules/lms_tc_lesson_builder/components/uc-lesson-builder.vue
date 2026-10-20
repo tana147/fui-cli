@@ -3,13 +3,22 @@
 	<div class="builder-layout">
 		<!-- Cột trái: Thư viện -->
 		<div class="builder-sidebar left-sidebar">
-			<uc-lesson-component-library @add-element="addElement"></uc-lesson-component-library>
-			<!-- {{lesson.elements}} -->
+			<!-- Thư viện cuộn trong phần còn lại; nút xem trước luôn nằm sát đáy sidebar. -->
+			<div class="flex-grow-1 fpScrollbar" style="min-height: 0;">
+				<uc-lesson-component-library @add-element="addElement"></uc-lesson-component-library>
+			</div>
+			<div v-if="canEdit" class="action-buttons">
+				<v-btn variant="outlined" color="primary" block @click="openLessonPreview">
+					<v-icon start class="me-1">mdi-eye-outline</v-icon> Xem trước bài học
+				</v-btn>
+			</div>
 		</div>
 
 		<!-- Cột giữa: Canvas -->
-		<div class="builder-canvas">
-			<uc-lesson-canvas :elements="lesson.elements" v-model:selected-index="selectedElementIndex"
+		<!-- Canvas và nội dung thuộc tính bên phải cuộn độc lập để mỗi cột giữ đúng chiều cao viewport. -->
+		<div class="builder-canvas fpScrollbar">
+			<uc-lesson-canvas :elements="lesson.elements" :completion-policy="lesson.CompletionPolicy"
+				v-model:selected-index="selectedElementIndex" :read-only="!canEdit"
 				@update:elements="updateElements" />
 		</div>
 
@@ -17,8 +26,8 @@
 		<div class="builder-sidebar right-sidebar">
 			<uc-lesson-properties v-model:lesson-header="lesson" :element="selectedElement"
 				:index="selectedElementIndex" @update:element="updateElement" />
-			<!-- Chỉ giữ các thao tác giáo viên cần ở màn hình này: nhập nội dung, lưu nháp và lưu để giao bài. -->
-			<div class="action-buttons">
+			<!-- Các thao tác lưu và nhập nội dung dành cho giáo viên. -->
+			<div v-if="canEdit" class="action-buttons">
 				<!-- Content Hub là nguồn nhập duy nhất của trình soạn bài, nên mở dialog trực tiếp. -->
 				<v-btn variant="outlined" color="deep-purple" block class="mb-2" @click="isOpenContentHubImport = true">
 					<v-icon start class="me-1">mdi-import</v-icon>Import từ Content Hub
@@ -118,6 +127,7 @@
 	props: {
 		initialLesson: Object,
 		isEditMode: Boolean,
+		canEdit: { type: Boolean, default: true },
 		onSave: { type: Function, default: () => { } }
 	},
 	emits: ['update:initialLesson'],
@@ -154,6 +164,9 @@
 		},
 	},
 	mounted() {
+		// Người xem theo môn không cần gọi API lớp/giao bài; các thao tác này chỉ dành cho chủ bài.
+		if (!this.canEdit) return
+
 		// ajaxCALL("/lms/EL_Teacher_GetGroupedDashboard", {
 
 		// }, (res) => {
@@ -193,6 +206,9 @@
 							console.error("Lỗi parse ElementData:", el.ElementData, e);
 							el.ElementData = {};
 						}
+						// Ưu tiên thời lượng lấy từ metadata hoặc ước lượng nội dung chữ; giữ giá trị cũ nếu không đủ dữ liệu để tính lại.
+						const expectedDuration = this.getExpectedDurationSeconds(el);
+						if (expectedDuration !== null) el.ExpectedDurationSeconds = expectedDuration;
 						return el;
 					});
 					this.lesson = { ...newVal, elements: processedElements };
@@ -203,6 +219,97 @@
 		}
 	},
 	methods: {
+		parseDurationSeconds(value) {
+			if (value === null || value === undefined || value === '') return null;
+			const numericValue = Number(value);
+			if (Number.isFinite(numericValue) && numericValue > 0) return Math.round(numericValue);
+			const valueText = String(value).trim();
+			const isoMatch = valueText.match(/^PT(?:(\d+(?:\.\d+)?)H)?(?:(\d+(?:\.\d+)?)M)?(?:(\d+(?:\.\d+)?)S)?$/i);
+			if (isoMatch) {
+				const total = Number(isoMatch[1] || 0) * 3600 + Number(isoMatch[2] || 0) * 60 + Number(isoMatch[3] || 0);
+				return total > 0 ? Math.round(total) : null;
+			}
+			const clockMatch = valueText.match(/^(?:(\d+):)?([0-5]?\d):([0-5]\d)$/);
+			if (!clockMatch) return null;
+			const total = Number(clockMatch[1] || 0) * 3600 + Number(clockMatch[2]) * 60 + Number(clockMatch[3]);
+			return total > 0 ? total : null;
+		},
+		getExpectedDurationSeconds(element) {
+			const elementData = element?.ElementData || {};
+			const sourceMetadata = Array.isArray(elementData.sources) ? elementData.sources : [];
+			const metadataObjects = [elementData, elementData.metadata, elementData.mediaMetadata, ...sourceMetadata].filter(Boolean);
+			const durationKeys = ['durationSeconds', 'DurationSeconds', 'mediaDurationSeconds', 'MediaDurationSeconds', 'duration', 'Duration', 'lengthSeconds', 'LengthSeconds'];
+			for (const metadata of metadataObjects) {
+				for (const key of durationKeys) {
+					const seconds = this.parseDurationSeconds(metadata[key]);
+					if (seconds !== null) return seconds;
+				}
+				const milliseconds = Number(metadata.durationMilliseconds || metadata.DurationMilliseconds || metadata.durationMs || metadata.DurationMs);
+				if (Number.isFinite(milliseconds) && milliseconds > 0) return Math.round(milliseconds / 1000);
+			}
+
+			let rawText = '';
+			let standaloneLinkUrl = '';
+			if (element?.ElementType === 'TEXT') rawText = elementData.content || '';
+			else if (element?.ElementType === 'HTML') {
+				rawText = elementData.textContent || elementData.htmlContent || (elementData.IsHTML ? elementData.source : '');
+				// Với HTML ở chế độ URL trang, nội dung ở xa không đọc được an toàn do CORS/đăng nhập.
+				if (!elementData.IsHTML) standaloneLinkUrl = this.normalizeExpectedLinkUrl(elementData.source);
+			}
+			const estimate = this.getTextAndLinkEstimate(rawText);
+			const linkUrls = new Set(estimate.linkUrls);
+			if (standaloneLinkUrl) linkUrls.add(standaloneLinkUrl);
+			const readingSeconds = estimate.wordCount > 0 ? Math.max(1, Math.ceil(estimate.wordCount * 60 / 200)) : 0;
+			// Link ngoài được tính một phút đọc/xem sơ bộ; đây là mốc tham khảo vì trang đích có thể dài, ngắn hoặc yêu cầu đăng nhập.
+			const linkedPageSeconds = linkUrls.size * 60;
+			if (readingSeconds || linkedPageSeconds) return readingSeconds + linkedPageSeconds;
+			return this.parseDurationSeconds(element?.ExpectedDurationSeconds);
+		},
+		normalizeExpectedLinkUrl(value) {
+			const candidate = String(value || '').trim();
+			if (!candidate) return '';
+			try {
+				const parsed = new URL(/^www\./i.test(candidate) ? 'https://' + candidate : candidate);
+				return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : '';
+			} catch (error) {
+				return '';
+			}
+		},
+		getTextAndLinkEstimate(rawHtml) {
+			if (!rawHtml || typeof DOMParser === 'undefined') return { wordCount: 0, linkUrls: [] };
+			const parsed = new DOMParser().parseFromString('<div>' + rawHtml + '</div>', 'text/html');
+			const root = parsed.body.firstElementChild;
+			if (!root) return { wordCount: 0, linkUrls: [] };
+			root.querySelectorAll('script, style').forEach(node => node.remove());
+
+			const links = new Set();
+			Array.from(root.querySelectorAll('a')).forEach(anchor => {
+				const href = this.normalizeExpectedLinkUrl(anchor.getAttribute('href') || anchor.href);
+				if (href) links.add(href);
+				// A URL shown as its own link is counted as a page, not as a single reading word.
+				if (href && this.normalizeExpectedLinkUrl(anchor.textContent) === href) anchor.remove();
+			});
+
+			const urlPattern = /(?:https?:\/\/|www\.)[^\s<>"']+/gi;
+			const collectPlainTextLinks = node => {
+				if (node.nodeType === 3) {
+					node.nodeValue = (node.nodeValue || '').replace(urlPattern, rawUrl => {
+						const trimmedUrl = rawUrl.replace(/[),.;:!?…]+$/u, '');
+						const normalizedUrl = this.normalizeExpectedLinkUrl(trimmedUrl);
+						if (normalizedUrl) links.add(normalizedUrl);
+						return ' ';
+					});
+					return;
+				}
+				if (node.nodeType !== 1 || node.tagName === 'A') return;
+				Array.from(node.childNodes).forEach(collectPlainTextLinks);
+			};
+			collectPlainTextLinks(root);
+
+			const text = (root.textContent || '').replace(/\s+/g, ' ').trim();
+			const wordCount = text ? text.split(' ').filter(word => /[A-Za-z0-9À-ỹ]/.test(word)).length : 0;
+			return { wordCount, linkUrls: Array.from(links) };
+		},
 		showSnackbar(message, color = 'info') {
 			this.snackbarRef?.value?.showSnackbar?.({ message, color })
 		},
@@ -309,12 +416,32 @@
 			}
 			console.log('this.selectedClass', this.selectedClass)
 		},
-		// Kiểm tra tính hợp lệ của từng element trong bài học trước khi giao bài
+		// Chế độ per-element không được lưu/đưa cho học sinh nếu chưa có ít nhất một required element và đủ ngưỡng.
+		validateCompletionSettings() {
+			if (this.lesson?.CompletionPolicy !== 'ALL_REQUIRED') return { isValid: true }
+			const elements = this.lesson?.elements || []
+			const requiredElements = elements.filter(el => [true, 1, '1'].includes(el.IsRequired));
+			if (requiredElements.length === 0) {
+				return { isValid: false, message: 'Chế độ theo từng khối cần ít nhất một khối bắt buộc.' }
+			}
+			const missing = requiredElements.find(el => {
+				const seconds = Number(el.RequiredDurationSeconds);
+				return !Number.isInteger(seconds) || seconds < 1;
+			});
+			if (missing) {
+				const actualIndex = elements.indexOf(missing) + 1;
+				return { isValid: false, message: `Mục số ${actualIndex} cần có thời gian bắt buộc (giây) trước khi lưu chế độ này.` }
+			}
+			return { isValid: true }
+		},
+		// Kiểm tra nội dung element trước khi giao; completion settings được kiểm tra riêng để tránh lưu cấu hình dở.
 		validateLessonElements() {
 			const elements = this.lesson?.elements || []
 			if (elements.length === 0) {
 				return { isValid: false, message: 'Bài học chưa có nội dung nào. Vui lòng thêm nội dung trước khi giao bài.' }
 			}
+			const completionValidation = this.validateCompletionSettings();
+			if (!completionValidation.isValid) return completionValidation;
 
 			for (let i = 0; i < elements.length; i++) {
 				const el = elements[i]
@@ -415,12 +542,19 @@
 		},
 		async addElement(elementInfo) {
 			const lessonID = this.lesson?.LessonID || vueData.LessonID
+			// Khối thêm vào lesson ALL_REQUIRED đã có học sinh không chặn progress cho tới khi giáo viên cấu hình ngưỡng.
+			const isRequiredByDefault = !(lessonID && this.lesson?.CompletionPolicy === 'ALL_REQUIRED')
 			const newElement = {
 				LessonID: lessonID || 0,
 				ElementType: elementInfo.type,
 				ElementData: JSON.parse(JSON.stringify(elementInfo.defaultData)),
-				SortOrder: (this.lesson.elements.length + 1) * 10
+				SortOrder: (this.lesson.elements.length + 1) * 10,
+				IsRequired: isRequiredByDefault ? 1 : 0,
+				CompletionMode: 'TIME_REQUIRED',
+				ExpectedDurationSeconds: null,
+				RequiredDurationSeconds: null
 			};
+			newElement.ExpectedDurationSeconds = this.getExpectedDurationSeconds(newElement);
 			// Bài mới chưa có LessonID; giữ element ở local để lần lưu đầu tiên tạo bài rồi mới ghi element.
 			if (!lessonID) {
 				this.lesson.elements.push(newElement)
@@ -428,9 +562,14 @@
 				return
 			}
 			try {
-				await fetchPromise('lms/EL_Element_Save', newElement, { cache: false })
+				const newElementIndex = this.lesson.elements.length
+				await fetchPromise('lms/EL_Element_Save_V2', {
+					...newElement,
+					ElementID: newElement.ElementID || 0,
+					ElementData: JSON.stringify(newElement.ElementData)
+				}, { cache: false })
 				CALL('getLessonData')
-				this.selectedElementIndex = this.lesson.elements.length  //- 1;
+				this.selectedElementIndex = newElementIndex
 			} catch (error) { this.showSnackbar(error?.Message || error?.message || 'Không thể thêm nội dung.', 'error') }
 			// this.lesson.elements.push(newElement);
 		},
@@ -465,6 +604,7 @@
 			const elementData = {
 				title: document.name || 'Tài liệu Content Hub',
 				source: defaultSource,
+				durationSeconds: document.durationSeconds ?? null,
 				IsHTML: isHtml && Boolean(document.htmlContent),
 				interactive: document.interactive === true,
 				interactions: Array.isArray(document.interactions) ? document.interactions : [],
@@ -485,12 +625,23 @@
 				ElementType: elementType,
 				ElementData: elementData,
 				SortOrder: (this.lesson.elements.length + 1) * 10,
+				// Nội dung import vào bài ALL_REQUIRED đang giao được đánh dấu optional trước, chờ giáo viên cấu hình duration.
+				IsRequired: !(this.lesson?.LessonID && this.lesson?.CompletionPolicy === 'ALL_REQUIRED') ? 1 : 0,
+				CompletionMode: 'TIME_REQUIRED',
+				ExpectedDurationSeconds: null,
+				RequiredDurationSeconds: null
 			}
+			newElement.ExpectedDurationSeconds = this.getExpectedDurationSeconds(newElement);
 			
 			try {
-				await fetchPromise('lms/EL_Element_Save', newElement, { cache: false })
+				const newElementIndex = this.lesson.elements.length
+				await fetchPromise('lms/EL_Element_Save_V2', {
+					...newElement,
+					ElementID: newElement.ElementID || 0,
+					ElementData: JSON.stringify(newElement.ElementData)
+				}, { cache: false })
 				CALL('getLessonData')
-				this.selectedElementIndex = this.lesson.elements.length
+				this.selectedElementIndex = newElementIndex
 				this.showSnackbar(`Đã import ${document.name} từ Content Hub`, 'success')
 			} catch (error) {
 				this.showSnackbar(error?.Message || error?.message || 'Không thể import tài liệu từ Content Hub.', 'error')
@@ -502,11 +653,54 @@
 		updateElement(updatedPayload) {
 			const newElements = [...this.lesson.elements];
 			if (newElements[updatedPayload.index]) {
-				newElements[updatedPayload.index] = updatedPayload.element;
+				const updatedElement = { ...updatedPayload.element };
+				const expectedDuration = this.getExpectedDurationSeconds(updatedElement);
+				if (expectedDuration !== null) updatedElement.ExpectedDurationSeconds = expectedDuration;
+				newElements[updatedPayload.index] = updatedElement;
 				this.updateElements(newElements);
 			}
 		},
+		// Không lưu trước khi xem: truyền bản sao thuần để preview phản ánh chính xác nội dung đang soạn.
+		openLessonPreview() {
+			let previewLesson
+			try {
+				previewLesson = JSON.parse(JSON.stringify(this.lesson || { elements: [] }))
+			} catch (error) {
+				this.showSnackbar('Không thể chuẩn bị nội dung xem trước.', 'error')
+				return
+			}
+			const previewToken = `lesson-${Date.now()}-${Math.random().toString(36).slice(2)}`
+			try {
+				// GlobalIframeWindow chỉ chuyển title/url/kích thước qua postMessage, nên snapshot được gửi một lần qua sessionStorage.
+				window.sessionStorage.setItem(`fui-lesson-preview:${previewToken}`, JSON.stringify(previewLesson))
+			} catch (error) {
+				this.showSnackbar('Không thể lưu dữ liệu tạm để xem trước bài học.', 'error')
+				return
+			}
+			const payload = {
+				id: 'WinLessonPreview',
+				title: 'Xem trước bài học',
+				url: `/lms-tc-lesson-preview?PreviewToken=${encodeURIComponent(previewToken)}`,
+				width: '96%',
+				height: '92%'
+			}
+			if (this.iframeRef?.value?.openWindow) {
+				this.iframeRef.value.openWindow(payload)
+			} else {
+				window.parent.postMessage({ type: 'iframeRef_openWindow', ...payload }, '*')
+			}
+		},
 		async handleSave(isPublishing) {
+			// Tính lại trước khi gửi để các thay đổi nội dung trực tiếp trong editor cũng cập nhật thời lượng dự kiến được lưu.
+			this.lesson.elements = (this.lesson.elements || []).map(element => {
+				const expectedDuration = this.getExpectedDurationSeconds(element);
+				return expectedDuration === null ? element : { ...element, ExpectedDurationSeconds: expectedDuration };
+			});
+			const completionValidation = this.validateCompletionSettings()
+			if (!completionValidation.isValid) {
+				this.showSnackbar(completionValidation.message, 'error')
+				return null
+			}
 			if (isPublishing) {
 				const validation = this.validateLessonElements()
 				if (!validation.isValid) {

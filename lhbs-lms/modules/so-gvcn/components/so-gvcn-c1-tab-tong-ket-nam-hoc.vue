@@ -6,8 +6,8 @@
 			Chọn một lớp ở thanh trên để xem và biên soạn Tổng kết cuối năm học.
 		</v-alert>
 
-		<div v-else class="d-flex flex-grow-1 ga-3" style="min-height: 0; min-width: 0;">
-			<div class="flex-shrink-0 overflow-y-auto"
+		<div v-else class="d-flex flex-grow-1 ga-3 so-gvcn-c1-desktop-only" style="min-height: 0; min-width: 0;">
+			<div class="d-none d-md-block flex-shrink-0 overflow-y-auto"
 				style="width: 260px; min-height: 0; border-right: 1px solid rgba(0, 0, 0, 0.12);">
 				<v-list density="compact" nav color="primary" class="pa-0">
 					<v-list-subheader class="text-caption font-weight-bold text-primary px-3">
@@ -97,6 +97,40 @@
 				</v-card>
 			</div>
 		</div>
+		<!-- Native phone editors keep period ratings and summary notes editable without a wide grid. -->
+		<div v-if="selectedLopID !== '__ALL__'" class="so-gvcn-c1-mobile-editor flex-column flex-grow-1 overflow-y-auto">
+			<div class="pa-2">
+				<v-select :model-value="selectedKyDanhGia" :items="kyDanhGiaOptions" item-title="title" item-value="value"
+					label="Kỳ đánh giá" variant="outlined" density="compact" hide-details
+					@update:model-value="prepareEvaluationPeriod" />
+			</div>
+			<v-expansion-panels multiple>
+				<v-expansion-panel value="general">
+					<v-expansion-panel-title>Đánh giá chung</v-expansion-panel-title>
+					<v-expansion-panel-text>
+						<v-textarea v-model="localForm.DuyTriSoLuong" label="1. Công tác duy trì số lượng" rows="3" auto-grow variant="outlined" density="compact" class="mb-3" hide-details />
+						<v-textarea v-model="localForm.NangLucPhamChat" label="2. Về năng lực, phẩm chất" rows="3" auto-grow variant="outlined" density="compact" class="mb-3" hide-details />
+						<v-textarea v-model="localForm.KienThucKyNang" label="3. Về kiến thức, kĩ năng" rows="3" auto-grow variant="outlined" density="compact" hide-details />
+					</v-expansion-panel-text>
+				</v-expansion-panel>
+				<v-expansion-panel v-for="section in mobileResultDefinitions" :key="section.key" :value="section.key">
+					<v-expansion-panel-title>{{ section.title }}</v-expansion-panel-title>
+					<v-expansion-panel-text>
+						<uc-so-gvcn-mobile-sheet-editor :ref="'mobileSummary_' + section.key"
+							:rows="getInitialMobileRows(section.key)" :columns="getMobileColumns(section.key)"
+							:nested-headers="getMobileNestedHeaders(section.key)" :title-index="0"
+							empty-title="Nội dung" @cell-changed="onMobileSummaryCellChanged(section.key, $event)" />
+					</v-expansion-panel-text>
+				</v-expansion-panel>
+				<v-expansion-panel value="conclusion">
+					<v-expansion-panel-title>Hoàn thành chương trình và phong trào</v-expansion-panel-title>
+					<v-expansion-panel-text>
+						<v-textarea v-model="localForm.HoanThanhCT" label="5. Hoàn thành chương trình lớp học" rows="3" auto-grow variant="outlined" density="compact" class="mb-3" hide-details />
+						<v-textarea v-model="localForm.PhongTraoKhac" label="6. Các hoạt động, phong trào khác" rows="3" auto-grow variant="outlined" density="compact" hide-details />
+					</v-expansion-panel-text>
+				</v-expansion-panel>
+			</v-expansion-panels>
+		</div>
 	</v-card-text>
 </template>
 
@@ -118,6 +152,8 @@
 				sheet3Instance: null,
 				sheet4Instance: null,
 				activeSection: 'duy-tri',
+				isMobileViewport: false,
+				mobileSheetRows: {},
 				selectedKyDanhGia: 4,
 				syncLoading: false,
 				// Sheet 1 và Sheet 2 được giữ riêng theo từng kỳ; Sheet 3/4 là phần tổng kết chung.
@@ -162,10 +198,12 @@
 				this.localForm.HoanThanhCT = ''
 				this.localForm.PhongTraoKhac = ''
 				this.periodSheetData = { Sheet1: {}, Sheet2: {} }
+				this.mobileSheetRows = {}
 				this.initAllSheets()
 			},
 			selectedLopID() {
 				this.periodSheetData = { Sheet1: {}, Sheet2: {} }
+				this.mobileSheetRows = {}
 				this.initAllSheets()
 			},
 			savedData: {
@@ -179,11 +217,14 @@
 						this.localForm.PhongTraoKhac = val.PhongTraoKhac || ''
 					}
 					this.syncPeriodSheetData()
+					this.mobileSheetRows = {}
 					this.initAllSheets()
 				}
 			}
 		},
 		mounted() {
+			this.isMobileViewport = window.matchMedia('(max-width: 959.98px)').matches
+			window.addEventListener('resize', this.onWindowResize)
 			if (this.savedData) {
 				this.localForm.DuyTriSoLuong = this.savedData.DuyTriSoLuong || ''
 				this.localForm.NangLucPhamChat = this.savedData.NangLucPhamChat || ''
@@ -195,9 +236,36 @@
 			this.initAllSheets()
 		},
 		beforeUnmount() {
+			window.removeEventListener('resize', this.onWindowResize)
 			this.destroyAllSheets()
 		},
+		computed: {
+			mobileResultDefinitions() {
+				return [
+					{ key: 'Sheet1', title: '1. Năng lực, phẩm chất (' + this.getKyDanhGiaTitle() + ')' },
+					{ key: 'Sheet2', title: '2. Môn học và hoạt động giáo dục (' + this.getKyDanhGiaTitle() + ')' },
+					{ key: 'Sheet3', title: '3. Đánh giá kết quả giáo dục' },
+					{ key: 'Sheet4', title: '4. Khen thưởng' }
+				]
+			}
+		},
 		methods: {
+			onWindowResize() {
+				const nextIsMobile = window.matchMedia('(max-width: 959.98px)').matches
+				if (nextIsMobile === this.isMobileViewport) return
+				const sheet1Rows = this.getSheetRows(this.sheet1Instance, 'Sheet1')
+				const sheet2Rows = this.getSheetRows(this.sheet2Instance, 'Sheet2')
+				this.mobileSheetRows = {
+					Sheet1: this.toMobileRatingRows('Sheet1', sheet1Rows),
+					Sheet2: this.toMobileRatingRows('Sheet2', sheet2Rows),
+					Sheet3: this.getSheetRows(this.sheet3Instance, 'Sheet3'),
+					Sheet4: this.getSheetRows(this.sheet4Instance, 'Sheet4')
+				}
+				if (sheet1Rows.length) this.setPeriodSheetRows('Sheet1', sheet1Rows)
+				if (sheet2Rows.length) this.setPeriodSheetRows('Sheet2', sheet2Rows)
+				this.isMobileViewport = nextIsMobile
+				this.$nextTick(() => this.initAllSheets())
+			},
 			// Các sheet kết quả nằm trong scrollContainer chung của tab. Không lấy chiều
 			// cao theo vị trí hiện tại trong viewport: sheet ở phía dưới sẽ trả về fallback
 			// "100%" hoặc một giá trị rất nhỏ trước khi người dùng cuộn tới, khiến
@@ -284,7 +352,8 @@
 				this.periodSheetData[sheetKey][String(period)] = this.cloneSheetRows(rows)
 			},
 
-			getSheetRows(instance) {
+			getSheetRows(instance, sheetKey = '') {
+				if (this.isMobileViewport && sheetKey) return this.getMobileSheetRows(sheetKey)
 				const sheet = Array.isArray(instance) ? instance[0] : instance
 				if (sheet && typeof sheet.closeEditor === 'function') {
 					try { sheet.closeEditor(true) } catch (error) {}
@@ -294,7 +363,16 @@
 					: []
 			},
 
-			applyRowsToSheet(instance, rows) {
+			applyRowsToSheet(instance, rows, sheetKey = '') {
+				if (this.isMobileViewport && sheetKey) {
+					const mobileRows = sheetKey === 'Sheet1' || sheetKey === 'Sheet2'
+						? this.toMobileRatingRows(sheetKey, rows)
+						: this.cloneSheetRows(rows)
+					this.mobileSheetRows[sheetKey] = mobileRows
+					if (sheetKey === 'Sheet1' || sheetKey === 'Sheet2') this.setPeriodSheetRows(sheetKey, rows)
+					this.$refs['mobileSummary_' + sheetKey]?.setRows?.(mobileRows)
+					return true
+				}
 				const sheet = Array.isArray(instance) ? instance[0] : instance
 				if (!sheet) return false
 				const safeRows = this.cloneSheetRows(rows)
@@ -329,10 +407,104 @@
 			buildSheet2Rows(savedRows = []) {
 				return this.buildSheetRows(['Hoàn thành tốt (T)', 'Hoàn thành (H)', 'Chưa hoàn thành (C)'], 22, savedRows)
 			},
+			getMobileFieldNames(sheetKey) {
+				if (sheetKey === 'Sheet1') {
+					return [
+						'Phẩm chất — Yêu nước', 'Phẩm chất — Nhân ái', 'Phẩm chất — Chăm chỉ',
+						'Phẩm chất — Trung thực', 'Phẩm chất — Trách nhiệm', 'Năng lực — Tự chủ và tự học',
+						'Năng lực — Giao tiếp và hợp tác', 'Năng lực — Giải quyết vấn đề và sáng tạo',
+						'Năng lực — Ngôn ngữ', 'Năng lực — Tính toán', 'Năng lực — Khoa học',
+						'Năng lực — Thẩm mĩ', 'Năng lực — Thể chất', 'Năng lực — Công nghệ', 'Năng lực — Tin học'
+					]
+				}
+				if (sheetKey === 'Sheet2') {
+					return ['Tiếng Việt', 'Toán', 'Tiếng Anh', 'Lịch sử và Địa lí',
+						this.getCurrentKhoiID() <= 3 ? 'Tự nhiên và Xã hội' : 'Khoa học',
+						'Tin học - Công nghệ', 'Đạo đức', 'Giáo dục thể chất', 'Âm nhạc', 'Mĩ thuật', 'Hoạt động trải nghiệm']
+				}
+				return []
+			},
+			toMobileRatingRows(sheetKey, rows) {
+				const ratingRows = this.cloneSheetRows(rows)
+				const fields = this.getMobileFieldNames(sheetKey)
+				return fields.map((title, fieldIndex) => [title, ...ratingRows.flatMap(row => [
+					row[1 + fieldIndex * 2] ?? '', row[2 + fieldIndex * 2] ?? ''
+				])])
+			},
+			toCanonicalRatingRows(sheetKey, mobileRows) {
+				const fields = this.getMobileFieldNames(sheetKey)
+				const defaults = sheetKey === 'Sheet1' ? this.buildSheet1Rows() : this.buildSheet2Rows()
+				return defaults.map((row, ratingIndex) => [row[0], ...fields.flatMap((_, fieldIndex) => {
+					const mobileRow = mobileRows[fieldIndex] || []
+					return [mobileRow[1 + ratingIndex * 2] ?? '', mobileRow[2 + ratingIndex * 2] ?? '']
+				})])
+			},
+			getMobileNestedHeaders(sheetKey) {
+				if (sheetKey !== 'Sheet1' && sheetKey !== 'Sheet2') return []
+				const ratingLabels = sheetKey === 'Sheet1'
+					? ['Tốt (T)', 'Đạt (Đ)', 'Cần cố gắng (C)']
+					: ['Hoàn thành tốt (T)', 'Hoàn thành (H)', 'Chưa hoàn thành (C)']
+				const nestedRatings = [{ title: '', colspan: 1 }, ...ratingLabels.map(title => ({ title, colspan: 2 }))]
+				const fieldHeaders = [{ title: '', colspan: 1 }]
+				ratingLabels.forEach(() => fieldHeaders.push({ title: 'Số lượng', colspan: 1 }, { title: 'Tỉ lệ (%)', colspan: 1 }))
+				return [nestedRatings, fieldHeaders]
+			},
+			getMobileColumns(sheetKey) {
+				if (sheetKey === 'Sheet1' || sheetKey === 'Sheet2') {
+					const columns = [{ title: 'Chỉ tiêu', width: 250, readOnly: true }]
+					for (let index = 0; index < 3; index++) {
+						columns.push({ title: 'Số lượng', type: 'numeric' }, { title: 'Tỉ lệ (%)', type: 'numeric' })
+					}
+					return columns
+				}
+				if (sheetKey === 'Sheet3') return [
+					{ title: 'Xếp loại', width: 250, readOnly: true },
+					{ title: 'Số lượng', type: 'numeric' }, { title: 'Tỉ lệ (%)', type: 'numeric' }
+				]
+				return [
+					{ title: 'Danh hiệu', width: 250, readOnly: true },
+					{ title: 'Số lượng', type: 'numeric' }, { title: 'Tỉ lệ (%)', type: 'numeric' }
+				]
+			},
+			buildFinalResultRows(sheetKey) {
+				if (sheetKey === 'Sheet3') {
+					const saved = this.savedData?.Sheet3 || []
+					return ['Hoàn thành xuất sắc', 'Hoàn thành tốt', 'Hoàn thành', 'Chưa hoàn thành'].map((label, index) => [label, saved[index]?.[1] ?? '', saved[index]?.[2] ?? ''])
+				}
+				const saved = this.savedData?.Sheet4 || []
+				return ['Học sinh Xuất sắc', 'Học sinh tiêu biểu hoàn thành tốt trong học tập và rèn luyện'].map((label, index) => [label, saved[index]?.[1] ?? '', saved[index]?.[2] ?? ''])
+			},
+			getInitialMobileRows(sheetKey) {
+				if (this.mobileSheetRows[sheetKey]) return this.mobileSheetRows[sheetKey]
+				if (sheetKey === 'Sheet1' || sheetKey === 'Sheet2') {
+					const saved = this.getPeriodSheetRows(sheetKey)
+					const canonical = saved.length ? saved : (sheetKey === 'Sheet1' ? this.buildSheet1Rows() : this.buildSheet2Rows())
+					return this.toMobileRatingRows(sheetKey, canonical)
+				}
+			return this.buildFinalResultRows(sheetKey)
+			},
+			getMobileSheetRows(sheetKey) {
+				const rows = this.$refs['mobileSummary_' + sheetKey]?.getRows?.()
+					|| this.mobileSheetRows[sheetKey]
+					|| this.getInitialMobileRows(sheetKey)
+				this.mobileSheetRows[sheetKey] = this.cloneSheetRows(rows)
+				if (sheetKey === 'Sheet1' || sheetKey === 'Sheet2') {
+					const canonical = this.toCanonicalRatingRows(sheetKey, rows)
+					this.setPeriodSheetRows(sheetKey, canonical)
+					return canonical
+				}
+				return this.cloneSheetRows(rows)
+			},
+			onMobileSummaryCellChanged(sheetKey, change) {
+				this.mobileSheetRows[sheetKey] = this.cloneSheetRows(change.rows)
+				if (sheetKey === 'Sheet1' || sheetKey === 'Sheet2') {
+					this.setPeriodSheetRows(sheetKey, this.toCanonicalRatingRows(sheetKey, change.rows))
+				}
+			},
 
 			captureCurrentPeriodSheetData() {
-				const sheet1Rows = this.getSheetRows(this.sheet1Instance)
-				const sheet2Rows = this.getSheetRows(this.sheet2Instance)
+				const sheet1Rows = this.getSheetRows(this.sheet1Instance, 'Sheet1')
+				const sheet2Rows = this.getSheetRows(this.sheet2Instance, 'Sheet2')
 				if (sheet1Rows.length) this.setPeriodSheetRows('Sheet1', sheet1Rows)
 				if (sheet2Rows.length) this.setPeriodSheetRows('Sheet2', sheet2Rows)
 			},
@@ -346,8 +518,8 @@
 				this.selectedKyDanhGia = nextPeriod
 				const sheet1Rows = this.getPeriodSheetRows('Sheet1', nextPeriod)
 				const sheet2Rows = this.getPeriodSheetRows('Sheet2', nextPeriod)
-				this.applyRowsToSheet(this.sheet1Instance, sheet1Rows.length ? sheet1Rows : this.buildSheet1Rows())
-				this.applyRowsToSheet(this.sheet2Instance, sheet2Rows.length ? sheet2Rows : this.buildSheet2Rows())
+				this.applyRowsToSheet(this.sheet1Instance, sheet1Rows.length ? sheet1Rows : this.buildSheet1Rows(), 'Sheet1')
+				this.applyRowsToSheet(this.sheet2Instance, sheet2Rows.length ? sheet2Rows : this.buildSheet2Rows(), 'Sheet2')
 			},
 
 			buildPeriodizedSheetData(sheetKey) {
@@ -456,7 +628,7 @@
 
 							// Lưu vào bộ nhớ theo kỳ để lần chuyển kỳ hoặc lần render sau không làm mất số liệu.
 							this.setPeriodSheetRows('Sheet1', [r0, r1, r2], kyDanhGiaNum)
-							this.applyRowsToSheet(this.sheet1Instance, [r0, r1, r2])
+							this.applyRowsToSheet(this.sheet1Instance, [r0, r1, r2], 'Sheet1')
 						}
 					}
 
@@ -535,7 +707,7 @@
 
 						// Lưu vào bộ nhớ theo kỳ; khi bấm Lưu, getData() sẽ gom toàn bộ các kỳ vào JSON.
 						this.setPeriodSheetRows('Sheet2', [r0, r1, r2], kyDanhGiaNum)
-						this.applyRowsToSheet(this.sheet2Instance, [r0, r1, r2])
+						this.applyRowsToSheet(this.sheet2Instance, [r0, r1, r2], 'Sheet2')
 					}
 
 					if (!options.quiet && typeof showMessage === 'function') {
@@ -574,25 +746,19 @@
 					Form: { ...this.localForm },
 					Sheet1: this.buildPeriodizedSheetData('Sheet1'),
 					Sheet2: this.buildPeriodizedSheetData('Sheet2'),
-					Sheet3: this.getSheetRows(this.sheet3Instance),
-					Sheet4: this.getSheetRows(this.sheet4Instance),
+					Sheet3: this.getSheetRows(this.sheet3Instance, 'Sheet3'),
+					Sheet4: this.getSheetRows(this.sheet4Instance, 'Sheet4'),
 					KyDanhGia: this.selectedKyDanhGia
 				}
 			},
 
 			getStructuredRatings(allMonHoc = []) {
-				const getSheetData = (inst) => {
-					const sheet = Array.isArray(inst) ? inst[0] : inst
-					if (sheet && typeof sheet.closeEditor === 'function') {
-						try { sheet.closeEditor(true) } catch (error) {}
-					}
-					return sheet && typeof sheet.getData === 'function' ? sheet.getData() : []
-				}
+				const getSheetData = (inst, key) => this.getSheetRows(inst, key)
 
 				const ratings = []
 
 				// 1. Sheet 1: Năng lực phẩm chất
-				const sheet1Rows = getSheetData(this.sheet1Instance)
+				const sheet1Rows = getSheetData(this.sheet1Instance, 'Sheet1')
 				const fields1 = [
 					{ name: 'Yêu nước', code: 'PC_YEU_NUOC', type: 'QUALITY' },
 					{ name: 'Nhân ái', code: 'PC_NHAN_AI', type: 'QUALITY' },
@@ -630,7 +796,7 @@
 				})
 
 				// 2. Sheet 2: Môn học và HĐGD
-				const sheet2Rows = getSheetData(this.sheet2Instance)
+				const sheet2Rows = getSheetData(this.sheet2Instance, 'Sheet2')
 				// Khối 1, 2, 3 học môn 'Tự nhiên và Xã hội' (MonHocID: 3)
 				// Khối 4, 5 học môn 'Khoa học' (MonHocID: 4)
 				const khoiID = this.getCurrentKhoiID()
@@ -673,7 +839,7 @@
 				})
 
 				// 3. Sheet 3: Đánh giá kết quả giáo dục
-				const sheet3Rows = getSheetData(this.sheet3Instance)
+				const sheet3Rows = getSheetData(this.sheet3Instance, 'Sheet3')
 				const sheet3RatingCodes = ['HT_XUAT_SAC', 'HT_TOT', 'HOAN_THANH', 'CHUA_HT']
 				sheet3Rows.forEach((row, rIdx) => {
 					const ratingCode = sheet3RatingCodes[rIdx] || 'HOAN_THANH'
@@ -689,7 +855,7 @@
 				})
 
 				// 4. Sheet 4: Khen thưởng
-				const sheet4Rows = getSheetData(this.sheet4Instance)
+				const sheet4Rows = getSheetData(this.sheet4Instance, 'Sheet4')
 				sheet4Rows.forEach((row, rIdx) => {
 					ratings.push({
 						LoaiDanhGia: 'KHEN_THUONG',
@@ -736,6 +902,16 @@
 					this.destroyAllSheets()
 					return
 				}
+				if (this.isMobileViewport) {
+					this.destroyAllSheets()
+					['Sheet1', 'Sheet2', 'Sheet3', 'Sheet4'].forEach(key => {
+						const rows = this.getInitialMobileRows(key)
+						this.mobileSheetRows[key] = this.cloneSheetRows(rows)
+						this.$refs['mobileSummary_' + key]?.setRows?.(rows)
+					})
+					return
+				}
+				// Desktop keeps JSpreadsheet; mobile uses native inputs with the same saved row shapes.
 				this.$nextTick(() => {
 					this.destroyAllSheets()
 
@@ -836,8 +1012,8 @@
 
 					// Sheet 3: Đánh giá kết quả giáo dục
 					if (this.$refs.sheetRef3 && typeof jspreadsheet === 'function') {
-						const savedSheet3 = this.savedData?.Sheet3 || []
-						const defaultSheet3Data = [
+						const savedSheet3 = this.mobileSheetRows.Sheet3 || this.savedData?.Sheet3 || []
+						const defaultSheet3Data = savedSheet3.length ? savedSheet3 : [
 							['Hoàn thành xuất sắc', savedSheet3[0]?.[1]||'', savedSheet3[0]?.[2]||''],
 							['Hoàn thành tốt', savedSheet3[1]?.[1]||'', savedSheet3[1]?.[2]||''],
 							['Hoàn thành', savedSheet3[2]?.[1]||'', savedSheet3[2]?.[2]||''],
@@ -869,8 +1045,8 @@
 
 					// Sheet 4: Khen thưởng
 					if (this.$refs.sheetRef4 && typeof jspreadsheet === 'function') {
-						const savedSheet4 = this.savedData?.Sheet4 || []
-						const defaultSheet4Data = [
+						const savedSheet4 = this.mobileSheetRows.Sheet4 || this.savedData?.Sheet4 || []
+						const defaultSheet4Data = savedSheet4.length ? savedSheet4 : [
 							['Học sinh Xuất sắc', savedSheet4[0]?.[1]||'', savedSheet4[0]?.[2]||''],
 							['Học sinh tiêu biểu hoàn thành tốt trong học tập và rèn luyện', savedSheet4[1]?.[1]||'', savedSheet4[1]?.[2]||'']
 						]

@@ -1,7 +1,7 @@
 --}
 --{"AnPhamID":2650,"CongThucKhenThuongID":6,"DiemHoiDong":"0.75","HeSo_IF":"2.6","HeSoChatLuongID":3}
 --  [dbo].[spAPI_PhiKhenThuong_Cal] 6891, 1, 0.75, 0, 0
-CREATE PROC [dbo].[___spAPI_PhiKhenThuong_Cal]
+CREATE PROC [dbo].[spAPI_PhiKhenThuong_Cal]
 @AnPhamID INT,
 @CongThucKhenThuongID INT,
 @DiemHoiDong FLOAT,

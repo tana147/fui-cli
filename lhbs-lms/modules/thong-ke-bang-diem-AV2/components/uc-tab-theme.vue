@@ -1,5 +1,5 @@
 <template>
-    <!-- Card lọc -->
+	<!-- Card lọc -->
     <v-card class="pa-4 elevation-1 rounded-lg" style="position: sticky;
     top: 0;
     z-index: 1000;
@@ -78,11 +78,9 @@
     </v-card>
 </template>
 
-
-
 <script>
-export default {
-    props: [],
+	export default {
+		props: [],
     data() {
         return {
             vueData,
@@ -480,7 +478,9 @@ export default {
             return new Promise(resolve => {
                 ajaxCALL('lms/HocSinhLop_Get_ByLopID',
                     {
-                        LopID: LopID
+                        LopID: LopID,
+                        // Khóa danh sách học sinh theo đúng cặp LopID và niên khóa.
+                        NienKhoa: vueData.NienKhoa
                     },
                     res => {
                         this.DSHocSinh = res.data
@@ -692,5 +692,5 @@ export default {
             await this.DashboardDiemTrungBinhTheoTheme_Get()
         }
     },
-}
+	}
 </script>

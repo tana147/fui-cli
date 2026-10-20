@@ -1,6 +1,6 @@
 <template>
 	<v-dialog v-model="dialog" max-width="600" scrollable>
-		<v-card>
+		<v-card class="rounded-xs">
 			<v-card-title class="d-flex align-center px-3 pt-2 pb-3">
 				<span class="subtitle-1 font-weight-bold primary--text">Lịch sử xử lý</span>
 				<v-spacer></v-spacer>
@@ -8,7 +8,7 @@
 					<v-icon small>mdi-close</v-icon>
 				</v-btn>
 			</v-card-title>
-			<v-card-text class="px-3 py-3" style="max-height: 65vh;">
+			<v-card-text class="px-3 py-3 lichsu-modal-body">
 				<div v-if="loading" class="text-center py-6">
 					<v-progress-circular indeterminate color="primary"></v-progress-circular>
 				</div>

@@ -3,7 +3,7 @@
 		<v-row dense class="compact-form-row">
 			<!-- 1. Chọn loại đề xuất khen thưởng -->
 			<v-col cols="12" class="py-1 mb-2">
-				<div class="d-flex align-center px-3 py-2 rounded-xs" style="background: #eef2f6; border-left: 4px solid #1976d2;">
+				<div class="d-flex align-center px-3 py-2 rounded-xs form-section-banner">
 					<span class="text-subtitle-2 font-weight-bold primary--text mr-4">
 						<v-icon small color="primary" class="mr-1">mdi-shape-outline</v-icon>
 						Loại đề xuất:
@@ -67,8 +67,37 @@
 					outlined dense hide-details="auto"></v-text-field>
 			</v-col>
 			<v-col cols="12" sm="4" class="py-1">
-				<v-text-field v-model="formData.NgayBanHanh" label="Ngày ban hành (YYYY-MM-DD) *" type="date"
-					outlined dense hide-details="auto"></v-text-field>
+				<v-menu
+					v-model="menuNgayBanHanh"
+					:close-on-content-click="false"
+					transition="scale-transition"
+					offset-y
+					max-width="290px"
+					min-width="290px"
+				>
+					<template v-slot:activator="{ on, attrs }">
+						<v-text-field
+							v-model="inputNgayBanHanh"
+							label="Ngày ban hành *"
+							placeholder="DD/MM/YYYY"
+							prepend-inner-icon="mdi-calendar"
+							v-bind="attrs"
+							outlined
+							dense
+							hide-details="auto"
+							:rules="[v => !!v || 'Bắt buộc nhập ngày ban hành', v => !v || isValidDate(v) || 'Ngày không đúng định dạng DD/MM/YYYY']"
+							@click:prepend-inner="menuNgayBanHanh = !menuNgayBanHanh"
+							@click="menuNgayBanHanh = true"
+							@blur="onNgayBanHanhBlur"
+						></v-text-field>
+					</template>
+					<v-date-picker
+						v-model="pickerNgayBanHanh"
+						no-title
+						locale="vi-vn"
+						@input="onPickerNgayBanHanh"
+					></v-date-picker>
+				</v-menu>
 			</v-col>
 			<v-col cols="12" sm="4" class="py-1">
 				<v-select v-model="formData.HinhThucThanhToan" :items="hinhThucThanhToanList" item-text="text"
@@ -131,14 +160,63 @@
 					{ text: 'Chuyển khoản từng cá nhân', value: 1 },
 					{ text: 'Ủy quyền đại diện nhận thay', value: 2 },
 				],
+				menuNgayBanHanh: false,
+				inputNgayBanHanh: '',
 			}
 		},
 		computed: {
 			formData() {
 				return this.value || this.khenThuongObj || {}
 			},
+			displayNgayBanHanh() {
+				const val = this.formData && this.formData.NgayBanHanh
+				if (!val) return ''
+				if (typeof moment !== 'undefined') {
+					const m = moment(val, ['YYYY-MM-DD', 'YYYY-MM-DDTHH:mm:ss', 'DD/MM/YYYY'])
+					if (m.isValid()) return m.format('DD/MM/YYYY')
+				}
+				const parts = String(val).substring(0, 10).split('-')
+				if (parts.length === 3 && parts[0].length === 4) {
+					return `${parts[2]}/${parts[1]}/${parts[0]}`
+				}
+				return val
+			},
+			pickerNgayBanHanh: {
+				get() {
+					if (this.inputNgayBanHanh && typeof moment !== 'undefined') {
+						const m = moment(this.inputNgayBanHanh, ['DD/MM/YYYY', 'D/M/YYYY', 'D/MM/YYYY', 'DD/M/YYYY'], true)
+						if (m.isValid()) return m.format('YYYY-MM-DD')
+					}
+					const val = this.formData && this.formData.NgayBanHanh
+					if (!val) return ''
+					if (typeof moment !== 'undefined') {
+						const m = moment(val, ['YYYY-MM-DD', 'YYYY-MM-DDTHH:mm:ss', 'DD/MM/YYYY'])
+						if (m.isValid()) return m.format('YYYY-MM-DD')
+					}
+					return String(val).substring(0, 10)
+				},
+				set(val) {
+					if (this.formData) {
+						this.formData.NgayBanHanh = val
+						if (typeof moment !== 'undefined') {
+							this.inputNgayBanHanh = moment(val).format('DD/MM/YYYY')
+						}
+					}
+				}
+			}
 		},
 		watch: {
+			inputNgayBanHanh(val) {
+				if (val && typeof moment !== 'undefined') {
+					const m = moment(val, ['DD/MM/YYYY', 'D/M/YYYY', 'D/MM/YYYY', 'DD/M/YYYY'], true)
+					if (m.isValid()) {
+						const iso = m.format('YYYY-MM-DD')
+						if (this.formData && this.formData.NgayBanHanh !== iso) {
+							this.formData.NgayBanHanh = iso
+						}
+					}
+				}
+			},
 			'formData.LoaiKhenThuong': {
 				immediate: true,
 				handler(val) {
@@ -160,12 +238,47 @@
 							if (this.formData.NgayBanHanh !== formatted) {
 								this.formData.NgayBanHanh = formatted
 							}
+							const display = m.format('DD/MM/YYYY')
+							if (this.inputNgayBanHanh !== display) {
+								this.inputNgayBanHanh = display
+							}
 						}
+					} else if (!val) {
+						this.inputNgayBanHanh = ''
 					}
 				},
 			},
 		},
 		methods: {
+			isValidDate(val) {
+				if (!val) return true
+				if (typeof moment === 'undefined') return true
+				const m = moment(val, ['DD/MM/YYYY', 'D/M/YYYY', 'D/MM/YYYY', 'DD/M/YYYY', 'YYYY-MM-DD'], true)
+				return m.isValid()
+			},
+			onNgayBanHanhBlur() {
+				if (!this.inputNgayBanHanh) {
+					if (this.formData) this.formData.NgayBanHanh = ''
+					return
+				}
+				if (typeof moment !== 'undefined') {
+					const m = moment(this.inputNgayBanHanh, ['DD/MM/YYYY', 'D/M/YYYY', 'D/MM/YYYY', 'DD/M/YYYY', 'YYYY-MM-DD'], true)
+					if (m.isValid()) {
+						const iso = m.format('YYYY-MM-DD')
+						if (this.formData) this.formData.NgayBanHanh = iso
+						this.inputNgayBanHanh = m.format('DD/MM/YYYY')
+					}
+				}
+			},
+			onPickerNgayBanHanh(val) {
+				if (this.formData) {
+					this.formData.NgayBanHanh = val
+					if (typeof moment !== 'undefined') {
+						this.inputNgayBanHanh = moment(val).format('DD/MM/YYYY')
+					}
+				}
+				this.menuNgayBanHanh = false
+			},
 			onCategoryChange(val) {
 				if (val === 1) {
 					this.formData.LoaiKhenThuong = 1

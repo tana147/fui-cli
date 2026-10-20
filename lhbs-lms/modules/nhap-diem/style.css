@@ -1,0 +1,31 @@
+/* Vẽ icon riêng khỏi nội dung cell để không làm đổi giá trị công thức hoặc nền ô. */
+td.grade-history-cell {
+	position: relative !important;
+}
+td.grade-history-cell::after {
+	content: "";
+	position: absolute;
+	right: 3px;
+	bottom: 2px;
+	width: 13px;
+	height: 13px;
+	z-index: 2;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%237E57C2%22 d=%22M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.95-2.05l-1.42 1.42C8.27 20.01 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9m-1 5v5l4.25 2.52.75-1.23-3.5-2.07V8z%22/%3E%3C/svg%3E");
+	pointer-events: none;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+}
+/* JSpreadsheet cuộn trong .jss_content và tự tính left cho cột freeze.
+   Chỉ nâng lớp hiển thị để ô điểm cuộn ngang không che thông tin học sinh. */
+.hExcel .jss_content tbody td.jss_freezed {
+	z-index: 20 !important;
+	background-color: #fff !important;
+}
+.hExcel .jss_content thead td.jss_freezed,
+.hExcel .jss_content thead th.jss_freezed {
+	z-index: 21 !important;
+}
+.hExcel .jss_content td.jss_column_filter.jss_freezed {
+	z-index: 22 !important;
+}

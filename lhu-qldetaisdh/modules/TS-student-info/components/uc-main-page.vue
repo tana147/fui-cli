@@ -25,6 +25,7 @@
 		<uc-modal-update-student-id
 			v-model="isUpdateStudentIDModalOpen"
 			:ds-exist-student="DsExistStudent"
+			:current-nien-khoa="nienKhoaValue"
 			@on-reload="reloadStudentData"
 		/>
 

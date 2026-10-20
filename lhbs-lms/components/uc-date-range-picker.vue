@@ -52,11 +52,23 @@
 	export default {
 		props: { modelValue: { type: Object, default: function(){ return { from:null, to:null } } } },
   emits: ['update:modelValue'],
-  data(){ return { menuOpen:false, picking:{ from:this.modelValue?.from||null, to:this.modelValue?.to||null }, shortcuts:[
+  data(){
+    // Mặc định mở theo toàn bộ tháng hiện tại để màn hình báo cáo có phạm vi vừa đủ, không phải tải cả lịch sử.
+    const now = new Date()
+    const dateToISO = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')
+    const defaultRange = { from: dateToISO(new Date(now.getFullYear(), now.getMonth(), 1)), to: dateToISO(new Date(now.getFullYear(), now.getMonth()+1, 0)) }
+    const hasIncomingRange = this.modelValue?.from || this.modelValue?.to
+    const initialRange = hasIncomingRange ? { from:this.modelValue?.from||null, to:this.modelValue?.to||null } : defaultRange
+    return { menuOpen:false, picking:initialRange, shortcuts:[
     {label:'Hôm nay',fn:()=>{const t=this.dateToISO(new Date());return{from:t,to:t}}},
     {label:'Tuần này',fn:()=>this.currentWeek()}, {label:'Tháng này',fn:()=>this.currentMonth()}, {label:'Tháng trước',fn:()=>this.lastMonth()},
     {label:'Học kỳ 1',fn:()=>this.hocKy(1)}, {label:'Học kỳ 2',fn:()=>this.hocKy(2)}
-  ]} },
+  ]}
+  },
+  mounted(){
+    // Đồng bộ khoảng mặc định lên component cha để lần Tra cứu đầu tiên dùng đúng tháng hiện tại.
+    if (!this.modelValue?.from && !this.modelValue?.to) this.$emit('update:modelValue',{...this.picking})
+  },
   watch:{ modelValue:{deep:true,handler(v){this.picking={from:v?.from||null,to:v?.to||null}}}, menuOpen(v){if(v)this.picking={from:this.modelValue?.from||null,to:this.modelValue?.to||null}} },
   methods:{
     isoToDate(v){if(!v)return null;const p=v.split('-').map(Number);return new Date(p[0],p[1]-1,p[2])},

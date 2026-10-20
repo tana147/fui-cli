@@ -28,7 +28,11 @@
 						VÀ KẾ HOẠCH THÁNG {{ activeMonthLabel }}/{{ activeYearLabel }}
 					</template>
 				</div>
+				<div v-if="isMobileViewport" class="text-caption text-medium-emphasis mb-2">
+					Mở từng tuần để nhập kế hoạch, kết quả và nguyên nhân.
+				</div>
 
+				<!-- Text fields mutate local plans directly; emit changed so the parent enables Save and unsaved-change handling. -->
 				<v-row dense class="mb-3">
 					<v-col v-if="Number(activeMonth) !== 8" cols="12" class="mb-3">
 						<v-card variant="outlined">
@@ -38,7 +42,8 @@
 							<v-card-text>
 								<v-textarea v-if="currentPlan" v-model="currentPlan.DanhGia" rows="5" auto-grow
 									variant="outlined" density="compact" hide-details
-									placeholder="Nhập nội dung đánh giá kết quả thực hiện trong tháng..." />
+									placeholder="Nhập nội dung đánh giá kết quả thực hiện trong tháng..."
+									@update:model-value="$emit('changed')" />
 							</v-card-text>
 						</v-card>
 					</v-col>
@@ -51,7 +56,8 @@
 							<v-card-text>
 								<v-textarea v-if="currentPlan" v-model="currentPlan.MucTieu" rows="5" auto-grow
 									variant="outlined" density="compact" hide-details
-									placeholder="Nhập nội dung và nhiệm vụ trọng tâm của tháng..." />
+									placeholder="Nhập nội dung và nhiệm vụ trọng tâm của tháng..."
+									@update:model-value="$emit('changed')" />
 							</v-card-text>
 						</v-card>
 					</v-col>
@@ -63,7 +69,12 @@
 							</v-card-title>
 							<v-divider />
 							<v-card-text class="pa-2">
-								<div class="wrapper-jexcel">
+								<uc-so-gvcn-mobile-sheet-editor v-if="isMobileViewport && currentPlan"
+									ref="mobileWeeklyEditorRef" class="so-gvcn-c1-mobile-editor flex-column"
+									:rows="currentPlan.weeklyRows" :columns="mobileWeeklyColumns"
+									:title-index="1" :subtitle-indices="[0, 2]" :searchable="true" empty-title="Tuần"
+								@cell-changed="onMobileCellChanged" />
+								<div v-else class="wrapper-jexcel so-gvcn-c1-desktop-only so-gvcn-c1-weekly-sheet-wrap">
 									<div ref="sheetRef" class="w-100 so-gvcn-sheet so-gvcn-cong-tac-thang-sheet"
 										:style="{ height: weeklySheetHeight }"></div>
 								</div>
@@ -71,6 +82,7 @@
 						</v-card>
 					</v-col>
 				</v-row>
+
 			</div>
 		</div>
 	</v-card-text>
@@ -78,7 +90,6 @@
 
 <script>
 	export default {
-		name: 'so-gvcn-c1-tab-cong-tac-chu-nhiem',
 		props: {
 			selectedLopID: { type: [String, Number], default: '__ALL__' },
 			sheetHeight: { type: String, default: 'calc(100vh - 230px)' },
@@ -94,6 +105,7 @@
 			return {
 				months,
 				activeMonth: months[0]?.value || 8,
+				isMobileViewport: false,
 				localPlans: {},
 				plansInitialized: false,
 				deletedWeekMonths: new Set(),
@@ -127,6 +139,12 @@
 			},
 			weeklySheetHeight() {
 				return '100%'
+			},
+			mobileWeeklyColumns() {
+				return this.weeklyColumns.map((column, index) => ({
+					...column,
+					...(index < 3 ? { readOnly: true } : {})
+				}))
 			}
 		},
 		watch: {
@@ -167,13 +185,27 @@
 			this.buildPlans({ commitCurrent: false })
 		},
 		mounted() {
+			this.isMobileViewport = window.matchMedia('(max-width: 959.98px)').matches
+			window.addEventListener('resize', this.onWindowResize)
 			this.initSheet()
 		},
 		beforeUnmount() {
+			window.removeEventListener('resize', this.onWindowResize)
 			this.commitCurrentSheet()
 			this.destroySheet()
 		},
 		methods: {
+			onWindowResize() {
+				const nextIsMobile = window.matchMedia('(max-width: 959.98px)').matches
+				if (nextIsMobile === this.isMobileViewport) return
+				// Keep worksheet dimensions current after the phone changes orientation or crosses the layout breakpoint.
+				this.commitCurrentSheet()
+				this.isMobileViewport = nextIsMobile
+				this.$nextTick(() => {
+					if (nextIsMobile) this.$refs.mobileWeeklyEditorRef?.setRows?.(this.currentPlan?.weeklyRows || [])
+					this.initSheet()
+				})
+			},
 			onSheetWheel(event) {
 				// JSpreadsheet giữ wheel trên các ô dù bảng không có scroll dọc riêng.
 				// Bắt ở capture và chuyển nó về scrollbar của nội dung tab.
@@ -360,10 +392,20 @@
 				if (Number(month) === Number(this.activeMonth)) return
 				this.commitCurrentSheet()
 				this.activeMonth = month
-				this.initSheet()
+				this.$nextTick(() => {
+					if (this.isMobileViewport) this.$refs.mobileWeeklyEditorRef?.setRows?.(this.currentPlan?.weeklyRows || [])
+					this.initSheet()
+				})
 			},
 			commitCurrentSheet() {
 				const plan = this.currentPlan
+				if (plan && this.isMobileViewport) {
+					const rows = this.$refs.mobileWeeklyEditorRef?.getRows?.()
+					if (Array.isArray(rows)) {
+						plan.weeklyRows = this.normalizeWeeklyRows(rows)
+					}
+					return
+				}
 				const sheet = Array.isArray(this.instance) ? this.instance[0] : this.instance
 				if (plan && sheet && typeof sheet.getData === 'function') {
 					try {
@@ -374,12 +416,14 @@
 							sheet.closeEditor(editorCell, true)
 						}
 						const data = sheet.getData()
-						if (Array.isArray(data)) {
-							this.deletedWeekMonths.add(String(this.activeMonth))
-						}
 						plan.weeklyRows = this.normalizeWeeklyRows(data)
 					} catch (error) {}
 				}
+			},
+			onMobileCellChanged() {
+				// Chỉ thao tác sửa ô của người dùng mới giữ bản cục bộ; commit khi đổi tab/đổi tháng không được chặn dữ liệu server.
+				this.deletedWeekMonths.add(String(this.activeMonth))
+				this.$emit('changed')
 			},
 			destroySheet() {
 				if (!this.instance) return
@@ -400,7 +444,17 @@
 					this.destroySheet()
 					return
 				}
+				if (this.isMobileViewport) {
+					this.commitCurrentSheet()
+					this.destroySheet()
+					this.$nextTick(() => this.$refs.mobileWeeklyEditorRef?.setRows?.(this.currentPlan?.weeklyRows || []))
+					return
+				}
 				this.$nextTick(() => {
+					if (this.selectedLopID === '__ALL__') {
+						this.destroySheet()
+						return
+					}
 					const container = this.$refs.sheetRef
 					if (!container || !this.currentPlan || typeof jspreadsheet !== 'function') return
 					this.destroySheet()
@@ -427,9 +481,8 @@
 								onchange: worksheet => {
 								if (this.currentPlan) {
 									const data = worksheet.getData()
-					if (Array.isArray(data)) {
-						this.deletedWeekMonths.add(String(this.activeMonth))
-									}
+									// Chỉ onchange do người dùng sửa mới đánh dấu dữ liệu cục bộ.
+									if (Array.isArray(data)) this.deletedWeekMonths.add(String(this.activeMonth))
 									this.currentPlan.weeklyRows = this.normalizeWeeklyRows(data)
 									this.$emit('changed')
 								}
@@ -465,6 +518,11 @@
 				})
 			},
 			getSaveWeekRows(soGVCNID) {
+				// Bảng lịch mặc định có thể xuất hiện trước response từ server.
+				// Không biến bảng tạm đó thành payload ghi đè kế hoạch đã lưu.
+				if (!this.weeklyPlanLoaded) {
+					throw new Error('Kế hoạch tuần chưa tải xong. Vui lòng tải lại trước khi lưu.')
+				}
 				this.commitCurrentSheet()
 				const rows = []
 				this.months.forEach(month => {

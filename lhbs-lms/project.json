@@ -1127,9 +1127,9 @@
         },
         "submenu": [
           {
-            "name": "Thời khóa biểu",
-            "icon": "mdi-calendar-clock",
-            "url": "/lms-teacher-log-shedule"
+            "name": "Log chung",
+            "icon": "mdi-text-box-search-outline",
+            "url": "/log-chung"
           },
           {
             "name": "Báo lỗi hệ thống",
@@ -1156,7 +1156,17 @@
       {
         "name": "Hỗ trợ sự cố",
         "icon": "mdi-lifebuoy",
-        "url": "/support"
+        "url": "/support",
+        "right": {
+          "SystemRight": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            9
+          ]
+        }
       }
     ],
     "menuComponent": [

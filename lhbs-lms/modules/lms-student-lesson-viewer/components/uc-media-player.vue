@@ -17,8 +17,9 @@
 		<!-- Giao diện 2 cột khi phát video (YouTube/HTML5 Video) -->
 		<v-row v-else-if="mediaType === 'youtube' || mediaType === 'video'">
 			<!-- Cột trái: Trình phát và thanh Timeline (chiếm 9/12 cột để phóng to tối đa) -->
-			<v-col cols="12" md="9">
-				<div class="video-preview-box position-relative w-100" style="aspect-ratio: 16/9; background: #000; border-radius: 8px; overflow: hidden; width: 100%;">
+			<!-- Video không có câu hỏi thì ẩn sidebar và dùng toàn bộ chiều rộng để tránh vùng trống. -->
+			<v-col cols="12" :md="normalizedInteractions.length > 0 ? 9 : 12">
+			<div ref="videoPreviewBox" class="video-preview-box position-relative w-100" style="aspect-ratio: 16/9; background: #000; border-radius: 8px; overflow: hidden; width: 100%;">
 					<div v-if="mediaType === 'youtube'" key="yt-preview-box" ref="ytWrapper" class="w-100 h-100 position-absolute" style="top: 0; left: 0;">
 						<div :id="playerId" class="w-100 h-100"></div>
 						<div class="player-overlay" @click="togglePlay"></div>
@@ -53,21 +54,53 @@
 						</div>
 					</div>
 					
-					<div class="d-flex align-center justify-space-between w-100">
+					<!-- Thanh điều khiển bổ sung cho YouTube vì player đang tắt controls mặc định; HTML5 video cũng dùng chung để giao diện nhất quán. -->
+					<div class="d-flex align-center justify-space-between flex-wrap ga-2 w-100">
 						<div class="d-flex align-center ga-2">
 							<v-btn icon size="small" variant="tonal" color="success" @click="togglePlay">
 								<v-icon>{{ videoPlaying ? 'mdi-pause' : 'mdi-play' }}</v-icon>
 							</v-btn>
-							<span class="text-caption font-weight-medium text-white">
+							<span class="text-caption font-weight-medium text-grey-darken-2 text-no-wrap">
 								{{ formatTime(videoCurrentTime) }} / {{ formatTime(videoDuration) }}
 							</span>
+						</div>
+
+						<div class="d-flex align-center ga-1">
+							<v-menu location="top">
+								<template v-slot:activator="{ props }">
+									<v-btn v-bind="props" size="small" variant="text" color="grey-darken-2" class="px-2"
+										:title="'Tốc độ phát: ' + playbackRate + 'x'">
+										{{ playbackRate }}x
+									</v-btn>
+								</template>
+								<v-list density="compact" min-width="110">
+									<v-list-item v-for="rate in playbackRates" :key="rate" :active="playbackRate === rate"
+										@click="setPlaybackRate(rate)">
+										<v-list-item-title>{{ rate }}x</v-list-item-title>
+									</v-list-item>
+								</v-list>
+							</v-menu>
+
+							<v-btn icon size="small" variant="text" color="grey-darken-2" @click="toggleMute"
+								:title="isMuted ? 'Bật âm thanh' : 'Tắt âm thanh'">
+								<v-icon>{{ volumeIcon }}</v-icon>
+							</v-btn>
+							<!-- Dùng range native để đường âm lượng luôn nhìn thấy ổn định giữa các bản Vuetify/trình duyệt. -->
+							<input type="range" v-model.number="volume" class="video-volume-range d-none d-sm-flex" min="0" max="1" step="0.05"
+								:style="{ '--volume-percent': (volume * 100) + '%' }"
+								:aria-label="'Âm lượng ' + Math.round(volume * 100) + '%'" @input="setVolume($event.target.value)">
+
+							<v-btn icon size="small" variant="text" color="grey-darken-2" @click="toggleFullscreen"
+								:title="isFullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình'">
+								<v-icon>{{ isFullscreen ? 'mdi-fullscreen-exit' : 'mdi-fullscreen' }}</v-icon>
+							</v-btn>
 						</div>
 					</div>
 				</div>
 			</v-col>
 
-			<!-- Cột phải: Sidebar Sự kiện Video (chiếm 3/12 cột để nhường chỗ cho video) -->
-			<v-col cols="12" md="3">
+			<!-- Chỉ hiển thị danh sách sự kiện khi video thực sự có câu hỏi tương tác. -->
+			<v-col v-if="normalizedInteractions.length > 0" cols="12" md="3">
 				<v-card variant="outlined" class="pa-4 h-100 d-flex flex-column" style="min-height: 350px; overflow: hidden !important;">
 					<v-card-title class="text-subtitle-1 font-weight-bold pa-0 mb-3 d-flex align-center">
 						<v-icon color="primary" class="mr-2">mdi-format-list-bulleted</v-icon>
@@ -198,6 +231,13 @@
 				videoPlaying: false,
 				videoDuration: 0,
 				videoCurrentTime: 0,
+				playbackRates: [0.5, 1, 1.25, 1.5, 2],
+				playbackRate: 1,
+				volume: 1,
+				lastVolume: 1,
+				isMuted: false,
+				isFullscreen: false,
+				handleFullscreenChange: null,
 				
 				lastWarningTime: 0,
 				lastConfirmedTime: 0,
@@ -235,6 +275,11 @@
 			activeInteractionSlideData() {
 				if (!this.activeInteraction) return null;
 				return this.getInteractionSlideData(this.activeInteraction);
+			},
+			volumeIcon() {
+				if (this.isMuted || this.volume === 0) return 'mdi-volume-off';
+				if (this.volume < 0.5) return 'mdi-volume-medium';
+				return 'mdi-volume-high';
 			}
 		},
 		mounted() {
@@ -254,9 +299,16 @@
 					document.head.appendChild(tag);
 				}
 			}
+			this.handleFullscreenChange = () => {
+				this.isFullscreen = Boolean(document.fullscreenElement);
+			};
+			document.addEventListener('fullscreenchange', this.handleFullscreenChange);
 		},
 		beforeUnmount() {
 			this.stopTimeCheck();
+			if (this.handleFullscreenChange) {
+				document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
+			}
 			if (this.ytPlayer) {
 				try {
 					this.ytPlayer.destroy();
@@ -446,6 +498,8 @@
 				const player = event.target;
 				this.ytPlayer = player;
 				this.videoDuration = Math.floor(player.getDuration() || 0);
+				this.setPlaybackRate(this.playbackRate);
+				this.setVolume(this.volume);
 				this.disableYtCC(player);
 			},
 
@@ -527,6 +581,60 @@
 						htmlPlayer.pause();
 						this.videoPlaying = false;
 					}
+				}
+			},
+
+			// Giữ tốc độ phát đồng nhất giữa YouTube và video HTML5 để nút điều khiển dùng chung.
+			setPlaybackRate(rate) {
+				const nextRate = Number(rate);
+				if (!Number.isFinite(nextRate) || nextRate <= 0) return;
+				this.playbackRate = nextRate;
+
+				if (this.mediaType === 'youtube' && this.ytPlayer && typeof this.ytPlayer.setPlaybackRate === 'function') {
+					this.ytPlayer.setPlaybackRate(nextRate);
+				} else if (this.mediaType === 'video' && this.$refs.htmlVideoPlayer) {
+					this.$refs.htmlVideoPlayer.playbackRate = nextRate;
+				}
+			},
+
+			// YouTube nhận âm lượng theo phần trăm, còn HTML5 nhận số thực từ 0 đến 1.
+			setVolume(value) {
+				const nextVolume = Math.min(1, Math.max(0, Number(value)));
+				if (!Number.isFinite(nextVolume)) return;
+				this.volume = nextVolume;
+				if (nextVolume > 0) this.lastVolume = nextVolume;
+				this.isMuted = nextVolume === 0;
+
+				if (this.mediaType === 'youtube' && this.ytPlayer) {
+					if (this.isMuted && typeof this.ytPlayer.mute === 'function') this.ytPlayer.mute();
+					if (!this.isMuted && typeof this.ytPlayer.unMute === 'function') this.ytPlayer.unMute();
+					if (typeof this.ytPlayer.setVolume === 'function') this.ytPlayer.setVolume(Math.round(nextVolume * 100));
+				} else if (this.mediaType === 'video' && this.$refs.htmlVideoPlayer) {
+					this.$refs.htmlVideoPlayer.volume = nextVolume;
+					this.$refs.htmlVideoPlayer.muted = this.isMuted;
+				}
+			},
+
+			toggleMute() {
+				this.setVolume(this.isMuted ? (this.lastVolume || 1) : 0);
+			},
+
+			// Toàn màn hình chỉ bao phần video, không kéo sidebar câu hỏi vào cùng khung.
+			async toggleFullscreen() {
+				const target = this.$refs.videoPreviewBox;
+				if (!target) return;
+				try {
+					if (document.fullscreenElement) {
+						await document.exitFullscreen();
+						return;
+					}
+					if (typeof target.requestFullscreen === 'function') {
+						await target.requestFullscreen();
+					} else if (typeof target.webkitRequestFullscreen === 'function') {
+						target.webkitRequestFullscreen();
+					}
+				} catch (error) {
+					console.warn('Không thể bật toàn màn hình video', error);
 				}
 			},
 
@@ -862,6 +970,8 @@
 
 			onHtmlVideoMetadata(event) {
 				this.videoDuration = Math.floor(event.target.duration || 0);
+				this.setPlaybackRate(this.playbackRate);
+				this.setVolume(this.volume);
 			},
 
 			sanitizeSvgHtml(str) {
@@ -1050,3 +1160,43 @@
 		}
 	}
 </script>
+
+<style scoped>
+.media-player-container .video-volume-range {
+	appearance: none;
+	-webkit-appearance: none;
+	background: linear-gradient(to right, #4caf50 0%, #4caf50 var(--volume-percent), #dfe9e2 var(--volume-percent), #dfe9e2 100%);
+	border-radius: 999px;
+	height: 4px;
+	width: 88px;
+	flex: 0 0 88px;
+	max-width: 88px;
+	cursor: pointer;
+}
+
+.media-player-container .video-volume-range::-webkit-slider-thumb {
+	appearance: none;
+	-webkit-appearance: none;
+	background: #4caf50;
+	border: 0;
+	border-radius: 50%;
+	height: 12px;
+	width: 12px;
+}
+
+.media-player-container .video-volume-range::-moz-range-thumb {
+	background: #4caf50;
+	border: 0;
+	border-radius: 50%;
+	height: 12px;
+	width: 12px;
+}
+
+@media (max-width: 599px) {
+	.media-player-container .video-volume-range {
+		width: 72px;
+		flex-basis: 72px;
+		max-width: 72px;
+	}
+}
+</style>

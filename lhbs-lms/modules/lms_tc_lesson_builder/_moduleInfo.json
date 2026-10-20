@@ -5,10 +5,10 @@
   "ProjectID": "lhbs-lms",
   "ModuleID": "lms_tc_lesson_builder",
   "ModuleName": "Trình soạn thảo Bài giảng",
-  "UpdateTime": "2026-10-02 16:10:41",
+  "UpdateTime": "2026-10-13 15:23:45",
   "UpdateUser": "DEV000037",
-  "LastLoad": "2026-10-04",
-  "LoadCount": 1979,
+  "LastLoad": "2026-10-19",
+  "LoadCount": 2489,
   "HTMLOnly": false,
   "Framework": "V3",
   "mTitle": ""

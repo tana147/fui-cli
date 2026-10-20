@@ -1,14 +1,6 @@
 [
   {
-    "name": "/include/vue-advanced-cropper/style.css",
-    "type": ".css",
-    "contentType": "comp-link",
-    "fileID": "FD4934F40E95403B9FE28BA7630D8E72",
-    "scope": "module",
-    "sort": 22
-  },
-  {
-    "name": "/include/vue-advanced-cropper/index.umd.js",
+    "name": "/include/vue-advanced-cropper/fui-custom.js",
     "type": ".js",
     "contentType": "comp-link",
     "fileID": "B2D3B14A31074F23B97A500CE7F99002",

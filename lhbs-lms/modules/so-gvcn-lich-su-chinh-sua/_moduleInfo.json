@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/so-gvcn-lich-su-chinh-sua",
+  "url": "//lms.lhbs.vn/so-gvcn-lich-su-chinh-sua",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "so-gvcn-lich-su-chinh-sua",
+  "ModuleName": "Lịch sử chỉnh sửa Sổ GVCN",
+  "UpdateTime": "2026-10-12 16:33:59",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-14",
+  "LoadCount": 130,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

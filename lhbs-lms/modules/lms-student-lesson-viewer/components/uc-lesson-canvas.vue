@@ -13,7 +13,7 @@
 
 		<div v-for="(element, index) in elements" :key="element.ElementID || index" :id="'element-' + index"
 			class="element-preview"
-			:class="{ 'selectable': !isViewer, 'selected': !isViewer && selectedIndex === index }"
+			:class="{ 'selectable': !isViewer, 'selected': !isViewer && selectedIndex === index, 'element-completed': isViewer && elementProgress[element.ElementID]?.Status === 'COMPLETED' }"
 			@click="!isViewer && $emit('update:selectedIndex', index)">
 
 			<!-- Nút xóa (chỉ ở chế độ soạn bài) -->
@@ -28,9 +28,14 @@
 				<v-icon v-if="isViewer" :icon="getVisualsForType(element.ElementType).icon" class="mr-3" size="22">
 				</v-icon>
 				<span>{{ element.ElementData.title }}</span>
+				<v-chip v-if="isViewer && elementProgress[element.ElementID]?.Status === 'COMPLETED'" size="x-small" color="success" variant="tonal" class="ml-2">Hoàn thành</v-chip>
 			</div>
 
-			<div class="element-content" :class="{ 'with-title': !!element.ElementData.title }">
+			<div v-if="isElementLocked(index)" class="element-content pa-6 text-center text-medium-emphasis rounded border bg-grey-lighten-5">
+				<v-icon size="28" class="mb-2">mdi-lock-outline</v-icon>
+				<div>Hoàn thành khối bắt buộc phía trên để mở nội dung này.</div>
+			</div>
+			<div v-else class="element-content" :class="{ 'with-title': !!element.ElementData.title }">
 				<!-- URL được đổi thành liên kết chữ; click sẽ mở GlobalIframeWindow của hệ thống. -->
 				<div v-if="element.ElementType === 'TEXT'" v-html="getTextContent(element.ElementData.content)"
 					class="text-content" @click="handleTextContentClick">
@@ -145,7 +150,10 @@
 		props: {
 			elements: Array,
 			selectedIndex: Number,
-			isViewer: { type: Boolean, default: false }
+			isViewer: { type: Boolean, default: false },
+			elementProgress: { type: Object, default: () => ({}) },
+			isSequential: { type: Boolean, default: false },
+			firstIncompleteRequiredIndex: { type: Number, default: -1 }
 		},
 		emits: ['update:elements', 'update:selectedIndex'],
 		inject: ['iframeRef'],
@@ -173,12 +181,39 @@
 		},
 	
 		methods: {
+			// Khi chọn học tuần tự, chỉ ẩn nội dung sau element bắt buộc đầu tiên chưa hoàn thành.
+			isElementLocked(index) {
+				return this.isViewer && this.isSequential
+					&& this.firstIncompleteRequiredIndex >= 0
+					&& index > this.firstIncompleteRequiredIndex;
+			},
 			// Google Drive không render ổn định khi mở URL /drive/folders/... trong iframe.
-			// Đổi sang endpoint embeddedfolderview để folder có thể hiển thị trong iframeRef.
+			// YouTube cũng không cho nhúng trang /watch vào iframe, nên phải đổi sang
+			// endpoint /embed trước khi chuyển URL cho GlobalIframeWindow.
 			normalizeIframeUrl(url) {
 				if (!url) return url;
 				try {
 					const parsedUrl = new URL(url, window.location.href);
+					const hostname = parsedUrl.hostname.toLowerCase();
+					let youtubeVideoId = '';
+
+					// Chuẩn hóa các dạng link YouTube thường xuất hiện trong nội dung bài học.
+					// Chỉ dùng video ID hợp lệ để tránh biến link YouTube khác thành URL embed sai.
+					if (hostname === 'youtu.be') {
+						youtubeVideoId = parsedUrl.pathname.split('/').filter(Boolean)[0] || '';
+					} else if (hostname === 'youtube.com' || hostname === 'www.youtube.com') {
+						if (parsedUrl.pathname === '/watch') {
+							youtubeVideoId = parsedUrl.searchParams.get('v') || '';
+						} else {
+							const pathMatch = parsedUrl.pathname.match(/^\/(?:embed|shorts)\/([^/]+)/i);
+							youtubeVideoId = pathMatch?.[1] || '';
+						}
+					}
+
+					if (/^[a-zA-Z0-9_-]{11}$/.test(youtubeVideoId)) {
+						return `https://www.youtube.com/embed/${youtubeVideoId}?rel=0&modestbranding=1`;
+					}
+
 					const folderMatch = parsedUrl.hostname === 'drive.google.com'
 						? parsedUrl.pathname.match(/\/folders\/([^/]+)/i)
 						: null;
@@ -203,24 +238,88 @@
 
 				event.preventDefault();
 				event.stopPropagation();
-				const payload = {
-					title: (anchor.textContent || 'Nội dung liên kết').trim(),
-					url: this.normalizeIframeUrl(href),
-					icon: 'mdi-link-variant'
-				};
+			const payload = {
+				title: (anchor.textContent || 'Nội dung liên kết').trim(),
+				url: href,
+				icon: 'mdi-link-variant'
+			};
 
-				if (this.iframeRef?.value?.openWindow) {
-					this.iframeRef.value.openWindow(payload);
+			// Wordwall chặn /resource bằng X-Frame-Options. Resolve qua oEmbed trước
+			// khi mở iframeRef; URL gốc trong nội dung bài học không bị thay đổi.
+			const wordwallResourceUrl = this.getWordwallResourceUrl(href);
+			if (wordwallResourceUrl) {
+				const self = this;
+				this.resolveWordwallEmbedUrl(wordwallResourceUrl, function(embedUrl) {
+					if (embedUrl) {
+						payload.url = embedUrl;
+						self.openLessonLink(payload);
+						return;
+					}
+					// Không đưa lại /resource vào iframe vì sẽ lặp lỗi refused to connect.
+					self.openLessonLink(payload, true);
+				});
+				return;
+			}
+
+			payload.url = this.normalizeIframeUrl(href);
+			this.openLessonLink(payload);
+		},
+
+		openLessonLink(payload, externalOnly) {
+			// Fallback Wordwall mở tab ngoài; các link khác vẫn dùng cửa sổ nội dung FUI.
+			if (externalOnly) {
+				window.open(payload.url, '_blank', 'noopener,noreferrer');
+				return;
+			}
+			if (this.iframeRef?.value?.openWindow) {
+				this.iframeRef.value.openWindow(payload);
+				return;
+			}
+
+			// Component có thể được render độc lập ngoài Global.vue; giữ fallback để link không bị chết.
+			if (window?.parent && window.parent !== window) {
+				window.parent.postMessage({ type: 'iframeRef_openWindow', ...payload }, '*');
+				return;
+			}
+			window.open(payload.url, '_blank', 'noopener,noreferrer');
+		},
+
+		getWordwallResourceUrl(url) {
+			try {
+				const parsedUrl = new URL(url, window.location.href);
+				const isWordwall = ['wordwall.net', 'www.wordwall.net'].includes(parsedUrl.hostname.toLowerCase());
+				const isResource = /^\/(?:[a-z]{2}\/)?resource\/\d+(?:\/|$)/i.test(parsedUrl.pathname);
+				return isWordwall && isResource ? parsedUrl.toString() : '';
+			} catch (error) {
+				return '';
+			}
+		},
+
+		resolveWordwallEmbedUrl(resourceUrl, callback) {
+			const endpoint = 'https://wordwall.net/api/oembed?url=' + encodeURIComponent(resourceUrl) + '&format=json';
+			const request = new XMLHttpRequest();
+			request.timeout = 5000;
+			request.open('GET', endpoint, true);
+			request.onreadystatechange = function() {
+				if (request.readyState !== 4) return;
+				if (request.status < 200 || request.status >= 300) {
+					callback('');
 					return;
 				}
-
-				// Component có thể được render độc lập ngoài Global.vue; giữ fallback để link không bị chết.
-				if (window?.parent && window.parent !== window) {
-					window.parent.postMessage({ type: 'iframeRef_openWindow', ...payload }, '*');
-					return;
+				try {
+					const data = JSON.parse(request.responseText || '{}');
+					const parser = typeof DOMParser !== 'undefined' ? new DOMParser() : null;
+					const documentNode = parser?.parseFromString(data.html || '', 'text/html');
+					const embedUrl = documentNode?.querySelector('iframe')?.getAttribute('src') || '';
+					callback(embedUrl ? new URL(embedUrl, 'https://wordwall.net').toString() : '');
+				} catch (error) {
+					callback('');
 				}
-				window.open(href, '_blank', 'noopener,noreferrer');
-			},
+			};
+			request.onerror = function() { callback(''); };
+			request.ontimeout = function() { callback(''); };
+			request.send();
+		},
 
 			// Chỉ tự động tạo liên kết ở chế độ học sinh; giáo viên cần nhìn thấy đúng nội dung đang soạn.
 			getTextContent(content) {

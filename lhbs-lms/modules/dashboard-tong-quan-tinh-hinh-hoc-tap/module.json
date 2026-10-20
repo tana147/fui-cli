@@ -450,7 +450,8 @@
         {
           "API": "lms/Lop_Get_ByKhoiID",
           "IN": {
-            "KhoiID": "vueData.Chart2_KhoiID"
+            "KhoiID": "vueData.Chart2_KhoiID",
+            "NienKhoa": "vueData.NienKhoa"
           },
           "OUT": "DSLop",
           "CALLBACK": {
@@ -547,9 +548,8 @@
       ]
     },
     "Chart4_KhoiID": {
-      "EXE": "console.log(1, vueData.Chart4_KhoiID)",
-      "IF": "vueData.Chart4_KhoiID",
-      "CALL": [
+      "IF": "Chart4_KhoiID > 0",
+      "THEN": [
         {
           "Chart4_LopID": null,
           "Chart4_MonHocItem": null,
@@ -563,7 +563,8 @@
         {
           "API": "lms/Lop_Get_ByKhoiID",
           "IN": {
-            "KhoiID": "vueData.Chart4_KhoiID"
+            "KhoiID": "vueData.Chart4_KhoiID",
+            "NienKhoa": "vueData.NienKhoa"
           },
           "OUT": "DSLop",
           "CALLBACK": {
@@ -1492,6 +1493,7 @@
                                               "IN": {
                                                 "NienKhoa": 2024,
                                                 "KhoiID": "Chart3_KhoiID",
+                                                "LopID": null,
                                                 "MaCotDiem": "Chart3_MaCotDiem"
                                               },
                                               "OUT": "TiLeDat_Chart3_API",

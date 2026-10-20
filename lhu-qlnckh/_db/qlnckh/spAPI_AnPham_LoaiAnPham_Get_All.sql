@@ -1,4 +1,4 @@
-CREATE PROCEDURE [dbo].[spAPI_AnPham_LoaiAnPham_Get_All]
+CREATE PROCEDURE [dbo].[spAPI_AnPham_LoaiAnPham_Dev_Get_All]
 AS
     BEGIN
         SET NOCOUNT ON;

@@ -550,7 +550,7 @@
 		},
 			initModuleState() {
 			var defaults = {
-				DSLop: [], DSLopChuNhiem: [], LopItem: null, DSTuan: [], TuanXemTKB: null, TKBRaw: null, TKBTuanInfo: null, DSTKB: [], TKBQueue: [], TKBKeyDangChon: null,
+				DSLop: [], DSLopChuNhiem: [], DSNhomAV: [], LopItem: null, DSTuan: [], TuanXemTKB: null, TKBRaw: null, TKBTuanInfo: null, DSTKB: [], TKBQueue: [], TKBKeyDangChon: null,
 				isLoadingTKB: false, NgayApDung: null, Buoi: 1, TietBatDau: 1, TietKetThuc: 1,
 				DSBuoi: [{ title: 'Sáng', value: 1 }, { title: 'Chiều', value: 2 }, { title: 'Tối', value: 3 }], DSTiet: [1, 2, 3, 4, 5], DSLoaiThietBi: ['Laptop', 'Tablet', 'Điện thoại di động', 'Thiết bị khác'],
 				DSHocSinhLop: [], HocSinhThietBi: [], TimKiemHocSinh: '', GhiChu: '', DSDangKy: [], isLoadingSave: false,
@@ -576,9 +576,11 @@
 					fetchPromise('lms/GiaoVienLop_Get_By_GiaoVienID', { GiaoVienID: vueData.user.UserID, NienKhoa: vueData.NienKhoa }, { cache: false }),
 					fetchPromise('lms/Lop_Get_ByGVCN', { NienKhoa: vueData.NienKhoa, sys_UserID: vueData.user.UserID }, { cache: false }),
 					fetchPromise('lms/TuanHocTap_Get', { NienKhoa: vueData.NienKhoa }, { cache: false }),
+					// Danh mục nhóm chỉ làm nguồn tra cứu dự phòng cho lớp có trong TKB thay thế.
+					fetchPromise('lms/NhomAV_Get', { NienKhoa: vueData.NienKhoa }, { cache: false }),
 				])
 				var valueOf = function(result) { return result.status === 'fulfilled' ? result.value : [] }
-				vueData.DSLop = valueOf(results[0]); vueData.DSLopChuNhiem = valueOf(results[1]); vueData.DSTuan = valueOf(results[2])
+				vueData.DSLop = valueOf(results[0]); vueData.DSLopChuNhiem = valueOf(results[1]); vueData.DSTuan = valueOf(results[2]); vueData.DSNhomAV = valueOf(results[3])
 				vueData.renderDSLop()
 				// Chọn tuần học hiện tại trước, sau đó nạp dữ liệu TKB và danh sách đăng ký đúng theo tuần đó
 				vueData.chonTuanTKBHienTai()
@@ -592,6 +594,7 @@
 			if (!vueData.TuanXemTKB || !vueData.user?.UserID) return
 			vueData.isLoadingTKB = true
 			try {
+				// Dung cung giao vien voi GiaoVienLop_Get_By_GiaoVienID de lop tu TKB tra duoc LopID dang ky.
 				vueData.TKBRaw = await fetchPromise('quansinh/ThoiKhoaBieu_GiaoVien', { NgayDauTuan: vueData.tinhNgayDauTuanTKB(), GiaoVienID: vueData.user.UserID }, { cache: false })
 				vueData.renderTKB()
 			} finally { vueData.isLoadingTKB = false }

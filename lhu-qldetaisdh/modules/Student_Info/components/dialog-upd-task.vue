@@ -323,7 +323,7 @@
 																	<div>
 																		<v-btn :disabled="itemDes.IsOldProc"
 																			color="warning"
-																			@click="checkTopicBtn(itemDes.Text_Content)"
+																			@click="checkTopicBtn(itemDes.Text_Content, true)"
 																			class="mb-6">
 																			Kiểm tra đề tài trùng</v-btn>
 																	</div>
@@ -604,7 +604,9 @@
 	            ],
 	        }
 	    },
-	    mounted() { },
+	    mounted() {
+	        window.checkTopicBtn = this.checkTopicBtn
+	    },
 	    computed: {
 	        HocVienData: function () {
 	            return vueData.hocVienObj
@@ -726,9 +728,17 @@
 	                    this.DsNNDauRa = this.DsNNDauRa.filter((item) => item.fogrein_type === this.ExistData.Loai_NgoaiNgu_DauVao)
 	                    this.DsTenNgoaiNgu = this.DsTenNgoaiNgu.filter((item) => item.value === this.ExistData.Loai_NgoaiNgu_DauVao)
 	                }
+	                if (typeof vueData !== 'undefined') {
+	                    if (!vueData.similiarTopic) vueData.similiarTopic = []
+	                    if (!vueData.similiarList) vueData.similiarList = []
+	                }
 	            } else {
 	                console.log('is upd dialog false', val)
-	                vueData.Panel = null
+	                if (typeof vueData !== 'undefined') {
+	                    vueData.Panel = null
+	                    vueData.similiarTopic = []
+	                    vueData.similiarList = []
+	                }
 	                this.rootArr = []
 	            }
 	        },
@@ -743,6 +753,40 @@
 	        },
 	    },
 	    methods: {
+	        async checkTopicBtn(TenDeTai, isUserAction = false) {
+	            if (!TenDeTai || !TenDeTai.trim()) {
+	                if (isUserAction) {
+	                    Vue.$toast.warning('Vui lòng nhập tên đề tài để kiểm tra trùng', { position: 'top' })
+	                }
+	                const emptyList = []
+	                if (typeof vueData !== 'undefined') {
+	                    if (typeof Vue !== 'undefined' && Vue.set) {
+	                        Vue.set(vueData, 'similiarTopic', emptyList)
+	                        Vue.set(vueData, 'similiarList', emptyList)
+	                    } else {
+	                        vueData.similiarTopic = emptyList
+	                        vueData.similiarList = emptyList
+	                    }
+	                }
+	                return
+	            }
+	            try {
+	                const res = await ajaxCALLPromise('/Get_SimiliarPaper', { TenDeTai: TenDeTai.trim() })
+	                const list = Array.isArray(res) ? res : (res?.data || [])
+	                if (typeof vueData !== 'undefined') {
+	                    if (typeof Vue !== 'undefined' && Vue.set) {
+	                        Vue.set(vueData, 'similiarTopic', list)
+	                        Vue.set(vueData, 'similiarList', list)
+	                    } else {
+	                        vueData.similiarTopic = list
+	                        vueData.similiarList = list
+	                    }
+	                }
+	            } catch (error) {
+	                console.error('Error checkTopicBtn', error)
+	            }
+	        },
+
 	        onPrevent(e) {
 	            this.preventNegative(e)
 	            this.onlyNumber(e)
@@ -1985,7 +2029,7 @@
 	                            // })
 	                            .map(async (item) => {
 	                                if (root !== 'C' && item.Task_Detail_Type === 'TEXTAREA | FUN' && item.FN_Check === 'fnCheckTenDeTai' && item.Text_Content) {
-	                                    checkTopicBtn(item.Text_Content)
+	                                    await $this.checkTopicBtn(item.Text_Content)
 	                                }
 	
 	                                if (root !== 'C' && item.FN_Check === 'fnCheckHocPhi(StudentID)' && item.Task_Detail_Type === 'FUN') {

@@ -8,8 +8,8 @@
           variant="underlined" class="max-width-search-small" />
       </v-card-title>
 
-      <v-data-table :items="studentArr" :headers="headerTable" :search="search" dense items-per-page="-1" height="100%"
-        fixed-header hide-default-footer class="flex-grow-1 flex-shrink-1 overflow-hidden">
+      <v-data-table :items="studentArr" :headers="headerTable" :search="search" item-key="Student_ID" dense
+        :items-per-page="-1" height="calc(90vh - 380px)" fixed-header hide-default-footer class="flex-grow-1">
         <template v-slot:no-data>
           <c-empty-state text="Không có học viên nào" />
         </template>

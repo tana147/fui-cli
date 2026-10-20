@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "name": "/include/plupload-2.3.7/plupload.full.min.js",
+    "type": ".js",
+    "contentType": "comp-link",
+    "fileID": "41E7C5EADA9648F4AC911FED6AC8AE53",
+    "scope": "module",
+    "sort": 50
+  }
+]

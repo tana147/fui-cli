@@ -44,11 +44,9 @@
 	</div>
 </template>
 
-
-
 <script>
-export default {
-	props: [],
+	export default {
+		props: [],
 	data() {
 		return {
 			vueData,
@@ -306,7 +304,9 @@ export default {
 			return new Promise(resolve => {
 				ajaxCALL('lms/HocSinhLop_Get_ByLopID',
 					{
-						LopID: LopID
+						LopID: LopID,
+					// Gửi niên khóa để không lấy nhầm học sinh của lớp cùng mã ở năm khác.
+					NienKhoa: vueData.NienKhoa
 					},
 					res => {
 						this.DSHocSinh = res.data
@@ -548,5 +548,5 @@ export default {
 			await this.DashboardDiemTrungBinhTheoTheme_Get()
 		}
 	},
-}
+	}
 </script>

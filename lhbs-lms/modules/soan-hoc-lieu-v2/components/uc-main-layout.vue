@@ -23,6 +23,12 @@
 							<v-icon start>mdi-plus-circle</v-icon>
 							Thêm mục gốc
 						</v-btn>
+						<!-- Dùng cùng luồng import với empty state; null target để tạo node trực tiếp ở root.
+						     Nút nằm ngoài cây node và dùng cùng style với nút thêm mục gốc. -->
+						<v-btn color="success" variant="tonal" size="small" class="add-root-btn ml-2" @click="openImportContentForRoot">
+							<v-icon start>mdi-database-import-outline</v-icon>
+							Lấy từ Content Hub
+						</v-btn>
 					</div>
 				</v-card-text>
 			</v-card>
@@ -146,10 +152,18 @@
 								<v-icon size="64" color="grey-lighten-2">mdi-file-tree-outline</v-icon>
 								<h4>Chưa có nội dung</h4>
 								<p>Hãy thêm chương hoặc bài học đầu tiên</p>
-								<v-btn color="primary" @click="addNewRootNode" class="mt-4">
-									<v-icon start>mdi-plus</v-icon>
-									Thêm mục đầu tiên
-								</v-btn>
+				<!-- Hai cách khởi tạo được gom cùng một hàng; chữ "hoặc" nối rõ lựa chọn tạo mới và lấy từ kho dùng chung. -->
+				<div class="d-flex justify-center align-center flex-wrap ga-2 mt-4">
+					<v-btn color="primary" @click="addNewRootNode">
+						<v-icon start>mdi-plus</v-icon>
+						Thêm mục đầu tiên
+					</v-btn>
+					<span class="text-caption text-medium-emphasis">hoặc</span>
+					<v-btn color="primary" variant="outlined" @click="openImportContentForRoot">
+						<v-icon start>mdi-database-import-outline</v-icon>
+						Lấy từ Content Hub
+					</v-btn>
+				</div>
 							</div>
 						</div>
 					</div>
@@ -160,10 +174,10 @@
 		<uc-noi-dung-dialog v-model:is-open="isDialogOpen" :item="editingItem"
 			:resource-context="{ KhoiID: selectedKhoi, MonHocID: selectedMon, BoSachID: selectedBoSach }"
 			@save="onSaveItem" @refresh-tree="fetchTreeNoiDung" @update-item="editingItem = $event" />
-		<!-- Dùng component global để luồng import thống nhất; chỉ định các loại học liệu bài giảng hỗ trợ (loại bỏ ảnh lẻ/screenshot) -->
+		<!-- Dùng component global để luồng import thống nhất; ảnh được lưu thành node IMAGE riêng. -->
 		<uc-content-hub-import-dialog v-model="isImportContentDialogOpen"
 			:resource="{ KhoiID: selectedKhoi, MonHocID: selectedMon }"
-			:allowed-document-types="['DOCUMENT', 'VIDEO', 'AUDIO', 'HTML', 'ISPRING']"
+			:allowed-document-types="['DOCUMENT', 'VIDEO', 'AUDIO', 'IMAGE', 'HTML', 'ISPRING']"
 			@import-document="onImportContentDocument" @import-question="onImportContentQuestion" />
 		<uc-thong-ke-xem-hoc-lieu-dialog v-model="isThongKeDialogOpen"
 			:hoc-lieu-id="selectedHocLieu ? selectedHocLieu.HocLieuID : null"
@@ -477,9 +491,19 @@
 					}
 					try {
 						const res = await fetchPromise('lms/FP_NoiDung_Save', item, { cache: false });
-						if (res) successCount++;
+						const saved = Array.isArray(res) ? res[0] : res;
+						const apiError = saved && (
+							saved.Success === false || saved.success === false ||
+							saved.Error || saved.error || saved.Status === 'ERROR'
+						);
+						const savedId = saved?.NoiDungID ?? saved?.noidungid;
+						// SP trả lại bản ghi vừa lưu; không coi object lỗi/rỗng là lưu thành công.
+						if (apiError || !savedId) {
+							throw new Error(saved?.Message || saved?.message || saved?.Error || saved?.error || 'API không trả về mục đã lưu.');
+						}
+						successCount++;
 					} catch (error) {
-						console.error('Lỗi khi lưu câu hỏi:', error);
+						console.error('Lỗi khi lưu nội dung:', error);
 					}
 				}
 
@@ -500,11 +524,20 @@
 				this.isImportContentDialogOpen = true;
 			},
 
+			// Empty state không có node đích; null được hiểu là import trực tiếp vào root của học liệu.
+			openImportContentForRoot() {
+				if (!this.selectedHocLieu) return;
+				this.importContentTarget = null;
+				this.isImportContentDialogOpen = true;
+			},
+
 			// Component global chỉ chuẩn hóa dữ liệu tài liệu và phát event; module này lưu node vào học liệu hiện tại.
 			async onImportContentDocument(document) {
 				const targetNode = this.importContentTarget;
-				if (!document || !targetNode || !this.selectedHocLieu) return;
+				if (!document || !this.selectedHocLieu) return;
 				try {
+					const parentId = targetNode?.NoiDungID || 0;
+					const siblingCount = targetNode ? (targetNode.children || []).length : this.treeNoiDung.length;
 					const contentType = this.getImportedContentType(document);
 					// Content Hub lưu video tương tác theo nhóm mốc thời gian. Giữ timerMarkers làm nguồn chuẩn
 					// và map thêm url để form VIDEO của soạn học liệu có thể mở lại đúng link khi edit node.
@@ -523,18 +556,25 @@
 						sourceNoiDungID: document.sourceTracking?.nodeId || null,
 						sourceHocLieuID: document.sourceTracking?.resourceId || null
 					};
-					await fetchPromise('lms/FP_NoiDung_Save', {
-						NoiDungID: 0,
+					// Import tạo node mới giống luồng Tạo tài liệu: bỏ NoiDungID để API tự tạo bản ghi mới.
+					const saveResult = await fetchPromise('lms/FP_NoiDung_Save', {
 						HocLieuID: this.selectedHocLieu.HocLieuID,
-						ParentID: targetNode.NoiDungID,
+						ParentID: parentId,
+						TenHocLieu: this.selectedHocLieu.TenHocLieu || '',
 						TenNoiDung: document.name || 'Tài liệu Content Hub',
 						LoaiNoiDung: contentType,
 						NguonTaiNguyenCode: 'CONTENT_HUB',
-						ThuTu: (targetNode.children || []).length + 1,
+						ThuTu: siblingCount + 1,
 						User: this.vueData.user?.UserID,
 						DataJson: JSON.stringify(dataJson)
 					}, { cache: false });
+					// Một số tAPI trả lỗi trong object thay vì reject Promise; không đóng giả thành công khi node chưa được tạo.
+					const saved = Array.isArray(saveResult) ? saveResult[0] : saveResult;
+					if (saved && (saved.Success === false || saved.success === false || saved.Error || saved.error)) {
+						throw new Error(saved.Message || saved.message || saved.Error || saved.error || 'API không tạo được nội dung.');
+					}
 					await this.fetchTreeNoiDung();
+					this.importContentTarget = null;
 					this.notify('Đã import tài liệu từ Content Hub.');
 				} catch (error) {
 					this.notify(error?.message || 'Import tài liệu thất bại.', 'error');
@@ -611,18 +651,21 @@
 
 			// Câu hỏi từ Content Hub được lưu thành schema phẳng để dialog Soạn học liệu mở lại đúng dạng và đáp án.
 			async onImportContentQuestion(question) {
-				if (!question || !this.importContentTarget || !this.selectedHocLieu) return;
+				if (!question || !this.selectedHocLieu) return;
 				try {
+					const targetNode = this.importContentTarget;
+					const parentId = targetNode?.NoiDungID || 0;
+					const siblingCount = targetNode ? (targetNode.children || []).length : this.treeNoiDung.length;
 					const normalized = this.normalizeImportedQuestion(question);
 					const questionText = normalized.data.prompt || 'Câu hỏi từ Content Hub';
 					await fetchPromise('lms/FP_NoiDung_Save', {
 						NoiDungID: 0,
 						HocLieuID: this.selectedHocLieu.HocLieuID,
-						ParentID: this.importContentTarget.NoiDungID,
+						ParentID: parentId,
 						TenNoiDung: typeof questionText === 'string' ? questionText.replace(/<[^>]*>/g, '').trim().slice(0, 200) || 'Câu hỏi từ Content Hub' : 'Câu hỏi từ Content Hub',
 						LoaiNoiDung: normalized.type || 'QUIZ_SINGLE_CHOICE',
 						NguonTaiNguyenCode: 'CONTENT_HUB',
-						ThuTu: (this.importContentTarget.children || []).length + 1,
+						ThuTu: siblingCount + 1,
 						User: this.vueData.user?.UserID,
 						DataJson: JSON.stringify({
 							...normalized.data,
@@ -657,8 +700,9 @@
 				return 'TAILIEU';
 			},
 			normalizeImportedInteractiveMarkers(markers) {
-				const supportedTypes = ['QUIZ_SINGLE_CHOICE', 'QUIZ_MULTIPLE_CHOICE', 'QUIZ_TRUE_FALSE',
-					'QUIZ_MATCHING', 'QUIZ_ORDERING', 'QUIZ_DRAG_DROP_CATEGORIZE', 'QUIZ_FILL_IN_BLANK', 'QUIZ_CONNECTION'];
+					const supportedTypes = ['QUIZ_SINGLE_CHOICE', 'QUIZ_MULTIPLE_CHOICE', 'QUIZ_TRUE_FALSE',
+						'QUIZ_MATCHING', 'QUIZ_ORDERING', 'QUIZ_DRAG_DROP_CATEGORIZE', 'QUIZ_FILL_IN_BLANK',
+						'QUIZ_CONNECTION', 'SHORT_ANSWER', 'ESSAY'];
 				return (Array.isArray(markers) ? markers : []).map(marker => {
 					const questions = Array.isArray(marker?.questions) ? marker.questions : (marker?.question ? [marker.question] : []);
 					return {

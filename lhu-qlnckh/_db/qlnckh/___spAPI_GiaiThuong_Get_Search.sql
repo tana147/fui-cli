@@ -1,4 +1,4 @@
-CREATE PROC [dbo].[___spAPI_GiaiThuong_Get_Search]
+CREATE PROC [dbo].[spAPI_GiaiThuong_Get_Search]
 	@TuKhoa NVARCHAR(500)
 AS
 BEGIN

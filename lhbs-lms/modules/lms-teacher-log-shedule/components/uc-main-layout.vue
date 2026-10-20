@@ -33,6 +33,13 @@
 			</v-col>
 		</v-row>
 
+		<!-- Bộ đếm lịch sử từng bị cộng chéo và không có log từng lượt để tính lại; giữ cảnh báo để người xem hiểu đúng tổng hiện tại. -->
+		<v-alert type="warning" variant="tonal" density="compact" class="mb-4" prepend-icon="mdi-alert-outline">
+			Thông báo: Tổng lượt xem hiện vẫn gồm số liệu lịch sử có thể bị cao. Lỗi cộng chéo đã được sửa lúc
+			17:06 ngày 12/10/2026; các bộ đếm đã lưu trước thời điểm này không thể tính lại chính xác vì hệ thống
+			không lưu nhật ký từng lượt xem.
+		</v-alert>
+
 		<!-- Summary Cards — giữ nguyên -->
 		<v-row class="mb-4">
 			<v-col cols="6" sm="3">
@@ -77,13 +84,17 @@
 		<v-card rounded="lg" elevation="1">
 			<v-card-title class="pa-4 pb-2">
 				<v-row align="center">
-					<v-col cols="12" sm="6">
+					<v-col cols="12" md="4">
 						<!-- ✅ Đổi sang @update:modelValue="onSearchInput" -->
 						<v-text-field v-model="search" @update:modelValue="onSearchInput"
-							prepend-inner-icon="mdi-magnify" placeholder="Tìm kiếm theo người tạo, ngày..."
+							prepend-inner-icon="mdi-magnify" placeholder="Tìm theo ID, người tạo/cập nhật, lớp..."
 							variant="outlined" density="compact" hide-details clearable rounded="lg" color="primary" />
 					</v-col>
-					<v-col cols="12" sm="6" class="d-flex justify-end">
+					<!-- Reuse the shared range picker used by the Sổ GVCN log; it returns ISO { from, to }. -->
+					<v-col cols="12" md="4" class="d-flex align-center">
+						<uc-date-range-picker v-model="dateRange" />
+					</v-col>
+					<v-col cols="12" md="4" class="d-flex justify-end align-center flex-wrap ga-2">
 						<v-chip v-if="filterType !== 'all'" :color="filterType === '0' ? 'secondary' : 'info'"
 							variant="tonal" size="small" closable @click:close="filterType = 'all'; resetAndLoad()">
 							<v-icon start size="14">{{ filterType === '0' ? 'mdi-cellphone' : 'mdi-monitor' }}</v-icon>
@@ -165,9 +176,9 @@
 
 <script>
 	export default {
-		name: 'LmsScreenScheduleLog',
-	
 		data() {
+			const now = new Date()
+			const toLocalISODate = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 			return {
 				vueData,
 				loading: false,
@@ -176,6 +187,11 @@
 				itemsPerPage: 10,
 				totalItems: 0,
 				search: '',
+				// Start with the current month so the large history table is bounded on first load.
+				dateRange: {
+					from: toLocalISODate(new Date(now.getFullYear(), now.getMonth(), 1)),
+					to: toLocalISODate(new Date(now.getFullYear(), now.getMonth() + 1, 0)),
+				},
 				filterType: 'all',
 				items: [],
 				searchTimer: null,
@@ -212,7 +228,13 @@
 			desktopViews() { return this.summary.desktopViewCount },
 		},
 	
-		// ✅ Bỏ toàn bộ watch
+		// Apply or clear from the shared date picker resets paging and reloads the server-filtered range.
+		watch: {
+			dateRange: {
+				deep: true,
+				handler() { this.resetAndLoad() },
+			},
+		},
 	
 		beforeUnmount() {
 			if (this.searchTimer) clearTimeout(this.searchTimer)
@@ -246,12 +268,15 @@
 				})
 				this.loading = true
 				try {
-					const response = await fetchPromise('lms/LMS_Screen_Schedule_Get', {
+					const response = await fetchPromise('lms/LMS_Screen_Schedule_GetRange', {
 						NienKhoa: vueData.NienKhoa,
 						PageNumber: this.page,
 						PageSize: this.itemsPerPage,
-						TypeScreen: this.filterType === 'all' ? 0 : Number(this.filterType),
+						// NULL means all devices; 0 and 1 select Mobile and Desktop.
+						TypeScreen: this.filterType === 'all' ? null : Number(this.filterType),
 						Search: this.search?.trim() || '',
+						FromDate: this.dateRange?.from || null,
+						ToDate: this.dateRange?.to || null,
 					}, { cache: false, forceRefresh: true }) // ✅ thêm dòng này
 	
 					if (requestId !== this.currentRequestId) {
@@ -278,7 +303,8 @@
 				} catch (error) {
 					if (requestId !== this.currentRequestId) return
 					console.error('🔴 fetchData ERROR:', error)
-					this.showSnackbar('Không thể tải dữ liệu. Vui lòng thử lại.', 'error', 'mdi-alert-circle')
+					const detail = String(error?.message || '').trim().slice(0, 180)
+					this.showSnackbar(detail ? `Không thể tải dữ liệu: ${detail}` : 'Không thể tải dữ liệu. Vui lòng thử lại.', 'error', 'mdi-alert-circle')
 				} finally {
 					if (requestId === this.currentRequestId) {
 						this.loading = false

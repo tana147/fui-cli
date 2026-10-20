@@ -1,5 +1,6 @@
 <template>
-	<v-card-text class="pa-2" :style="{ height: sheetHeight, 'overflow': 'hidden' }">
+	<!-- Bỏ đệm bên phải để scrollbar của vùng nội dung sát mép phải viewport. -->
+	<v-card-text class="pt-2 pl-2 pb-2 pr-0" :style="{ height: sheetHeight, 'overflow': 'hidden' }">
 		<v-alert v-if="selectedLopID === '__ALL__'" type="info" variant="tonal" density="compact" class="mb-0">
 			Chọn một lớp ở thanh trên để nhập chỉ tiêu và giải pháp giáo dục của lớp đó.
 		</v-alert>
@@ -23,7 +24,7 @@
 			</div>
 
 			<!-- Main Content Area on the Right (All cards rendered in scrollable container) -->
-			<div ref="scrollContainer" class="flex-grow-1 h-100 overflow-y-auto pr-1">
+			<div ref="scrollContainer" class="flex-grow-1 h-100 overflow-y-auto pr-0">
 				<v-row dense class="pb-16">
 					<v-col v-for="card in chiTieuCards" :key="card.key" cols="12" class="py-1 mb-4">
 						<v-card :id="`card_section_${card.key}`" outlined elevation="0" style="margin-bottom: 16px;">
@@ -61,7 +62,7 @@
 				sheetInstances: {}
 			}
 		},
-		emits: ['update-card-rows', 'handle-card-change'],
+		emits: ['update-card-rows', 'handle-card-change', 'handle-card-sort'],
 		methods: {
 			getNavTitle(card) {
 				if (card.key === 'chi-tieu-giao-duc') return 'I. Chỉ tiêu 2 mặt giáo dục'
@@ -97,6 +98,32 @@
 					if (sheet && typeof sheet.destroy === 'function') sheet.destroy()
 				} catch (e) {}
 				delete this.sheetInstances[cardKey]
+			},
+			getInstances() {
+				return Object.values(this.sheetInstances)
+					.flatMap(instance => Array.isArray(instance) ? instance : [instance])
+					.filter(Boolean)
+			},
+			getCardRows() {
+				return Object.entries(this.sheetInstances).reduce((result, [cardKey, instance]) => {
+					const sheet = Array.isArray(instance) ? instance[0] : instance
+					if (sheet && typeof sheet.getData === 'function') result[cardKey] = sheet.getData()
+					return result
+				}, {})
+			},
+			closeEditors(save = true) {
+				this.getInstances().forEach(sheet => {
+					if (typeof sheet.closeEditor !== 'function') return
+					try {
+						const editorCell = sheet.edition ? sheet.edition[0] : null
+						if (editorCell !== null && editorCell !== undefined) sheet.closeEditor(editorCell, save)
+						else sheet.closeEditor(save)
+					} catch (error) {
+						// JSpreadsheet có hai chữ ký closeEditor giữa các phiên bản; thử chữ ký đơn giản làm fallback.
+						try { sheet.closeEditor(save) } catch (fallbackError) {}
+					}
+				})
+				return this.getCardRows()
 			},
 			initSheet(card) {
 				if (!card) return
@@ -147,6 +174,12 @@
 									const rows = worksheet.getData()
 									this.$emit('update-card-rows', card, rows)
 									this.$emit('handle-card-change', card, { instance: worksheet, worksheet, cell, x, y, value, rows })
+								},
+								onsort: (worksheet, column, order, sortedRows) => {
+									// Sort làm thay đổi thứ tự dòng nhưng không tự cập nhật cột STT.
+									// Gửi cả worksheet để parent đánh lại STT ngay trên bảng đang hiển thị.
+									const rows = typeof worksheet.getData === 'function' ? worksheet.getData() : sortedRows
+									this.$emit('handle-card-sort', card, { instance: worksheet, worksheet, column, order, rows })
 								}
 							})
 							this.sheetInstances[card.key] = sheet

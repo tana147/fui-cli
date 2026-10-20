@@ -21,8 +21,17 @@
 					<v-btn v-if="!isGrade && submissionstatus < 2" icon="mdi-close" color="red" variant="tonal"
 						@click="answer.splice(idx, 1)" size="small"
 						style="position: absolute; right: 8px; top:8px; z-index: 2" />
-					<uc-audio-record :key="idx" v-model:file="item.file" v-model:src="item.playUrl" :readonly="true"
-						:isSaveFile="false" :isShowBtn="false" />
+					<!--
+						Ở màn hình chấm, giáo viên chỉ cần nghe bài đã nộp.
+						Không mount uc-audio-record tại đây vì component đó khởi tạo luồng
+						microphone/encoder dù toàn bộ nút ghi âm đã bị ẩn, gây warning
+						ScriptProcessorNode và làm chậm trang chấm.
+					-->
+					<audio v-if="isGrade" :key="`grade-audio-${idx}`" class="audio-native-player"
+						:src="item.playUrl" controls preload="metadata"
+						:aria-label="`Audio answer ${idx + 1}`" />
+					<uc-audio-record v-else :key="idx" v-model:file="item.file" v-model:src="item.playUrl"
+						:readonly="true" :isSaveFile="false" :isShowBtn="false" />
 				</div>
 			</div>
 
@@ -415,6 +424,10 @@
 	}
 
 	.audio-player {
+		width: 100%;
+	}
+
+	.audio-native-player {
 		width: 100%;
 	}
 

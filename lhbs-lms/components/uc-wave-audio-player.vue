@@ -1,9 +1,24 @@
 <template>
 	<v-card class="audio-player" elevation="2">
 		<div class="player-content">
-			<!-- Waveform (LUÔN TỒN TẠI) -->
+			<!--
+				Ưu tiên backend MediaElement để trình duyệt tự giải mã file audio.
+				Một số file ghi âm WebM/MP3 không thể đi qua decodeAudioData nhưng vẫn
+				phát được bằng thẻ audio native; khi waveform lỗi, player sẽ chuyển sang
+				fallback bên dưới thay vì để vùng nghe bị treo ở 0:00.
+			-->
 			<div class="waveform-container">
-				<div :ref="waveformRef" class="waveform"></div>
+				<div v-show="!usingNativeAudio" :ref="waveformRef" class="waveform"></div>
+				<div v-if="usingNativeAudio" class="native-audio-fallback">
+					<audio ref="nativeAudio" class="native-audio" :src="nativeAudioUrl" controls preload="metadata"
+						style="width: 100%;"
+						@loadedmetadata="handleNativeReady" @timeupdate="handleNativeTimeUpdate"
+						@play="isPlaying = true" @pause="isPlaying = false" @ended="isPlaying = false"
+						@error="handleNativeError" />
+					<div class="text-caption text-medium-emphasis mt-1">
+						Waveform không khả dụng, đang dùng trình phát audio của trình duyệt.
+					</div>
+				</div>
 
 				<!-- Loading overlay -->
 				<div v-if="loading" class="loading-overlay d-flex align-center justify-center">
@@ -15,7 +30,8 @@
 			<!-- Controls -->
 			<div class="player-controls">
 				<!-- Play / Pause -->
-				<v-btn icon size="small" variant="text" color="primary" :disabled="loadingAudio || !waveSurfer"
+				<v-btn icon size="small" variant="text" color="primary"
+					:disabled="loadingAudio || (!waveSurfer && !nativeAudioReady)"
 					@click="togglePlay">
 					<v-icon size="24">
 						{{ isPlaying ? 'mdi-pause' : 'mdi-play' }}
@@ -32,13 +48,15 @@
 					</v-icon>
 
 					<v-slider v-model="volume" min="0" max="1" step="0.01" hide-details density="compact"
-						class="volume-slider" :disabled="loadingAudio" @update:modelValue="setVolume" />
+						class="volume-slider" :disabled="loadingAudio || (!waveSurfer && !nativeAudioReady)"
+						@update:modelValue="setVolume" />
 				</div>
 
 				<!-- Speed -->
 				<v-menu>
 					<template #activator="{ props }">
-						<v-chip size="x-small" variant="text" v-bind="props" :disabled="loadingAudio">
+						<v-chip size="x-small" variant="text" v-bind="props"
+							:disabled="loadingAudio || (!waveSurfer && !nativeAudioReady)">
 							{{ playbackSpeed }}x
 						</v-chip>
 					</template>
@@ -75,6 +93,12 @@
 				waveformRef: `waveform-${generateID()}`,
 	
 				waveSurfer: null,
+				nativeAudioReady: false,
+				nativeAudioUrl: '',
+				usingNativeAudio: false,
+				activeAudioUrl: '',
+				objectUrl: '',
+				loadRequestId: 0,
 				isPlaying: false,
 	
 				volume: 0.8,
@@ -108,12 +132,14 @@
 	
 		watch: {
 			audioUrl(newUrl) {
-				if (newUrl) this.loadAudio(newUrl)
+				this.loadAudio(newUrl)
 			},
 		},
 	
 		methods: {
 			async loadAudio(url) {
+				const requestId = ++this.loadRequestId
+				this.resetPlayer()
 				if (!url) return
 
 				this.loading = true
@@ -146,15 +172,24 @@
 						finalUrl = objectUrl
 					}
 
+					if (requestId !== this.loadRequestId) return
+					this.activeAudioUrl = finalUrl
+					this.objectUrl = objectUrl
+
 					this.waveSurfer?.destroy()
 					this.waveSurfer = null
 					await this.$nextTick()
 
 					const container = this.$refs[this.waveformRef]
 					if (!container) throw new Error('Waveform container not found')
+					if (typeof WaveSurfer === 'undefined') {
+						throw new Error('WaveSurfer chưa được nạp')
+					}
 
 					this.waveSurfer = WaveSurfer.create({
 						container,
+						// MediaElement tránh decodeAudioData/ScriptProcessorNode của WebAudio.
+						backend: 'MediaElement',
 						waveColor: '#B3E5FC',
 						progressColor: '#1976D2',
 						cursorColor: '#1976D2',
@@ -170,7 +205,7 @@
 						this.loading = false
 						this.loadingAudio = false
 					})
-					this.waveSurfer.on('error', error => this.handleLoadError(error))
+					this.waveSurfer.on('error', error => this.handleLoadError(error, finalUrl, requestId))
 					this.waveSurfer.on('audioprocess', () => {
 						this.currentTime = this.formatTime(this.waveSurfer.getCurrentTime())
 					})
@@ -180,18 +215,70 @@
 					this.waveSurfer.on('finish', () => { this.isPlaying = false })
 					this.waveSurfer.load(finalUrl)
 				} catch (error) {
-					this.handleLoadError(error)
+					this.handleLoadError(error, finalUrl, requestId)
 				}
 			},
-			handleLoadError(error) {
-				console.error('Không tải được âm thanh:', error)
+			handleLoadError(error, fallbackUrl = this.activeAudioUrl, requestId = this.loadRequestId) {
+				if (requestId !== this.loadRequestId) return
+				// Giải mã waveform có thể lỗi dù browser vẫn phát được file bằng <audio>.
+				// Fallback này giữ cho giáo viên vẫn nghe được bài mà không làm lỗi trang chấm.
+				this.waveSurfer?.destroy()
+				this.waveSurfer = null
+				this.activeAudioUrl = fallbackUrl || ''
+				this.nativeAudioUrl = fallbackUrl || ''
+				this.usingNativeAudio = !!this.nativeAudioUrl
 				this.loading = false
 				this.loadingAudio = false
-				this.loadingText = 'Không tải được âm thanh'
+				this.loadingText = 'Đang dùng trình phát audio native'
 				this.isPlaying = false
 			},
-	
+			resetPlayer() {
+				this.waveSurfer?.destroy()
+				this.waveSurfer = null
+				const nativeAudio = this.$refs.nativeAudio
+				if (nativeAudio) {
+					nativeAudio.pause()
+					nativeAudio.removeAttribute('src')
+					nativeAudio.load()
+				}
+				if (this.objectUrl) URL.revokeObjectURL(this.objectUrl)
+				this.objectUrl = ''
+				this.nativeAudioReady = false
+				this.nativeAudioUrl = ''
+				this.usingNativeAudio = false
+				this.activeAudioUrl = ''
+				this.loading = false
+				this.loadingAudio = false
+				this.currentTime = '0:00'
+				this.duration = '0:00'
+				this.isPlaying = false
+			},
+			handleNativeReady(event) {
+				const audio = event?.target || this.$refs.nativeAudio
+				this.nativeAudioReady = !!audio
+				this.duration = this.formatTime(audio?.duration || 0)
+				if (audio) audio.volume = this.volume
+				this.loading = false
+				this.loadingAudio = false
+			},
+			handleNativeTimeUpdate(event) {
+				const audio = event?.target || this.$refs.nativeAudio
+				if (audio) this.currentTime = this.formatTime(audio.currentTime || 0)
+			},
+			handleNativeError() {
+				this.loading = false
+				this.loadingAudio = false
+				this.isPlaying = false
+			},
+
 			togglePlay() {
+				if (this.usingNativeAudio) {
+					const audio = this.$refs.nativeAudio
+					if (!audio) return
+					if (audio.paused) audio.play().catch(() => { this.handleNativeError() })
+					else audio.pause()
+					return
+				}
 				if (!this.waveSurfer) return
 				this.waveSurfer.playPause()
 				this.isPlaying = !this.isPlaying
@@ -199,6 +286,8 @@
 	
 			setVolume() {
 				this.waveSurfer?.setVolume(this.volume)
+				const audio = this.$refs.nativeAudio
+				if (audio) audio.volume = this.volume
 			},
 	
 			toggleMute() {
@@ -214,6 +303,8 @@
 			setSpeed(speed) {
 				this.playbackSpeed = speed
 				this.waveSurfer?.setPlaybackRate(speed)
+				const audio = this.$refs.nativeAudio
+				if (audio) audio.playbackRate = speed
 			},
 	
 			formatTime(sec) {
@@ -232,7 +323,8 @@
 		},
 	
 		beforeUnmount() {
-			this.waveSurfer?.destroy()
+			this.loadRequestId++
+			this.resetPlayer()
 		},
 	}
 </script>

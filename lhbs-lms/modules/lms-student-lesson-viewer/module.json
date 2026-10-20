@@ -4,11 +4,12 @@
       "dataReady": false,
       "lesson": null,
       "assignToClassId": "AssignToClassID",
+      "HocSinhID": "parseInt(HocSinhID ?? 0)",
       "dataVersion": 0
     },
     {
       "getLessonData": {
-        "API": "lms/EL_Student_GetAssignedLessonContent",
+        "API": "lms/EL_Student_GetAssignedLessonContent_V2",
         "IN": {
           "AssignToClassID": "vueData.assignToClassId",
           "HocSinhID": "vueData.HocSinhID"
@@ -38,6 +39,7 @@
           "cols": [
             {
               "el": "uc-lesson-viewer",
+              "w": 12,
               "attr": {
                 "v-if": "dataReady",
                 ":initial-lesson": "lesson",

@@ -29,7 +29,8 @@
     {
       "API": "lms/HocSinhLop_Get_ByLopID",
       "IN": {
-        "LopID": "vueData.LopID"
+        "LopID": "vueData.LopID",
+        "NienKhoa": "vueData.NienKhoa"
       },
       "OUT": "dataSource_API",
       "CALLBACK": {

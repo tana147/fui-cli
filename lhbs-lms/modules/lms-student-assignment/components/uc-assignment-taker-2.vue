@@ -74,7 +74,7 @@
 					<AssignmentProgress v-show="shouldShowProgress" style="flex: 0 0 auto;" :answered-count="answeredCount"
 						:total-questions="totalQuestions" :progress-percent="progressPercent" :save-status="saveStatus"
 						:save-status-color="saveStatusColor" :save-status-icon="saveStatusIcon"
-						:is-submitted="isSubmitted" :is-graded="isGraded" @submit="handleSubmit" />
+						:is-submitted="isSubmitted" :is-graded="isGraded" :can-submit="canSubmit" @submit="handleSubmit" />
 
 					<v-card v-if="currentQuestion?.config" class="uat__question-card mx-2 mb-2" flat border
 						style="flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
@@ -169,7 +169,7 @@
 						<AssignmentProgress v-show="shouldShowProgress" class="my-2 mx-2" :answered-count="answeredCount"
 							:total-questions="totalQuestions" :progress-percent="progressPercent" :save-status="saveStatus"
 							:save-status-color="saveStatusColor" :save-status-icon="saveStatusIcon"
-							:is-submitted="isSubmitted" :is-graded="isGraded" @submit="handleSubmit" />
+							:is-submitted="isSubmitted" :is-graded="isGraded" :can-submit="canSubmit" @submit="handleSubmit" />
 
 						<div class="uat__questions-container">
 							<div v-for="(group, groupIndex) in assignment.groups" :key="group.id"
@@ -261,6 +261,8 @@
 	
 				// Time tracking
 				intervalDurationTime: null,
+				durationTimeRequestInFlight: false,
+				durationTimeTrackingStopped: false,
 				resizeHandler: null,
 	
 				// Lodash ref (dùng trong template nếu cần)
@@ -317,7 +319,16 @@
 						const raw = (isGraded && config.AssignmentConfig_HadAnswer)
 							? config.AssignmentConfig_HadAnswer
 							: config.AssignmentConfig;
-						const parsed = JSON.parse(raw);
+						let parsed = JSON.parse(raw);
+						const hasQuestions = (groups) => Array.isArray(groups) && groups.some(g => Array.isArray(g.questions) && g.questions.length > 0);
+						if (isGraded && config.AssignmentConfig_HadAnswer && (!parsed.groups || !hasQuestions(parsed.groups)) && config.AssignmentConfig) {
+							try {
+								const fallbackParsed = JSON.parse(config.AssignmentConfig);
+								if (hasQuestions(fallbackParsed.groups)) {
+									parsed = fallbackParsed;
+								}
+							} catch (err) {}
+						}
 						config._cachedGroups = parsed.groups || [];
 						config.groups = config._cachedGroups;
 	
@@ -366,6 +377,15 @@
 			shouldShowProgress() {
 				const s = this.draft?.SubmissionStatus;
 				return s !== 4 && s !== 3 && !this.isIntegrated;
+			},
+
+			// Không cho mở luồng nộp khi đáp án còn đang chờ auto-save hoặc lần lưu gần nhất thất bại.
+			// Nếu session hết hạn (401), saveStatus sẽ là "Lỗi lưu" và học sinh phải đăng nhập lại.
+			canSubmit() {
+				return !this.isSubmitted
+					&& !this.isSaving
+					&& !this.pendingSave
+					&& this.saveStatus === 'Đã lưu';
 			},
 	
 			isFirstQuestion() {
@@ -517,7 +537,16 @@
 						let saved = { answers: {} };
 						try { saved = JSON.parse(this.draft.SubmissionContent); } catch { /* giữ default */ }
 	
-						const answers = saved?.answers || {};
+						const activeQuestionIds = new Set(
+							asmData.groups.flatMap(group => (group?.questions || [])
+								.filter(question => question?.id !== null && question?.id !== undefined && question?.id !== '')
+								.map(question => String(question.id)))
+						);
+						// Draft cũ có thể còn key của câu đã bị bỏ khỏi snapshot; chỉ khôi phục
+						// câu thuộc lượt hiện tại để autosave/submit không trộn hai lượt làm.
+						const answers = Object.fromEntries(
+							Object.entries(saved?.answers || {}).filter(([questionId]) => activeQuestionIds.has(String(questionId)))
+						);
 	
 						// Chuẩn hóa kiểu dữ liệu điểm để UI không hiển thị 0 khi backend trả về string.
 						Object.keys(answers).forEach(questionId => {
@@ -556,6 +585,25 @@
 					}
 				} else {
 					// Chưa có bài nộp → tạo draft mới + khởi tạo groupCollapsed
+					const asmConfigStr = this.assignmentData?.[0]?.[0]?.AssignmentConfig;
+					try {
+						const asmData = JSON.parse(asmConfigStr || '{}');
+						const answers = {};
+						(asmData.groups || []).forEach(group => {
+							(group?.questions || []).forEach(question => {
+								if (!question?.id) return;
+								answers[question.id] = {
+									answerData: null,
+									flag: false,
+									grading: { comment: null, teacherComment: null, manualScore: null },
+								};
+							});
+						});
+						this.$emit('update:puseranswers', answers);
+					} catch (e) {
+						console.error('[uc-assignment-taker] Không khởi tạo được đáp án theo snapshot:', e);
+						this.$emit('update:puseranswers', {});
+					}
 					this.saveDraft();
 					if (this.assignment?.groups) {
 						const collapsed = {};
@@ -614,8 +662,12 @@
 				const submitionInfo = this.assignmentData?.[1]?.[0];
 				if (!submitionInfo) return;
 				if ([2, 3, 4].includes(submitionInfo.SubmissionStatus)) return;
+				if (this.intervalDurationTime || this.durationTimeRequestInFlight || this.durationTimeTrackingStopped) return;
 	
 				this.intervalDurationTime = setInterval(() => {
+					// Giữ chu kỳ 5 giây trong trường hợp bình thường; nếu request trước
+					// chưa xong thì bỏ qua tick này, không gọi chồng lên request cũ.
+					if (this.durationTimeRequestInFlight || this.durationTimeTrackingStopped) return;
 					this.insertDurationTime(submitionInfo);
 				}, 5000);
 	
@@ -623,6 +675,7 @@
 			},
 	
 			_stopTimeTracking() {
+				this.durationTimeTrackingStopped = true;
 				if (this.intervalDurationTime) {
 					clearInterval(this.intervalDurationTime);
 					this.intervalDurationTime = null;
@@ -634,6 +687,10 @@
 			// ══════════════════════════════════════════════════════
 	
 			handleSubmit() {
+				if (!this.canSubmit) {
+					Vue.$toast?.warning('Bài làm chưa được lưu thành công. Vui lòng chờ lưu xong hoặc đăng nhập lại.', { position: 'top' });
+					return;
+				}
 				this._stopTimeTracking();
 				this.onOpenSubmitDialog();
 			},

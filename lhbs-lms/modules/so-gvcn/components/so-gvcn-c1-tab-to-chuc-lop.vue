@@ -4,7 +4,8 @@
     <v-alert v-if="selectedLopID === '__ALL__'" type="info" variant="tonal" density="compact">
       Chọn một lớp ở thanh trên để nhập thông tin tổ chức lớp.
     </v-alert>
-	<div v-else class="d-flex h-100 ga-3" style="min-height: 0; min-width: 0; max-width: 100%; overflow: hidden;">
+	<template v-else>
+	<div class="d-flex h-100 ga-3 so-gvcn-c1-desktop-only" style="min-height: 0; min-width: 0; max-width: 100%; overflow: hidden;">
       <div class="flex-shrink-0 overflow-y-auto" style="width: 260px; border-right: 1px solid rgba(0, 0, 0, 0.12);">
         <v-list density="compact" nav color="primary" class="pa-0">
           <v-list-item v-for="card in organizationCards" :key="card.key" :value="card.key"
@@ -41,6 +42,26 @@
         </v-row>
       </div>
     </div>
+	<!-- On phones use one student card at a time so all columns stay editable without a wide grid. -->
+	<div class="so-gvcn-c1-mobile-editor flex-column flex-grow-1 overflow-y-auto" style="min-height: 0; max-height: 100%;">
+		<div class="px-2 pt-2 flex-shrink-0">
+			<div class="text-subtitle-2 font-weight-bold">Tổ chức lớp</div>
+			<div class="text-caption text-medium-emphasis mb-2">Chọn học sinh để sửa nhiệm vụ và ghi chú.</div>
+		</div>
+		<v-expansion-panels v-if="organizationCards.length" v-model="expandedOrganizationCards" multiple class="px-2 pb-2">
+			<v-expansion-panel v-for="card in organizationCards" :key="card.key" :value="card.key">
+				<v-expansion-panel-title>{{ card.title }}</v-expansion-panel-title>
+				<v-expansion-panel-text>
+					<uc-so-gvcn-mobile-sheet-editor :ref="'mobileEditor_' + card.key"
+						:rows="card.rows" :columns="card.columns" :title-index="3" :subtitle-indices="[1, 2]"
+						:searchable="true" empty-title="Học sinh" empty-text="Chưa có thông tin trong mục này."
+						@cell-changed="onMobileOrganizationCellChange(card.key, $event)" />
+				</v-expansion-panel-text>
+			</v-expansion-panel>
+		</v-expansion-panels>
+		<div v-else class="text-body-2 text-medium-emphasis pa-3">Chưa có thông tin tổ chức lớp.</div>
+	</div>
+	</template>
   </v-card-text>
 </template>
 
@@ -59,8 +80,53 @@
 			return {
 				localSheetKey: 0,
 				organizationCards: [],
+				// Keep the open section ids in component state so taps update the mobile accordion reliably.
+				expandedOrganizationCards: [],
 				activeCardKey: 'can-bo-lop',
-				sheetInstances: {}
+				sheetInstances: {},
+				isMobileViewport: false,
+				resizeTimer: null,
+				mobileSearch: ''
+			}
+		},
+		computed: {
+			// Derive the read-only phone cards from the same column definitions and rows used by JSpreadsheet.
+			mobileOrganizationCards() {
+				const query = String(this.mobileSearch || '').trim().toLocaleLowerCase('vi')
+				return (this.organizationCards || []).map(card => ({
+					key: card.key,
+					title: card.title,
+					mobileRows: (card.rows || []).map((sourceRow, index) => {
+						const values = Array.isArray(sourceRow) ? sourceRow : []
+						const valueAt = columnIndex => this.displayMobileValue(values[columnIndex])
+						const name = valueAt(3)
+						const fields = (card.columns || []).slice(4).map((column, offset) => ({
+							label: column.title,
+							value: valueAt(offset + 4)
+						}))
+						const group = card.key === 'to-nhom-hoc-sinh' ? valueAt(0) : '—'
+						const studentId = valueAt(1)
+						const bookNumber = valueAt(2)
+						const searchableText = [name, studentId, bookNumber, group, ...fields.map(field => field.value)]
+							.join(' ').toLocaleLowerCase('vi')
+						const hasContent = [name, studentId, bookNumber, group, ...fields.map(field => field.value)]
+							.some(value => value !== '—')
+						return {
+							key: `${card.key}-${studentId}-${index}`,
+							serialNo: valueAt(0),
+							name: name === '—' ? '' : name,
+							studentId,
+							bookNumber,
+							group,
+							fields,
+							searchableText,
+							hasContent
+						}
+					}).filter(row => row.hasContent && (!query || row.searchableText.includes(query)))
+				}))
+			},
+			mobileOrganizationCount() {
+				return this.mobileOrganizationCards.reduce((total, section) => total + section.mobileRows.length, 0)
 			}
 		},
 		watch: {
@@ -93,15 +159,63 @@
 			}
 		},
 		created() {
+			// Set viewport mode before buildCards so phone sheets keep desktop column widths and remain editable.
+			this.isMobileViewport = typeof window !== 'undefined'
+				&& window.matchMedia('(max-width: 959.98px)').matches
 			this.buildCards()
 		},
 		mounted() {
+			this.isMobileViewport = window.matchMedia('(max-width: 959.98px)').matches
+			window.addEventListener('resize', this.onWindowResize)
 			this.initAllSheets()
 		},
 		beforeUnmount() {
+			window.removeEventListener('resize', this.onWindowResize)
+			clearTimeout(this.resizeTimer)
 			this.destroyAllSheets()
 		},
 		methods: {
+			// Carry edits across orientation changes before switching between desktop sheets and phone forms.
+			onWindowResize() {
+				clearTimeout(this.resizeTimer)
+				this.resizeTimer = setTimeout(() => {
+					const nextIsMobile = window.matchMedia('(max-width: 959.98px)').matches
+					if (nextIsMobile === this.isMobileViewport) return
+					;(this.organizationCards || []).forEach(card => {
+						card.rows = this.getLiveCardRows(card)
+					})
+					this.isMobileViewport = nextIsMobile
+					this.$nextTick(() => {
+						if (nextIsMobile) {
+							(this.organizationCards || []).forEach(card => this.$refs['mobileEditor_' + card.key]?.setRows?.(card.rows))
+						}
+						this.initAllSheets()
+					})
+				}, 160)
+			},
+			displayMobileValue(value) {
+				if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) return '—'
+				if (Array.isArray(value)) {
+					const items = value.map(item => this.displayMobileValue(item)).filter(item => item !== '—')
+					return items.length ? items.join(', ') : '—'
+				}
+				if (typeof value === 'object') {
+					try { return JSON.stringify(value) || '—' } catch (error) { return '—' }
+				}
+				return String(value).trim() || '—'
+			},
+			// Long notes and multiline parent names need a full row; short spreadsheet columns share two columns on phones.
+			mobileFieldColumns(field) {
+				const label = String(field?.label || '').toLocaleLowerCase('vi')
+				const value = String(field?.value || '')
+				if (value.includes('\n') || value.length > 36 || /ghi chú|cha mẹ|phụ huynh/.test(label)) return 12
+				return 6
+			},
+			// Use sentence case for phone labels while keeping the original uppercase spreadsheet headers on desktop.
+			mobileFieldLabel(label) {
+				const text = String(label || '').trim().toLocaleLowerCase('vi')
+				return text ? text.charAt(0).toLocaleUpperCase('vi') + text.slice(1) : ''
+			},
 			getStudentNames() {
 				return (this.students || [])
 					.map(row => row.HoTen || row.HoTenHocSinh || '')
@@ -288,7 +402,10 @@
 					this.destroySheet(card.key)
 					container.innerHTML = ''
 					if (typeof jspreadsheet !== 'function') return
-					const columns = this.getResponsiveColumns(card, container)
+					// Keep original desktop widths on phones; the sheet scrolls sideways instead of squeezing labels or dropping columns.
+					const columns = this.isMobileViewport
+						? (card.columns || []).map(column => ({ ...column }))
+						: this.getResponsiveColumns(card, container)
 
 					try {
 						this.sheetInstances[card.key] = soGvcnJspreadsheet.create(container, {
@@ -329,6 +446,12 @@
 				})
 			},
 			initAllSheets() {
+				if (this.isMobileViewport) {
+					this.destroyAllSheets()
+					;(this.organizationCards || []).forEach(card => this.$refs['mobileEditor_' + card.key]?.setRows?.(card.rows))
+					return
+				}
+				// Desktop keeps JSpreadsheet; the phone form retains the same row-array save contract.
 				;(this.organizationCards || []).forEach(card => this.initSheet(card))
 			},
 			findStudent(name) {
@@ -337,6 +460,9 @@
 					String(student.HoTen || student.HoTenHocSinh || '').trim() === cleanName) || {}
 			},
 			getLiveCardRows(card) {
+				if (this.isMobileViewport) {
+					return this.$refs['mobileEditor_' + card.key]?.getRows?.() || card.rows || []
+				}
 				const instance = this.sheetInstances[card.key]
 				const worksheet = Array.isArray(instance) ? instance[0] : instance
 				if (worksheet && typeof worksheet.closeEditor === 'function') {
@@ -372,6 +498,19 @@
 				worksheet.setValueFromCoords(1, rowIndex, student.MaHocSinh || student.HocSinhID || '', true)
 				worksheet.setValueFromCoords(2, rowIndex, student.SoDanhBo || '', true)
 				worksheet.setValueFromCoords(4, rowIndex, parent.names, true)
+			},
+			onMobileOrganizationCellChange(cardKey, change) {
+				const rows = Array.isArray(change.rows) ? change.rows : []
+				const card = this.organizationCards.find(item => item.key === cardKey)
+				if (card) card.rows = rows
+				if (Number(change?.columnIndex) !== 3) return
+				const row = rows[change.rowIndex]
+				if (!row) return
+				const student = this.findStudent(change.value)
+				row[1] = student.MaHocSinh || student.HocSinhID || ''
+				row[2] = student.SoDanhBo || ''
+				if (cardKey === 'ban-dai-dien-cmhs') row[4] = this.getParentSummary(student).names
+				this.$refs['mobileEditor_' + cardKey]?.setRows?.(rows)
 			},
 			sortGroupRows(rows) {
 				return (rows || []).sort((rowA, rowB) => {
@@ -410,7 +549,7 @@
 							STT: index + 1,
 							HSLopID: student.HSLopID || null,
 							HocSinhID: student.HocSinhID || null,
-							MaHocSinh: row[1] || student.MaHocSinh || student.HocSinhID || '',
+							MaHocSinh: student.MaHocSinh || student.HocSinhID || row[1] || '',
 							SoDanhBo: row[2] || student.SoDanhBo || '',
 							HocSinh: row[3] || '',
 							ChucVu: row[4] || '',
@@ -424,7 +563,7 @@
 							STT: index + 1,
 							HSLopID: student.HSLopID || null,
 							HocSinhID: student.HocSinhID || null,
-							MaHocSinh: row[1] || student.MaHocSinh || student.HocSinhID || '',
+							MaHocSinh: student.MaHocSinh || student.HocSinhID || row[1] || '',
 							SoDanhBo: row[2] || student.SoDanhBo || '',
 							HocSinh: row[3] || '',
 							ChaMe: row[4] || '',

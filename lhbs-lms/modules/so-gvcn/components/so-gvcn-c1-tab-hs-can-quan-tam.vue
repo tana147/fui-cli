@@ -4,9 +4,14 @@
 		<v-alert v-if="selectedLopID === '__ALL__'" type="info" variant="tonal" density="compact" class="ma-2">
 			Chọn một lớp ở thanh trên để theo dõi học sinh cần quan tâm.
 		</v-alert>
-		<div v-else class="w-100 h-100 overflow-hidden so-gvcn-sheet so-gvcn-sheet-wrap so-gvcn-hs-can-quan-tam-sheet" style="min-height: 0;">
+		<div v-else class="w-100 h-100 overflow-hidden so-gvcn-sheet so-gvcn-sheet-wrap so-gvcn-hs-can-quan-tam-sheet so-gvcn-c1-desktop-only" style="min-height: 0;">
 			<div ref="sheetRef" class="w-100 h-100 overflow-hidden" style="min-height: 0;"></div>
 		</div>
+		<!-- Mỗi học sinh là một phiếu nhập để các mốc theo dõi không bị nén thành bảng ngang. -->
+		<uc-so-gvcn-mobile-sheet-editor v-if="selectedLopID !== '__ALL__'" ref="mobileEditorRef"
+			class="so-gvcn-c1-mobile-editor flex-column flex-grow-1" :rows="mobileEditorRows" :columns="columns"
+			:title-index="2" :subtitle-indices="[0, 1]" :searchable="true" empty-title="Học sinh"
+			empty-text="Chưa có học sinh trong lớp này." />
 	</v-card-text>
 </template>
 
@@ -26,6 +31,8 @@
 		data() {
 			return {
 				timer: null,
+				isMobileViewport: false,
+				pendingRows: null,
 				columns: [
 					{ title: 'MÃ HỌC SINH', width: 120, readOnly: true },
 					{ title: 'SỐ DANH BỘ', width: 120, readOnly: true },
@@ -72,13 +79,17 @@
 			}
 		},
 		mounted() {
+			this.isMobileViewport = window.matchMedia('(max-width: 959.98px)').matches
+			window.addEventListener('resize', this.onWindowResize)
 			this.scheduleInit()
 		},
 		beforeUnmount() {
+			window.removeEventListener('resize', this.onWindowResize)
 			if (this.timer) clearTimeout(this.timer)
 			this.destroySheet()
 		},
 		computed: {
+			mobileEditorRows() { return this.buildRows() },
 			nestedHeaders() {
 				return [
 					[
@@ -91,6 +102,29 @@
 			}
 		},
 		methods: {
+			onWindowResize() {
+				const nextIsMobile = window.matchMedia('(max-width: 959.98px)').matches
+				if (nextIsMobile === this.isMobileViewport) return
+				const rows = this.getRows()
+				this.pendingRows = rows
+				this.isMobileViewport = nextIsMobile
+				this.$nextTick(() => {
+					if (nextIsMobile) this.$refs.mobileEditorRef?.setRows?.(rows)
+					this.initSheet()
+				})
+			},
+			// Avoid rendering JavaScript's default "[object Object]" if a cell value is structured data.
+			displayMobileValue(value) {
+				if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) return '—'
+				if (Array.isArray(value)) {
+					const items = value.map(item => this.displayMobileValue(item)).filter(item => item !== '—')
+					return items.length ? items.join(', ') : '—'
+				}
+				if (typeof value === 'object') {
+					try { return JSON.stringify(value) || '—' } catch (error) { return '—' }
+				}
+				return String(value)
+			},
 			// Bảng theo dõi có thể rất rộng; chỉ giới hạn chiều cao theo số dòng và viewport,
 			// để phần rộng/dài còn lại cuộn trong JSpreadsheet.
 			getContentTableHeight(container, rowCount, nestedHeaderCount = 0) {
@@ -109,6 +143,7 @@
 				return this.instance
 			},
 			getRows() {
+				if (this.isMobileViewport) return this.$refs.mobileEditorRef?.getRows?.() || this.buildRows()
 				const sheet = Array.isArray(this.instance) ? this.instance[0] : this.instance
 				return sheet && typeof sheet.getData === 'function' ? sheet.getData() : []
 			},
@@ -164,13 +199,21 @@
 					this.destroySheet()
 					return
 				}
+				if (this.isMobileViewport) {
+					this.destroySheet()
+					const rows = this.pendingRows || this.$refs.mobileEditorRef?.getRows?.() || this.buildRows()
+					this.pendingRows = null
+					this.$nextTick(() => this.$refs.mobileEditorRef?.setRows?.(rows))
+					return
+				}
 				const container = this.$refs.sheetRef
 				if (!container) return
 
 				this.destroySheet()
 				container.innerHTML = ''
 				if (typeof jspreadsheet !== 'function') return
-				const data = this.buildRows()
+				const data = this.pendingRows || this.buildRows()
+				this.pendingRows = null
 
 				this.instance = soGvcnJspreadsheet.create(container, {
 					worksheets: [{

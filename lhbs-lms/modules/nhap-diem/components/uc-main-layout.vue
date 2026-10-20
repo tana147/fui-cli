@@ -32,7 +32,8 @@
 
 					<!-- Chưa khóa hết -->
 					<div v-else class="d-flex flex-wrap ga-2 align-center">
-						<v-tooltip v-for="cotDiem in displayColumns.slice(0, 5)" :key="cotDiem.value"
+						<!-- Chỉ giữ bốn chip đầu ở hàng tiêu đề; các cột còn lại nằm trong menu để hàng không quá chật. -->
+						<v-tooltip v-for="cotDiem in displayColumns.slice(0, 4)" :key="cotDiem.value"
 							:text="isColumnReadyToLock(cotDiem.value) ? (isEn ? 'All grades entered — ready to lock!' : 'Đã nhập đủ điểm — sẵn sàng khóa!') : ''"
 							:disabled="!isColumnReadyToLock(cotDiem.value)" location="bottom">
 							<template v-slot:activator="{ props: tooltipProps }">
@@ -50,19 +51,19 @@
 							</template>
 						</v-tooltip>
 
-						<v-menu v-if="displayColumns.length > 5" offset-y>
+						<v-menu v-if="displayColumns.length > 4" offset-y>
 							<template v-slot:activator="{ props }">
 								<v-chip v-bind="props"
-									:color="displayColumns.slice(5).some(c => isColumnReadyToLock(c.value)) ? 'warning' : 'grey-lighten-1'"
-									:variant="displayColumns.slice(5).some(c => isColumnReadyToLock(c.value)) ? 'tonal' : 'outlined'"
+									:color="displayColumns.slice(4).some(c => isColumnReadyToLock(c.value)) ? 'warning' : 'grey-lighten-1'"
+									:variant="displayColumns.slice(4).some(c => isColumnReadyToLock(c.value)) ? 'tonal' : 'outlined'"
 									size="small" label>
-									+{{ displayColumns.length - 5 }} {{ isEn ? 'other columns' : 'cột khác' }}
-									<v-icon v-if="displayColumns.slice(5).some(c => isColumnReadyToLock(c.value))" end
+									+{{ displayColumns.length - 4 }} {{ isEn ? 'other columns' : 'cột khác' }}
+									<v-icon v-if="displayColumns.slice(4).some(c => isColumnReadyToLock(c.value))" end
 										size="x-small">mdi-lock-clock</v-icon>
 								</v-chip>
 							</template>
 							<v-list density="compact" max-height="300" class="overflow-y-auto">
-								<v-list-item v-for="cotDiem in displayColumns.slice(5)" :key="cotDiem.value">
+								<v-list-item v-for="cotDiem in displayColumns.slice(4)" :key="cotDiem.value">
 									<template v-slot:prepend>
 										<v-icon v-if="cotDiem.isLocked" size="small" start>mdi-lock</v-icon>
 										<v-icon v-else-if="isColumnReadyToLock(cotDiem.value)" size="small"
@@ -230,6 +231,18 @@
 							<template v-else>
 								Comment <b>(màu đỏ)</b> là ô điểm do <b>Giáo viên khác</b> nhập
 							</template>
+							<span class="ml-4">
+								<v-icon color="deep-purple">mdi-history</v-icon>
+								{{ isEn ? 'History icon means this cell has grade history' : 'Biểu tượng lịch sử là ô đã có lịch sử chỉnh sửa' }}
+							</span>
+						</div>
+					</v-alert>
+					<v-alert v-if="formulaMismatchCells.length" type="warning" variant="tonal" density="compact"
+						style="width: fit-content">
+						<div class="text-caption">
+							<b>{{ isEn ? 'Formula value differed at load' : 'Ô công thức lệch lúc tải bảng' }}</b>
+							— {{ isEn ? formulaMismatchCells.length + ' amber cell(s) had an initial sheet value different from the saved API value.' : formulaMismatchCells.length + ' ô nền cam có kết quả lúc tải bảng khác với giá trị API đã lưu.' }}
+							{{ isEn ? 'Hover over a cell to compare the initial values. Saving remains available.' : 'Di chuột vào ô để xem hai giá trị lúc tải; vẫn lưu bình thường.' }}
 						</div>
 					</v-alert>
 					<v-alert v-if="showStarConversionRule" type="info" variant="tonal" density="compact"
@@ -243,14 +256,21 @@
 
 			<!-- Jexcel Table -->
 			<v-card-text class="pa-0 fontSizeCustom" ref="tableWrapper">
+				<!-- Header công thức có DOM icon riêng; tooltip chỉ gắn với icon của cột công thức. -->
 				<uc-jexcel v-if="hasStudents" :key="keyComp" v-model="instance" v-model:dataSource="DSHocSinh"
 					class="hExcel" :freeze-columns="freezeColumns" :columns="headers" :comments="comments"
 					:styleSheet="styleSheet" :nestedHeaders="shouldShowNestedHeaders ? nestedHeaders : []"
-					:rootDataSource="DSHocSinh_API" @onChange="onChangeSheet" :filters="true"
+					:rootDataSource="DSHocSinh_API" @onChange="onChangeSheet" :context-menu="onGradeContextMenu" :filters="true"
 					:style="{ '--excel-max-height': excelMaxHeight }" />
 				<uc-card-empty v-else />
 			</v-card-text>
 		</v-card>
+
+		<!-- Tooltip thường chỉ hiện công thức khi người dùng rê hoặc bấm icon của cột công thức. -->
+		<v-tooltip v-model="formulaTooltipOpen" :activator="formulaTooltipActivator"
+			:open-on-click="false" :open-on-hover="false" location="top" max-width="560">
+			<div class="text-body-2 text-break">{{ formulaTooltipText }}</div>
+		</v-tooltip>
 
 		<!-- Dialog Khóa Cột Điểm -->
 		<v-dialog v-model="action.lockDialog.show" max-width="480" persistent>
@@ -599,7 +619,63 @@
 			</v-card>
 		</v-dialog>
 
-	</Global>
+			<!-- Dialog lịch sử điểm của đúng học sinh và cột điểm vừa chọn bằng chuột phải -->
+			<v-dialog v-model="action.gradeHistoryDialog.show" max-width="860" scrollable>
+				<v-card rounded="lg">
+					<!-- Giữ mã học sinh ngay tiêu đề để xác định đúng người khi xem lịch sử từ bảng nhiều dòng. -->
+					<v-card-title class="d-flex align-center ga-2 pt-4 pb-2 px-4">
+						<v-icon color="primary" size="22">mdi-history</v-icon>
+						<div>
+							<div class="text-body-1 font-weight-bold">{{ isEn ? 'Grade history' : 'Lịch sử điểm' }}</div>
+							<div class="text-caption text-medium-emphasis d-flex align-center flex-wrap ga-1">
+								<span>{{ action.gradeHistoryDialog.studentName }}</span>
+								<span>·</span>
+								<span>{{ isEn ? 'Student ID: ' : 'Mã học sinh: ' }}{{ action.gradeHistoryDialog.studentId }}</span>
+								<span>·</span>
+								<span>{{ action.gradeHistoryDialog.columnTitle }}</span>
+							</div>
+						</div>
+				</v-card-title>
+				<v-divider />
+
+				<v-card-text class="pa-4">
+					<div v-if="action.gradeHistoryDialog.loading" class="d-flex justify-center py-6">
+						<v-progress-circular indeterminate color="primary" />
+					</div>
+					<v-alert v-else-if="action.gradeHistoryDialog.error" type="error" variant="tonal" density="compact">
+						{{ action.gradeHistoryDialog.error }}
+					</v-alert>
+					<v-alert v-else-if="action.gradeHistoryDialog.rows.length === 0" type="info" variant="tonal" density="compact">
+						{{ isEn ? 'This cell has no previous grade history.' : 'Ô điểm này chưa có lịch sử thay đổi.' }}
+					</v-alert>
+					<v-table v-else density="compact" hover>
+						<thead>
+							<tr>
+								<th>{{ isEn ? 'Time' : 'Thời gian' }}</th>
+										<th>{{ isEn ? 'Value' : 'Giá trị' }}</th>
+										<th>{{ isEn ? 'Entered by' : 'Người nhập' }}</th>
+							</tr>
+						</thead>
+						<tbody>
+											<tr v-for="(log, index) in action.gradeHistoryDialog.rows" :key="(log.KQHTID || 'log') + '_' + (log.NhapDiemTime || index) + '_' + index">
+												<td>{{ log.NhapDiemTime || log.UpdateTime || log.CreateTime || '-' }}</td>
+												<td>{{ log.KetQuaDanhGia_VI ?? '-' }}</td>
+												<td>{{ getHistoryUserLabel(log) }}</td>
+											</tr>
+						</tbody>
+					</v-table>
+				</v-card-text>
+
+				<v-divider />
+				<v-card-actions class="justify-end pa-3">
+					<v-btn variant="text" @click="action.gradeHistoryDialog.show = false">
+						{{ isEn ? 'Close' : 'Đóng' }}
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+
+		</Global>
 </template>
 
 <script>
@@ -645,12 +721,27 @@
 					show: false,
 					selectedLopIDs: [],
 					loading: false
+				},
+					gradeHistoryDialog: {
+						show: false,
+						loading: false,
+						studentName: '',
+						studentId: '',
+						columnTitle: '',
+					rows: [],
+					error: ''
 				}
 			},
 
 			aiWarnings: [],
 			aiCache: {},
 			aiRunCounts: {},
+			gradeHistoryCache: {},
+			gradeHistoryLoadId: 0,
+			// Cache danh mục giáo viên để dialog hiển thị họ tên kèm mã, không gọi API lặp lại cho từng dòng log.
+			teacherNameMap: {},
+			teacherNameMapLoaded: false,
+			teacherNameMapLoading: null,
 
 			filter: {
 				KhoiItem: null,
@@ -684,7 +775,13 @@
 			freezeColumns: 3,
 			comments: {},
 			styleSheet: {},
+			formulaMismatchCells: [],
+			formulaMismatchOriginalStyles: {},
 			instance: null,
+			formulaTooltipOpen: false,
+			formulaTooltipActivator: null,
+			formulaTooltipText: '',
+			formulaTooltipEventHandler: null,
 			keyComp: 0
 		};
 	},
@@ -794,9 +891,31 @@
 			return ['Theme_2', 'Theme_4', 'Theme_6', 'Theme_8'].includes(this.filter.MaNhomCotDiemItem.MaNhomCotDiem);
 		},
 
+		pendingSaveCells() {
+			const cells = [...this.editedCells];
+			const existingCoords = new Set(cells.map(cell => `${Number(cell.x)}:${Number(cell.y)}`));
+			// Giữ snapshot ban đầu để cảnh báo, nhưng lưu giá trị công thức mới nhất sau khi giáo viên sửa dữ liệu đầu vào.
+			this.formulaMismatchCells.forEach(mismatch => {
+				const x = Number(mismatch.columnIndex);
+				const y = Number(mismatch.rowIndex);
+				if (!Number.isInteger(x) || !Number.isInteger(y)) return;
+				const coord = `${x}:${y}`;
+				if (existingCoords.has(coord)) return;
+				existingCoords.add(coord);
+				cells.push({
+					x,
+					y,
+						value: mismatch.saveValue ?? mismatch.calculatedValue,
+					formulaMismatch: true,
+					studentId: mismatch.studentId,
+					columnCode: mismatch.columnCode
+				});
+			});
+			return cells;
+		},
+
 		changedCellCount() {
-			console.log("editedCells", this.editedCells);
-			return this.editedCells.length;
+			return this.pendingSaveCells.length;
 		},
 
 		textColumns() {
@@ -833,6 +952,12 @@
 			return this.action.aiResultDialog.title?.includes('AI') && 
 				this.aiWarnings?.some(w => w.type === 'spelling' && !w.applied);
 		},
+		hasBlockingDialog() {
+			const action = this.action;
+			return Boolean(action.isShowDialogMauNhanXet || action.aiResultDialog.show ||
+				action.aiColumnDialog.show || action.lockDialog.show || action.unlockDialog.show ||
+				action.exportDialog.show || action.gradeHistoryDialog.show);
+		},
 		filteredAiWarnings() {
 			if (!this.aiWarnings) return [];
 			if (this.action.aiResultDialog.title?.includes('giới hạn ký tự') && this.showOnlyLimitExceeded) {
@@ -843,6 +968,17 @@
 	},
 
 	watch: {
+		formulaTooltipOpen(isOpen) {
+			if (!isOpen) this.resetFormulaTooltipState();
+		},
+		hasBlockingDialog(isOpen) {
+			// Ẩn tooltip khi dialog nghiệp vụ mở để nội dung không phủ lên dialog.
+			if (isOpen) this.closeFormulaTooltip();
+		},
+		keyComp() {
+			// JExcel dựng lại header khi key đổi; chèn icon sau khi DOM của bảng mới sẵn sàng.
+			this.$nextTick(() => this.refreshFormulaHeaderIcons());
+		},
 		filter: {
 			handler(newFilter) {
 				if (!BangDiemService.filter.isValidFilter(newFilter)) {
@@ -867,9 +1003,30 @@
 		this._updateExcelHeight();
 		this._resizeObserver = new ResizeObserver(() => { this._updateExcelHeight(); });
 		this._resizeObserver.observe(this.$el);
+		const tableWrapper = this.$refs.tableWrapper?.$el || this.$refs.tableWrapper;
+		if (tableWrapper) {
+			this.formulaTooltipEventHandler = (event) => this.onFormulaHeaderTooltip(event);
+			tableWrapper.addEventListener('mouseover', this.formulaTooltipEventHandler);
+			tableWrapper.addEventListener('mouseout', this.formulaTooltipEventHandler);
+			tableWrapper.addEventListener('click', this.formulaTooltipEventHandler, true);
+			tableWrapper.addEventListener('keydown', this.formulaTooltipEventHandler, true);
+			tableWrapper.addEventListener('focusout', this.formulaTooltipEventHandler);
+		}
+		this.$nextTick(() => this.refreshFormulaHeaderIcons());
 	},
 
 	beforeUnmount() {
+		const tableWrapper = this.$refs.tableWrapper?.$el || this.$refs.tableWrapper;
+		if (tableWrapper && this.formulaTooltipEventHandler) {
+			tableWrapper.removeEventListener('mouseover', this.formulaTooltipEventHandler);
+			tableWrapper.removeEventListener('mouseout', this.formulaTooltipEventHandler);
+			tableWrapper.removeEventListener('click', this.formulaTooltipEventHandler, true);
+			tableWrapper.removeEventListener('keydown', this.formulaTooltipEventHandler, true);
+			tableWrapper.removeEventListener('focusout', this.formulaTooltipEventHandler);
+		}
+		this.formulaTooltipOpen = false;
+		this.formulaTooltipActivator = null;
+		this.formulaTooltipEventHandler = null;
 		if (this._resizeObserver) {
 			this._resizeObserver.disconnect();
 			this._resizeObserver = null;
@@ -877,6 +1034,88 @@
 	},
 
 	methods: {
+		// JExcel render title thành text; chèn icon sau khi bảng dựng xong và chỉ trên header có metadata của cột công thức.
+		refreshFormulaHeaderIcons() {
+			const tableWrapper = this.$refs.tableWrapper?.$el || this.$refs.tableWrapper;
+			if (!tableWrapper || !this.headers?.length) return;
+
+			this.headers.forEach((column, columnIndex) => {
+				const headerCells = Array.from(tableWrapper.querySelectorAll(
+					`thead td[data-x="${columnIndex}"]`
+				)).filter(cell => !cell.classList.contains('jss_column_filter'));
+				const headerCell = headerCells[headerCells.length - 1];
+				if (!headerCell) return;
+
+				let icon = headerCell.querySelector('[data-formula-tooltip]');
+				if (!column.formulaTooltipText) {
+					if (icon) icon.remove();
+					return;
+				}
+
+				if (!icon) {
+					icon = document.createElement('span');
+					icon.className = 'mdi mdi-information-outline ml-1';
+					icon.setAttribute('role', 'button');
+					icon.setAttribute('tabindex', '0');
+					headerCell.appendChild(icon);
+				}
+				icon.setAttribute('aria-label', column.formulaTooltipText);
+				icon.setAttribute('data-formula-tooltip', column.formulaTooltipText);
+			});
+		},
+
+		onFormulaHeaderTooltip(event) {
+			const icon = event.target?.closest?.('[data-formula-tooltip]');
+			const tableWrapper = this.$refs.tableWrapper?.$el || this.$refs.tableWrapper;
+			if (event.type === 'mouseout') {
+				if (icon && !icon.contains(event.relatedTarget) && this.formulaTooltipActivator === icon) {
+					this.closeFormulaTooltip();
+				}
+				return;
+			}
+			if (event.type === 'focusout') {
+				if (icon && !icon.contains(event.relatedTarget) && this.formulaTooltipActivator === icon) {
+					this.closeFormulaTooltip();
+				}
+				return;
+			}
+			if (!icon || !tableWrapper?.contains(icon)) {
+				if (event.type === 'click' && this.formulaTooltipOpen) this.closeFormulaTooltip();
+				return;
+			}
+			if (event.type === 'mouseover' && icon.contains(event.relatedTarget)) return;
+			if (event.type === 'keydown' && !['Enter', ' '].includes(event.key)) return;
+			if (event.type === 'mouseover') {
+				this.openFormulaTooltip(icon);
+				return;
+			}
+			if (event.type === 'click' || event.type === 'keydown') {
+				event.preventDefault();
+				event.stopPropagation();
+				// Click chỉ mở tooltip; để pointer leave/focusout hoặc click ngoài bảng đóng nó.
+				if (!this.formulaTooltipOpen || this.formulaTooltipActivator !== icon) {
+					this.openFormulaTooltip(icon);
+				}
+			}
+		},
+
+		openFormulaTooltip(icon) {
+			if (this.hasBlockingDialog) return;
+			this.formulaTooltipActivator = icon;
+			this.formulaTooltipText = icon.getAttribute('data-formula-tooltip') || '';
+			this.formulaTooltipOpen = true;
+		},
+
+		resetFormulaTooltipState() {
+			this.formulaTooltipActivator = null;
+			this.formulaTooltipText = '';
+		},
+
+		closeFormulaTooltip() {
+			this.formulaTooltipOpen = false;
+			this.resetFormulaTooltipState();
+		},
+
 		setLanguage(val) {
 			this.isEn = val;
 			if (this.$i18n) this.$i18n.locale = val ? 'en' : 'vi';
@@ -971,7 +1210,8 @@
 		},
 
 		async ensureSavedBeforeLock() {
-			if (!this.editedCells.length) return true;
+			const cellsToSave = this.pendingSaveCells;
+			if (!cellsToSave.length) return true;
 
 			const shouldSave = await this.confirmRef.value.show({
 				title: 'Bạn có muốn lưu dữ liệu trước khi khóa cột điểm không?'
@@ -981,7 +1221,7 @@
 
 			try {
 				const success = await BangDiemService.saveData(
-					this.editedCells, this.DSHocSinh, this.DSHocSinh_API,
+					cellsToSave, this.DSHocSinh, this.DSHocSinh_API,
 					this.freezeColumns, { ...this.filter, NienKhoa: this.vueData.NienKhoa },
 					this.instance, this.vueData
 				);
@@ -1017,6 +1257,15 @@
 				await BangDiemService.lock.lockColumns(selectedCols, this.filter);
 				if (nlpcIDList.length > 0) {
 					await BangDiemService.lock.lockNLPCColumns(this.filter, this.vueData, this.DSHocSinh_API);
+				}
+				// Dựng payload đồng bộ từ bảng sau khi khóa để log kiểm tra; request mark/lms_syncdiem vẫn được giữ comment.
+				try {
+					await BangDiemService.lock.logLmsSyncDiemParamsAfterLock(
+						selectedCols, this.filter, this.vueData, this.instance, this.headers, this.DSHocSinh_API
+					);
+				} catch (payloadError) {
+					// Payload preview không được làm hỏng thao tác khóa đã lưu thành công.
+					console.warn('[mark/lms_syncdiem] Không thể dựng payload xem trước:', payloadError);
 				}
 				this.showSnackbar(
 					nlpcIDList.length > 0
@@ -1087,12 +1336,16 @@
 		resetData() {
 			this.DSHocSinh_API = [];
 			this.DSHocSinh = [];
+			this.formulaMismatchCells = [];
+			this.formulaMismatchOriginalStyles = {};
 			this.headers = [];
 			this.nestedHeaders = [];
 			this.displayColumns = [];
 			this.keyComp++;
 			this.aiWarnings = [];
 			this.aiRunCounts = {};
+			this.gradeHistoryCache = {};
+			this.gradeHistoryLoadId++;
 		},
 
 		async onRefresh() {
@@ -1113,6 +1366,8 @@
 				// Reset kết quả kiểm tra AI khi làm mới bảng điểm
 				this.aiWarnings = [];
 				this.aiRunCounts = {};
+				this.gradeHistoryCache = {};
+				const historyLoadId = ++this.gradeHistoryLoadId;
 
 				// Auto-mark các ô có default value vào editedCells
 				const defaultCells = [];
@@ -1131,13 +1386,251 @@
 				this.editedCells = defaultCells;
 				this.checkSuggestLock();
 				this.keyComp++;
+
+				// Nạp log một lần cho cả lớp để đánh dấu các ô có lịch sử trước khi giáo viên mở chi tiết.
+				this.$nextTick(() => {
+					// Chụp một lần đối chiếu API với kết quả công thức ban đầu sau khi bảng JSpreadsheet tính xong.
+					setTimeout(() => {
+						if (historyLoadId === this.gradeHistoryLoadId) this.refreshFormulaMismatchMarkers();
+					}, 0);
+					this.loadGradeHistoryMarkers(result.students, result.apiData, historyLoadId);
+				});
 			} catch (error) {
 				console.error('onRefresh error:', error);
 				this.showSnackbar('Có lỗi xảy ra khi tải dữ liệu!', 'error');
 			}
 		},
 
-		onChangeSheet(options) {
+		getGradeHistoryCacheKey(studentId, cotDiemId) {
+			const filter = this.filter;
+			return [
+				this.vueData.NienKhoa,
+				filter.LopItem?.LopID,
+				filter.MonHocItem?.MonHocID,
+				cotDiemId,
+				studentId
+			].join('|');
+		},
+
+		// Log_Diem chỉ trả các bản ghi từ bảng log; có ít nhất một dòng nghĩa là ô điểm từng được chỉnh sửa.
+		hasGradeHistory(rows) {
+			return Array.isArray(rows) && rows.length > 0;
+		},
+
+		// Dùng pseudo-element cho icon để marker nằm trên màu nền nhưng không sửa nội dung ô công thức
+		// hoặc che tam giác comment đỏ ở góc trên bên phải.
+		markGradeHistoryCell(studentId, maCotDiem) {
+			const sheet = Array.isArray(this.instance) ? this.instance[0] : this.instance;
+			if (!sheet || typeof sheet.getValueFromCoords !== 'function') return;
+
+			const studentIdColumnIndex = this.headers.findIndex(item => item.name === 'HocSinhID');
+			const gradeColumnIndex = this.headers.findIndex(item => item.name === maCotDiem);
+			if (studentIdColumnIndex < 0 || gradeColumnIndex < 0 || typeof sheet.getData !== 'function') return;
+
+			const rows = sheet.getData();
+			const rowIndex = rows.findIndex((_, index) =>
+				String(sheet.getValueFromCoords(studentIdColumnIndex, index)) === String(studentId)
+			);
+			const spreadsheetApi = typeof jspreadsheet !== 'undefined' ? jspreadsheet : null;
+			if (rowIndex < 0 || !spreadsheetApi?.helpers?.getCellNameFromCoords) return;
+
+			const cellAddress = spreadsheetApi.helpers.getCellNameFromCoords(gradeColumnIndex, rowIndex);
+			const cell = typeof sheet.getCell === 'function'
+				? sheet.getCell(cellAddress)
+				: (typeof sheet.getCellFromCoords === 'function'
+					? sheet.getCellFromCoords(gradeColumnIndex, rowIndex)
+					: null);
+			if (cell?.classList) cell.classList.add('grade-history-cell');
+		},
+
+		async loadGradeHistoryMarkers(students, apiData, requestId) {
+			const filter = this.filter;
+			if (!Array.isArray(students) || students.length === 0) return;
+
+			try {
+				// SP nhận HocSinhID tùy chọn: bỏ tham số để lấy log cả lớp trong một request; HocSinhID vẫn dùng được cho màn hình cần tra từng em.
+				const response = await BangDiemService.api.getLogDiem({
+					NienKhoa: this.vueData.NienKhoa,
+					LopID: filter.LopItem?.LopID,
+					MonHocID: filter.MonHocItem?.MonHocID,
+					MaNhomCotDiem: filter.MaNhomCotDiemItem?.MaNhomCotDiem
+				});
+				if (requestId !== this.gradeHistoryLoadId) return;
+
+				const logRows = Array.isArray(response)
+					? response
+					: (Array.isArray(response?.Result) ? response.Result : []);
+				const logsByStudent = new Map();
+				logRows.forEach(log => {
+					const studentKey = String(log.HocSinhID);
+					if (!logsByStudent.has(studentKey)) logsByStudent.set(studentKey, []);
+					logsByStudent.get(studentKey).push(log);
+				});
+
+				const apiCellsByStudent = new Map();
+				apiData.forEach(apiCell => {
+					const studentKey = String(apiCell.HocSinhID);
+					if (!apiCellsByStudent.has(studentKey)) apiCellsByStudent.set(studentKey, []);
+					apiCellsByStudent.get(studentKey).push(apiCell);
+				});
+
+				students.forEach(student => {
+					const studentLogs = logsByStudent.get(String(student.HocSinhID)) || [];
+					const logsByColumn = studentLogs.reduce((map, log) => {
+						const key = String(log.CotDiemID);
+						if (!map[key]) map[key] = [];
+						map[key].push(log);
+						return map;
+					}, {});
+
+					(apiCellsByStudent.get(String(student.HocSinhID)) || []).forEach(apiCell => {
+						const rows = (logsByColumn[String(apiCell.CotDiemID)] || [])
+							.sort((left, right) => this.getHistoryTimeValue(right) - this.getHistoryTimeValue(left));
+						const cacheKey = this.getGradeHistoryCacheKey(student.HocSinhID, apiCell.CotDiemID);
+						this.gradeHistoryCache[cacheKey] = rows;
+
+						// API chỉ trả lịch sử; không còn trộn dòng điểm hiện tại nên một log là đủ bật icon.
+						if (this.hasGradeHistory(rows)) {
+							this.markGradeHistoryCell(student.HocSinhID, apiCell.MaCotDiem);
+						}
+					});
+				});
+			} catch (error) {
+				if (requestId === this.gradeHistoryLoadId) console.warn('loadGradeHistoryMarkers error:', error);
+			}
+		},
+
+		// JSpreadsheet gọi callback này khi người dùng mở context menu trên một ô.
+		// Chỉ giữ mục lịch sử; các lệnh mặc định như Copy/Delete/Paste/Edit comments không phù hợp với bảng nhập điểm.
+		onGradeContextMenu(instance, x, y, event) {
+			const columnIndex = Number(x);
+			const rowIndex = Number(y);
+			const header = this.headers[columnIndex];
+			const sheet = Array.isArray(instance) ? instance[0] : instance;
+			const studentIdColumnIndex = this.headers.findIndex(item => item.name === 'HocSinhID');
+			const studentId = studentIdColumnIndex >= 0 && typeof sheet?.getValueFromCoords === 'function'
+				? sheet.getValueFromCoords(studentIdColumnIndex, rowIndex)
+				: this.DSHocSinh[rowIndex]?.HocSinhID;
+			const student = this.DSHocSinh.find(item => String(item.HocSinhID) === String(studentId));
+
+			if (!header?.name || !student?.HocSinhID || columnIndex < this.freezeColumns) {
+				return [];
+			}
+
+			const apiCell = this.DSHocSinh_API.find(item =>
+				String(item.HocSinhID) === String(student.HocSinhID) && item.MaCotDiem === header.name
+			);
+
+			if (!apiCell) return [];
+
+			return [{
+				title: this.isEn ? 'View grade history' : 'Xem lịch sử điểm',
+				onclick: () => this.openGradeHistory(student, header, apiCell)
+			}];
+		},
+
+		// Tải log theo đúng học sinh + cột điểm, sau đó cache để các lần chuột phải tiếp theo không gọi API lặp lại.
+		async openGradeHistory(student, header, apiCell) {
+			const filter = this.filter;
+			const dialog = this.action.gradeHistoryDialog;
+			const cacheKey = this.getGradeHistoryCacheKey(student.HocSinhID, apiCell.CotDiemID);
+
+			dialog.studentName = student.HoVaTenHocSinh || student.HocSinhID;
+			dialog.studentId = student.HocSinhID || '';
+			dialog.columnTitle = header.displayTitle || header.title || header.name;
+			dialog.error = '';
+			dialog.rows = [];
+			dialog.show = true;
+
+			if (Object.prototype.hasOwnProperty.call(this.gradeHistoryCache, cacheKey)) {
+				this.ensureTeacherNameMap();
+				dialog.rows = this.gradeHistoryCache[cacheKey];
+				if (this.hasGradeHistory(dialog.rows)) {
+					this.markGradeHistoryCell(student.HocSinhID, header.name);
+				}
+				return;
+			}
+
+			dialog.loading = true;
+			try {
+				const response = await BangDiemService.api.getLogDiem({
+					NienKhoa: this.vueData.NienKhoa,
+					LopID: filter.LopItem?.LopID,
+					MonHocID: filter.MonHocItem?.MonHocID,
+					MaNhomCotDiem: filter.MaNhomCotDiemItem?.MaNhomCotDiem,
+					HocSinhID: student.HocSinhID
+				});
+				const logRows = Array.isArray(response)
+					? response
+					: (Array.isArray(response?.Result) ? response.Result : []);
+				const rows = logRows
+					.filter(log => String(log.CotDiemID) === String(apiCell.CotDiemID))
+					.sort((left, right) => this.getHistoryTimeValue(right) - this.getHistoryTimeValue(left));
+
+				this.gradeHistoryCache[cacheKey] = rows;
+				// Tải tên giáo viên sau khi có log; nếu endpoint danh mục lỗi thì vẫn giữ mã nhân viên làm fallback.
+				await this.ensureTeacherNameMap();
+				dialog.rows = rows;
+				// Truy vấn theo đúng học sinh là fallback để vẫn đánh dấu cell nếu lần nạp log toàn lớp bỏ sót cột công thức.
+				if (this.hasGradeHistory(rows)) {
+					this.markGradeHistoryCell(student.HocSinhID, header.name);
+				}
+			} catch (error) {
+				console.error('openGradeHistory error:', error);
+				dialog.error = this.isEn ? 'Unable to load grade history.' : 'Không thể tải lịch sử điểm.';
+			} finally {
+				dialog.loading = false;
+			}
+		},
+
+			getHistoryTimeValue(log) {
+				const raw = String(log?.NhapDiemTime || log?.UpdateTime || log?.CreateTime || '');
+				// API trả thêm mili-giây để các lần cập nhật sát nhau vẫn được sắp xếp đúng thứ tự.
+				const match = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,3}))?)?/);
+				if (match) {
+					const baseTime = new Date(`${match[3]}-${match[2]}-${match[1]}T${match[4] || '00'}:${match[5] || '00'}:${match[6] || '00'}`).getTime();
+					const milliseconds = Number(String(match[7] || '').padEnd(3, '0')) || 0;
+					return baseTime + milliseconds;
+				}
+				return Date.parse(raw) || 0;
+			},
+
+			async ensureTeacherNameMap() {
+				if (this.teacherNameMapLoaded) return this.teacherNameMap;
+				if (this.teacherNameMapLoading) return await this.teacherNameMapLoading;
+
+				this.teacherNameMapLoading = BangDiemService.api.getTeacherList()
+					.then(response => {
+						const teachers = Array.isArray(response)
+							? response
+							: (Array.isArray(response?.Result) ? response.Result : []);
+						this.teacherNameMap = teachers.reduce((map, teacher) => {
+							const teacherId = String(teacher?.GiaoVienID || '').trim();
+							const teacherName = String(teacher?.HoTenGV || '').trim();
+							if (teacherId && teacherName) map[teacherId] = teacherName;
+							return map;
+						}, {});
+						this.teacherNameMapLoaded = true;
+						this.teacherNameMapLoading = null;
+						return this.teacherNameMap;
+					})
+					.catch(error => {
+						console.warn('ensureTeacherNameMap error:', error);
+						this.teacherNameMapLoading = null;
+						return this.teacherNameMap;
+					});
+
+				return await this.teacherNameMapLoading;
+			},
+
+			getHistoryUserLabel(log) {
+				const userId = String(log?.NhapDiemUser || log?.UpdateUser || log?.CreateUser || '').trim();
+				if (!userId) return '-';
+				const teacherName = this.teacherNameMap[userId];
+				return teacherName ? teacherName + ' (' + userId + ')' : userId;
+			},
+
+			onChangeSheet(options) {
 			setTimeout(() => { this.processChange(options); }, 0);
 		},
 
@@ -1150,6 +1643,124 @@
 				updated[existingIndex] = { ...updated[existingIndex], value };
 				this.editedCells = updated;
 			}
+			// Giữ nguyên cảnh báo theo snapshot lúc tải; chỉ làm mới giá trị công thức sẽ gửi khi lưu.
+			this.refreshFormulaMismatchSaveValues();
+		},
+
+		clearFormulaMismatchMarkers() {
+			const sheet = Array.isArray(this.instance) ? this.instance[0] : this.instance;
+			Object.entries(this.formulaMismatchOriginalStyles).forEach(([address, original]) => {
+				if (typeof sheet?.setStyle === 'function') {
+					sheet.setStyle(address, 'background-color', original.backgroundColor);
+				}
+				const cell = typeof sheet?.getCell === 'function' ? sheet.getCell(address) : null;
+				if (!cell) return;
+				cell.style.backgroundColor = original.backgroundColor || '';
+				if (original.title == null) cell.removeAttribute('title');
+				else cell.setAttribute('title', original.title);
+			});
+			this.formulaMismatchOriginalStyles = {};
+			this.formulaMismatchCells = [];
+		},
+
+		// Chỉ tạo cảnh báo khi bảng vừa tải; không so sánh lại sau mỗi lần giáo viên nhập điểm.
+		refreshFormulaMismatchMarkers() {
+			const sheet = Array.isArray(this.instance) ? this.instance[0] : this.instance;
+			if (!sheet || !Array.isArray(this.DSHocSinh_API) || !this.DSHocSinh_API.length) return;
+
+			this.clearFormulaMismatchMarkers();
+			const studentIdColumn = this.headers.findIndex(column => column.name === 'HocSinhID');
+			if (studentIdColumn < 0 || typeof sheet.getData !== 'function') return;
+
+			// Dùng mã học sinh trong thứ tự dữ liệu hiện tại của sheet để không lệch ô khi bảng đã sắp xếp/lọc.
+			const rowIndexByStudentId = new Map();
+			sheet.getData().forEach((row, rowIndex) => {
+				const studentId = row?.[studentIdColumn] ?? sheet.getValueFromCoords?.(studentIdColumn, rowIndex);
+				if (studentId != null) rowIndexByStudentId.set(String(studentId), rowIndex);
+			});
+			const columnIndexByCode = new Map(this.headers.map((column, index) => [column.name, index]));
+			const mismatches = [];
+
+			this.DSHocSinh_API.forEach(apiCell => {
+				if (apiCell.LoaiCotDiem !== 'Công thức' && !apiCell.Formula) return;
+				const rowIndex = rowIndexByStudentId.get(String(apiCell.HocSinhID));
+				const columnIndex = columnIndexByCode.get(apiCell.MaCotDiem);
+				if (rowIndex == null || columnIndex == null) return;
+
+				const address = jspreadsheet.helpers.getCellNameFromCoords(columnIndex, rowIndex);
+				const formulaCell = sheet.records?.[rowIndex]?.[columnIndex];
+				const cell = formulaCell?.element || sheet.getCell?.(address);
+				// Lấy innerHTML từ record khi hàng đang nằm ngoài vùng render ảo; công thức vẫn có kết quả để đối chiếu.
+				const rawCalculatedValue = cell?.textContent ?? formulaCell?.innerHTML ?? '';
+				const calculatedValue = String(rawCalculatedValue).replace(/<[^>]*>/g, '').trim();
+				const savedValue = apiCell.KetQuaDanhGia_VI;
+				if ((!cell && !formulaCell) || !calculatedValue || /^#(REF!?|DIV\/0!?|VALUE!?|NAME\?|N\/A|NUM!?|NULL!?|ERROR!?)/i.test(calculatedValue)) return;
+
+				const savedNumber = savedValue === null || savedValue === undefined || String(savedValue).trim() === ''
+					? NaN : Number(savedValue);
+				const calculatedNumber = Number(calculatedValue);
+				const bothNumeric = Number.isFinite(savedNumber) && Number.isFinite(calculatedNumber);
+				const isDifferent = bothNumeric
+					? Math.abs(savedNumber - calculatedNumber) > 0.000001
+					: String(savedValue ?? '').trim() !== calculatedValue;
+				if (!isDifferent) return;
+
+				const configuredBackground = String(this.styleSheet[address] || '').match(/background-color\s*:\s*([^;]+)/i)?.[1]
+					|| this.headers[columnIndex]?.backGroundColor
+					|| '';
+				this.formulaMismatchOriginalStyles[address] = {
+					backgroundColor: cell?.style?.backgroundColor || configuredBackground,
+					title: cell?.getAttribute?.('title') ?? null
+				};
+				// Tô màu cam để phân biệt giá trị công thức hiển thị với giá trị API đang lưu; không khóa thao tác lưu.
+				if (typeof sheet.setStyle === 'function') sheet.setStyle(address, 'background-color', '#ffe0a3');
+				if (cell?.style) cell.style.backgroundColor = '#ffe0a3';
+				const detail = `${this.isEn ? 'Saved API value' : 'Giá trị API đã lưu'}: ${savedValue ?? '(trống)'} | ${this.isEn ? 'initial sheet value' : 'bảng tính lúc tải'}: ${calculatedValue}`;
+				const originalTitle = this.formulaMismatchOriginalStyles[address].title;
+				if (cell?.setAttribute) cell.setAttribute('title', originalTitle ? `${originalTitle}\n${detail}` : detail);
+				mismatches.push({
+					address,
+					studentId: apiCell.HocSinhID,
+					columnCode: apiCell.MaCotDiem,
+					rowIndex,
+					columnIndex,
+					savedValue,
+					calculatedValue
+				});
+			});
+
+			this.formulaMismatchCells = mismatches;
+		},
+
+		// Giữ snapshot cảnh báo cố định, nhưng dùng kết quả công thức hiện tại khi giáo viên lưu điểm.
+		refreshFormulaMismatchSaveValues() {
+			const sheet = Array.isArray(this.instance) ? this.instance[0] : this.instance;
+			if (!sheet || !this.formulaMismatchCells.length || typeof sheet.getData !== 'function') return;
+
+			const studentIdColumn = this.headers.findIndex(column => column.name === 'HocSinhID');
+			if (studentIdColumn < 0) return;
+
+			const rowIndexByStudentId = new Map();
+			sheet.getData().forEach((row, rowIndex) => {
+				const studentId = row?.[studentIdColumn] ?? sheet.getValueFromCoords?.(studentIdColumn, rowIndex);
+				if (studentId != null) rowIndexByStudentId.set(String(studentId), rowIndex);
+			});
+			const columnIndexByCode = new Map(this.headers.map((column, index) => [column.name, index]));
+
+			this.formulaMismatchCells = this.formulaMismatchCells.map(mismatch => {
+				const rowIndex = rowIndexByStudentId.get(String(mismatch.studentId));
+				const columnIndex = columnIndexByCode.get(mismatch.columnCode);
+				if (rowIndex == null || columnIndex == null) return mismatch;
+
+				const formulaCell = sheet.records?.[rowIndex]?.[columnIndex];
+				const cellAddress = jspreadsheet.helpers.getCellNameFromCoords(columnIndex, rowIndex);
+				const cell = formulaCell?.element || sheet.getCell?.(cellAddress);
+				if (!cell && !formulaCell) return mismatch;
+
+				const rawValue = cell?.textContent ?? formulaCell?.innerHTML ?? '';
+				const saveValue = String(rawValue).replace(/<[^>]*>/g, '').trim();
+				return { ...mismatch, rowIndex, columnIndex, saveValue };
+			});
 		},
 
 		// ============================================================
@@ -1158,8 +1769,9 @@
 
 		async onLuuTam() {
 			try {
+				const cellsToSave = this.pendingSaveCells;
 				const success = await BangDiemService.saveData(
-					this.editedCells, this.DSHocSinh, this.DSHocSinh_API,
+					cellsToSave, this.DSHocSinh, this.DSHocSinh_API,
 					this.freezeColumns, { ...this.filter, NienKhoa: this.vueData.NienKhoa },
 					this.instance, this.vueData
 				);
@@ -1200,8 +1812,9 @@
 
 		async onGuiBGH() {
 			try {
+				const cellsToSave = this.pendingSaveCells;
 				const success = await BangDiemService.saveData(
-					this.editedCells, this.DSHocSinh, this.DSHocSinh_API,
+					cellsToSave, this.DSHocSinh, this.DSHocSinh_API,
 					this.freezeColumns, { ...this.filter, NienKhoa: this.vueData.NienKhoa },
 					this.instance, this.vueData
 				);

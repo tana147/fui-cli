@@ -66,7 +66,11 @@
 				res => {
 					console.log('res', res.data)
 					if (vueData.HocSinhSelected.CapID === 1) {
-						this.DSNhomDiem = res.data
+						// Cấp 1 có tab Học kỳ riêng; chỉ giữ nhóm Theme/Topic ở đây để không lặp điểm giữa/cuối kỳ.
+						this.DSNhomDiem = (res.data || []).filter(item => {
+							const maNhomCotDiem = String(item.MaNhomCotDiem || '')
+							return maNhomCotDiem.indexOf('Theme_') === 0 || maNhomCotDiem.indexOf('Topic_') === 0
+						})
 					} else {
 						const ListMaNhomCotDiem = ['S1_Mid', 'S1_Final', 'S2_Mid', 'S2_Final']
 						this.DSNhomDiem = res.data

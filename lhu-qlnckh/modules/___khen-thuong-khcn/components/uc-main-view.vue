@@ -9,8 +9,8 @@
 					<v-btn icon color="success" class="mr-2" @click="onExportExcel" title="Xuất file Excel">
 						<v-icon>mdi-microsoft-excel</v-icon>
 					</v-btn>
-					<v-text-field v-model="search" class="c-underline-search mr-3" prepend-inner-icon="mdi-magnify"
-						label="Tìm kiếm nhanh..." dense hide-details single-line clearable style="max-width: 250px;"></v-text-field>
+					<v-text-field v-model="search" class="c-underline-search mr-3 article-search-input" prepend-inner-icon="mdi-magnify"
+						label="Tìm kiếm nhanh..." dense hide-details single-line clearable></v-text-field>
 					<v-btn color="primary" small elevation="0" @click="openAdd">
 						<v-icon left small>mdi-plus</v-icon>Thêm đề xuất
 					</v-btn>
@@ -42,12 +42,20 @@
 
 					<template v-slot:item.actions="{ item }">
 						<div class="d-flex align-center justify-center">
-							<v-icon small color="green darken-2" class="mr-2" title="Chỉnh sửa"
+							<v-icon
+								small
+								:color="item.TrangThai === 2 || item.TrangThai === 3 ? 'primary' : 'green darken-2'"
+								class="mr-2"
+								:title="item.TrangThai === 2 || item.TrangThai === 3 ? 'Xem chi tiết' : 'Chỉnh sửa'"
 								@click="editItem(item)">
-								mdi-square-edit-outline
+								{{ item.TrangThai === 2 || item.TrangThai === 3 ? 'mdi-eye-outline' : 'mdi-square-edit-outline' }}
 							</v-icon>
-							<v-icon v-if="item.TrangThai === 1 || item.TrangThai === 2 || item.TrangThai === 4"
-								small color="red darken-3" title="Xóa đề xuất" @click="deleteItem(item)">
+							<v-icon
+								v-if="item.TrangThai === 1 || item.TrangThai === 4"
+								small
+								color="red darken-3"
+								title="Xóa đề xuất"
+								@click="deleteItem(item)">
 								mdi-trash-can-outline
 							</v-icon>
 						</div>

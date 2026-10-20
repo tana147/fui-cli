@@ -1573,6 +1573,33 @@
         },
         getDocumentIcon(item) { return { 'Video tương tác': 'mdi-timeline-text-outline', Video: 'mdi-play-circle-outline', Audio: 'mdi-volume-high', 'Hình ảnh': 'mdi-image-outline', HTML: 'mdi-language-html5', ISPRING_CONTENT: 'mdi-play-box-multiple' }[this.getDocumentType(item)] || 'mdi-file-document-outline' },
         getDocumentColor(item) { return { 'Video tương tác': 'deep-purple', Video: 'deep-purple', Audio: 'teal', 'Hình ảnh': 'orange', HTML: 'amber', ISPRING_CONTENT: 'purple' }[this.getDocumentType(item)] || 'primary' },
+        // Chuyển metadata media của Content Hub sang giây để module soạn bài có thể tự tính và lưu thời lượng dự kiến.
+        getDocumentDurationSeconds(item, meta) {
+            const metadataObjects = [meta, meta?.metadata, meta?.mediaMetadata, item].filter(Boolean)
+            const durationKeys = ['durationSeconds', 'DurationSeconds', 'mediaDurationSeconds', 'MediaDurationSeconds', 'duration', 'Duration', 'lengthSeconds', 'LengthSeconds']
+            for (const metadata of metadataObjects) {
+                for (const key of durationKeys) {
+                    const value = metadata[key]
+                    if (value === null || value === undefined || value === '') continue
+                    const numericValue = Number(value)
+                    if (Number.isFinite(numericValue) && numericValue > 0) return Math.round(numericValue)
+                    const valueText = String(value).trim()
+                    const isoMatch = valueText.match(/^PT(?:(\d+(?:\.\d+)?)H)?(?:(\d+(?:\.\d+)?)M)?(?:(\d+(?:\.\d+)?)S)?$/i)
+                    if (isoMatch) {
+                        const total = Number(isoMatch[1] || 0) * 3600 + Number(isoMatch[2] || 0) * 60 + Number(isoMatch[3] || 0)
+                        if (total > 0) return Math.round(total)
+                    }
+                    const clockMatch = valueText.match(/^(?:(\d+):)?([0-5]?\d):([0-5]\d)$/)
+                    if (clockMatch) {
+                        const total = Number(clockMatch[1] || 0) * 3600 + Number(clockMatch[2]) * 60 + Number(clockMatch[3])
+                        if (total > 0) return total
+                    }
+                }
+                const milliseconds = Number(metadata.durationMilliseconds || metadata.DurationMilliseconds || metadata.durationMs || metadata.DurationMs)
+                if (Number.isFinite(milliseconds) && milliseconds > 0) return Math.round(milliseconds / 1000)
+            }
+            return null
+        },
         parseDocument(item) {
             const meta = this.getDocumentMeta(item)
             const rawSource = this.getRawDocumentSource(item)
@@ -1585,8 +1612,10 @@
             const source = ['Audio', 'Hình ảnh'].includes(documentType)
                 ? (directSource || this.normalizeDirectFileSource(rawSource))
                 : (documentType === 'HTML' ? (htmlContent || viewerSource || rawSource) : (viewerSource || rawSource))
-            const audioUrl = this.getAudioSourceFromHtml(item)
-            return {
+			const audioUrl = this.getAudioSourceFromHtml(item)
+			// Content Hub có thể lưu phần thuyết minh riêng với file ảnh; giữ về textContent để form Soạn học liệu hiển thị ở editor riêng.
+			const textContent = meta.textContent || meta.description || meta.moTa || item?.textContent || item?.NoiDung || item?.MoTa || item?.Description || ''
+			return {
                 id: meta.fileId || meta.FILE_ID || item.NoiDungID,
                 name: this.getDocumentName(item),
                 url: source,
@@ -1597,6 +1626,7 @@
                 uploadSource: meta.uploadSource || '',
                 mediaSource: meta.uploadSource === 'db' || meta.storage ? 'db' : 'link',
                 fileSize: Number(meta.fileSize || meta.FILE_SIZE || 0),
+                durationSeconds: this.getDocumentDurationSeconds(item, meta),
                 contentType: meta.contentType || item.LoaiNoiDung || '',
                 // Dùng mã loại ổn định để module nhận biết IMAGE/AUDIO dù label hiển thị có dấu hoặc được dịch.
                 mediaType: typeCode,
@@ -1604,8 +1634,9 @@
                 // Giữ riêng iSpringURL/GUID để module Soạn và viewer mở đúng iframe, không chỉ có URL fallback.
                 iSpringURL: meta.iSpringURL || (documentType === 'ISPRING_CONTENT' ? source : ''),
                 iSpringGUID: meta.iSpringGUID || meta.ISPRING_GUID || '',
-                audioUrl,
-                htmlContent,
+				audioUrl,
+				htmlContent,
+				textContent,
                 // Giữ timerMarkers để module mới hiểu đúng nhóm mốc; interactions phẳng để module cũ vẫn phát/chấm được.
                 interactive: meta.interactive === true,
                 timerMarkers: JSON.parse(JSON.stringify(this.getInteractiveTimerMarkers(item))),

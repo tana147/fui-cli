@@ -701,6 +701,29 @@
 					return
 				}
 
+				// Kiểm tra trùng lặp StudentID hoặc (MaHoSo + NienKhoa) trong danh sách import
+				const seenStudentId = {}
+				const seenMaHoSo = {}
+				for (let i = 0; i < validList.length; i++) {
+					const item = validList[i]
+					const rowNum = i + 1
+
+					if (seenStudentId[item.StudentID]) {
+						Vue.$toast.error(`Mã học viên "${item.StudentID}" bị trùng lặp ở dòng ${seenStudentId[item.StudentID]} và dòng ${rowNum}. Vui lòng sửa lại!`, { position: "top" })
+						return
+					}
+					seenStudentId[item.StudentID] = rowNum
+
+					if (item.MaHoSo) {
+						const hsKey = `${item.MaHoSo.toLowerCase()}__${item.NienKhoa}`
+						if (seenMaHoSo[hsKey]) {
+							Vue.$toast.error(`Mã hồ sơ "${item.MaHoSo}" bị trùng lặp trong niên khóa "${item.NienKhoa}" ở dòng ${seenMaHoSo[hsKey]} và dòng ${rowNum}. Vui lòng sửa lại!`, { position: "top" })
+							return
+						}
+						seenMaHoSo[hsKey] = rowNum
+					}
+				}
+
 				this.saving = true
 				try {
 					await ajaxCALLPromise("/Student_INS_obj", {

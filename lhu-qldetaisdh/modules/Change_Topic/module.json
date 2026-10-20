@@ -4,19 +4,20 @@
       "id": "id",
       "fullflow": "",
       "rootflow": "",
-      "Panel": null
+      "Panel": null,
+      "studentId": "new URLSearchParams(window.location.search).get('studentId') || new URLSearchParams(window.location.search).get('StudentID') || (window.vueData?.user?.UserID || '')"
     },
     {
       "API": "/Student_Process_Change_Get",
       "IN": {
-        "Student_ID": "vueData.user.UserID",
+        "Student_ID": "vueData.studentId || vueData.user.UserID",
         "Process_Action": 2
       },
       "OUT": "StudentProcess",
       "CALLBACK": {
         "API": "/Get_RootFlow",
         "IN": {
-          "StudentID": "vueData.user.UserID",
+          "StudentID": "vueData.studentId || vueData.user.UserID",
           "Process_Student_ID": "vueData.StudentProcess.length > 0 ? vueData.StudentProcess[0].Process_Student_ID : 0",
           "Process_Tree": "2"
         },

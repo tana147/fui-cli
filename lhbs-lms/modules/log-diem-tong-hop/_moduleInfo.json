@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/log-diem-tong-hop",
+  "url": "//lms.lhbs.vn/log-diem-tong-hop",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "log-diem-tong-hop",
+  "ModuleName": "Lịch sử nhập điểm",
+  "UpdateTime": "2026-10-12 16:04:40",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-14",
+  "LoadCount": 36,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

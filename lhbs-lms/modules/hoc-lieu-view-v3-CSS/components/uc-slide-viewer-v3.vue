@@ -350,9 +350,10 @@
 				<div v-if="slideData.content.slideType === 'PDF'" class="lh-pdf-book-container">
 					<uc-office-reader :file-url="slideData.content.url" />
 				</div>
-				<!-- 2. Render Office Reader -->
-				<div v-else-if="slideData.content.slideType === 'DOCX'" class="lh-pdf-book-container">
-					<uc-office-reader :file-url="slideData.content.url" />
+				<!-- 2. Render Office Reader cho cả DOC và DOCX -->
+				<!-- File Word phải dùng cùng viewer Office, không rơi vào trạng thái chưa hỗ trợ. -->
+				<div v-else-if="['DOC', 'DOCX'].includes(String(slideData.content.slideType).toUpperCase())" class="lh-pdf-book-container">
+					<uc-office-reader :file-url="slideData.content.url" :file-type="String(slideData.content.slideType).toUpperCase()" />
 				</div>
 				<div v-else-if="slideData.content.slideType === 'PPT' || slideData.content.slideType === 'PPTX'" class="lh-pdf-book-container">
 					<uc-office-reader :file-url="slideData.content.url" file-type="PPT" />

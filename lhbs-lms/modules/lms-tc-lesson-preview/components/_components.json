@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "comID": 12418,
+    "comName": "uc-lesson-canvas"
+  },
+  {
+    "comID": 12419,
+    "comName": "uc-lesson-preview-viewer"
+  },
+  {
+    "comID": 12417,
+    "comName": "uc-media-player"
+  },
+  {
+    "comID": 12416,
+    "comName": "uc-slide-viewer-v3"
+  }
+]

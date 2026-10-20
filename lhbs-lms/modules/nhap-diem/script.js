@@ -82,6 +82,14 @@ const ApiService = {
     async fetchBangDiem(action, params) {
         return await ajaxCALLPromise(action, params);
     },
+    /** Lấy lịch sử thay đổi điểm của cả lớp hoặc riêng một học sinh nếu truyền HocSinhID */
+    async getLogDiem(params) {
+        return await ajaxCALLPromise("lms/Log_Diem", params);
+    },
+    /** Lấy danh mục giáo viên để đổi mã người nhập trong lịch sử thành họ tên dễ đọc. */
+    async getTeacherList() {
+        return await ajaxCALLPromise("lms/GiaoVien_Get");
+    },
     /** Lưu dữ liệu điểm */
     async saveGradeData(params) {
         return await ajaxCALLPromise("lms/KQHT_MonHocLop_Ins", params);
@@ -116,6 +124,11 @@ const ApiService = {
     async toggleKhoaCotDiem(params) {
         return await ajaxCALLPromise("lms/KhoaCotDiem_Ins_And_Upd", params);
     },
+    // Giữ helper gọi mark/lms_syncdiem ở comment trong lúc kiểm tra payload.
+//     /** Đẩy dữ liệu điểm LMS sang QLDiem sau khi khóa cột điểm. */
+//     async syncDiemToQLDiem(params) {
+//         return await ajaxCALLPromise("mark/lms_syncdiem", params);
+//     },
     /** Cập nhật tình trạng khóa cột điểm theo KhoaCotDiemID */
     async updateKhoaCotDiemTinhTrang(params) {
         return await ajaxCALLPromise("lms/KhoaCotDiem_TinhTrang_Upd_ByKhoaCotDiem", params);
@@ -124,6 +137,27 @@ const ApiService = {
     async getSTEMConfig(params) {
         return await ajaxCALLPromise("lms/Config_STEM_Get", params);
     },
+};
+// STEM thay đổi cấu trúc theo từng niên khóa. Chỉ coi là luồng legacy khi
+// server thực sự trả về cấu hình Config_STEM đang bật cho niên khóa/khối đó;
+// thiếu cấu hình phải rơi về luồng template chuẩn, tránh dùng nhầm logic năm cũ.
+const StemModeService = {
+    normalizeConfigList(response) {
+        if (Array.isArray(response)) return response;
+        if (Array.isArray(response?.Result)) return response.Result;
+        return [];
+    },
+    isEnabled(value) {
+        return value === true || value === 1 || String(value ?? '').trim() === '1';
+    },
+    hasLegacyConfig(configList) {
+        return this.normalizeConfigList(configList).some(config => this.isEnabled(config?.Enable));
+    },
+    getConfigForSemester(configList, semester) {
+        return this.normalizeConfigList(configList).find(config =>
+            config?.HocKi === semester && this.isEnabled(config?.Enable)
+        );
+    }
 };
 // ==================== FILTER SERVICE ====================
 const FilterService = {
@@ -136,14 +170,11 @@ const FilterService = {
         if (monHocID === 5 && (maNhom?.includes('DiemCK') || maNhom?.includes('DiemGK'))) {
             return 'lms/HocSinhBangDiem_Get_ByThuTuNhom';
         }
-        // Môn 36 (STEM)
-        if (monHocID === CONSTANTS.SUBJECT_IDS.STEM_36) {
-            const stemConfig = stemConfigList.find(c => c.HocKi === hocKi && c.Enable);
-            if (stemConfig) {
-                if (maNhom?.includes(stemConfig.HocKi_LayTongDiemChuDe)) {
-                    return 'lms/HocSinhBangDiem_STEM_CK_Get';
-                }
-            } else {
+        // Môn 36 (STEM): chỉ dùng endpoint legacy khi niên khóa có Config_STEM.
+        // STEM không có cấu hình (ví dụ template mới) dùng endpoint theo template như AI.
+        if (monHocID === CONSTANTS.SUBJECT_IDS.STEM_36 && StemModeService.hasLegacyConfig(stemConfigList)) {
+            const stemConfig = StemModeService.getConfigForSemester(stemConfigList, hocKi);
+            if (!stemConfig || maNhom?.includes(stemConfig.HocKi_LayTongDiemChuDe)) {
                 if (maNhom?.includes('DiemCK') || maNhom?.includes('DiemGK')) {
                     return 'lms/HocSinhBangDiem_STEM_CK_Get';
                 }
@@ -276,17 +307,64 @@ const DataProcessor = {
             "\ninstance", instance
         );
         const dataBeforeInsertToDB = [];
+        const sheet = Array.isArray(instance) ? instance[0] : instance;
+        const firstStudentId = DSHocSinh[0]?.HocSinhID;
+        const gradeColumns = DSHocSinh_API.filter(column =>
+            String(column.HocSinhID) === String(firstStudentId)
+        );
+        const manualEdits = editedCells.filter(cell => !cell.formulaMismatch);
+        const formulaMismatchByStudent = new Map();
+        editedCells.filter(cell => cell.formulaMismatch && cell.studentId != null && cell.columnCode)
+            .forEach(cell => {
+                const studentId = String(cell.studentId);
+                if (!formulaMismatchByStudent.has(studentId)) formulaMismatchByStudent.set(studentId, new Map());
+                formulaMismatchByStudent.get(studentId).set(String(cell.columnCode), cell);
+            });
+        const editedRows = new Set(manualEdits.map(cell => Number(cell.y)));
         for (let i = 0; i < DSHocSinh.length; i++) {
             const hocSinh = DSHocSinh[i];
-            for (let j = 0; j < DSHocSinh_API.length; j++) {
-                const exists = editedCells.find(cell => cell.x == j && cell.y == i);
-                if (!exists) continue;
-                const currentJ = j - freezeColumns;
-                const currentI = i;
-                const cotDiem = DSHocSinh_API[currentJ];
+            const hasManualEdits = editedRows.has(i);
+            const rowFormulaMismatches = formulaMismatchByStudent.get(String(hocSinh.HocSinhID));
+            if (!hasManualEdits && !rowFormulaMismatches?.size) continue;
+            for (let currentJ = 0; currentJ < gradeColumns.length; currentJ++) {
+                const cellX = currentJ + freezeColumns;
+                const exists = hasManualEdits && manualEdits.find(cell => Number(cell.x) === cellX && Number(cell.y) === i);
+                const cotDiem = gradeColumns[currentJ];
+                const isFormulaColumn = this.isFormulaColumn(cotDiem);
+                const formulaMismatch = rowFormulaMismatches?.get(String(cotDiem.MaCotDiem));
+                // Cột công thức chỉ được tính ở trình duyệt; API lưu không tự tính lại.
+                // Khi lưu một ô công thức lệch, gửi giá trị vừa tính của đúng học sinh/cột dù không có ô nhập tay nào đổi.
+                if (hasManualEdits) {
+                    if (!exists && !isFormulaColumn) continue;
+                } else if (!isFormulaColumn || !formulaMismatch) {
+                    continue;
+                }
                 let giaTriCotDiem = hocSinh[cotDiem.MaCotDiem];
-                if (cotDiem.LoaiCotDiem === CONSTANTS.FORMULA_COLUMN) {
-                    giaTriCotDiem = instance[0].records[exists.y][exists.x]?.element?.innerHTML;
+                if (isFormulaColumn) {
+                    if (formulaMismatch) {
+                        giaTriCotDiem = formulaMismatch.value;
+                    } else {
+                        const formulaCell = sheet?.records?.[i]?.[cellX]?.element;
+                        const renderedValue = formulaCell?.textContent;
+                        giaTriCotDiem = renderedValue == null
+                            ? formulaCell?.innerHTML
+                            : renderedValue.trim();
+                        giaTriCotDiem = giaTriCotDiem == null ? '' : giaTriCotDiem;
+                    }
+                    if (cotDiem.GiaTriCotDiem === CONSTANTS.COLUMN_TYPES.NUMBER && giaTriCotDiem !== '') {
+                        const numericValue = Number(giaTriCotDiem);
+                        const isFormulaError = /^#(REF!?|DIV\/0!?|VALUE!?|NAME\?|N\/A|NUM!?|NULL!?|ERROR!?)/i.test(String(giaTriCotDiem).trim());
+                        if (!Number.isFinite(numericValue) || isFormulaError) {
+                            const cellAddress = jspreadsheet.helpers.getCellNameFromCoords(cellX, i);
+                            sheet?.setStyle(cellAddress, 'background-color', 'red');
+                            Vue.$toast.error(
+                                `Công thức cột ${cotDiem.MaCotDiem} chưa cho ra giá trị hợp lệ, vui lòng kiểm tra dữ liệu đầu vào!`,
+                                { position: 'top' }
+                            );
+                            return undefined;
+                        }
+                        giaTriCotDiem = numericValue;
+                    }
                 }
                 if (cotDiem.GiaTriCotDiem === 'number') {
                     if (giaTriCotDiem === null || giaTriCotDiem === NaN || giaTriCotDiem === '') {
@@ -316,10 +394,8 @@ const DataProcessor = {
                     cotDiem.DiemMax
                 );
                 if (cotDiem_HS.IsError === 1) {
-                    // currentJ là index trong danh sách cột điểm, còn ô trên sheet
-                    // phải dùng đúng tọa độ x của editedCells (đã bao gồm freezeColumns).
-                    const cellAddress = jspreadsheet.helpers.getCellNameFromCoords(exists.x, currentI);
-                    instance[0].setStyle(cellAddress, 'background-color', 'red');
+                    const cellAddress = jspreadsheet.helpers.getCellNameFromCoords(cellX, i);
+                    sheet?.setStyle(cellAddress, 'background-color', 'red');
                     Vue.$toast.error(
                         `Cột điểm ${cotDiem.MaCotDiem} chỉ cho phép nhập thang điểm từ ${cotDiem.DiemMin} đến ${cotDiem.DiemMax}!`,
                         { position: 'top' }
@@ -388,13 +464,29 @@ const HeaderBuilder = {
         } else if (isNoPermission) {
             backGroundColor = column.HexBackground || '#f5f5f5';
         }
+        const isFormulaColumn = column.LoaiCotDiem === CONSTANTS.FORMULA_COLUMN;
+        const displayTitle = title;
+        let formulaTooltipText = '';
+        let formulaTooltipFormula = '';
+        if (isFormulaColumn) {
+            // Chừa chỗ cho icon thông tin và khoảng cách cạnh tên cột; các cột nhập tay giữ nguyên width.
+            width += 24;
+            const isEnglishLabel = isLanguage || isEnglish;
+            formulaTooltipFormula = column.Formula == null ? '' : String(column.Formula).trim();
+            formulaTooltipText = (isEnglishLabel ? 'Formula: ' : 'Công thức: ') +
+                (formulaTooltipFormula || (isEnglishLabel ? 'Not configured' : 'Chưa cấu hình'));
+        }
+        // JExcel hiển thị title như text, nên giữ title thuần và truyền metadata riêng để giao diện chèn icon DOM thật.
         const config = {
-            title, name: column.MaCotDiem, width,
+            title, displayTitle, name: column.MaCotDiem, width,
             typeValue: column.GiaTriCotDiem,
             type: this.mapValueTypeToJssType(column.GiaTriCotDiem),
             backGroundColor, wrap: true,
-            readOnly: column.LoaiCotDiem === CONSTANTS.FORMULA_COLUMN || isNoPermission || isDisabled || isLocked
+            readOnly: isFormulaColumn || isNoPermission || isDisabled || isLocked
         };
+        if (isFormulaColumn) {
+            config.formulaTooltipText = formulaTooltipText;
+        }
         return this.buildColumnByType(column.GiaTriCotDiem, config, column);
     },
     mapValueTypeToJssType(valueType) {
@@ -455,7 +547,7 @@ const HeaderBuilder = {
 // ==================== FORMULA PROCESSOR ====================
 const FormulaProcessor = {
     /** Xử lý cột có công thức */
-    processFormulaValue(column, allColumns, rowIndex, filter, headers, freezeColumns, isEnglish, vueData) {
+    processFormulaValue(column, allColumns, rowIndex, filter, headers, freezeColumns, isEnglish, vueData, isLegacyStem) {
         const { Formula, GiaTriCotDiem, KetQuaDanhGia_VI, MaCotDiem } = column;
         const groupCode = filter.MaNhomCotDiemItem?.MaNhomCotDiem;
         const columnsCotDiem = headers.filter(h => h.typeValue);
@@ -469,8 +561,8 @@ const FormulaProcessor = {
             return '=' + replaceFormula(columnsCotDiem, Formula, rowIndex, freezeColumns);
         }
         if (this.isCase_EnglishThemeResult(column, isEnglish, filter)) return KetQuaDanhGia_VI;
-        if (this.isCase_STEM_TongDiem(groupCode, MaCotDiem, filter.MonHocItem?.MonHocID)) return KetQuaDanhGia_VI;
-        if (this.isCase_STEM_DiemCK(groupCode, MaCotDiem, filter.MonHocItem?.MonHocID)) {
+        if (this.isCase_STEM_TongDiem(groupCode, MaCotDiem, filter.MonHocItem?.MonHocID, isLegacyStem)) return KetQuaDanhGia_VI;
+        if (this.isCase_STEM_DiemCK(groupCode, MaCotDiem, filter.MonHocItem?.MonHocID, isLegacyStem)) {
             const expandedFormula = this.expandRangeInFormula(Formula, allColumns);
             return '=' + replaceFormula(columnsCotDiem, expandedFormula, rowIndex, freezeColumns);
         }
@@ -495,13 +587,15 @@ const FormulaProcessor = {
     isCase_EnglishThemeResult(column, isEnglish, filter) {
         return isEnglish && this.isGetResultTopic(column, filter);
     },
-    isCase_STEM_TongDiem(groupCode, maCotDiem, monHocID) {
-        return (groupCode?.includes('DiemCK') || groupCode?.includes('DiemGK')) &&
+    isCase_STEM_TongDiem(groupCode, maCotDiem, monHocID, isLegacyStem) {
+        return isLegacyStem &&
+            (groupCode?.includes('DiemCK') || groupCode?.includes('DiemGK')) &&
             monHocID === CONSTANTS.SUBJECT_IDS.STEM_36 &&
             ['TongDiem_CD1', 'TongDiem_CD2', 'TongDiem_CD3'].some(x => maCotDiem.includes(x));
     },
-    isCase_STEM_DiemCK(groupCode, maCotDiem, monHocID) {
-        return (groupCode?.includes('DiemCK') || groupCode?.includes('DiemGK')) &&
+    isCase_STEM_DiemCK(groupCode, maCotDiem, monHocID, isLegacyStem) {
+        return isLegacyStem &&
+            (groupCode?.includes('DiemCK') || groupCode?.includes('DiemGK')) &&
             monHocID === CONSTANTS.SUBJECT_IDS.STEM_36 &&
             ['DiemCK_', 'DiemGK_', 'SaoCK_', 'SaoGK_'].some(x => maCotDiem.includes(x));
     },
@@ -847,6 +941,163 @@ const LockService = {
             });
         }
     },
+    // Dựng payload thật từ JSpreadsheet và chỉ ghi log để kiểm tra; chưa gọi mark/lms_syncdiem.
+    /** Ánh xạ mã cột LMS sang LoaiDiem mà mark/lms_syncdiem nhận. */
+    getSyncLoaiDiemForColumn(column, filter, apiData = []) {
+        const isEnglishSubject = CONSTANTS.ENGLISH_SUBJECTS.includes(Number(filter.MonHocItem?.MonHocID));
+        const columnMeta = apiData.find(row =>
+            ColumnCodeService.isSameMaCotDiem(row?.MaCotDiem, column?.value)
+        );
+        // LoaiDiem trong SELECT KQHT được suy ra từ MaCotDiem; không lấy theo nhóm đang lọc
+        // để tránh cột như DiemTB bị gán nhầm thành GK/CK.
+        const sources = [columnMeta?.MaCotDiem, column?.value, column?.MaCotDiemSave];
+        for (const source of sources) {
+            const normalized = String(source ?? '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toUpperCase();
+            // Theme_total của môn Anh C2/C3 là TX; LMS cũng xếp các mã kết thúc bằng Total vào TX.
+            if (isEnglishSubject && /THEME[_\s-]*TOTAL/.test(normalized)) return 'TX';
+            if (/DIEMCD1|DIEMGK|GIA\s*KY|MID[_\s-]*TOTAL[_\s-]*POINT/.test(normalized)) return 'DiemGK';
+            if (/DIEMCD2|DIEMCK|CUOI\s*KY|FINAL[_\s-]*TOTAL[_\s-]*POINT/.test(normalized)) return 'DiemCK';
+            if (/KTTX|DIEMTX|THUONG\s*XUYEN|(?:^|[_\s-])TX(?:\d|[_\s-]|$)|TOTAL$/.test(normalized)) return 'TX';
+        }
+        return null;
+    },
+    /** Loại điểm khác nhau cần đẩy, không gửi lặp khi khóa nhiều cột cùng nhóm. */
+    getSyncLoaiDiem(columns, filter, apiData = []) {
+        return [...new Set(columns
+            .map(column => this.getSyncLoaiDiemForColumn(column, filter, apiData))
+            .filter(Boolean))];
+    },
+    getSyncCellIndex(headers, columnCode) {
+        return headers.findIndex(header => header?.name === columnCode ||
+            ColumnCodeService.isSameMaCotDiem(header?.name, columnCode));
+    },
+    getSyncCellValue(row, index, key) {
+        if (index < 0) return row && !Array.isArray(row) ? row[key] : undefined;
+        return Array.isArray(row) ? row[index] : row?.[key];
+    },
+    toSyncNumber(value) {
+        if (value === null || value === undefined || value === '') return null;
+        const number = Number(value);
+        return Number.isFinite(number) ? number : null;
+    },
+    normalizeSyncHocKy(value) {
+        const semester = String(value ?? '').trim();
+        return /^[12]$/.test(semester) ? `HK${semester}` : (semester || null);
+    },
+    /**
+     * Tạo record theo đúng 12 key của SELECT LMS_KetQuaHocTap.
+     * KetQua lấy từ JSpreadsheet; DSHocSinh_API chỉ cung cấp metadata cho các cột.
+     */
+    buildSyncDataFromSheet(columns, loaiDiem, filter, vueData, sheetInstance, headers, apiData = []) {
+        const sheet = Array.isArray(sheetInstance) ? sheetInstance[0] : sheetInstance;
+        if (!sheet || typeof sheet.getData !== 'function') {
+            throw new Error('Bảng JSpreadsheet chưa sẵn sàng để lấy dữ liệu đồng bộ.');
+        }
+        const sheetRows = sheet.getData();
+        if (!Array.isArray(sheetRows)) throw new Error('JSpreadsheet không trả về danh sách dòng dữ liệu.');
+        const studentIdIndex = this.getSyncCellIndex(headers, 'HocSinhID');
+        const soDanhBoIndex = this.getSyncCellIndex(headers, 'SoDanhBo');
+        if (studentIdIndex < 0) throw new Error('Không tìm thấy cột HocSinhID trên JSpreadsheet.');
+        const targetColumns = columns.map(column => {
+            const columnMeta = apiData.find(row =>
+                ColumnCodeService.isSameMaCotDiem(row?.MaCotDiem, column?.value)
+            );
+            if (this.getSyncLoaiDiemForColumn(column, filter, apiData) !== loaiDiem) return null;
+            const maCotDiem = String(columnMeta?.MaCotDiem || column.MaCotDiemSave ||
+                ColumnCodeService.normalizeMaCotDiem(column.value));
+            const sheetColumnIndex = this.getSyncCellIndex(headers, maCotDiem);
+            if (sheetColumnIndex < 0) throw new Error(`Không tìm thấy cột ${maCotDiem} trên JSpreadsheet.`);
+            return { columnMeta, maCotDiem, sheetColumnIndex };
+        }).filter(Boolean);
+        const sortedCodes = [...targetColumns]
+            .sort((left, right) => left.maCotDiem.localeCompare(right.maCotDiem))
+            .map(item => item.maCotDiem);
+        const result = [];
+        sheetRows.forEach((sheetRow, rowIndex) => {
+            const hocSinhID = this.getSyncCellValue(sheetRow, studentIdIndex, 'HocSinhID');
+            if (hocSinhID === null || hocSinhID === undefined || hocSinhID === '') return;
+            const studentMeta = apiData.find(row => String(row?.HocSinhID) === String(hocSinhID));
+            targetColumns.forEach(target => {
+                const cellMeta = apiData.find(row =>
+                    String(row?.HocSinhID) === String(hocSinhID) &&
+                    ColumnCodeService.isSameMaCotDiem(row?.MaCotDiem, target.maCotDiem)
+                ) || target.columnMeta;
+                let ketQua = this.getSyncCellValue(sheetRow, target.sheetColumnIndex, target.maCotDiem);
+                if (cellMeta?.Formula || cellMeta?.LoaiCotDiem === CONSTANTS.FORMULA_COLUMN) {
+                    const formulaCell = sheet.records?.[rowIndex]?.[target.sheetColumnIndex]?.element;
+                    const displayedValue = formulaCell?.textContent?.trim();
+                    if (displayedValue) ketQua = displayedValue;
+                    else if (formulaCell?.innerHTML != null) ketQua = formulaCell.innerHTML;
+                }
+                if (ketQua && typeof ketQua === 'object') {
+                    ketQua = ketQua.value ?? ketQua.text ?? ketQua.name ?? JSON.stringify(ketQua);
+                }
+                const monHocCode = cellMeta?.MonHocCode ?? target.columnMeta?.MonHocCode ??
+                    filter.MonHocItem?.MonHocCode;
+                if (monHocCode == null || String(monHocCode).trim() === '') {
+                    throw new Error('Không tìm thấy MonHocCode để tạo dữ liệu đồng bộ điểm.');
+                }
+                const semester = cellMeta?.HocKy ?? cellMeta?.Semester ??
+                    target.columnMeta?.HocKy ?? target.columnMeta?.Semester ??
+                    filter.MaNhomCotDiemItem?.Semester ?? vueData.NienKhoaItem?.HocKi;
+                const fallbackThuTuCotDiem = sortedCodes.indexOf(target.maCotDiem) + 1;
+                result.push({
+                    LopID: String(cellMeta?.LopID ?? filter.LopItem?.LopID ?? ''),
+                    TenLop: cellMeta?.TenLop ?? filter.LopItem?.TenLop ?? '',
+                    SoDanhBo: this.getSyncCellValue(sheetRow, soDanhBoIndex, 'SoDanhBo') ?? studentMeta?.SoDanhBo ?? null,
+                    HocSinhID: this.toSyncNumber(hocSinhID),
+                    MonHocCode: monHocCode == null ? null : String(monHocCode),
+                    LoaiDiem: loaiDiem,
+                    ThuTuNhom: this.toSyncNumber(cellMeta?.ThuTuNhom ?? target.columnMeta?.ThuTuNhom ??
+                        filter.MaNhomCotDiemItem?.ThuTuNhom),
+                    ThuTuCotDiem: this.toSyncNumber(cellMeta?.ThuTuCotDiem ?? target.columnMeta?.ThuTuCotDiem ??
+                        fallbackThuTuCotDiem),
+                    MaCotDiem: target.maCotDiem,
+                    KetQua: ketQua === null || ketQua === undefined || String(ketQua).trim() === ''
+                        ? null
+                        : String(ketQua).trim(),
+                    HocKy: this.normalizeSyncHocKy(semester),
+                    Sort: this.toSyncNumber(cellMeta?.Sort ?? target.columnMeta?.Sort ?? filter.MonHocItem?.Sort)
+                });
+            });
+        });
+        return result;
+    },
+    /**
+     * Dựng và log payload theo schema LMS_KetQuaHocTap để kiểm tra trước; chưa gửi request sang QLDiem.
+     * Chỉ cấp 2/3 có payload; API thật vẫn được giữ comment.
+     */
+    async logLmsSyncDiemParamsAfterLock(columns, filter, vueData, sheetInstance, headers, apiData = []) {
+        const capHoc = Number(vueData.CapID);
+        if (![2, 3].includes(capHoc)) return { loggedTypes: [] };
+        const khoiID = Number(filter.KhoiItem?.KhoiID);
+        const rawHocKy = vueData.NienKhoaItem?.HocKi ?? filter.MaNhomCotDiemItem?.Semester;
+        const hocKyMatch = String(rawHocKy ?? '').match(/([12])\s*$/);
+        const hocKy = hocKyMatch ? Number(hocKyMatch[1]) : Number(rawHocKy);
+        if (!Number.isInteger(khoiID) || ![1, 2].includes(hocKy)) {
+            throw new Error('Thiếu Khối hoặc Học kỳ hợp lệ để đồng bộ điểm sang QLDiem.');
+        }
+        const loaiDiemList = this.getSyncLoaiDiem(columns, filter, apiData);
+        for (const loaiDiem of loaiDiemList) {
+            const rows = this.buildSyncDataFromSheet(
+                columns, loaiDiem, filter, vueData, sheetInstance, headers, apiData
+            );
+            if (!rows.length) continue;
+            const params = {
+                KhoiID: khoiID,
+                LoaiDiem: loaiDiem,
+                HocKy: hocKy,
+                Data: JSON.stringify(rows)
+            };
+            console.log('[mark/lms_syncdiem] params:', params);
+            // Giữ request tắt để bạn kiểm tra payload trên console trước.
+            // await ApiService.syncDiemToQLDiem(params);
+        }
+        return { loggedTypes: loaiDiemList };
+    },
     /**
      * Mở khóa một danh sách cột điểm của môn chính
      * @param {Array} columns - [{ value: MaCotDiem, KhoaCotDiemID }]
@@ -940,11 +1191,13 @@ const BangDiemService = {
             // 1. Fetch STEM config
             let stemConfigList = [];
             if (filter.MonHocItem.MonHocID === CONSTANTS.SUBJECT_IDS.STEM_36) {
-                stemConfigList = await this.api.getSTEMConfig({
+                stemConfigList = StemModeService.normalizeConfigList(await this.api.getSTEMConfig({
                     NienKhoa: vueData.NienKhoa,
                     KhoiID: filter.KhoiItem.KhoiID
-                });
+                }));
             }
+            const isLegacyStem = filter.MonHocItem.MonHocID === CONSTANTS.SUBJECT_IDS.STEM_36 &&
+                StemModeService.hasLegacyConfig(stemConfigList);
             // 2. Fetch data
             const action = this.filter.getBangDiemAction(filter, vueData, stemConfigList);
             const apiData = await this.api.fetchBangDiem(action, {
@@ -1019,7 +1272,9 @@ const BangDiemService = {
                 };
             });
             // 8. Data rows
-            const dataRows = this.buildDataRows(students, apiData, filter, headers, freezeColumns, isEnglish, vueData);
+            const dataRows = this.buildDataRows(
+                students, apiData, filter, headers, freezeColumns, isEnglish, vueData, isLegacyStem
+            );
             // 9. Styles & comments
             const styleSheet = this.style.applyBackgroundStyles(dataRows, gradeColumns, freezeColumns);
             const comments = this.style.applyComments(dataRows, gradeColumns, apiData, freezeColumns);
@@ -1034,7 +1289,7 @@ const BangDiemService = {
         }
     },
     /** Build data rows */
-    buildDataRows(students, apiData, filter, headers, freezeColumns, isEnglish, vueData) {
+    buildDataRows(students, apiData, filter, headers, freezeColumns, isEnglish, vueData, isLegacyStem) {
         return students.map((student, rowIndex) => {
             const gradeColumns = apiData.filter(x => x.HocSinhID === student.HocSinhID);
             const rowData = {
@@ -1051,19 +1306,19 @@ const BangDiemService = {
             gradeColumns.forEach(column => {
                 rowData[column.MaCotDiem] = this.processColumnValue(
                     column, gradeColumns, rowIndex + 1,
-                    filter, headers, freezeColumns, isEnglish, vueData
+                    filter, headers, freezeColumns, isEnglish, vueData, isLegacyStem
                 );
             });
             return rowData;
         });
     },
     /** Process column value */
-    processColumnValue(column, allColumns, rowIndex, filter, headers, freezeColumns, isEnglish, vueData) {
+    processColumnValue(column, allColumns, rowIndex, filter, headers, freezeColumns, isEnglish, vueData, isLegacyStem) {
         if (column.LoaiCotDiem !== CONSTANTS.FORMULA_COLUMN) {
             return this.data.processNonFormulaValue(column);
         }
         return this.formula.processFormulaValue(
-            column, allColumns, rowIndex, filter, headers, freezeColumns, isEnglish, vueData
+            column, allColumns, rowIndex, filter, headers, freezeColumns, isEnglish, vueData, isLegacyStem
         );
     },
     /** Lưu dữ liệu */

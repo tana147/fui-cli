@@ -114,7 +114,7 @@
 			</div>
 			<div class="d-flex align-center flex-wrap gap-2">
 				<!-- Chuyển mode nhận tiền trực tiếp tại Tab 3 -->
-				<div class="d-flex align-center grey lighten-4 px-2 py-1 rounded-sm border">
+				<div class="d-flex align-center grey lighten-4 px-2 py-1 rounded-xs border">
 					<span class="text-caption font-weight-bold grey--text text--darken-2 mr-2">Hình thức:</span>
 					<v-btn-toggle v-model="localHinhThucThanhToan" mandatory dense borderless color="primary" @change="onPaymentModeChange">
 						<v-btn :value="1" x-small class="text-none font-weight-medium">
@@ -141,7 +141,7 @@
 
 		<!-- Banner thông báo khi ở chế độ ủy quyền -->
 		<v-alert v-if="isDaiDienMode" type="info" text dense class="mb-2 rounded-xs font-weight-medium">
-			<div class="d-flex align-center justify-space-between flex-wrap" style="gap: 8px;">
+			<div class="d-flex align-center justify-space-between flex-wrap gap-2">
 				<div>
 					<v-icon left small color="info">mdi-information</v-icon>
 					<strong>Chế độ ủy quyền nhận thay:</strong> Toàn bộ tiền thưởng của Nhóm tác giả sẽ được chuyển khoản cho <strong>{{ representativeName || 'người đại diện được chỉ định' }}</strong>.

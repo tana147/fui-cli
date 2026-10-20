@@ -25,7 +25,7 @@
 							<v-icon>mdi-microsoft-excel</v-icon>
 						</v-btn>
 					</template>
-					<v-card class="pa-3 rounded-xs" style="width: 300px;">
+					<v-card class="pa-3 rounded-xs menu-export-card">
 						<div class="text-subtitle-2 font-weight-bold mb-2">Xuất báo cáo chi tiền</div>
 						<v-select v-model="exportDotDuyetID" :items="dsdotduyet" item-text="TenDotDuyet"
 							item-value="DotDuyetID" label="Chọn đợt duyệt" outlined dense hide-details />
@@ -37,9 +37,8 @@
 				</v-menu>
 
 				<!-- Ô tìm kiếm nhanh chuẩn AGENTS.md -->
-				<v-text-field v-model="search" class="c-underline-search" prepend-inner-icon="mdi-magnify"
-					label="Tìm kiếm nhanh..." single-line dense hide-details clearable
-					style="max-width: 250px;"></v-text-field>
+				<v-text-field v-model="search" class="c-underline-search duyet-search-input" prepend-inner-icon="mdi-magnify"
+					label="Tìm kiếm nhanh..." single-line dense hide-details clearable></v-text-field>
 			</div>
 		</v-card-title>
 
@@ -50,12 +49,10 @@
 				clearable></v-select>
 
 			<v-select v-model="filterLoaiHinh" :items="loaiHinhFilterOptions" item-text="text" item-value="value"
-				label="Lọc theo loại hình" outlined dense hide-details class="mr-2 mb-2"
-				style="max-width: 200px;"></v-select>
+				label="Lọc theo loại hình" outlined dense hide-details class="mr-2 mb-2 filter-select-loaihinh"></v-select>
 
 			<v-select v-model="filterCapDo" :items="capDoFilterOptions" item-text="text" item-value="value"
-				label="Lọc theo cấp độ" outlined dense hide-details class="mr-2 mb-2"
-				style="max-width: 180px;"></v-select>
+				label="Lọc theo cấp độ" outlined dense hide-details class="mr-2 mb-2 filter-select-capdo"></v-select>
 
 			<v-spacer></v-spacer>
 
@@ -83,8 +80,7 @@
 		<!-- Bảng dữ liệu chính cuộn nội bộ -->
 		<v-card-text class="pa-2 pt-1 flex-grow-1 overflow-hidden">
 			<!-- Thống kê duy nhất 1 dòng giống approve-request -->
-			<div v-if="activeTab === 1" class="d-flex align-center px-3 py-2 mb-2"
-				style="background:#f5f5f5; border-radius:4px;">
+			<div v-if="activeTab === 1" class="d-flex align-center px-3 py-2 mb-2 rounded-xs total-cost-banner">
 				<v-icon small color="primary" class="mr-2">mdi-cash-multiple</v-icon>
 				<span class="text-body-2">
 					Tổng chi phí dự kiến (Đã duyệt):
@@ -124,6 +120,14 @@
 					<span v-else class="grey--text text-caption">Chưa gán</span>
 				</template>
 
+				<template v-slot:item.NgayBanHanhFormatted="{ item }">
+					<span>{{ item.NgayBanHanhFormatted }}</span>
+				</template>
+
+				<template v-slot:item.TenNguoiSubmit="{ item }">
+					<span>{{ item.TenNguoiSubmit || item.NhanVienSubmit }}</span>
+				</template>
+
 				<template v-slot:item.actions="{ item }">
 					<v-btn small color="primary" elevation="0" class="px-2" height="28" @click="openEdit(item)">
 						<v-icon left x-small>mdi-file-check-outline</v-icon>Thẩm định
@@ -160,7 +164,8 @@
 					{ text: 'Cấp độ', value: 'TenCapDo', width: 120 },
 					{ text: 'Giải thưởng / Bằng', value: 'TenGiaiThuong', width: 130 },
 					{ text: 'Số QĐ / Bằng', value: 'SoQuyetDinh_VanBang', width: 120 },
-					{ text: 'Người nộp', value: 'NhanVienSubmit', width: 100 },
+					{ text: 'Ngày BH', value: 'NgayBanHanhFormatted', align: 'center', width: 110 },
+					{ text: 'Người nộp', value: 'TenNguoiSubmit', width: 140 },
 					{ text: 'Tiền thưởng (đ)', value: 'TongTienThuong', align: 'right', width: 130 },
 					{ text: 'Đợt chi tiền', value: 'TenDotDuyet', width: 130 },
 					{ text: 'Trạng thái', value: 'TrangThaiText', align: 'center', width: 110 },
@@ -235,6 +240,7 @@
 						TenLoaiKhenThuong: tenLoai,
 						TenCapDo: tenCapDo,
 						TenGiaiThuong: tenGiai,
+						NgayBanHanhFormatted: item.NgayBanHanhFormatted || this.formatDateDisplay(item.NgayBanHanh),
 					}
 				})
 			},
@@ -266,6 +272,19 @@
 			},
 		},
 		methods: {
+			formatDateDisplay(val) {
+				if (!val) return ''
+				if (typeof val === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(val)) return val
+				if (typeof moment !== 'undefined') {
+					let m = moment(val, ['YYYY-MM-DD', 'YYYY-MM-DDTHH:mm:ss', 'DD/MM/YYYY'])
+					if (m.isValid()) return m.format('DD/MM/YYYY')
+				}
+				const parts = String(val).substring(0, 10).split('-')
+				if (parts.length === 3 && parts[0].length === 4) {
+					return `${parts[2]}/${parts[1]}/${parts[0]}`
+				}
+				return val
+			},
 			openEdit(item) {
 				this.$emit('on-edit', item)
 			},
@@ -305,7 +324,7 @@
 						'Giải thưởng / Văn bằng': row.TenGiai_HinhThuc,
 						'Cấp độ': row.TenCapDo,
 						'Số Quyết định / Bằng': row.SoQuyetDinh_VanBang || '',
-						'Ngày ban hành': row.NgayBanHanh || '',
+						'Ngày ban hành': row.NgayBanHanhFormatted || this.formatDateDisplay(row.NgayBanHanh) || '',
 						'Đợt duyệt': row.TenDotDuyet || dotName,
 					}))
 

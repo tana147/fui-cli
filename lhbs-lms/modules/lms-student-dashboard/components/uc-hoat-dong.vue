@@ -352,9 +352,17 @@
 				this.summaryModal.data = null;
 				this.summaryModal.hd = hd;
 				try {
+					// Dòng chính của hoạt động dùng ObjectID, còn item trong "Lịch sử nộp bài"
+					// được tạo từ DSBaiLam nên giữ tên SubmissionID. Chuẩn hóa cả hai nguồn
+					// trước khi gọi API để không gửi thiếu ID và bị báo sai quyền xem.
+					const submissionID = hd.SubmissionID || hd.ObjectID;
+					const hocSinhID = this.HocSinh?.HocSinhID || this.hocSinhID;
+					if (!submissionID || !hocSinhID) {
+						throw new Error('Thiếu SubmissionID hoặc HocSinhID');
+					}
 					const res = await ajaxCALLPromise('lms/EL_Student_GetSubmissionSummary', {
-						SubmissionID: hd.ObjectID,
-						HocSinhID: this.HocSinh.HocSinhID
+						SubmissionID: submissionID,
+						HocSinhID: hocSinhID
 					});
 					this.summaryModal.data = {
 						overview: res[0]?.[0] ?? null,

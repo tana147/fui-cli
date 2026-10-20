@@ -239,7 +239,7 @@
   padding: 0 14px !important;
   text-transform: none !important;
   font-weight: 500 !important;
-  border-radius: 4px !important;
+  border-radius: 2px !important;
   box-shadow: none !important;
 }
 
@@ -248,4 +248,44 @@
 .nowrap-table th {
   white-space: nowrap !important;
   font-weight: 600 !important;
+}
+
+/* Chuẩn hóa class thay thế inline styles theo AGENTS.md */
+.gap-8 {
+  gap: 8px;
+}
+
+.gap-10 {
+  gap: 10px;
+}
+
+.article-search-input {
+  max-width: 250px !important;
+}
+
+.form-section-banner {
+  background: #eef2f6;
+  border-left: 4px solid #1976d2;
+}
+
+.article-modal-card {
+  min-height: 680px;
+}
+
+.article-modal-body {
+  max-height: calc(85vh - 150px);
+  overflow-y: auto;
+}
+
+.period-notice-text {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.rate-input-wrap {
+  max-width: 100px;
+}
+
+.rate-input input {
+  font-size: 13px !important;
 }

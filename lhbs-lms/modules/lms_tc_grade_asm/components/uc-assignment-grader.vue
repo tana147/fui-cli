@@ -154,7 +154,18 @@
 				-->
 				<aside v-if="!mobile && navDrawerOpen" class="question-drawer">
 					<div class="pa-2 d-flex flex-column h-100 overflow-y-auto">
-						<v-card class="question-nav mb-2" flat border>
+						<!--
+							Bài chấm được nạp lại trong cùng một component khi giáo viên đổi bài.
+							Key theo bài giúp Vuetify dựng lại panel cấu trúc, không giữ DOM/trạng thái
+							collapse của bài trước làm mất danh sách câu ở sidebar.
+						-->
+						<!--
+							Nội dung nhận xét có thể dài hơn chiều cao sidebar. Panel câu hỏi phải
+							giữ chiều cao tự nhiên, nếu không flex column sẽ co panel về 0px và chỉ
+							còn phần Tổng kết như ảnh chụp của bài essay.
+						-->
+						<v-card :key="submission?.SubmissionID || assignment?.AssignmentID || assignment?.Title"
+							class="question-nav mb-2" flat border style="flex: 0 0 auto;">
 							<div class="d-flex justify-space-between align-center text-subtitle-1 font-weight-medium cursor-pointer pa-2"
 								@click="navCollapsed = !navCollapsed">
 								{{ $t('message.AssignmentStructure') }}
@@ -881,6 +892,13 @@
 					}
 					this.assignment = assignmentConfig;
 					const submissionData = data[1][0];
+					const isNewSubmission = this.submission?.SubmissionID !== submissionData?.SubmissionID;
+					// Mỗi bài mới phải mở lại sidebar và panel cấu trúc; các lần autosave
+					// của cùng bài vẫn giữ lựa chọn thu gọn của giáo viên.
+					if (isNewSubmission) {
+						this.navDrawerOpen = true;
+						this.navCollapsed = false;
+					}
 					console.log('submissionData', submissionData)
 					console.log('assignmentConfig', assignmentConfig)
 					// AssignmentConfig ở bảng 1 chứa đáp án đúng của toàn bộ pool để chấm.
@@ -1063,6 +1081,11 @@
 			updateGrading(questionId, newGradingData) {
 				const isQuestionRegraded = newGradingData?.manualScoreSource === 'teacher_regrade'
 					&& Array.isArray(newGradingData?.regradeHistory);
+				const previousAnnotations = this.gradingData[questionId]?.grading?.textAnnotations || [];
+				// Ghi chú vùng văn bản cũng là dữ liệu chấm; so sánh để autosave ngay cả
+				// khi bài đã hoàn tất và giáo viên không thay đổi điểm số.
+				const isAnnotationUpdate = Array.isArray(newGradingData?.textAnnotations)
+					&& JSON.stringify(previousAnnotations) !== JSON.stringify(newGradingData.textAnnotations);
 				const newGrading = { ...this.gradingData };
 				const currentAnswer = newGrading[questionId] || {};
 				newGrading[questionId] = { ...currentAnswer, grading: newGradingData };
@@ -1076,7 +1099,7 @@
 				}
 				// Chấm lại phải được lưu ngay để lịch sử và lý do không mất khi giáo viên
 				// chuyển câu hoặc đóng trang mà chưa bấm Chấm nháp.
-				if (isQuestionRegraded) this.triggerAutoSave();
+				if (isQuestionRegraded || isAnnotationUpdate) this.triggerAutoSave();
 			},
 			async calculateTotalScore() {
 				if (this.assignment?.AssignmentType === 'INTEGRATED') return;

@@ -1,6 +1,7 @@
 CREATE PROC [dbo].[spAPI_Student_Update_StudentID_By_MaHoSo]
 	@MaHoSo VARCHAR(20),
 	@NewStudentID VARCHAR(9),
+	@NienKhoa VARCHAR(10),
 	@sys_UserID VARCHAR(9),
 	@sys_SystemRight INT,
 	@sys_GroupID INT,
@@ -20,6 +21,7 @@ BEGIN
 
 	SET @MaHoSo = LTRIM(RTRIM(@MaHoSo));
 	SET @NewStudentID = LTRIM(RTRIM(@NewStudentID));
+	SET @NienKhoa = LTRIM(RTRIM(@NienKhoa));
 
 	IF (@MaHoSo IS NULL OR @MaHoSo = '')
 	BEGIN
@@ -35,15 +37,16 @@ BEGIN
 		RETURN 0;
 	END
 
-	-- Tìm học viên theo MaHoSo hoặc StudentID
+	-- Tìm học viên theo MaHoSo hoặc StudentID (kết hợp Niên khóa nếu có)
 	DECLARE @OldStudentID VARCHAR(20);
 	SELECT TOP 1 @OldStudentID = StudentID
 	FROM StudentInfo
-	WHERE MaHoSo = @MaHoSo OR StudentID = @MaHoSo;
+	WHERE (MaHoSo = @MaHoSo OR StudentID = @MaHoSo)
+	  AND (@NienKhoa IS NULL OR @NienKhoa = '' OR @NienKhoa = '0' OR NienKhoa = @NienKhoa);
 
 	IF (@OldStudentID IS NULL)
 	BEGIN
-		SET @MsgError = N'Không tìm thấy học viên có mã hồ sơ: ' + @MaHoSo;
+		SET @MsgError = N'Không tìm thấy học viên có mã hồ sơ: ' + @MaHoSo + CASE WHEN @NienKhoa IS NOT NULL AND @NienKhoa <> '' AND @NienKhoa <> '0' THEN N' trong niên khóa ' + @NienKhoa ELSE N'' END;
 		RAISERROR(@MsgError, 16, 1);
 		RETURN 0;
 	END
@@ -70,7 +73,8 @@ BEGIN
 		SET StudentID = @NewStudentID,
 			UpdateUser = ISNULL(@sys_UserID, UpdateUser),
 			UpdateTime = GETDATE()
-		WHERE (MaHoSo = @MaHoSo OR StudentID = @OldStudentID);
+		WHERE (MaHoSo = @MaHoSo OR StudentID = @OldStudentID)
+		  AND (@NienKhoa IS NULL OR @NienKhoa = '' OR @NienKhoa = '0' OR NienKhoa = @NienKhoa);
 
 		-- 2. Cập nhật Process_Student
 		UPDATE Process_Student

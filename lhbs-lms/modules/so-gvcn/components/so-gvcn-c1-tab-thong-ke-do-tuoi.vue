@@ -3,9 +3,14 @@
 		<v-alert v-if="selectedLopID === '__ALL__'" type="info" variant="tonal" density="compact" class="ma-2">
 			Chọn một lớp ở thanh trên để xem thống kê độ tuổi học sinh.
 		</v-alert>
-		<div v-else class="w-100 flex-grow-1 overflow-hidden so-gvcn-thong-ke-do-tuoi-sheet" style="min-height: 0;">
+		<div v-else class="w-100 flex-grow-1 overflow-hidden so-gvcn-thong-ke-do-tuoi-sheet so-gvcn-c1-desktop-only" style="min-height: 0;">
 			<div ref="sheetRef" class="w-100 overflow-hidden" style="min-height: 0;"></div>
 		</div>
+		<!-- The phone editor keeps all age, gender, ethnicity, and disability fields in the same save row shape. -->
+		<uc-so-gvcn-mobile-sheet-editor v-if="selectedLopID !== '__ALL__'" ref="mobileEditorRef"
+			class="so-gvcn-c1-mobile-editor flex-column flex-grow-1" :rows="mobileEditorRows"
+			:columns="mobileEditorColumns" :title-index="0" :searchable="true" empty-title="Độ tuổi"
+			empty-text="Chưa có số liệu thống kê độ tuổi." />
 	</v-card-text>
 </template>
 
@@ -20,7 +25,9 @@
 		},
 		data() {
 			return {
-				instance: null
+				instance: null,
+				isMobileViewport: false,
+				resizeTimer: null,
 			}
 		},
 		watch: {
@@ -41,6 +48,7 @@
 			}
 		},
 		mounted() {
+			this.isMobileViewport = window.matchMedia('(max-width: 959.98px)').matches
 			window.addEventListener('resize', this.onWindowResize)
 			this.initSheet()
 		},
@@ -48,6 +56,15 @@
 			window.removeEventListener('resize', this.onWindowResize)
 			clearTimeout(this.resizeTimer)
 			this.destroySheet()
+		},
+		computed: {
+			mobileEditorColumns() {
+				return this.buildColumnsAndHeaders().columns
+			},
+			mobileEditorRows() {
+				const { ethnicList } = this.buildColumnsAndHeaders()
+				return this.buildRows(ethnicList)
+			}
 		},
 		methods: {
 			// Bảng có tối thiểu 20 dòng tuổi; chỉ khi dữ liệu dài hơn viewport mới tạo
@@ -68,7 +85,24 @@
 			},
 			onWindowResize() {
 				clearTimeout(this.resizeTimer)
-				this.resizeTimer = setTimeout(() => this.initSheet(), 120)
+				this.resizeTimer = setTimeout(() => {
+					const nextIsMobile = window.matchMedia('(max-width: 959.98px)').matches
+					if (nextIsMobile === this.isMobileViewport) return
+					const rows = this.getRowsForCurrentViewport()
+					this.isMobileViewport = nextIsMobile
+					this.$nextTick(() => {
+						if (nextIsMobile) this.$refs.mobileEditorRef?.setRows?.(rows)
+						this.initSheet(nextIsMobile ? undefined : rows)
+					})
+				}, 120)
+			},
+			getRowsForCurrentViewport() {
+				if (this.isMobileViewport) return this.$refs.mobileEditorRef?.getRows?.() || this.buildRows(this.getEthnicList())
+				const sheet = Array.isArray(this.instance) ? this.instance[0] : this.instance
+				if (sheet && typeof sheet.closeEditor === 'function') {
+					try { sheet.closeEditor(true) } catch (error) {}
+				}
+				return sheet && typeof sheet.getData === 'function' ? sheet.getData() : this.buildRows(this.getEthnicList())
 			},
 			applyTableHeight(tableHeight) {
 				const container = this.$refs.sheetRef
@@ -83,6 +117,9 @@
 				return this.instance
 			},
 			getRows() {
+				if (this.isMobileViewport) {
+					return this.$refs.mobileEditorRef?.getRows?.() || this.buildRows(this.getEthnicList())
+				}
 				const sheet = Array.isArray(this.instance) ? this.instance[0] : this.instance
 				return sheet && typeof sheet.getData === 'function' ? sheet.getData() : []
 			},
@@ -181,11 +218,16 @@
 				this.instance = null
 			},
 
-			initSheet() {
+			initSheet(initialRows) {
 				if (this.selectedLopID === '__ALL__') {
 					this.destroySheet()
 					return
 				}
+				if (this.isMobileViewport) {
+					this.destroySheet()
+					return
+				}
+				// Mobile edits the row cards; avoid initializing a hidden wide sheet on a phone.
 				this.$nextTick(() => {
 					const container = this.$refs.sheetRef
 					if (!container) return
@@ -193,7 +235,7 @@
 					container.innerHTML = ''
 
 					const { columns, nestedHeaders, ethnicList } = this.buildColumnsAndHeaders()
-					const data = this.buildRows(ethnicList)
+					const data = Array.isArray(initialRows) ? initialRows : this.buildRows(ethnicList)
 					const tableHeight = this.getContentTableHeight(container, data.length, nestedHeaders.length)
 
 					if (typeof jspreadsheet === 'function') {

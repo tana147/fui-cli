@@ -2274,4 +2274,53 @@
 .lh-preview-group-info {
   display: flex;
   gap: 12px;
-  font-
+  font-size: 12px;
+  color: #6c757d;
+  margin-bottom: 4px;
+}
+
+/* Màn hình bắt đầu quiz tổng hợp cần dùng toàn bộ khung viewer; nếu không,
+   flex item `.lh-groups-preview` sẽ co theo nội dung và bị dồn thành một cột hẹp. */
+.uc-quiz-composite {
+  width: 100%;
+  height: 100%;
+}
+
+.uc-quiz-composite .lh-quiz-start {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100%;
+  justify-content: flex-start;
+  overflow-y: auto;
+}
+
+.uc-quiz-composite .lh-start-info,
+.uc-quiz-composite .lh-groups-preview {
+  width: 100%;
+  max-width: 780px;
+  box-sizing: border-box;
+}
+
+.uc-quiz-composite .lh-start-info {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.uc-quiz-composite .lh-preview-groups {
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .uc-quiz-composite .lh-start-info {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .uc-quiz-composite .lh-quiz-start {
+    padding: var(--lh-space-lg);
+  }
+
+  .uc-quiz-composite .lh-start-info {
+    grid-template-columns: 1fr;
+  }
+}

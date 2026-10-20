@@ -8,6 +8,22 @@
     "comName": "uc-de-tai-da-tham-gia"
   },
   {
+    "comID": 12561,
+    "comName": "uc-gia-dinh"
+  },
+  {
+    "comID": 12562,
+    "comName": "uc-khen-thuong"
+  },
+  {
+    "comID": 12563,
+    "comName": "uc-llkh-info"
+  },
+  {
+    "comID": 12564,
+    "comName": "uc-llkh-muc"
+  },
+  {
     "comID": 4406,
     "comName": "uc-main"
   },
@@ -18,6 +34,10 @@
   {
     "comID": 4412,
     "comName": "uc-qua-trinh-dao-tao"
+  },
+  {
+    "comID": 12565,
+    "comName": "uc-shtt"
   },
   {
     "comID": 4408,

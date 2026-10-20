@@ -30,25 +30,19 @@ BEGIN
     (
         AnPhamID INT,
         SoTienKhenThuong NUMERIC(18, 0),
-        SoTienHoanPhiDangBai NUMERIC(18, 0),
-        AnPhamTacGiaID INT,
-        NguoiDaiDienQuyetToan BIT
+        SoTienHoanPhiDangBai NUMERIC(18, 0)
     );
 
     INSERT INTO @tbl
     (
         AnPhamID,
         SoTienKhenThuong,
-        SoTienHoanPhiDangBai,
-        AnPhamTacGiaID,
-        NguoiDaiDienQuyetToan
+        SoTienHoanPhiDangBai
     )
     SELECT
         A.AnPhamID,
         SUM(ISNULL(A.SoTienKhenThuong, 0)) AS SoTienKhenThuong,
-        SUM(ISNULL(A.SoTienHoanPhiDangBai, 0)) AS SoTienHoanPhiDangBai,
-        A.AnPhamTacGiaID,
-        A.NguoiDaiDienQuyetToan
+        SUM(ISNULL(A.SoTienHoanPhiDangBai, 0)) AS SoTienHoanPhiDangBai
     FROM dbo.AnPham_TacGia A
     INNER JOIN dbo.AnPham B
         ON A.AnPhamID = B.AnPhamID
@@ -66,9 +60,7 @@ BEGIN
         )
         AND B.Is_LocalStore = 0
     GROUP BY
-        A.AnPhamID,
-        A.AnPhamTacGiaID,
-        A.NguoiDaiDienQuyetToan;
+        A.AnPhamID;
 
 
     SELECT DISTINCT

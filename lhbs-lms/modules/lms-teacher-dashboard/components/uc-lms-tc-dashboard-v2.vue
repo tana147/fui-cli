@@ -2,7 +2,7 @@
 	<div class="lms-dashboard-root teacher-dashboard" ref="containerPage"
 		:class="{ 'lms-focus-drawer-open': showFocusDrawer }">
 		<!-- TOPBAR -->
-		<v-toolbar border density="compact" class="bg-white border-sm"
+		<v-toolbar border density="compact" class="bg-white border-sm lms-topbar"
 			style="position:sticky;top:0;z-index:50;flex-shrink:0;">
 			<template #prepend>
 				<v-btn v-if="$vuetify.display.mobile" icon size="small" @click="showCascadeDrawer = true" class="me-1">
@@ -11,35 +11,31 @@
 				</v-btn>
 			</template>
 			<template #title>
-				<div class="d-flex align-center flex-nowrap" style="min-width: 0; max-width: 100%;">
-					<span v-if="!$vuetify.display.mobile" class="text-subtitle-1 font-weight-semibold text-no-wrap">{{ $t('message.ControlPanel') }}</span>
-					<v-btn size="small" class="ms-1 px-1 text-caption" variant="text"
+				<div class="d-flex align-center flex-nowrap lms-topbar-title" style="min-width: 0; max-width: 100%;">
+					<span v-if="!$vuetify.display.mobile" class="text-subtitle-1 font-weight-semibold text-no-wrap lms-topbar-dashboard-label">{{ $t('message.ControlPanel') }}</span>
+					<v-btn size="small" class="ms-1 px-1 text-caption lms-topbar-teacher-btn" variant="text"
 						v-if="vueData.user.UserID == 'NA0000022' || vueData.user.UserID == 'NV0000134'"
 						@click="onHandleOpenChangeGV">{{ $t('message.ChooseTeacher') }}</v-btn>
 					<!-- BREADCRUMB -->
-					<div class="lms-breadcrumb ms-2">
+					<div class="lms-breadcrumb ms-1 lms-topbar-breadcrumb">
 						<template v-for="(bc, i) in cascadeBreadcrumb" :key="i">
 							<span v-if="i > 0" class="bc-sep">›</span>
-							<span class="bc-chip" :class="bc.active ? 'bc-active' : bc.done ? 'bc-done' : 'bc-lock'"
-								@click="bc.done ? resetCascadeFrom(bc.step) : null">{{ bc.label }}</span>
+							<span class="bc-chip" :class="[bc.active ? 'bc-active' : bc.done ? 'bc-done' : 'bc-lock', bc.step === 2 ? 'bc-chip--week' : '']"
+								:title="bc.label" @click="bc.done ? resetCascadeFrom(bc.step) : null">{{ formatTopbarBreadcrumb(bc.label, bc.step) }}</span>
 						</template>
 					</div>
 				</div>
 			</template>
 			<template #append>
 				<template v-if="!$vuetify.display.mobile">
-					<v-btn ref="tourBtnThongKe" @click="OpenDashboard()">
+					<v-btn ref="tourBtnThongKe" class="lms-topbar-action" @click="OpenDashboard()">
 						<v-icon class="me-1">mdi-blinds-horizontal-closed</v-icon>{{ $t('message.Statistical') }}
 					</v-btn>
-					<v-btn ref="tourBtnThuVien" @click="OpenMyLiberies()" class="me-1">
+					<v-btn ref="tourBtnThuVien" class="lms-topbar-action" @click="OpenMyLiberies()">
 						<v-icon class="me-1">mdi-library-shelves</v-icon>{{ $t('message.MyDocument') }}
 					</v-btn>
-					<v-btn icon @click="startTour" class="me-1">
-						<v-icon>mdi-help-circle-outline</v-icon>
-						<v-tooltip activator="parent" location="bottom">{{ $t('message.TourGuide') }}</v-tooltip>
-					</v-btn>
 				</template>
-				<!-- Trên desktop dùng nút có nhãn để người dùng biết đây là panel cần mở. -->
+				<!-- Đặt Bài cần chấm cạnh các khu vực thao tác chính để cụm header dễ quét hơn. -->
 				<v-badge v-if="!$vuetify.display.mobile && focusTaskCount" :content="focusTaskCountLabel"
 					color="error" floating offset-x="4" offset-y="4" class="lms-focus-trigger-badge me-3">
 					<v-btn size="small" variant="text" class="lms-focus-trigger" @click="showFocusDrawer = true">
@@ -63,12 +59,19 @@
 					<v-icon color="teal">mdi-clipboard-check-outline</v-icon>
 					<v-tooltip activator="parent" location="bottom">{{ focusDrawerLabel }}</v-tooltip>
 				</v-btn>
-				<v-btn-toggle v-model="toggle" size="small">
-					<v-btn :value="false" :disabled="!toggle" :color="!toggle ? 'green' : 'white'">
-						<v-img src="/_cdn/lhbs-lms/img_page_ph/Viet.png" width="35" />
+				<template v-if="!$vuetify.display.mobile">
+					<v-btn icon size="small" @click="startTour" class="lms-topbar-action lms-topbar-help">
+						<v-icon>mdi-help-circle-outline</v-icon>
+						<v-tooltip activator="parent" location="bottom">{{ $t('message.TourGuide') }}</v-tooltip>
 					</v-btn>
-					<v-btn :value="true" :disabled="toggle" :color="toggle ? 'green' : 'white'">
-						<v-img src="/_cdn/lhbs-lms/img_page_ph/Anh.png" width="35" />
+				</template>
+				<!-- Giới hạn cụm ngôn ngữ để hai lá cờ không đẩy tràn phần append ở mép phải toolbar. -->
+				<v-btn-toggle v-model="toggle" size="small" class="lms-language-toggle">
+					<v-btn class="lms-language-btn" :value="false" :disabled="!toggle" :color="!toggle ? 'green' : 'white'">
+						<v-img src="/_cdn/lhbs-lms/img_page_ph/Viet.png" width="24" max-width="24" />
+					</v-btn>
+					<v-btn class="lms-language-btn" :value="true" :disabled="toggle" :color="toggle ? 'green' : 'white'">
+						<v-img src="/_cdn/lhbs-lms/img_page_ph/Anh.png" width="24" max-width="24" />
 					</v-btn>
 				</v-btn-toggle>
 			</template>
@@ -91,7 +94,7 @@
 							<div v-for="k in DSKhoiCascade" :key="'m-' + k.KhoiID" class="lms-t-item"
 								:class="{ active: cascadeKhoiID === k.KhoiID }" @click="pickKhoi(k.KhoiID)">
 								<span class="lms-t-dot" :style="{ background: k.dot }"></span>
-								<span class="lms-t-label">{{ k.label }}</span><v-chip v-if="k.hasLibraryOnly" size="x-small" color="grey" variant="tonal">Có nội dung</v-chip><v-icon v-if="k.hasDelegated" size="13" color="warning" title="Có nội dung được giáo viên khác phân quyền">mdi-account-arrow-left-outline</v-icon>
+								<span class="lms-t-label">{{ k.label }}</span><v-chip v-if="k.hasLibraryOnly" size="x-small" color="grey" variant="tonal">Có nội dung</v-chip><v-icon v-if="k.hasTeaching" size="13" color="success" title="Đang dạy khối">mdi-school-outline</v-icon><v-icon v-if="k.hasDelegated" size="13" color="warning" title="Có tài liệu được chia sẻ">mdi-account-arrow-left-outline</v-icon>
 								<v-icon v-if="cascadeKhoiID === k.KhoiID" size="14" color="teal">mdi-check</v-icon>
 								<span v-else class="lms-t-arrow">&rsaquo;</span>
 							</div>
@@ -176,7 +179,7 @@
 							<div v-for="k in DSKhoiCascade" :key="k.KhoiID" class="lms-t-item"
 								:class="{ active: cascadeKhoiID === k.KhoiID }" @click="pickKhoi(k.KhoiID)">
 								<span class="lms-t-dot" :style="{ background: k.dot }"></span>
-								<span class="lms-t-label">{{ k.label }}</span><v-chip v-if="k.hasLibraryOnly" size="x-small" color="grey" variant="tonal">Có nội dung</v-chip><v-icon v-if="k.hasDelegated" size="13" color="warning" title="Có nội dung được giáo viên khác phân quyền">mdi-account-arrow-left-outline</v-icon>
+								<span class="lms-t-label">{{ k.label }}</span><v-chip v-if="k.hasLibraryOnly" size="x-small" color="grey" variant="tonal">Có nội dung</v-chip><v-icon v-if="k.hasTeaching" size="13" color="success" title="Đang dạy khối">mdi-school-outline</v-icon><v-icon v-if="k.hasDelegated" size="13" color="warning" title="Có tài liệu được chia sẻ">mdi-account-arrow-left-outline</v-icon>
 								<v-icon v-if="cascadeKhoiID === k.KhoiID" size="14" color="teal">mdi-check</v-icon>
 								<span v-else class="lms-t-arrow">&rsaquo;</span>
 							</div>
@@ -495,12 +498,15 @@
 				this.teachingGroups.forEach(g => {
 					if (!seen[g.KhoiID]) {
 						seen[g.KhoiID] = true
+						// Sidebar Khối dùng cùng quy ước với thư viện: direct teacher là xanh,
+						// assignment của giáo viên khác được phân quyền là cam.
 							result.push({
 								KhoiID: g.KhoiID,
 								label: this.$t('message.Grade') + ' ' + g.KhoiID,
-								hasDelegated: this.teachingGroups.some(x => x.KhoiID === g.KhoiID && this.groupHasDelegated(x)),
+								hasTeaching: this.teachingGroups.some(x => String(x.KhoiID) === String(g.KhoiID) && Number(x.IsDirectTeacher) === 1),
+								hasDelegated: this.teachingGroups.some(x => String(x.KhoiID) === String(g.KhoiID) && this.groupHasDelegated(x)),
 								dot: this.khoiDotColors[result.length % this.khoiDotColors.length]
-						})
+							})
 					}
 				})
 				return result.sort((a, b) => a.KhoiID - b.KhoiID)
@@ -824,6 +830,12 @@
 				}
 				return text
 			},
+			// Thanh đầu trang chỉ cần ngữ cảnh ngắn; ngày đầy đủ vẫn giữ trong title
+			// để người dùng xem khi rê chuột, tránh làm breadcrumb chiếm hết chiều ngang.
+			formatTopbarBreadcrumb(label, step) {
+				if (!label || step !== 2) return label
+				return label.replace(/\s*-\s*\([^)]*\)\s*$/, '').replace(/\s*-\s*/g, ' · ')
+			},
 			resetCascadeFrom(step) {
 				if (step === 0) { this.cascadeKhoiID = null; this.cascadeMonHocName = null; this.cascadeTuanID = null }
 				else if (step === 1) { this.cascadeMonHocName = null; this.cascadeTuanID = null }
@@ -832,3 +844,110 @@
 		},
 	}
 </script>
+
+<style scoped>
+/* Breadcrumb trên topbar là ngữ cảnh điều hướng, nên ưu tiên chiều cao thấp và không tràn ngang. */
+.lms-dashboard-root .lms-topbar {
+	min-height: 44px !important;
+	height: 44px;
+}
+
+.lms-dashboard-root .lms-topbar-title {
+	flex: 1 1 auto;
+	overflow: hidden;
+}
+
+.lms-dashboard-root .lms-topbar-dashboard-label {
+	font-size: 14px !important;
+}
+
+.lms-dashboard-root .lms-topbar-action,
+.lms-dashboard-root .lms-focus-trigger,
+.lms-dashboard-root .lms-focus-trigger-badge {
+	flex: 0 0 auto;
+}
+
+.lms-dashboard-root .lms-topbar-help {
+	margin-left: 4px;
+}
+
+/* Hai nút cờ là nhóm cuối của toolbar; kích thước cố định giúp chúng không tràn khỏi viewport. */
+.lms-dashboard-root .lms-language-toggle {
+	flex: 0 0 auto;
+	min-width: 0;
+	height: 36px;
+}
+
+.lms-dashboard-root .lms-language-toggle .lms-language-btn {
+	min-width: 36px;
+	width: 36px;
+	height: 36px;
+	padding: 0;
+}
+
+.lms-dashboard-root .lms-topbar-teacher-btn {
+	flex: 0 0 auto;
+	min-width: auto;
+	white-space: nowrap;
+}
+
+.lms-dashboard-root .lms-topbar-breadcrumb {
+	display: flex;
+	align-items: center;
+	gap: 3px;
+	min-width: 0;
+	max-width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.lms-dashboard-root .lms-topbar-breadcrumb .bc-chip {
+	display: inline-flex;
+	align-items: center;
+	min-width: 0;
+	max-width: 125px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	padding: 4px 8px;
+	font-size: 12px;
+	line-height: 1.2;
+}
+
+.lms-dashboard-root .lms-topbar-breadcrumb .bc-chip--week {
+	max-width: 205px;
+}
+
+.lms-dashboard-root .lms-topbar-breadcrumb .bc-sep {
+	flex: 0 0 auto;
+	margin: 0 1px;
+}
+
+/* Khi màn hình hẹp, rút ngắn chip tuần trước khi để toolbar tự cuộn/tràn. */
+@media (max-width: 760px) {
+	.lms-dashboard-root .lms-topbar-dashboard-label {
+		font-size: 13px !important;
+	}
+
+	.lms-dashboard-root .lms-topbar-breadcrumb .bc-chip {
+		max-width: 88px;
+		padding-left: 6px;
+		padding-right: 6px;
+		font-size: 11px;
+	}
+
+	.lms-dashboard-root .lms-topbar-breadcrumb .bc-chip--week {
+		max-width: 145px;
+	}
+}
+
+@media (max-width: 560px) {
+	.lms-dashboard-root .lms-topbar-dashboard-label {
+		display: none;
+	}
+
+	.lms-dashboard-root .lms-topbar-breadcrumb .bc-chip--week {
+		max-width: 115px;
+	}
+}
+</style>

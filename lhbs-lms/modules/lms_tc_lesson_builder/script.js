@@ -14,6 +14,20 @@ function getFirstApiRow(response) {
 function getApiErrorMessage(response) {
     return response?.Message || response?.message || response?.error?.Message || response?.error?.message;
 }
+function normalizeElementCompletion(element) {
+    const requiredValue = element?.IsRequired;
+    element.IsRequired = requiredValue === undefined || requiredValue === null
+        ? 1
+        : ([true, 1, '1'].includes(requiredValue) ? 1 : 0);
+    element.CompletionMode = element.CompletionMode || 'TIME_REQUIRED';
+    const expected = Number.parseInt(element.ExpectedDurationSeconds, 10);
+    const required = Number.parseInt(element.RequiredDurationSeconds, 10);
+    element.ExpectedDurationSeconds = Number.isFinite(expected) && expected >= 0 ? expected : null;
+    element.RequiredDurationSeconds = Number.isFinite(required) && required >= 1 ? required : null;
+    element.ElementProgressStatus = element.ElementProgressStatus || 'NOT_STARTED';
+    element.ElementTimeSpentSeconds = Number(element.ElementTimeSpentSeconds) || 0;
+    return element;
+}
 function serializeElementData(value) {
     if (typeof value === 'string') {
         try {
@@ -28,8 +42,16 @@ function serializeElementData(value) {
 function processInitialData(data) {
     if (data && data.length >= 2) {
         const lessonData = data[0][0];
+        // Quyền SUBJECT chỉ cho xem; SP trả CanEdit để không mở nhầm thao tác sửa/giao bài.
+        const canEditValue = lessonData?.CanEdit;
+        vueData.canEdit = canEditValue === undefined || canEditValue === null
+            ? true
+            : [true, 1, '1'].includes(canEditValue);
         // Bài cũ chưa có thời lượng cấu hình sẽ hiển thị và lưu lại theo mặc định 3 phút.
         lessonData.EstimatedDuration = normalizeCompletionDuration(lessonData.EstimatedDuration);
+        // Null/missing policy là dữ liệu lesson cũ; luôn mở theo timer tổng để giữ nguyên tiến độ hiện có.
+        lessonData.CompletionPolicy = lessonData.CompletionPolicy === 'ALL_REQUIRED' ? 'ALL_REQUIRED' : 'LEGACY_DURATION';
+        lessonData.RequireSequential = [true, 1, '1'].includes(lessonData.RequireSequential) ? 1 : 0;
         const elementsData = data[1];
         lessonData.elements = (elementsData || []).map(el => {
             try {
@@ -37,7 +59,7 @@ function processInitialData(data) {
             } catch (e) {
                 el.ElementData = {};
             }
-            return el;
+            return normalizeElementCompletion(el);
         });
         vueData.lesson = lessonData;
         console.log('vueData.lesson', vueData.lesson)
@@ -54,9 +76,12 @@ function initPage() {
         CALL('getLessonData')
     } else {
         vueData.isEditMode = false;
+        vueData.canEdit = true;
         vueData.lesson = {
             Title: '', Description: '', Tuan: '', Chuong: '',
             EstimatedDuration: DEFAULT_COMPLETION_DURATION_MINUTES,
+            CompletionPolicy: 'LEGACY_DURATION',
+            RequireSequential: 0,
             Status: 1,
             elements: []
         };
@@ -69,8 +94,8 @@ async function saveLesson(payload) {
     // API lưu theo phút; luôn gửi giá trị hợp lệ để ngưỡng hoàn thành không rơi về 0.
     dataToSend.EstimatedDuration = normalizeCompletionDuration(dataToSend.EstimatedDuration);
     // Bắt buộc chờ lưu phần header trước để lấy LessonID hợp lệ cho toàn bộ element.
-    const response = await fetchPromise("lms/EL_Lesson_Save", {
-        LessonID: dataToSend.LessonID,
+    const response = await fetchPromise("lms/EL_Lesson_Save_V2", {
+        LessonID: Number(dataToSend.LessonID) || 0,
         TuanHocID: dataToSend.TuanHocID,
         Chuong: dataToSend.Chuong,
         Title: dataToSend.Title,
@@ -83,6 +108,8 @@ async function saveLesson(payload) {
         ThumbnailURL: dataToSend.ThumbnailURL,
         Status: dataToSend.Status,
         IsPublic: dataToSend.IsPublic ? 1 : 0,
+        CompletionPolicy: dataToSend.CompletionPolicy === 'ALL_REQUIRED' ? 'ALL_REQUIRED' : 'LEGACY_DURATION',
+        RequireSequential: [true, 1, '1'].includes(dataToSend.RequireSequential) ? 1 : 0,
     }, { cache: false });
     const lessonRow = getFirstApiRow(response);
     const responseError = getApiErrorMessage(response);
@@ -102,9 +129,13 @@ async function saveLesson(payload) {
     const Json_Elements = JSON.stringify(elements.map(x => ({
         ...x,
         LessonID: newLessonID,
+        IsRequired: [true, 1, '1'].includes(x.IsRequired) ? 1 : 0,
+        CompletionMode: x.CompletionMode || 'TIME_REQUIRED',
+        ExpectedDurationSeconds: x.ExpectedDurationSeconds ?? null,
+        RequiredDurationSeconds: x.RequiredDurationSeconds ?? null,
         ElementData: serializeElementData(x.ElementData)
     })));
-    const elementsResponse = await fetchPromise('lms/EL_Element_Save_Multiple', {
+    const elementsResponse = await fetchPromise('lms/EL_Element_Save_Multiple_V2', {
         LessonID: newLessonID,
         Json_Elements
     }, { cache: false });

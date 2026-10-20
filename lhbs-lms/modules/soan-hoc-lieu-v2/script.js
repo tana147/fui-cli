@@ -62,6 +62,13 @@ window.QuizHelpers = {
                         { type: 'blank', correctAnswer: 'Hà Nội' },
                     ],
                 };
+            case 'SHORT_ANSWER':
+            case 'ESSAY':
+                // Đáp án tham khảo chỉ phục vụ giáo viên khi chấm; học sinh không nhận key này trong answerData.
+                return {
+                    prompt: parsedData.prompt || 'Nhập câu hỏi ở đây...',
+                    referenceAnswer: parsedData.referenceAnswer || '',
+                };
             case 'QUIZ_CONNECTION':
                 return {
                     prompt: parsedData.prompt || 'Nối các mục vào nhóm thích hợp:',

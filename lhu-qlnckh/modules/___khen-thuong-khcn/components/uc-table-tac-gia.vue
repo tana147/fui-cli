@@ -1,7 +1,7 @@
 <template>
 	<v-card outlined class="rounded-xs">
-		<v-card-title class="pa-3 d-flex align-center justify-space-between flex-wrap" style="gap: 8px;">
-			<div class="d-flex align-center flex-wrap" style="gap: 8px;">
+		<v-card-title class="pa-3 d-flex align-center justify-space-between flex-wrap gap-8">
+			<div class="d-flex align-center flex-wrap gap-8">
 				<span class="text-subtitle-1 font-weight-bold primary--text">
 					<v-icon color="primary" class="mr-1">mdi-account-group</v-icon>
 					Danh sách thành viên nhận khen thưởng
@@ -17,11 +17,11 @@
 					GVHD: {{ mentorTotalRate }}% / 100%
 				</v-chip>
 			</div>
-			<div class="d-flex align-center flex-wrap" style="gap: 8px;">
+			<div class="d-flex align-center flex-wrap gap-8">
 				<!-- Chuyển mode nhận tiền trực tiếp tại Tab 3 -->
-				<div class="d-flex align-center grey lighten-4 px-2 py-1 rounded-sm border">
+				<div class="d-flex align-center grey lighten-4 px-2 py-1 rounded-xs border">
 					<span class="text-caption font-weight-bold grey--text text--darken-2 mr-2">Hình thức:</span>
-					<v-btn-toggle v-model="localHinhThucThanhToan" mandatory dense borderless color="primary" @change="onPaymentModeChange">
+					<v-btn-toggle v-model="localHinhThucThanhToan" mandatory dense borderless color="primary" :disabled="readonly" @change="onPaymentModeChange">
 						<v-btn :value="1" x-small class="text-none font-weight-medium">
 							<v-icon left x-small>mdi-account-multiple</v-icon>
 							Từng cá nhân
@@ -34,11 +34,11 @@
 				</div>
 
 				<!-- Option chia đều nhanh -->
-				<v-btn color="indigo darken-1" small outlined elevation="0" class="text-capitalize"
+				<v-btn v-if="!readonly" color="indigo darken-1" small outlined elevation="0" class="text-capitalize"
 					:disabled="membersList.length === 0" @click="chiaDeuTyLe">
 					<v-icon left small>mdi-scale-balance</v-icon>Chia đều 100%
 				</v-btn>
-				<v-btn color="primary" small elevation="0" class="text-capitalize" @click="openDialog(null)">
+				<v-btn v-if="!readonly" color="primary" small elevation="0" class="text-capitalize" @click="openDialog(null)">
 					<v-icon left small>mdi-account-plus</v-icon>Thêm thành viên
 				</v-btn>
 			</div>
@@ -46,12 +46,12 @@
 
 		<!-- Banner thông báo khi ở chế độ ủy quyền -->
 		<v-alert v-if="isDaiDienMode" type="info" text dense class="mx-3 my-2 rounded-xs font-weight-medium">
-			<div class="d-flex align-center justify-space-between flex-wrap" style="gap: 8px;">
+			<div class="d-flex align-center justify-space-between flex-wrap gap-8">
 				<div>
 					<v-icon left small color="info">mdi-information</v-icon>
 					<strong>Chế độ ủy quyền nhận thay:</strong> Toàn bộ tiền thưởng của Nhóm tác giả sẽ được chuyển khoản cho <strong>{{ representativeName || 'người đại diện được chỉ định' }}</strong>.
 				</div>
-				<div class="caption font-italic grey--text text--darken-2">
+				<div v-if="!readonly" class="caption font-italic grey--text text--darken-2">
 					(Tích chọn ô "Đại diện" ở dòng thành viên tương ứng bên dưới để đổi người nhận)
 				</div>
 			</div>
@@ -75,16 +75,19 @@
 				</template>
 
 				<template v-slot:item.TyLeDongGop="{ item }">
-					<div class="d-flex align-center justify-end" style="max-width: 100px;">
+					<div v-if="!readonly" class="d-flex align-center justify-end rate-input-wrap">
 						<v-text-field v-model.number="item.TyLeDongGop" type="number" min="1" max="100" dense outlined
-							hide-details suffix="%" class="text-right my-1" style="font-size: 13px;" />
+							hide-details suffix="%" class="text-right my-1 rate-input" />
+					</div>
+					<div v-else class="text-right font-weight-medium pr-2">
+						{{ item.TyLeDongGop }}%
 					</div>
 				</template>
 
 				<template v-slot:item.Is_DaiDienNhanTien="{ item }">
 					<div class="d-flex justify-center align-center">
 						<v-checkbox v-model="item.Is_DaiDienNhanTien" dense hide-details class="mt-0 pt-0"
-							@change="onToggleDaiDien(item)"></v-checkbox>
+							:disabled="readonly" @change="onToggleDaiDien(item)"></v-checkbox>
 					</div>
 				</template>
 
@@ -208,6 +211,7 @@
 			value: { type: Array, default: () => [] },
 			khenThuongObj: { type: Object, default: () => ({}) },
 			dsNganHang: { type: Array, default: () => [] },
+			readonly: { type: Boolean, default: false },
 		},
 		emits: ['input', 'update:hinh-thuc-thanh-toan'],
 		data() {
@@ -279,7 +283,9 @@
 				if (this.isDaiDienMode) {
 					base.push({ text: 'Đại diện', value: 'Is_DaiDienNhanTien', align: 'center', width: 90, sortable: false })
 				}
-				base.push({ text: 'Thao tác', value: 'actions', align: 'center', width: 80, sortable: false })
+				if (!this.readonly) {
+					base.push({ text: 'Thao tác', value: 'actions', align: 'center', width: 80, sortable: false })
+				}
 				return base
 			},
 			bankList() {

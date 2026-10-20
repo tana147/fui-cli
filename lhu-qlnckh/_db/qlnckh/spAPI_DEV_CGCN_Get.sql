@@ -30,6 +30,7 @@ BEGIN
         ) AS [FileData],
         cn.NamHoc,
         cn.NhanVienSubmit,
+        COALESCE(nv.HoTen, LTRIM(RTRIM(CONCAT(tk.HoNV, ' ', tk.TenNV))), cn.NhanVienSubmit) AS TenNhanVienSubmit,
         cn.TrangThai,
         cn.ThoiGianSubmit,
         cn.LyDoReject,
@@ -37,6 +38,8 @@ BEGIN
         cn.ThoiGianDuyet,
         cn.ThoiGianCapNhat
     FROM dbo.ChuyenGiaoCongNghe_DEV cn
+    LEFT JOIN dbo.NhanVien nv ON cn.NhanVienSubmit = nv.MaNV
+    LEFT JOIN dbo.TaiKhoan tk ON cn.NhanVienSubmit = tk.MaNV
     WHERE cn.Is_Xoa = 0
       AND (@TrangThai IS NULL OR @TrangThai = 0 OR cn.TrangThai = @TrangThai)
       AND (@NamHoc IS NULL OR @NamHoc = '' OR cn.NamHoc = @NamHoc)
@@ -44,7 +47,9 @@ BEGIN
           cn.TenDuAn LIKE N'%' + @TuKhoa + N'%' OR
           cn.ChuNhiemDeTai LIKE N'%' + @TuKhoa + N'%' OR
           cn.DonViTiepNhan LIKE N'%' + @TuKhoa + N'%' OR
-          cn.SoHopDong LIKE N'%' + @TuKhoa + N'%'
+          cn.SoHopDong LIKE N'%' + @TuKhoa + N'%' OR
+          nv.HoTen LIKE N'%' + @TuKhoa + N'%' OR
+          cn.NhanVienSubmit LIKE N'%' + @TuKhoa + N'%'
       ))
     ORDER BY cn.[CGCNID] DESC;
 

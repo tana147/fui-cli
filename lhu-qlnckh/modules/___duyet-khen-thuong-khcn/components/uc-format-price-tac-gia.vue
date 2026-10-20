@@ -21,7 +21,8 @@
 					return formatAsCurrency(this.value, 0)
 				},
 				set: function (newValue) {
-					let number = Number(newValue.replace(/[^0-9\.]/g, ''))
+					let str = String(newValue !== null && newValue !== undefined ? newValue : '')
+					let number = Number(str.replace(/[^0-9\.]/g, '')) || 0
 					this.$emit('input', number)
 				}
 			}

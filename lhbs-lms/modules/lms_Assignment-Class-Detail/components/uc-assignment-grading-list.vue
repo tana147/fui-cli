@@ -145,15 +145,15 @@
 								<tbody>
 									<tr v-for="(obj, index) in getAllAssigned(item)">
 										<td class="py-2">
-								<v-chip size="small" variant="text" color="" class="me-1 font-weight-medium"
-									v-if="obj.Status !== 'NOT_SUBMITTED'">
-									{{ $t('message.Attempt') }} {{ getAttemptNumber(obj, index) }}
-								</v-chip>
+											<v-chip size="small" variant="text" color="" class="me-1 font-weight-medium"
+												v-if="obj.Status !== 'NOT_SUBMITTED'">
+												{{ $t('message.Attempt') }} {{ index + 1 }}
+											</v-chip>
 										</td>
 										<td class="py-2">
-											<v-chip :color="statusColors[obj.Status]" size="small" variant="text"
+											<v-chip :color="statusColors[item.Status]" size="small" variant="text"
 												class="font-weight-medium">
-												{{ statusTexts[obj.Status] }}
+												{{ statusTexts[item.Status] }}
 											</v-chip>
 										</td>
 										<td class="py-2"><span v-if="obj.SubmissionTime">{{
@@ -166,7 +166,7 @@
 											</span>
 											<span class="font-weight-medium text-blue"
 												v-tooltip="$t('message.MaximumScore')">
-					/{{ getAttemptMaxScore(obj) || '-' }}
+												/{{ stats.MaxScore || '-' }}
 											</span>
 										</td>
 										<td class="py-2 text-end ga-2">
@@ -236,10 +236,10 @@
 					<v-chip v-for="(obj, index) in getAllAssigned(item)" :key="index" :color="statusColors[obj.Status]"
 						size="small" variant="text" class="font-weight-medium "
 						:class="obj.Status !== 'NOT_SUBMITTED' ? 'ps-0' : ''" style="min-height: fit-content;">
-											<v-chip size="small" variant="text" color=""
-												class="me-1 font-weight-medium text-medium-emphasis" v-if="obj.Status !== 'NOT_SUBMITTED'">
-												Lần {{ getAttemptNumber(obj, index) }}:
-											</v-chip>
+						<v-chip size="small" variant="text" color=""
+							class="me-1 font-weight-medium text-medium-emphasis" v-if="obj.Status !== 'NOT_SUBMITTED'">
+							Lần {{ index + 1 }}:
+						</v-chip>
 						{{ statusTexts[obj.Status] }}
 					</v-chip>
 				</div>
@@ -282,20 +282,39 @@
 						</template>
 						<span>Phúc khảo</span>
 					</v-tooltip>
+					<!-- Yêu cầu nộp lại bài -->
+					<v-tooltip location="top">
+						<template #activator="{ props }">
+							<v-btn v-bind="props" size="x-small" color="warning" variant="text" icon
+								v-if="item.SubmissionID && [2, 3, 4].includes(item.SubmissionStatus)"
+								@click.stop="openYeuCauNopLai(item)">
+								<v-icon size="18">mdi-file-undo-outline</v-icon>
+							</v-btn>
+						</template>
+						<span>Yêu cầu nộp lại bài</span>
+					</v-tooltip>
 					<!-- Chấm bài / Xem bài -->
 					<v-tooltip location="top">
 						<template #activator="{ props }">
 							<v-btn v-bind="props" size="x-small" variant="text"
-								:color="actionColor(item)" icon
-								:disabled="isDisabled(item)"
+								:color="item.SubmissionStatus == 4 ? 'info' : 'primary'" icon
+								:disabled="!item.SubmissionID || item.SubmissionStatus == 1 || item.SubmissionStatus == 0"
 								@click.stop="RedirectToGrade(item)">
 								<v-icon size="18">
-									{{ actionIcon(item) }}
+									{{ item.SubmissionStatus == 4
+										? 'mdi-eye-outline'
+										: 'mdi-clipboard-check-outline'
+									}}
 								</v-icon>
 							</v-btn>
 						</template>
 
-						<span>{{ actionTooltip(item) }}</span>
+						<span>
+							{{ item.SubmissionStatus == 4
+								? $t('message.ReviewGraded')
+								: $t('message.GradeAssignment')
+							}}
+						</span>
 					</v-tooltip>
 					<!-- Nhắc nhở -->
 					<v-tooltip location="top">
@@ -315,6 +334,27 @@
 				</div>
 			</template>
 		</v-data-table>
+		<v-dialog v-model="yeuCauNopLai.show" max-width="480" persistent>
+			<v-card>
+				<v-card-title class="text-subtitle-1 font-weight-bold">Yêu cầu nộp lại bài</v-card-title>
+				<v-card-text>
+					<div class="mb-3">
+						Học sinh <b>{{ yeuCauNopLai.hoTen }}</b> sẽ được mở lại bài để làm lại.
+						Bài đã nộp được lưu vào lịch sử, điểm hiện tại không còn hiệu lực và học sinh nhận thông báo.
+					</div>
+					<v-textarea v-model="yeuCauNopLai.reason" label="Lý do (học sinh sẽ thấy)" rows="3"
+						variant="outlined" hide-details="auto" counter="2000" maxlength="2000"
+						:rules="[v => !!(v && v.trim()) || 'Vui lòng nhập lý do']"></v-textarea>
+				</v-card-text>
+				<v-card-actions class="justify-end">
+					<v-btn variant="text" :disabled="yeuCauNopLai.loading" @click="yeuCauNopLai.show = false">Hủy</v-btn>
+					<v-btn color="warning" variant="flat" :loading="yeuCauNopLai.loading"
+						:disabled="!yeuCauNopLai.reason || !yeuCauNopLai.reason.trim()" @click="submitYeuCauNopLai">
+						Yêu cầu nộp lại
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</v-card>
 </template>
 
@@ -335,6 +375,7 @@
 		return {
 			vueData,
 			localStorage,
+			yeuCauNopLai: { show: false, loading: false, reason: '', submissionID: null, hoTen: '' },
 			window,
 			loading: false,
 			lopList: [], monHocList: [], assignmentList: [],
@@ -456,18 +497,6 @@
 			if (val) {
 				// console.log('val', val)
 			}
-		},
-		'vueData.NienKhoa'(newVal, oldVal) {
-			if (newVal && newVal !== oldVal) {
-				this.lopList = [];
-				this.selectedLopID = null;
-				this.monHocList = [];
-				this.selectedMonHocID = null;
-				this.assignmentList = [];
-				this.selectedAssignToClassID = null;
-				this.clearReportData();
-				this.fetchMyClasses();
-			}
 		}
 	},
 	methods: {
@@ -505,35 +534,25 @@
 				{ title: this.$t('message.SubmissionInfo'), key: 'thongtinnopbai', }
 			]
 		},
-		// SubmissionStatus = 1/IN_PROGRESS nghĩa là học sinh vẫn đang làm bài;
-		// chỉ cho mở trang chấm khi bài đã nộp hoặc đang ở trạng thái chấm nháp.
-		isSubmissionInProgress(obj) {
-			return Number(obj?.SubmissionStatus) === 1 || obj?.Status === 'IN_PROGRESS'
-		},
 		isDisabled(obj) {
-			return !obj?.SubmissionID
-				|| Number(obj?.SubmissionStatus) === 0
-				|| this.isSubmissionInProgress(obj)
+			return !obj.SubmissionID
+				|| obj.SubmissionStatus == 1
+				|| obj.SubmissionStatus == 0
 		},
 
 		actionIcon(obj) {
-			if (this.isSubmissionInProgress(obj)) return 'mdi-timer-sand'
 			return obj.SubmissionStatus == 4
 				? 'mdi-eye-outline' // Xem lại
 				: 'mdi-clipboard-check-outline' // Chấm bài
 		},
 
 		actionTooltip(obj) {
-			if (this.isSubmissionInProgress(obj)) {
-				return this.$i18n.locale === 'en' ? 'Student is still working' : 'Học sinh đang làm bài'
-			}
 			return obj.SubmissionStatus == 4
 				? this.$t('message.ReviewGraded')
 				: this.$t('message.GradeAssignment')
 		},
 
 		actionColor(obj) {
-			if (this.isSubmissionInProgress(obj)) return 'warning'
 			return obj.SubmissionStatus == 4
 				? 'info'
 				: 'primary'
@@ -608,58 +627,14 @@
 				}
 			})
 		},
-		// Chấm hàng loạt phải dùng đúng tập câu của từng submission. Với bài RANDOM,
-		// AsmConfig là pool gốc còn SubmissionAssignmentConfig mới là snapshot lượt làm;
-		// chỉ lấy answer key/loại câu từ pool gốc, giữ thứ tự và điểm từ snapshot.
-		getJsonGroups(config) {
-			if (!config || typeof config !== 'object') return []
-			const groups = Array.isArray(config.groups) ? [...config.groups] : []
-			if (Array.isArray(config.questions) && config.questions.length) {
-				groups.push({ id: '__root_questions__', title: '', questions: config.questions })
-			}
-			return groups
-		},
-		getAttemptGradingGroups(hocSinh, masterConfig) {
-			const masterGroups = this.getJsonGroups(masterConfig)
-			let snapshot = null
-			try {
-				snapshot = typeof hocSinh?.SubmissionAssignmentConfig === 'string'
-					? JSON.parse(hocSinh.SubmissionAssignmentConfig)
-					: hocSinh?.SubmissionAssignmentConfig
-			} catch (error) {
-				console.warn('Không parse được SubmissionAssignmentConfig khi chấm hàng loạt:', error)
-			}
-			const snapshotGroups = this.getJsonGroups(snapshot)
-			if (!snapshotGroups.some(group => Array.isArray(group.questions) && group.questions.length)) return masterGroups
-
-			const fullQuestions = new Map(
-				masterGroups.flatMap(group => group.questions || [])
-					.filter(question => question?.id !== undefined && question?.id !== null)
-					.map(question => [String(question.id), question])
-			)
-			return snapshotGroups.map(group => ({
-				...group,
-				questions: (group.questions || []).map(snapshotQuestion => {
-					const fullQuestion = fullQuestions.get(String(snapshotQuestion?.id))
-					if (!fullQuestion) return snapshotQuestion
-					return {
-						...fullQuestion,
-						...snapshotQuestion,
-						// Snapshot có thể là bản no-answer; answer key luôn lấy từ pool gốc.
-						config: fullQuestion.config || snapshotQuestion.config,
-					}
-				})
-			}))
-		},
 		fn_ChamBaiStudent(hocSinh, AsmConfig) {
 			if (!hocSinh.SubmissionContent) return { SubmissionContent: null, Score: null }
 			const SubmissionContent = JSON.parse(hocSinh.SubmissionContent)
 			let answers = SubmissionContent?.answers ?? {}
-			const gradingGroups = this.getAttemptGradingGroups(hocSinh, AsmConfig)
 
 			let Score = 0
 
-			for (var group of gradingGroups) {
+			for (var group of AsmConfig.groups) {
 				// console.log('group.questions', group.questions)
 				for (var question of group.questions) {
 
@@ -797,7 +772,7 @@
 			vueData.loading = false;
 		},
 		async fetchMyClasses() {
-			await ajaxCALL("lms/EL_Teacher_GetMyClasses", { NienKhoa: (vueData.NienKhoaItem?.NienKhoa ?? vueData.NienKhoa), HocKi: vueData.NienKhoaItem?.HocKi }, (res) => {
+			await ajaxCALL("lms/EL_Teacher_GetMyClasses", { NienKhoa: vueData.NienKhoa, HocKi: vueData.NienKhoaItem.HocKi }, (res) => {
 				// SP trả 2 resultset: data[0]=NienKhoa hiện tại, data[1]=danh sách lớp thật
 				this.lopList = (Array.isArray(res.data) && Array.isArray(res.data[1])) ? res.data[1] : (res.data || []);
 				if (this.lopList.length > 0) {
@@ -806,7 +781,7 @@
 			});
 		},
 		async fetchSubjectsByClass(lopId) {
-			await ajaxCALL("lms/EL_Teacher_GetSubjectsByClass", { LopID: lopId, HocKi: vueData.NienKhoaItem?.HocKi, NienKhoa: (vueData.NienKhoaItem?.NienKhoa ?? vueData.NienKhoa) }, (res) => {
+			await ajaxCALL("lms/EL_Teacher_GetSubjectsByClass", { LopID: lopId, HocKi: vueData.NienKhoaItem.HocKi }, (res) => {
 				this.monHocList = res.data || [];
 				if (this.monHocList.length > 0) {
 					this.selectedMonHocID = this.monHocList.find(x => x.MonHocID == parseInt(this.monhocid))?.MonHocID ?? this.monHocList[0].MonHocID;
@@ -814,7 +789,7 @@
 			});
 		},
 		async fetchAssignmentsByClass(lopId, monHocId) {
-			await ajaxCALL("lms/EL_Teacher_GetAssignmentsByClass", { LopID: lopId, MonHocID: monHocId, HocKi: vueData.NienKhoaItem?.HocKi, NienKhoa: (vueData.NienKhoaItem?.NienKhoa ?? vueData.NienKhoa) }, (res) => {
+			await ajaxCALL("lms/EL_Teacher_GetAssignmentsByClass", { LopID: lopId, MonHocID: monHocId, HocKi: vueData.NienKhoaItem.HocKi }, (res) => {
 				this.assignmentList = res.data || [];
 				if (this.assignmentList.length > 0) {
 
@@ -880,7 +855,7 @@
 					SubmissionID: item.SubmissionID,
 					SubmissionStatus: item.SubmissionStatus,
 					SubmissionContent: item.SubmissionContent,
-					MaxScore: this.getAttemptMaxScore(item),
+					MaxScore: this.stats.MaxScore,
 					isSelected: false,
 					AccessTime: item.AccessTime,
 					DurationTime: item.DurationTime,
@@ -940,43 +915,6 @@
 			if (score == null) return '';
 			if (score < 5.0) return 'score-bad'; if (score < 7.0) return 'score-average'; return 'score-good';
 		},
-		parseSubmissionConfig(config) {
-			if (!config || config === 'null') return null
-			if (typeof config === 'object') return config
-			try {
-				return JSON.parse(config)
-			} catch (error) {
-				console.warn('Không parse được SubmissionAssignmentConfig khi lấy mẫu số:', error)
-				return null
-			}
-		},
-		// Lượt RANDOM có mẫu số riêng theo snapshot; các bài thường dùng MaxScore của bài giao.
-		// Giữ cùng quy tắc với trang chấm bài để điểm hiển thị trước khi mở bài không bị lệch mẫu số.
-		getAttemptMaxScore(submission) {
-			// API mới trả AttemptMaxScore đã lưu; fallback JSON giữ tương thích với submission cũ.
-			const storedAttemptMaxScore = Number(submission?.AttemptMaxScore)
-			if (Number.isFinite(storedAttemptMaxScore) && storedAttemptMaxScore > 0) return storedAttemptMaxScore
-
-			const snapshot = this.parseSubmissionConfig(submission?.SubmissionAssignmentConfig)
-			const snapshotGroups = this.getJsonGroups(snapshot)
-			const isRandomAttempt = snapshotGroups.some(group => group?.questionSelection?.mode === 'RANDOM')
-			if (isRandomAttempt) {
-				const snapshotScore = snapshotGroups
-					.flatMap(group => Array.isArray(group?.questions) ? group.questions : [])
-					.reduce((total, question) => {
-						const points = Number(question?.points)
-						return total + (Number.isFinite(points) ? points : 1)
-					}, 0)
-				if (snapshotScore > 0) return Number(snapshotScore.toFixed(2))
-			}
-
-			const fallbackScore = Number(
-				submission?.MaxScore
-				?? this.assignmentInfo?.MaxScore
-				?? this.stats?.MaxScore
-			)
-			return Number.isFinite(fallbackScore) && fallbackScore > 0 ? fallbackScore : null
-		},
 		viewClassReport() {
 			this.iframeRef.value.openWindow({
 				title: 'Xem báo cáo nộp bài',
@@ -984,45 +922,21 @@
 			})
 		},
 		chamBai(item) {
-			if (this.isDisabled(item)) return
 			this.iframeRef.value.openWindow({
 				title: 'Thao tác',
-				url: `/lms_tc_grade_asm?SubmissionID=${item.SubmissionID}&AssignType=${vueData.AssignType}`,
+				url: `https://lms.lhbs.vn/lms_tc_grade_asm?SubmissionID=${item.SubmissionID}`,
 				onclose: () => this.loadAllDataForAssignment(vueData.AssignToClassID_FromURL)
 			})
 		},
 		RedirectToGrade(item) {
-			// Chặn thêm ở tầng điều hướng để không thể mở trang chấm bằng gọi trực tiếp.
-			if (this.isSubmissionInProgress(item)) {
-				Vue.$toast.warning(this.$i18n.locale === 'en' ? 'The student is still working.' : 'Học sinh vẫn đang làm bài, chưa thể chấm.', { position: 'top' })
-				return
-			}
-			if (this.isDisabled(item)) return
 			this.iframeRef.value.openWindow({
 				title: this.$t('message.GradeAssignment'),
-				url: `/lms_tc_grade_asm?SubmissionID=${item.SubmissionID}&AssignType=${vueData.AssignType}`,
+				url: `https://lms.lhbs.vn/lms_tc_grade_asm?SubmissionID=${item.SubmissionID}&AssignType=${vueData.AssignType}`,
 				onclose: () => this.loadAllDataForAssignment(vueData.AssignToClassID_FromURL)
 			})
 		},
 		getAllAssigned(hocsinh) {
-			// API status trả từng SubmissionID/LanNop nhưng thứ tự JOIN không phải
-			// hợp đồng nghiệp vụ. Hiển thị và mở bài theo LanNop thật để không
-			// gắn nhầm nhãn lần làm khi học sinh làm lại hoặc làm bài RANDOM.
-			return this.studentSubmissionsOriginal
-				.filter(item => item.HocSinhID == hocsinh.HocSinhID)
-				.sort((left, right) => {
-					const leftAttempt = Number(left?.LanNop);
-					const rightAttempt = Number(right?.LanNop);
-					if (Number.isFinite(leftAttempt) && Number.isFinite(rightAttempt)) return leftAttempt - rightAttempt;
-					if (Number.isFinite(leftAttempt)) return -1;
-					if (Number.isFinite(rightAttempt)) return 1;
-					return Number(left?.SubmissionID || 0) - Number(right?.SubmissionID || 0);
-				})
-
-		},
-		getAttemptNumber(item, fallbackIndex = 0) {
-			const attempt = Number(item?.LanNop);
-			return Number.isFinite(attempt) && attempt > 0 ? attempt : fallbackIndex + 1;
+			return this.studentSubmissionsOriginal.filter(item => item.HocSinhID == hocsinh.HocSinhID)
 
 		},
 		mappingValue(item) {
@@ -1054,6 +968,30 @@
 					$this.studentSelected = []
 				}
 			})
+		},
+		openYeuCauNopLai(item) {
+			this.yeuCauNopLai = {
+				show: true,
+				loading: false,
+				reason: '',
+				submissionID: item.SubmissionID,
+				hoTen: item.HoTen || item.TenHocSinh || item.HocSinhID
+			}
+		},
+		submitYeuCauNopLai() {
+			const y = this.yeuCauNopLai
+			if (!y.submissionID || !y.reason || !y.reason.trim()) return
+			y.loading = true
+			ajaxCALLPromise("lms/EL_Teacher_YeuCauNopBaiLai", {
+				SubmissionID: y.submissionID,
+				Reason: y.reason.trim()
+			}).then(() => {
+				y.show = false
+				Vue.$toast.success('Đã yêu cầu học sinh nộp lại bài!', { position: 'top' })
+				this.fetchStudentSubmissions(this.selectedAssignToClassID)
+			}).catch(() => {
+				Vue.$toast.error('Không thể yêu cầu nộp lại bài. Vui lòng thử lại.', { position: 'top' })
+			}).finally(() => { y.loading = false })
 		},
 		ChamNhapStatus(obj) {
 			ajaxCALLPromise("lms/EL_Teacher_AssignToClass_Upd_SubmissionStatus", {

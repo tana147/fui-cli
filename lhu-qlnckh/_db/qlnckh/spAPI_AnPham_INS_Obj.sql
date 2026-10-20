@@ -300,8 +300,8 @@ AS
             0,
             @SYS_UserID,
             GETDATE(),
-            CASE WHEN ISNULL(json.MaNhanVien, '') = '' THEN 0
-                 ELSE json.Is_NhanVien END,
+            CASE WHEN json.TacGiaGroupID IN (1, 2) THEN 1
+                 ELSE ISNULL(json.Is_NhanVien, 0) END,
             json.TacGiaGroupID,
             0,
             json.Is_TacGiaChinh,

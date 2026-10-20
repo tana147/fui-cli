@@ -27,21 +27,25 @@ BEGIN
 	DECLARE @InputTable TABLE (
 		RowIndex INT IDENTITY(1,1),
 		MaHoSo VARCHAR(20),
+		NienKhoa VARCHAR(10),
 		NewStudentID VARCHAR(9)
 	);
 
-	INSERT INTO @InputTable (MaHoSo, NewStudentID)
+	INSERT INTO @InputTable (MaHoSo, NienKhoa, NewStudentID)
 	SELECT 
 		LTRIM(RTRIM(MaHoSo)),
+		LTRIM(RTRIM(NienKhoa)),
 		LTRIM(RTRIM(NewStudentID))
 	FROM OPENJSON(@JsonData)
 	WITH (
 		MaHoSo VARCHAR(20) '$.MaHoSo',
+		NienKhoa VARCHAR(10) '$.NienKhoa',
 		NewStudentID VARCHAR(9) '$.NewStudentID'
 	);
 
 	DECLARE @ResultTable TABLE (
 		MaHoSo VARCHAR(20),
+		NienKhoa VARCHAR(10),
 		OldStudentID VARCHAR(20),
 		NewStudentID VARCHAR(9),
 		Success BIT,
@@ -52,6 +56,7 @@ BEGIN
 	DECLARE @CurrentRow INT = 1;
 
 	DECLARE @CurMaHoSo VARCHAR(20);
+	DECLARE @CurNienKhoa VARCHAR(10);
 	DECLARE @CurNewStudentID VARCHAR(9);
 	DECLARE @CurOldStudentID VARCHAR(20);
 
@@ -59,6 +64,7 @@ BEGIN
 	BEGIN
 		SELECT 
 			@CurMaHoSo = MaHoSo,
+			@CurNienKhoa = NienKhoa,
 			@CurNewStudentID = NewStudentID
 		FROM @InputTable
 		WHERE RowIndex = @CurrentRow;
@@ -68,14 +74,14 @@ BEGIN
 		-- Validate dữ liệu dòng
 		IF (@CurMaHoSo IS NULL OR @CurMaHoSo = '')
 		BEGIN
-			INSERT INTO @ResultTable VALUES (@CurMaHoSo, NULL, @CurNewStudentID, 0, N'Mã hồ sơ trống');
+			INSERT INTO @ResultTable VALUES (@CurMaHoSo, @CurNienKhoa, NULL, @CurNewStudentID, 0, N'Mã hồ sơ trống');
 			SET @CurrentRow = @CurrentRow + 1;
 			CONTINUE;
 		END
 
 		IF (@CurNewStudentID IS NULL OR LEN(@CurNewStudentID) <> 9 OR @CurNewStudentID LIKE '%[^0-9]%')
 		BEGIN
-			INSERT INTO @ResultTable VALUES (@CurMaHoSo, NULL, @CurNewStudentID, 0, N'Mã học viên mới không đúng định dạng 9 chữ số');
+			INSERT INTO @ResultTable VALUES (@CurMaHoSo, @CurNienKhoa, NULL, @CurNewStudentID, 0, N'Mã học viên mới không đúng định dạng 9 chữ số');
 			SET @CurrentRow = @CurrentRow + 1;
 			CONTINUE;
 		END
@@ -83,26 +89,48 @@ BEGIN
 		-- Kiểm tra xem trùng lặp trong chính danh sách batch không
 		IF (SELECT COUNT(*) FROM @InputTable WHERE NewStudentID = @CurNewStudentID) > 1
 		BEGIN
-			INSERT INTO @ResultTable VALUES (@CurMaHoSo, NULL, @CurNewStudentID, 0, N'Mã học viên mới bị trùng lặp trong danh sách gửi lên');
+			INSERT INTO @ResultTable VALUES (@CurMaHoSo, @CurNienKhoa, NULL, @CurNewStudentID, 0, N'Mã học viên mới bị trùng lặp trong danh sách gửi lên');
 			SET @CurrentRow = @CurrentRow + 1;
 			CONTINUE;
 		END
 
-		-- Tìm học viên
+		IF (SELECT COUNT(*) FROM @InputTable WHERE MaHoSo = @CurMaHoSo AND (NienKhoa = @CurNienKhoa OR @CurNienKhoa IS NULL OR @CurNienKhoa = '' OR @CurNienKhoa = '0')) > 1
+		BEGIN
+			INSERT INTO @ResultTable VALUES (@CurMaHoSo, @CurNienKhoa, NULL, @CurNewStudentID, 0, N'Mã hồ sơ bị trùng lặp trong danh sách gửi lên');
+			SET @CurrentRow = @CurrentRow + 1;
+			CONTINUE;
+		END
+
+		-- Kiểm tra số lượng học viên khớp trên DB
+		DECLARE @MatchedCount INT;
+		SELECT @MatchedCount = COUNT(*)
+		FROM StudentInfo
+		WHERE (MaHoSo = @CurMaHoSo OR StudentID = @CurMaHoSo)
+		  AND (@CurNienKhoa IS NULL OR @CurNienKhoa = '' OR @CurNienKhoa = '0' OR NienKhoa = @CurNienKhoa);
+
+		IF (@MatchedCount = 0)
+		BEGIN
+			INSERT INTO @ResultTable VALUES (@CurMaHoSo, @CurNienKhoa, NULL, @CurNewStudentID, 0, N'Không tìm thấy học viên có mã hồ sơ này' + CASE WHEN @CurNienKhoa IS NOT NULL AND @CurNienKhoa <> '' AND @CurNienKhoa <> '0' THEN N' trong niên khóa ' + @CurNienKhoa ELSE N'' END);
+			SET @CurrentRow = @CurrentRow + 1;
+			CONTINUE;
+		END
+
+		IF (@MatchedCount > 1)
+		BEGIN
+			INSERT INTO @ResultTable VALUES (@CurMaHoSo, @CurNienKhoa, NULL, @CurNewStudentID, 0, N'Phát hiện có ' + CAST(@MatchedCount AS NVARCHAR(10)) + N' học viên trùng mã hồ sơ trong niên khóa này trên DB. Vui lòng kiểm tra lại!');
+			SET @CurrentRow = @CurrentRow + 1;
+			CONTINUE;
+		END
+
+		-- Lấy học viên duy nhất tìm thấy
 		SELECT TOP 1 @CurOldStudentID = StudentID
 		FROM StudentInfo
-		WHERE MaHoSo = @CurMaHoSo OR StudentID = @CurMaHoSo;
-
-		IF (@CurOldStudentID IS NULL)
-		BEGIN
-			INSERT INTO @ResultTable VALUES (@CurMaHoSo, NULL, @CurNewStudentID, 0, N'Không tìm thấy học viên có mã hồ sơ này');
-			SET @CurrentRow = @CurrentRow + 1;
-			CONTINUE;
-		END
+		WHERE (MaHoSo = @CurMaHoSo OR StudentID = @CurMaHoSo)
+		  AND (@CurNienKhoa IS NULL OR @CurNienKhoa = '' OR @CurNienKhoa = '0' OR NienKhoa = @CurNienKhoa);
 
 		IF (@CurOldStudentID = @CurNewStudentID)
 		BEGIN
-			INSERT INTO @ResultTable VALUES (@CurMaHoSo, @CurOldStudentID, @CurNewStudentID, 0, N'Mã học viên mới trùng với mã hiện tại');
+			INSERT INTO @ResultTable VALUES (@CurMaHoSo, @CurNienKhoa, @CurOldStudentID, @CurNewStudentID, 0, N'Mã học viên mới trùng với mã hiện tại');
 			SET @CurrentRow = @CurrentRow + 1;
 			CONTINUE;
 		END
@@ -110,7 +138,7 @@ BEGIN
 		-- Kiểm tra trùng lặp trên DB
 		IF EXISTS (SELECT 1 FROM StudentInfo WHERE StudentID = @CurNewStudentID AND (MaHoSo <> @CurMaHoSo OR MaHoSo IS NULL))
 		BEGIN
-			INSERT INTO @ResultTable VALUES (@CurMaHoSo, @CurOldStudentID, @CurNewStudentID, 0, N'Mã học viên mới đã tồn tại trên hệ thống');
+			INSERT INTO @ResultTable VALUES (@CurMaHoSo, @CurNienKhoa, @CurOldStudentID, @CurNewStudentID, 0, N'Mã học viên mới đã tồn tại trên hệ thống');
 			SET @CurrentRow = @CurrentRow + 1;
 			CONTINUE;
 		END
@@ -118,12 +146,12 @@ BEGIN
 		-- Bắt đầu cập nhật dòng
 		BEGIN TRANSACTION;
 		BEGIN TRY
-			-- 1. StudentInfo
+			-- 1. StudentInfo (chỉ update theo đúng StudentID duy nhất)
 			UPDATE StudentInfo
 			SET StudentID = @CurNewStudentID,
 				UpdateUser = ISNULL(@sys_UserID, UpdateUser),
 				UpdateTime = GETDATE()
-			WHERE (MaHoSo = @CurMaHoSo OR StudentID = @CurOldStudentID);
+			WHERE StudentID = @CurOldStudentID;
 
 			-- 2. Process_Student
 			UPDATE Process_Student
@@ -156,11 +184,11 @@ BEGIN
 
 			COMMIT TRANSACTION;
 
-			INSERT INTO @ResultTable VALUES (@CurMaHoSo, @CurOldStudentID, @CurNewStudentID, 1, N'Cập nhật thành công');
+			INSERT INTO @ResultTable VALUES (@CurMaHoSo, @CurNienKhoa, @CurOldStudentID, @CurNewStudentID, 1, N'Cập nhật thành công');
 		END TRY
 		BEGIN CATCH
 			IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
-			INSERT INTO @ResultTable VALUES (@CurMaHoSo, @CurOldStudentID, @CurNewStudentID, 0, ERROR_MESSAGE());
+			INSERT INTO @ResultTable VALUES (@CurMaHoSo, @CurNienKhoa, @CurOldStudentID, @CurNewStudentID, 0, ERROR_MESSAGE());
 		END CATCH
 
 		SET @CurrentRow = @CurrentRow + 1;
@@ -168,6 +196,7 @@ BEGIN
 
 	SELECT 
 		MaHoSo,
+		NienKhoa,
 		OldStudentID,
 		NewStudentID,
 		Success,

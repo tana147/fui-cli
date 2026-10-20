@@ -1,7 +1,7 @@
 <template>
 	<div class="mb-3 d-flex flex-column justify-center pa-3 pa-sm-4 period-banner-card">
 		<!-- Tiêu đề đợt & Trạng thái -->
-		<div class="d-flex flex-wrap align-center justify-center mb-1 text-center" style="gap: 8px;">
+		<div class="d-flex flex-wrap align-center justify-center mb-1 text-center gap-8">
 			<h2 class="primary--text text-subtitle-1 text-sm-h5 font-weight-bold">
 				{{ tenDotText }}
 			</h2>
@@ -14,7 +14,7 @@
 		</div>
 
 		<!-- Nội dung thông báo -->
-		<div v-if="thongBaoText" class="d-flex align-center justify-center text-center text-subtitle-2 text-sm-body-1 grey--text text--darken-3 mb-2 px-2" style="max-width: 900px; margin: 0 auto;">
+		<div v-if="thongBaoText" class="d-flex align-center justify-center text-center text-subtitle-2 text-sm-body-1 grey--text text--darken-3 mb-2 px-2 period-notice-text">
 			<v-icon small color="primary" class="mr-1">mdi-bullhorn-outline</v-icon>
 			<span><strong>Thông báo:</strong> {{ thongBaoText }}</span>
 		</div>

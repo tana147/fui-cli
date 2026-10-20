@@ -359,6 +359,20 @@
 
 			// Xử lý sự kiện quay lại trang trước
 			handleBack() {
+				// Khi mở trực tiếp hoặc đi từ viewer, referrer có thể không còn là danh mục; chọn đích theo nhóm người dùng và quyền admin.
+				const khoiId = this.bannerInfo?.KhoiID || this.bannerInfo?.KhoiHocID || this.bannerInfo?.khoiid;
+				const catalogUrl = khoiId ? `/kham-pha?khoiid=${encodeURIComponent(khoiId)}` : '/kham-pha';
+				const user = (typeof vueData !== 'undefined' && vueData?.user) || window.user || {};
+				const groupId = Number(user.GroupID ?? user.GroupId ?? user.groupid ?? user.groupID);
+				const systemRight = Number(user.SystemRight ?? user.systemRight ?? 0);
+				const editorParams = new URLSearchParams();
+				if (khoiId) editorParams.set('KhoiID', khoiId);
+				const monHocId = this.bannerInfo?.MonHocID || this.bannerInfo?.MonhocID || this.bannerInfo?.monhocid;
+				if (monHocId) editorParams.set('MonHocID', monHocId);
+				const editorUrl = `/soan-hoc-lieu-v2${editorParams.toString() ? `?${editorParams.toString()}` : ''}`;
+				const fallbackUrl = groupId === 1 && systemRight === 9
+					? editorUrl
+					: (groupId === 1 ? catalogUrl : '/lms-student-dashboard');
 				let savedReferrer = null;
 				try {
 					savedReferrer = sessionStorage.getItem('lhbs_catalog_referrer');
@@ -368,9 +382,9 @@
 				} else if (document.referrer && !document.referrer.includes('hoc-lieu-view-v2') && !document.referrer.includes('chi-tiet-hoc-lieu')) {
 					window.location.href = document.referrer;
 				} else if (typeof redirect === 'function') {
-					redirect('/lms-student-dashboard');
+					redirect(fallbackUrl);
 				} else {
-					window.history.back();
+					window.location.href = fallbackUrl;
 				}
 			},
 

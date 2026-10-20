@@ -1,35 +1,35 @@
- CREATE PROC [dbo].[spAPI_Get_SimiliarPaper] -- N'Hoàn thiện hệ thống kiểm soát nội bộ tại Công ty TNHH PT Việt'
- @TenDeTai AS NVARCHAR(500)
- AS
- BEGIN
+CREATE PROC [dbo].[spAPI_Get_SimiliarPaper]
+@TenDeTai AS NVARCHAR(500)
+AS
+BEGIN
+	SET NOCOUNT ON;
 
-	DECLARE @tbl AS TABLE (ThesisName NVARCHAR(500), ThesisStudent NVARCHAR(500), ThesisMajor NVARCHAR(500))
-	INSERT INTO @tbl(ThesisName, ThesisStudent, ThesisMajor)
-	SELECT  TOP 10 ThesisName, ThesisStudent, ThesisMajor
-		FROM  [dbo].[Thesises] WHERE ThesisName LIKE N'%' +  @TenDeTai +'%'
-	IF (SELECT COUNT(*) FROM @tbl) >0
+	SET @TenDeTai = LTRIM(RTRIM(@TenDeTai));
+	IF @TenDeTai IS NULL OR @TenDeTai = N''
+		RETURN;
+
+	-- 1. Tìm trực tiếp nếu tên đề tài có chứa @TenDeTai
+	IF EXISTS (
+		SELECT 1
+		FROM [dbo].[Thesises]
+		WHERE ThesisName LIKE N'%' + @TenDeTai + '%'
+	)
 	BEGIN
-		SELECT  ThesisName, ThesisStudent, ThesisMajor
-		FROM  @tbl
+		SELECT TOP 10 ThesisName, ThesisStudent, ThesisMajor
+		FROM [dbo].[Thesises]
+		WHERE ThesisName LIKE N'%' + @TenDeTai + '%';
+		RETURN;
 	END
-	ELSE
-	BEGIN
-		PRINT 'X'
-		SELECT TOP 5 ThesisName, ThesisStudent, ThesisMajor
-		FROM  [dbo].[Thesises]
-		WHERE dbo.edit_distance(@TenDeTai, ThesisName) <=30
-	END
-	
-		
 
-	--SELECT TOP 5 ThesisName, ThesisStudent, ThesisMajor
-	--FROM  [dbo].[Thesises]
-	--WHERE dbo.edit_distance(@TenDeTai, ThesisName) <=30
-	
-	--IF @@ROWCOUNT = 0
-	--BEGIN
-		
-	--END
+	-- 2. Nếu không tìm thấy bằng LIKE, tìm theo edit_distance <= 30
+	-- Toán học: edit_distance(A, B) luôn >= |len(A) - len(B)|
+	-- Lọc trước những đề tài có chênh lệch độ dài <= 30 để tránh chạy scalar UDF trên toàn bộ bảng
+	DECLARE @len INT = LEN(@TenDeTai);
 
- END
+	SELECT TOP 5 ThesisName, ThesisStudent, ThesisMajor
+	FROM [dbo].[Thesises]
+	WHERE ABS(LEN(ThesisName) - @len) <= 30
+	  AND dbo.edit_distance(@TenDeTai, ThesisName) <= 30;
+END
+
 

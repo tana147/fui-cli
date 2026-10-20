@@ -1,4 +1,4 @@
-CREATE PROCEDURE [dbo].[___spAPI_AnPhamTacGia_Udp]
+CREATE PROCEDURE [dbo].[spAPI_AnPhamTacGia_Udp]
     @AuthorsObjArr NVARCHAR(MAX),
 	@AnPhamID INT,
     @sys_UserID varchar(9)

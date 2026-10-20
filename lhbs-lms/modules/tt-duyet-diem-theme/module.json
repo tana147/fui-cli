@@ -17,6 +17,7 @@
           "cols": [
             {
               "el": "uc-main-layout",
+              "w": 12,
               "attr": {
                 "v-if": "NienKhoa"
               }

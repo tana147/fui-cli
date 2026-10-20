@@ -50,11 +50,9 @@
 	</v-card>
 </template>
 
-
-
 <script>
-export default {
-	props: [],
+	export default {
+		props: [],
 	data() {
 		return {
 			vueData,
@@ -297,9 +295,11 @@ export default {
 		},
 		onLoadDSHocSinh(LopID) {
 			return new Promise(resolve => {
+				// Gửi cả niên khóa đang xem để tránh lấy học sinh của năm khác cùng LopID.
 				ajaxCALL('lms/HocSinhLop_Get_ByLopID',
 					{
-						LopID: LopID
+						LopID: LopID,
+						NienKhoa: vueData.NienKhoa
 					},
 					res => {
 						this.DSHocSinh = res.data
@@ -516,5 +516,5 @@ export default {
 		},
 		calculateMedian
 	},
-}
+	}
 </script>

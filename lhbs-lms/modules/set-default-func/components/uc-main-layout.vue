@@ -302,8 +302,10 @@
             .map(row => ({ ...row, Enable: true }))
 
           for (let i = 0; i < rows.length; i += 500) {
+            // Truyền năm đang đồng bộ; không suy ra niên khóa từ LopID vì mã lớp có thể được dùng lại.
             await this._ajaxPromise('lms/IO_IN_HocSinhLop_Ins', {
               HocSinhLopObjArr: rows.slice(i, i + 500),
+              NienKhoa: namHoc,
             })
           }
 

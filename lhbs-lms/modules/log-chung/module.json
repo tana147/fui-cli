@@ -1,0 +1,72 @@
+{
+  "data": [],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid pa-0",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "Global",
+              "w": 12,
+              "innerHTML": [
+                {
+                  "el": "v-container",
+                  "attr": {
+                    "fluid": true,
+                    "class": "py-6 px-4"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-row",
+                      "attr": {
+                        "justify": "center"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": 12
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "div",
+                              "attr": {
+                                "class": "text-h4 text-primary text-center mb-1"
+                              },
+                              "innerHTML": "Trung tâm log"
+                            },
+                            {
+                              "el": "div",
+                              "attr": {
+                                "class": "text-body-1 text-medium-emphasis text-center mb-4"
+                              },
+                              "innerHTML": "Tập trung các trang lịch sử để truy cập nhanh hơn."
+                            },
+                            {
+                              "el": "div",
+                              "attr": {
+                                "class": "text-h6 text-primary text-center mb-3"
+                              },
+                              "innerHTML": "Danh sách trang log"
+                            },
+                            {
+                              "el": "uc-log-directory"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

@@ -85,16 +85,18 @@ BEGIN
 	ELSE
 	BEGIN
 		-- 2. Nếu là quyết định Giao đề tài (khớp số QĐ trong Flow_Detail.ThesisConfirmNo, xử lý lệch khoảng trắng)
-		WITH StudenList AS (
-			SELECT C.Student_ID 
-			FROM flow_detail a 
-			INNER JOIN task_detail b ON a.task_id = b.task_id 
-										AND a.task_detail_id = b.task_detail_id 
-										AND b.fieldname ='ThesisConfirmNo'
-			INNER JOIN flow c ON a.flow_id = c.flow_id AND c.use_yn = 1
-			WHERE b.FieldName = 'ThesisConfirmNo' 
-				AND LTRIM(RTRIM(a.Text_Content)) = @Decision_SoQD
-		)
+		DECLARE @StudenList TABLE (Student_ID VARCHAR(20) PRIMARY KEY);
+
+		INSERT INTO @StudenList (Student_ID)
+		SELECT DISTINCT c.Student_ID 
+		FROM flow_detail a 
+		INNER JOIN task_detail b ON a.task_id = b.task_id 
+									AND a.task_detail_id = b.task_detail_id 
+									AND b.fieldname ='ThesisConfirmNo'
+		INNER JOIN flow c ON a.flow_id = c.flow_id AND c.use_yn = 1
+		WHERE b.FieldName = 'ThesisConfirmNo' 
+			AND LTRIM(RTRIM(a.Text_Content)) = @Decision_SoQD;
+
 		INSERT INTO @tb(Student_ID 
 						,Ho_SV
 						,Ten_SV
@@ -121,7 +123,7 @@ BEGIN
 		, f.ThesisesProf1 AS Thesises_Prof1
 		, f.ThesisesProf2 AS Thesises_Prof2
 		FROM StudentInfo d
-		INNER JOIN StudenList e ON e.student_id = d.StudentID 
+		INNER JOIN @StudenList e ON e.student_id = d.StudentID 
 		LEFT JOIN (
 			SELECT c.Student_id
 				, MAX(CASE WHEN fieldname='ThesisName' THEN text_content ELSE ' ' END) ThesisName
@@ -132,7 +134,7 @@ BEGIN
 				AND a.task_detail_id = b.task_detail_id 
 				AND b.fieldname IN('ThesisName', 'ThesisesProf1', 'ThesisesProf2') 
 			INNER JOIN flow c ON a.flow_id = c.flow_id AND c.use_yn = 1
-			INNER JOIN StudenList e ON e.student_id = c.Student_ID
+			INNER JOIN @StudenList e ON e.student_id = c.Student_ID
 			WHERE a.use_yn = 1 
 			GROUP BY c.student_id
 		) f ON d.StudentID = f.student_id

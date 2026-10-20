@@ -5,9 +5,14 @@
 			<v-alert v-if="selectedLopID === '__ALL__'" type="info" variant="tonal" density="compact" class="ma-2">
 				Chọn một lớp ở thanh trên để theo dõi thành tích & khen thưởng học sinh.
 			</v-alert>
-			<div v-else class="w-100 flex-grow-1 overflow-hidden so-gvcn-theo-doi-thanh-tich-sheet" style="min-height: 0;">
+			<div v-else class="w-100 flex-grow-1 overflow-hidden so-gvcn-theo-doi-thanh-tich-sheet so-gvcn-c1-desktop-only" style="min-height: 0;">
 				<div ref="sheetRef" class="w-100 h-100 overflow-hidden" style="min-height: 0;"></div>
 			</div>
+			<!-- Mobile edits use the same row/column shape as JSpreadsheet so existing save and export paths remain shared. -->
+			<uc-so-gvcn-mobile-sheet-editor v-if="selectedLopID !== '__ALL__'" ref="mobileEditorRef"
+				class="so-gvcn-c1-mobile-editor flex-column flex-grow-1" :rows="mobileEditorRows" :columns="columns"
+				:title-index="3" :subtitle-indices="[1, 2]" :searchable="true" empty-title="Học sinh"
+				empty-text="Chưa có học sinh trong lớp này." />
 		</v-card-text>
 	</div>
 </template>
@@ -23,6 +28,7 @@
 		data() {
 			return {
 				instance: null,
+				isMobileViewport: false,
 				resizeTimer: null,
 				resizeObserver: null,
 				layoutRetry: 0,
@@ -57,6 +63,7 @@
 			}
 		},
 		mounted() {
+			this.isMobileViewport = window.matchMedia('(max-width: 959.98px)').matches
 			window.addEventListener('resize', this.onWindowResize)
 			this.startResizeObserver()
 			this.initSheet()
@@ -68,6 +75,9 @@
 			this.destroySheet()
 		},
 		computed: {
+			mobileEditorRows() {
+				return this.buildRows()
+			},
 			nestedHeaders() {
 				return [
 					[
@@ -101,7 +111,24 @@
 			},
 			onWindowResize() {
 				clearTimeout(this.resizeTimer)
-				this.resizeTimer = setTimeout(() => this.initSheet(), 120)
+				this.resizeTimer = setTimeout(() => {
+					const nextIsMobile = window.matchMedia('(max-width: 959.98px)').matches
+					if (nextIsMobile === this.isMobileViewport) return
+					const rows = this.getRowsForCurrentViewport()
+					this.isMobileViewport = nextIsMobile
+					this.$nextTick(() => {
+						if (nextIsMobile) this.$refs.mobileEditorRef?.setRows?.(rows)
+						this.initSheet(nextIsMobile ? undefined : rows)
+					})
+				}, 120)
+			},
+			getRowsForCurrentViewport() {
+				if (this.isMobileViewport) return this.$refs.mobileEditorRef?.getRows?.() || this.buildRows()
+				const sheet = Array.isArray(this.instance) ? this.instance[0] : this.instance
+				if (sheet && typeof sheet.closeEditor === 'function') {
+					try { sheet.closeEditor(true) } catch (error) {}
+				}
+				return sheet && typeof sheet.getData === 'function' ? sheet.getData() : this.buildRows()
 			},
 			startResizeObserver() {
 				const container = this.$refs.sheetRef
@@ -119,6 +146,9 @@
 				return this.instance
 			},
 			getRows() {
+				if (this.isMobileViewport) {
+					return this.$refs.mobileEditorRef?.getRows?.() || this.buildRows()
+				}
 				const sheet = Array.isArray(this.instance) ? this.instance[0] : this.instance
 				if (sheet && typeof sheet.closeEditor === 'function') {
 					try { sheet.closeEditor(true) } catch (error) {}
@@ -151,22 +181,21 @@
 				} catch (error) {}
 				this.instance = null
 			},
-		// Khởi tạo JSpreadsheet với chiều cao 100% tự co giãn theo flexbox viewport
-		initSheet() {
-			if (this.selectedLopID === '__ALL__') {
-				this.destroySheet()
-				return
-			}
-			this.$nextTick(() => {
-				const container = this.$refs.sheetRef
-				if (!container) return
-				this.destroySheet()
-				container.innerHTML = ''
-				if (typeof jspreadsheet === 'function') {
-					const data = this.buildRows()
+			initSheet(initialRows) {
+				if (this.selectedLopID === '__ALL__' || this.isMobileViewport) {
+					this.destroySheet()
+					return
+				}
+				this.$nextTick(() => {
+					const container = this.$refs.sheetRef
+					if (!container) return
+					this.destroySheet()
+					container.innerHTML = ''
+					if (typeof jspreadsheet !== 'function') return
+					const data = Array.isArray(initialRows) ? initialRows : this.buildRows()
 					this.instance = soGvcnJspreadsheet.create(container, {
 						worksheets: [{
-							data: data,
+							data,
 							columns: this.columns,
 							nestedHeaders: this.nestedHeaders,
 							rowResize: true,
@@ -183,9 +212,9 @@
 						}],
 						contextMenu: () => false
 					})
-				}
-			})
-		}
+				})
+			}
+
 		}
 	}
 </script>

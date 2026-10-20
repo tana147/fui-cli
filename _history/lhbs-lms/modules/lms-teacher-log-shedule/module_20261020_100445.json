@@ -1,0 +1,23 @@
+{
+  "data": [],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-layout",
+              "attr": {
+                "v-if": "NienKhoa"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

@@ -130,7 +130,8 @@
 				} else if (isFileDrive || isCanva) {
 					this.viewerUrl = absoluteUrl;
 				} else {
-					this.renderDocxFromUrl(absoluteUrl, "docx-container");
+					// DOC/DOCX/XLSX/PPTX dùng Office viewer qua iframe; không gọi docx-preview
+					// vì container preview không tồn tại và file .doc nhị phân không phải DOCX.
 				}
 				this.isLoading = false
 			},

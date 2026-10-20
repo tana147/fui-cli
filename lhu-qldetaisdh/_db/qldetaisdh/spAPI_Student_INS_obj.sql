@@ -95,7 +95,56 @@ BEGIN
 		)
 		BEGIN
 			SET @MsgError = N'Mã số học viên không hợp lệ. Đối với Tiến sĩ, mã học viên bắt buộc phải đúng chuẩn 9 chữ số (không dùng mã tạm HS1, HS2...).'
-			RAISERROR(@MsgError, 16, 1)
+			RAISERROR(@MsgError, 16, 1);
+			RETURN 0;
+		END
+
+		-- Kiểm tra trùng lặp (MaHoSo + NienKhoa) ngay trong danh sách gửi lên
+		IF EXISTS (
+			SELECT MaHoSo, NienKhoa 
+			FROM #TempStudentInfo 
+			WHERE MaHoSo IS NOT NULL AND LTRIM(RTRIM(MaHoSo)) <> ''
+			GROUP BY MaHoSo, NienKhoa 
+			HAVING COUNT(*) > 1
+		)
+		BEGIN
+			DECLARE @DupMaHoSo VARCHAR(20), @DupNienKhoa VARCHAR(10);
+			SELECT TOP 1 @DupMaHoSo = MaHoSo, @DupNienKhoa = NienKhoa
+			FROM #TempStudentInfo
+			WHERE MaHoSo IS NOT NULL AND LTRIM(RTRIM(MaHoSo)) <> ''
+			GROUP BY MaHoSo, NienKhoa
+			HAVING COUNT(*) > 1;
+
+			SET @MsgError = N'Trong danh sách import có mã hồ sơ "' + @DupMaHoSo + N'" bị trùng lặp trong niên khóa ' + ISNULL(@DupNienKhoa, '') + N'. Vui lòng kiểm tra lại!';
+			RAISERROR(@MsgError, 16, 1);
+			RETURN 0;
+		END
+
+		-- Kiểm tra xem (MaHoSo + NienKhoa) đã tồn tại trên Database ở học viên khác chưa
+		IF EXISTS (
+			SELECT 1 
+			FROM #TempStudentInfo T
+			INNER JOIN StudentInfo S 
+			   ON S.MaHoSo = T.MaHoSo 
+			  AND S.NienKhoa = T.NienKhoa
+			  AND S.StudentID <> T.StudentID
+			WHERE T.MaHoSo IS NOT NULL AND LTRIM(RTRIM(T.MaHoSo)) <> ''
+		)
+		BEGIN
+			DECLARE @ExistMaHoSo VARCHAR(20), @ExistNienKhoa VARCHAR(10), @ExistTenSV NVARCHAR(100);
+			SELECT TOP 1 
+				@ExistMaHoSo = T.MaHoSo, 
+				@ExistNienKhoa = T.NienKhoa,
+				@ExistTenSV = ISNULL(S.HoSV + ' ', '') + ISNULL(S.TenSV, '')
+			FROM #TempStudentInfo T
+			INNER JOIN StudentInfo S 
+			   ON S.MaHoSo = T.MaHoSo 
+			  AND S.NienKhoa = T.NienKhoa
+			  AND S.StudentID <> T.StudentID
+			WHERE T.MaHoSo IS NOT NULL AND LTRIM(RTRIM(T.MaHoSo)) <> '';
+
+			SET @MsgError = N'Mã hồ sơ "' + @ExistMaHoSo + N'" trong niên khóa ' + ISNULL(@ExistNienKhoa, '') + N' đã tồn tại trên hệ thống (thuộc học viên: ' + ISNULL(@ExistTenSV, '') + N'). Vui lòng kiểm tra lại!';
+			RAISERROR(@MsgError, 16, 1);
 			RETURN 0;
 		END
 	END

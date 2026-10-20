@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/log-chung",
+  "url": "//lms.lhbs.vn/log-chung",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "log-chung",
+  "ModuleName": "Log chung",
+  "UpdateTime": "2026-10-12 16:17:42",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-14",
+  "LoadCount": 18,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": "Log chung"
+}

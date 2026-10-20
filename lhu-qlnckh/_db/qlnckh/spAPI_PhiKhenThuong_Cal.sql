@@ -161,7 +161,7 @@ AS
                     UPDATE
                     @tacgia
                     SET
-                    KhenThuong = CAST(@KhenThuong * @HeSo *(CASE WHEN TacGiaGroupID IN (1, 2) THEN @HeSoHoTroCaoHoc ELSE 1 END) AS NUMERIC(18, 2))* IIF(@Is_NhanVien = 1, 1, 0)
+                    KhenThuong = CAST(@KhenThuong * @HeSo *(CASE WHEN TacGiaGroupID IN (1, 2) THEN @HeSoHoTroCaoHoc ELSE 1 END) AS NUMERIC(18, 2))* IIF(TacGiaGroupID IN (1, 2), 1, 0)
                     WHERE ViTri = @STT;
                     END;
                     IF (@CongThucKhenThuongID IN (52, 54, 56, 58, 60, 62, 64, 66, 68, 70)) and ((@Is_TacGiaChinh = 0) OR (@NguoiDaiDienQuyetToan = 0)) --- 20/8/2026 Tân xử lý note không chia số tác giả đối với các bài báo quốc tế, chỉ tính chính / phụ. Phụ thì công thức riêng

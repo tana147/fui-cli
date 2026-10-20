@@ -54,6 +54,8 @@
 		data() {
 			return {
 				isOpen: false,
+				// Khóa toàn bộ vòng đời cửa sổ để double-click không tạo thêm iframe/request.
+				isWindowBusy: false,
 				loading: false,
 				hasError: false,
 				fullscreen: true,
@@ -86,6 +88,10 @@
 		methods: {
 			// Gọi từ bên ngoài: this.$refs.win.openWindow({ title, url, icon, onclose })
 			openWindow({ title = '', url = '', icon = '', width, height, onclose = null } = {}) {
+				// Cửa sổ đang mở hoặc đang trong bước mở thì bỏ qua click/request tiếp theo.
+				if (this.isWindowBusy || this.isOpen) return false;
+				this.isWindowBusy = true;
+
 				this.currentTitle = title || this.title;
 				this.currentUrl = url || this.url;
 				this.currentIcon = icon || this.icon;
@@ -97,6 +103,7 @@
 				this.loading = true;
 				this.hasError = false;
 				this.isOpen = true;
+				return true;
 			},
 
 			// Bấm X → kiểm tra dirty trước khi đóng
@@ -117,6 +124,9 @@
 
 				// Hỗ trợ Function lẫn { EXE: '...' } giống openWindow cũ
 				const cb = this.oncloseCb;
+				this.oncloseCb = null;
+				// Chỉ mở khóa sau khi cửa sổ đã đi qua luồng đóng; lần click kế tiếp mới được mở.
+				this.isWindowBusy = false;
 				if (typeof cb === 'function') {
 					cb();
 				} else if (cb?.EXE) {
@@ -124,7 +134,6 @@
 				}
 
 				this.$emit('closed');
-				this.oncloseCb = null;
 			},
 
 			reloadIframe() {

@@ -1,115 +1,39 @@
 <template>
-	<div>
-		<h3 class="text-primary mb-2 mt-2 font-weight-bold">
-			IV. Các đề tài đã tham gia:
-		</h3>
-		<f-table :items="QuaTrinhDaoTao" :headers="headers" :update-form="updateForm" :update-api="updateApi"
-			:excel="false" dense></f-table>
-	</div>
+	<uc-llkh-muc title="II. Đề tài, dự án" nguon="NCKH" anchor="nckh-II"
+		note="Lấy từ đề tài KHCN cấp cơ sở, hội đồng NCKH giảng viên và kê khai giờ NCKH. Đề tài mới khai tại chức năng kê khai."
+		:actions="[{ label: 'Kê khai mới', icon: 'mdi-open-in-new' }]">
+		<f-table :items="rows" :headers="headers" :excel="false"></f-table>
+	</uc-llkh-muc>
 </template>
 
 <script>
 	export default {
-		props: [],
-		data() {
+		props: {
+			d: { type: Object, default: function () { return { deTai: [] } } }
+		},
+		data: function () {
 			return {
-				vueData,
-				QuaTrinhDaoTao: vueData.userProfile[3] ?? {},
 				headers: [
-					{ "title": "Tên đề tài", "value": "TenDeTai", "align": "left" },
-					{ "title": "Cơ quan tài trợ", "value": "CoQuanTaiTro", "align": "left" },
-					{ "title": "Vai trò", "value": "VaiTro", "align": "center" },
-					{ "title": "Thời gian thực hiện", "value": "ThoiGianThucHien", "align": "center" },
-					{ "title": "Chức năng", "value": "ctrl-update", "align": "center" }
-				],
-				updateForm: [
-					{
-						el: "v-text-field",
-						attr: {
-							"v-model": "TenDeTai",
-							"label": "Tên đề tài",
-							":rules": "[vueData.rules.required]"
-						},
-						w: 6,
-					},
-					{
-						el: "v-text-field",
-						attr: {
-							"v-model": "CoQuanTaiTro",
-							"label": "Cơ quan tài trợ",
-							":rules": "[vueData.rules.required]"
-						},
-						w: 6,
-					},
-					{
-						el: "v-text-field",
-						attr: {
-							"v-model": "VaiTro",
-							"label": "Vai trò",
-							":rules": "[vueData.rules.required]"
-						},
-						w: 4,
-					},
-					{
-						el: "v-text-field",
-						attr: {
-							"v-model": "ThoiGianThucHien",
-							"label": "Thời gian thực hiện",
-							":rules": "[vueData.rules.required]"
-						},
-						w: 8,
-					},
-				],
-				updateApi: {
-					new: {
-						API: "/HDKH_Profile_DeTaiDaThamGia_Save",
-						IN: {
-							DeTaiID: 0,
-							TenDeTai: "item.TenDeTai",
-							CoQuanTaiTro: "item.CoQuanTaiTro",
-							ThoiGianThucHien: "item.ThoiGianThucHien",
-							VaiTro: "item.VaiTro"
-						},
-						MESS: "Thêm mới đề tài thành công",
-						CALLBACK: [
-							{
-								CALL: "getUserProfile",
-							},
-						],
-					},
-					edit: {
-						API: "/HDKH_Profile_DeTaiDaThamGia_Save",
-						IN: {
-							DeTaiID: "item.DeTaiID",
-							TenDeTai: "item.TenDeTai",
-							CoQuanTaiTro: "item.CoQuanTaiTro",
-							ThoiGianThucHien: "item.ThoiGianThucHien",
-							VaiTro: "item.VaiTro"
-						},
-						MESS: "Cập nhật đề tài thành công",
-						CALLBACK: [
-							{
-								CALL: "getUserProfile",
-							},
-						],
-					},
-					delete: {
-						CONFIRM: "Bạn có muốn xóa đề tài <br/><b>{{item.TenDeTai}}</b>",
-						API: "",
-						IN: {},
-						MESS: "CHUA CO API",
-						CALLBACK: [
-							{
-								CALL: "getUserProfile",
-							},
-						],
-					},
-				},
+					{ title: "Tên đề tài", key: "TenDeTai" },
+					{ title: "Mã số", key: "MaSoDeTai" },
+					{ title: "Cấp", key: "Cap" },
+					{ title: "Lĩnh vực", key: "LinhVuc" },
+					{ title: "Thời gian", key: "ThoiGianHT" },
+					{ title: "Vai trò", key: "VaiTro" },
+					{ title: "Nguồn", key: "Nguon" }
+				]
 			}
 		},
-		mounted() { },
-		computed: {},
-		watch: {},
-		methods: {},
+		computed: {
+			rows: function () {
+				var L = window.LLKH
+				return this.d.deTai.map(function (t) {
+					return Object.assign({}, t, {
+						MaSoDeTai: L.show(t.MaSoDeTai), Cap: L.show(t.Cap), LinhVuc: L.show(t.LinhVuc),
+						ThoiGianHT: L.show(t.ThoiGian || t.Nam), VaiTro: L.show(t.VaiTro)
+					})
+				})
+			}
+		}
 	}
 </script>

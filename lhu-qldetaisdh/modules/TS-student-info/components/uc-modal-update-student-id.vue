@@ -70,6 +70,10 @@
 						<span class="font-weight-medium">{{ item.MaHoSo }}</span>
 					</template>
 
+					<template v-slot:item.NienKhoa="{ item }">
+						<span>{{ item.NienKhoa || '---' }}</span>
+					</template>
+
 					<template v-slot:item.StudentName="{ item }">
 						<span>{{ item.StudentName || '---' }}</span>
 					</template>
@@ -133,6 +137,10 @@
 				type: Array,
 				default: () => [],
 			},
+			currentNienKhoa: {
+				type: [String, Number],
+				default: "",
+			},
 		},
 		emits: ["input", "on-reload"],
 		data() {
@@ -142,9 +150,10 @@
 				isSavingBatch: false,
 				batchHeaders: [
 					{ text: "STT", value: "stt", align: "center", width: 60, sortable: false },
-					{ text: "Mã hồ sơ", value: "MaHoSo", width: 140 },
-					{ text: "Học viên (Hệ thống)", value: "StudentName", width: 220 },
-					{ text: "Mã HV mới (9 số)", value: "NewStudentID", width: 160 },
+					{ text: "Mã hồ sơ", value: "MaHoSo", width: 130 },
+					{ text: "Niên khóa", value: "NienKhoa", width: 110 },
+					{ text: "Học viên (Hệ thống)", value: "StudentName", width: 200 },
+					{ text: "Mã HV mới (9 số)", value: "NewStudentID", width: 150 },
 					{ text: "Trạng thái", value: "status", align: "center", width: 160, sortable: false },
 				],
 			}
@@ -186,14 +195,17 @@
 			},
 
 			downloadTemplate() {
+				const defaultNK = (this.currentNienKhoa && this.currentNienKhoa !== "0") ? String(this.currentNienKhoa) : "2020-01"
 				const sampleData = [
 					{
 						"Mã hồ sơ": "HS01",
+						"Niên khóa": defaultNK,
 						"Mã học viên mới": "923000215",
-						"Ghi chú": "Mã học viên mới bắt buộc gồm đúng 9 chữ số",
+						"Ghi chú": "Mã học viên mới bắt buộc gồm đúng 9 chữ số (Niên khóa có định dạng như 2020-01, 2026-03...)",
 					},
 					{
 						"Mã hồ sơ": "HSXD1",
+						"Niên khóa": defaultNK,
 						"Mã học viên mới": "923000216",
 						"Ghi chú": "Mã hồ sơ có thể là mã tạm ban đầu hoặc MSHV cũ",
 					},
@@ -232,6 +244,15 @@
 								""
 							).toString().trim()
 
+							const nienKhoa = (
+								row["Niên khóa"] ||
+								row["NienKhoa"] ||
+								row["Khóa"] ||
+								row["Khoá"] ||
+								(this.currentNienKhoa && this.currentNienKhoa !== "0" ? this.currentNienKhoa : "") ||
+								""
+							).toString().trim()
+
 							const newId = (
 								row["Mã học viên mới"] ||
 								row["Mã số học viên mới"] ||
@@ -241,13 +262,18 @@
 								""
 							).toString().trim()
 
-							// Tìm tên trong ds học viên hiện tại
+							// Tìm tên trong ds học viên hiện tại (ưu tiên khớp kèm Niên khóa nếu có)
 							let studentName = ""
 							const found = (this.dsExistStudent || []).find((s) => {
 								const sMaHoSo = (s.MaHoSo || "").toLowerCase().trim()
 								const sId = (s.StudentID || "").toLowerCase().trim()
 								const q = maHoSo.toLowerCase()
-								return sMaHoSo === q || sId === q
+								const matchId = (sMaHoSo === q || sId === q)
+								if (!matchId) return false
+								if (nienKhoa && s.NienKhoa) {
+									return s.NienKhoa.toString().trim() === nienKhoa
+								}
+								return true
 							})
 							if (found) {
 								studentName = found.HoTen || `${found.HoSV || ''} ${found.TenSV || ''}`.trim()
@@ -255,6 +281,7 @@
 
 							return {
 								MaHoSo: maHoSo,
+								NienKhoa: nienKhoa,
 								NewStudentID: newId,
 								StudentName: studentName,
 								resultSuccess: null,
@@ -286,8 +313,30 @@
 			async onSaveBatch() {
 				if (this.batchItems.length === 0 || this.batchInvalidCount > 0) return
 
+				// Kiểm tra trùng lặp NewStudentID hoặc (MaHoSo + NienKhoa) trong danh sách gửi lên
+				const seenNewId = {}
+				const seenHs = {}
+				for (let i = 0; i < this.batchItems.length; i++) {
+					const it = this.batchItems[i]
+					const rowNum = i + 1
+
+					if (seenNewId[it.NewStudentID]) {
+						Vue.$toast.error(`Mã học viên mới "${it.NewStudentID}" bị trùng lặp ở dòng ${seenNewId[it.NewStudentID]} và dòng ${rowNum}. Vui lòng sửa lại!`, { position: "top" })
+						return
+					}
+					seenNewId[it.NewStudentID] = rowNum
+
+					const hsKey = `${(it.MaHoSo || '').toLowerCase()}__${(it.NienKhoa || '').toLowerCase()}`
+					if (seenHs[hsKey]) {
+						Vue.$toast.error(`Mã hồ sơ "${it.MaHoSo}" bị trùng lặp trong niên khóa "${it.NienKhoa}" ở dòng ${seenHs[hsKey]} và dòng ${rowNum}. Vui lòng sửa lại!`, { position: "top" })
+						return
+					}
+					seenHs[hsKey] = rowNum
+				}
+
 				const payload = this.batchItems.map((x) => ({
 					MaHoSo: x.MaHoSo,
+					NienKhoa: x.NienKhoa,
 					NewStudentID: x.NewStudentID,
 				}))
 
@@ -304,12 +353,17 @@
 					const resultMap = {}
 					if (Array.isArray(res)) {
 						res.forEach((r) => {
-							resultMap[r.MaHoSo] = r
+							const key = `${r.MaHoSo}_${r.NienKhoa || ''}`
+							resultMap[key] = r
+							if (!resultMap[r.MaHoSo]) {
+								resultMap[r.MaHoSo] = r
+							}
 						})
 					}
 
 					this.batchItems.forEach((item) => {
-						const r = resultMap[item.MaHoSo]
+						const key = `${item.MaHoSo}_${item.NienKhoa || ''}`
+						const r = resultMap[key] || resultMap[item.MaHoSo]
 						if (r) {
 							item.resultSuccess = r.Success === 1 || r.Success === true
 							item.resultMessage = r.Message || ""

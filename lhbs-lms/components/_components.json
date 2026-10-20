@@ -192,6 +192,10 @@
     "comName": "uc-question-multiple-true-false"
   },
   {
+    "comID": 12254,
+    "comName": "uc-question-ordering"
+  },
+  {
     "comID": 4477,
     "comName": "uc-question-short-answer"
   },

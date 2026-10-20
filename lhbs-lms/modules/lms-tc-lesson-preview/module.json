@@ -1,4 +1,37 @@
 {
-  "data": [],
-  "controls": []
+  "data": [
+    {
+      "previewToken": "PreviewToken",
+      "dataReady": false,
+      "lesson": null
+    },
+    {
+      "EXE": "initPreviewLesson()"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid pa-0",
+      "rows": [
+        {
+          "prop": ":no-gutters='true'",
+          "cols": [
+            {
+              "el": "uc-lesson-preview-viewer",
+              "w": 12,
+              "attr": {
+                "v-if": "dataReady",
+                ":initial-lesson": "lesson"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "menuLeft": false
+  }
 }

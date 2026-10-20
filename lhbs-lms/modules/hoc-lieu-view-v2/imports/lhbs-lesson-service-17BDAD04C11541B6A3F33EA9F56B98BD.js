@@ -64,6 +64,61 @@
       return normalized;
     },
 
+    // Một số bản ghi cũ trả metadata file ở cấp item thay vì trong DataJson. Nếu bỏ qua
+    // các cột này, uc-main-view sẽ rơi vào EMPTY_STATE dù file DOC/DOCX vẫn tồn tại trong LMS.
+    extractLessonFileContent(item) {
+      if (!item || typeof item !== 'object') return null;
+
+      const readValue = keys => {
+        for (const key of keys) {
+          const value = item[key];
+          if (value !== undefined && value !== null && String(value).trim()) return value;
+        }
+        return '';
+      };
+
+      const fileId = readValue([
+        'fileId', 'FILE_ID', 'FileID', 'fileID', 'archiveFileId', 'ArchiveFileID',
+        'ResourceFileID', 'FileDataID', 'FileDataId', 'TaiNguyenFileID'
+      ]);
+      const fileName = readValue([
+        'fileName', 'FILE_NAME', 'FileName', 'TenFile', 'archiveFileName',
+        'ArchiveFileName', 'TenTep', 'TenNoiDung'
+      ]);
+      const fileUrl = readValue([
+        'url', 'source', 'FILE_URL', 'fileUrl', 'FileURL', 'FileUrl',
+        'dbUrl', 'DB_URL', 'viewerSource'
+      ]);
+      const contentType = readValue([
+        'contentType', 'FILE_CONTENTTYPE', 'FileContentType', 'MimeType',
+        'MIME_TYPE', 'fileMimeType'
+      ]);
+      const rawType = readValue(['slideType', 'fileType', 'FileType', 'LoaiFile', 'LoaiNoiDung']);
+      const value = `${rawType} ${contentType} ${fileName} ${fileUrl}`.toLowerCase();
+      const hasReference = Boolean(fileId || fileUrl) ||
+        /\.(?:pdf|docx?|xlsx?|pptx?)(?:$|[?#\s])/i.test(String(fileName));
+      if (!hasReference) return null;
+
+      let slideType = '';
+      if (/pdf|application\/pdf/.test(value)) slideType = 'PDF';
+      else if (/pptx?|powerpoint|presentation/.test(value)) slideType = 'PPT';
+      else if (/xlsx?|excel|spreadsheet/.test(value)) slideType = 'XLSX';
+      else if (/wordprocessingml|\bdocx\b/.test(value)) slideType = 'DOCX';
+      else if (/msword|(?:^|[\s._/?#-])doc(?:$|[\s._/?#-])/.test(value)) slideType = 'DOC';
+
+      const resolvedUrl = fileUrl || (fileId ? `/FileData/${fileId}` : '');
+      const resolvedName = fileName || (fileId ? `file-${fileId}` : '');
+      return {
+        title: resolvedName || item.TenNoiDung || '',
+        fileName: resolvedName,
+        fileId,
+        contentType,
+        url: resolvedUrl,
+        uploadSource: fileId || /(?:^|\/)FileData\//i.test(resolvedUrl) ? 'db' : '',
+        slideType: slideType || String(rawType || '').toUpperCase()
+      };
+    },
+
     normalizeQuizSlideContent(content, title = '', rawType = '') {
       if (!content || typeof content !== 'object') {
         return {
@@ -74,8 +129,30 @@
         };
       }
 
+      // Giữ nguyên schema composite có groups; chỉ bổ sung mảng rỗng khi dữ liệu thiếu để
+      // computed totalQuestions/allQuestions không đọc `.length` trên undefined.
+      if (Array.isArray(content.groups)) {
+        const groups = content.groups.map(group => {
+          const normalizedGroup = group && typeof group === 'object' ? group : {};
+          return {
+            ...normalizedGroup,
+            questions: Array.isArray(normalizedGroup.questions) ? normalizedGroup.questions : []
+          };
+        });
+        return {
+          ...content,
+          title: content.title || title || 'Bài tập trắc nghiệm',
+          description: content.description || '',
+          hasGroups: content.hasGroups === true || groups.length > 0,
+          groups,
+          questions: Array.isArray(content.questions) ? content.questions : [],
+          quizType: content.quizType || rawType
+        };
+      }
+
       if (Array.isArray(content.questions)) {
         return {
+          ...content,
           title: content.title || title || 'Bài tập trắc nghiệm',
           description: content.description || '',
           questions: content.questions,
@@ -4702,8 +4779,7 @@
 			<div class="lh-result-hero">
 				<div class="lh-result-icon">{{ testResult.passed ? '🎉' : '💪' }}</div>
 				<h1 class="lh-result-title">{{ testResult.passed ? 'Xuất sắc!' : 'Cố gắng lên!' }}</h1>
-				<p class="lh-result-subtitle">{{ testResult.passed ? 'Em đã hoàn thành bài kiểm tra!' : 'Hãy ôn tập và
-					thử lại nhé!' }}</p>
+				<p class="lh-result-subtitle">{{ testResult.passed ? 'Em đã hoàn thành bài kiểm tra!' : 'Hãy ôn tập và thử lại nhé!' }}</p>
 			</div>
 
 			<div class="lh-result-score">
@@ -4772,32 +4848,38 @@
   computed: {
     slideContentType() {
       const content = this.slideData?.content || {};
-      const value = `${content.slideType || content.fileType || ''} ${content.contentType || ''} ${content.fileName || content.title || ''} ${content.url || ''}`.toLowerCase();
+      // File archive cũ chỉ lưu archiveFileName/archiveFileId, không có fileName; vẫn phải suy ra loại tài liệu từ tên file.
+      const value = `${content.slideType || content.fileType || ''} ${content.contentType || ''} ${content.fileName || content.archiveFileName || content.title || ''} ${content.url || ''}`.toLowerCase();
       if (/pdf|application\/pdf/.test(value)) return 'PDF';
       if (/pptx?|powerpoint|presentation/.test(value)) return 'PPT';
       if (/xlsx?|excel|spreadsheet/.test(value)) return 'XLSX';
-      if (/docx?|msword|wordprocessingml/.test(value)) return 'DOCX';
+      if (/wordprocessingml|\bdocx\b/.test(value)) return 'DOCX';
+      if (/msword|(?:^|[\s._/?#-])doc(?:$|[\s._/?#-])/.test(value)) return 'DOC';
       return String(content.slideType || '').toUpperCase();
     },
     // Đồng bộ điều kiện nhận diện với Content Hub: URL FileData, uploadSource 'db' hoặc archiveFileId của LMS sẽ dùng viewer nội bộ
     lmsDocumentViewerUrl() {
-      if (!['PDF', 'DOCX', 'XLSX', 'PPT'].includes(this.slideContentType)) return '';
+      if (!['PDF', 'DOC', 'DOCX', 'XLSX', 'PPT'].includes(this.slideContentType)) return '';
       const content = this.slideData?.content || {};
       const rawFileDataUrl = String(
         content.dbUrl || content.DB_URL || content.FILE_URL || content.fileUrl ||
         content.FileURL || content.FileUrl || content.url || ''
       );
       const sourceId = rawFileDataUrl.match(/\/FileData\/([^/?#]+)/i)?.[1] || '';
-      const fileId = content.fileId || content.FILE_ID || content.FileID || content.fileID || content.archiveFileId || sourceId;
+      // File DOCX/PDF trong LMS phải đi cùng FileID DB; không phụ thuộc URL Drive còn sót trong DataJson.
+      const fileId = content.fileId || content.FILE_ID || content.FileID || content.fileID ||
+        content.FileDataID || content.FileDataId || content.LmsFileID || content.LmsFileId ||
+        content.archiveFileId || sourceId;
       const storageCode = String(content.storage || content.Storage || content.storageCode || content.storageType || '');
-      const isLmsFileData = /(?:file\.lhbs\.vn|lms\.lhbs\.vn)\/lms\/FileData\//i.test(rawFileDataUrl)
+      const isLmsFileData = !!fileId
+        || /(?:file\.lhbs\.vn|lms\.lhbs\.vn)\/lms\/(?:viewer\/)?FileData\//i.test(rawFileDataUrl)
         || /(?:^|\/)FileData\//i.test(rawFileDataUrl)
         || !!content.archiveFileId
         || content.uploadSource === 'db';
       const isLmsFileStorage = /LMS_.*FILEDATA/i.test(storageCode);
       if (!isLmsFileData && !isLmsFileStorage) return '';
 
-      const extensionByType = { PDF: '.pdf', DOCX: '.docx', XLSX: '.xlsx', PPT: '.pptx' };
+      const extensionByType = { PDF: '.pdf', DOC: '.doc', DOCX: '.docx', XLSX: '.xlsx', PPT: '.pptx' };
       const rawFileName = content.fileName || content.FILE_NAME || content.FileName || content.TenFile ||
         content.archiveFileName || content.title || `file-${fileId}${extensionByType[this.slideContentType] || ''}`;
       if (!fileId || !rawFileName) return '';
@@ -4813,7 +4895,9 @@
       const c = this.slideData && this.slideData.content;
       if (!c) return '';
       const url = c.url || c.source || c.viewerSource || c.externalSource || c.fileUrl || c.FileURL || '';
-      if (typeof url === 'string' && (/docs\.google\.com|canva\.com|\.docx(?:$|[?#])|\.xlsx(?:$|[?#])|\.pptx(?:$|[?#])/.test(url))) {
+      // File DOCX được upload qua Google Drive lưu URL /file/d/.../preview;
+      // phải nhận diện domain này để chuyển sang uc-office-reader thay vì rơi vào EMPTY_STATE.
+      if (typeof url === 'string' && (/docs\.google\.com|drive\.google\.com|canva\.com|office\.com|onedrive\.live\.com|sharepoint\.com|\.docx?(?:$|[?#])|\.xlsx?(?:$|[?#])|\.pptx?(?:$|[?#])/.test(url))) {
         return url;
       }
       return '';
@@ -4827,6 +4911,20 @@
       const c = this.slideData && this.slideData.content;
       if (!c) return '';
       return c.htmlContent || c.textContent || (typeof c === 'string' ? c : '');
+    },
+    // Ảnh và phần mô tả được lưu riêng trong DataJson để viewer trình bày trực quan theo hai vùng.
+    imageUrl() {
+      const c = this.slideData && this.slideData.content;
+      if (!c) return '';
+      const raw = c.url || c.source || c.externalSource || c.fileUrl || c.FILE_URL || c.src || '';
+      if (!raw || typeof raw !== 'string') return '';
+      if (/^(https?:|blob:|data:)/i.test(raw)) return raw;
+      return 'https://file.lhbs.vn/lms/' + raw.replace(/^\/+/, '');
+    },
+    imageDescription() {
+      const c = this.slideData && this.slideData.content;
+      if (!c) return '';
+      return c.textContent || c.htmlContent || c.description || c.moTa || '';
     }
   },
   methods: {
@@ -4891,15 +4989,35 @@
 
     <!-- 4. Video / Audio Media Player -->
     <div v-else-if="slideData.type === 'VIDEO' || slideData.type === 'AUDIO'" class="lh-media-slide fill-height pa-0 ma-0 w-100">
-      <uc-media-player :slide-data="slideData" />
+      <!-- Media player nhận URL trực tiếp; truyền cả metadata tương tác để video cũ vẫn chạy đúng. -->
+      <uc-media-player
+        :url="slideData.content.url || slideData.content.source || slideData.content.viewerSource || slideData.content.externalSource || slideData.content.audioUrl || ''"
+        :title="slideData.content.title || ''"
+        :interactions="slideData.content.timerMarkers || slideData.content.interactions || []"
+      />
     </div>
 
-    <!-- 5. PDF Reader -->
+    <!-- 5. Hình ảnh: hiển thị ảnh và nội dung mô tả song song, tránh rơi vào empty state như trước. -->
+    <div v-else-if="slideData.type === 'IMAGE'" class="lh-image-slide fill-height w-100 pa-3">
+      <v-row dense align="start" class="fill-height">
+        <v-col cols="12" md="7" class="d-flex align-center justify-center">
+          <v-img v-if="imageUrl" :src="imageUrl" :alt="slideData.content.title || 'Hình ảnh học liệu'"
+            max-height="600" contain />
+          <div v-else class="text-medium-emphasis text-center py-8">Chưa có hình ảnh.</div>
+        </v-col>
+        <v-col v-if="imageDescription" cols="12" md="5" class="fill-height">
+          <iframe :srcdoc="cleanIframeHtml(imageDescription)" sandbox="allow-scripts allow-popups allow-forms allow-same-origin allow-downloads"
+            title="Nội dung hình ảnh" class="lh-image-description-iframe w-100 fill-height" frameborder="0"></iframe>
+        </v-col>
+      </v-row>
+    </div>
+
+    <!-- 6. PDF Reader -->
     <div v-else-if="slideData.type === 'PDF' || slideData.type === 'PDF_BOOK'" class="lh-pdf-slide fill-height pa-0 ma-0 w-100">
       <uc-pdf-book-reader :file-url="slidePdfUrl" />
     </div>
 
-    <!-- 6. Reading / HTML / Rich Text / Empty State -->
+    <!-- 7. Reading / HTML / Rich Text / Empty State -->
     <div v-else class="lh-reading-slide fill-height pa-0 ma-0 d-flex align-center justify-center">
       <div v-if="displayHtml" class="lh-iframe-container fill-height pa-0 ma-0 position-relative w-100">
         <iframe
@@ -4953,6 +5071,7 @@
       DetailNoiDung: [],
       lenDetailNoiDung: 0,
       lenCurrentNoiDung: 0,
+      loadError: '',
       isPresentationFullscreen: false,
       showMucLucDrawer: false,
       treeMucLuc: [],
@@ -4989,6 +5108,7 @@
   methods: {
     async loadTreeData() {
       this.isLoading = true;
+      this.loadError = '';
       try {
         let result = null;
         if (typeof fetchPromise === 'function') {
@@ -5015,9 +5135,19 @@
           if (this.lessonId) {
             await this.loadLessonDetail(this.lessonId);
           }
+        } else {
+          // Node đã bị xóa hoặc học liệu không còn dữ liệu: kết thúc loading và hiển thị trạng thái rõ ràng.
+          this.slides = [];
+          this.currentSlideIndex = -1;
+          this.loadError = 'Không tìm thấy nội dung học liệu này.';
+          this.lessonTitle = 'Nội dung không còn tồn tại';
         }
       } catch (e) {
         console.error('loadTreeData error:', e);
+        this.slides = [];
+        this.currentSlideIndex = -1;
+        this.loadError = 'Không thể tải nội dung học liệu. Vui lòng thử lại.';
+        this.lessonTitle = 'Không thể tải bài học';
       } finally {
         this.isLoading = false;
       }
@@ -5025,6 +5155,7 @@
 
     async loadLessonDetail(id) {
       this.isLoading = true;
+      this.loadError = '';
       try {
         let res = null;
         if (typeof fetchPromise === 'function') {
@@ -5033,11 +5164,19 @@
           res = await new Promise(r => ajaxAPI('lms/FP_NoiDung_GetDetail', { NoiDungID: id }, r, () => r(null)));
         }
         this.handleApiResponse(res);
+        if (!res || !Array.isArray(res) || !res[0]) {
+          this.slides = [];
+          this.currentSlideIndex = -1;
+          this.loadError = 'Không tìm thấy nội dung học liệu này.';
+          this.lessonTitle = 'Nội dung không còn tồn tại';
+        }
         this.saveLog();
       } catch (e) {
         console.error('loadLessonDetail error:', e);
         this.lessonTitle = 'Lỗi tải dữ liệu bài giảng.';
         this.slides = [];
+        this.currentSlideIndex = -1;
+        this.loadError = 'Không thể tải nội dung học liệu. Vui lòng thử lại.';
       } finally {
         this.isLoading = false;
       }
@@ -5052,11 +5191,19 @@
 
         try {
           const raw = item.DataJson;
-          if (raw) {
+          if (raw && (typeof raw !== 'string' || raw.trim())) {
             slide.content = (typeof raw === 'object') ? raw : (service.isPureHTMLString(raw) ? { htmlContent: raw, textContent: raw, title: item.TenNoiDung } : JSON.parse(raw));
           }
         } catch (e) {
           slide.content = { htmlContent: item.DataJson, textContent: item.DataJson };
+        }
+
+        // Ưu tiên DataJson khi có nội dung; nếu DataJson rỗng hoặc chỉ là object placeholder,
+        // lấy metadata file ở cấp item để DOC/DOCX đi tiếp vào viewer thay vì thẻ cập nhật trống.
+        const itemFileContent = service.extractLessonFileContent(item);
+        const hasStructuredContent = slide.content && typeof slide.content === 'object' && Object.keys(slide.content).length > 0;
+        if ((!hasStructuredContent || !slide.content) && itemFileContent) {
+          slide.content = itemFileContent;
         }
 
         if (slide.content) {
@@ -5067,7 +5214,7 @@
           slide.content = { title: item.TenNoiDung, message: 'Nội dung bài học đang được cập nhật.' };
         }
 
-        if (String(slide.type || '').toUpperCase().startsWith('QUIZ_') && slide.type !== 'QUIZ_COMPOSITE') {
+        if (String(slide.type || '').toUpperCase().startsWith('QUIZ_')) {
           slide.content = service.normalizeQuizSlideContent(slide.content, item.TenNoiDung, slide.type);
         }
 
@@ -5179,7 +5326,18 @@
     },
 
     goBack() {
-      window.history.back();
+      // Nội dung đã bị xóa không còn hợp lệ để giữ lại trong query; quay về trang chi tiết của học liệu bằng HocLieuID.
+      const params = new URLSearchParams(window.location.search);
+      const hocLieuId = params.get('hoclieuid') || params.get('id') || this.HocLieuID;
+      const targetUrl = hocLieuId
+        ? `/chi-tiet-hoc-lieu?id=${encodeURIComponent(hocLieuId)}`
+        : '/chi-tiet-hoc-lieu';
+
+      if (typeof redirect === 'function') {
+        redirect(targetUrl);
+      } else {
+        window.location.href = targetUrl;
+      }
     }
   }
 }
@@ -5220,7 +5378,7 @@
               </button>
             </div>
 
-            <div v-if="slides && slides.length && currentSlideIndex !== -1" class="lh-slide-wrapper">
+          <div v-if="slides && slides.length && currentSlideIndex !== -1" class="lh-slide-wrapper">
               <uc-slide-viewer-v3
                 id="slide_viewer"
                 :slide-data="slides[currentSlideIndex]"
@@ -5231,11 +5389,28 @@
                 class="lh-slide-viewer-core"
               ></uc-slide-viewer-v3>
             </div>
-            <div v-else class="lh-loading-container">
+            <div v-else-if="isLoading" class="lh-loading-container">
               <div class="lh-loading-content">
                 <v-progress-circular :indeterminate="true" color="primary" size="36" width="3"></v-progress-circular>
                 <div class="lh-loading-text mt-3 text-medium-emphasis text-body-2">
                   <uc-latex-view :content="lessonTitle" class="d-inline"></uc-latex-view>
+                </div>
+              </div>
+            </div>
+            <div v-else class="lh-loading-container">
+              <div class="lh-empty-state-card pa-8 text-center">
+                <div class="lh-empty-state-icon-wrapper">
+                  <v-icon size="44" color="warning">mdi-file-alert-outline</v-icon>
+                </div>
+                <h3 class="lh-empty-state-title mt-3">{{ loadError || 'Chưa có nội dung để hiển thị' }}</h3>
+                <p class="lh-empty-state-desc mt-2">Mục này có thể đã bị xóa hoặc chưa được phát hành.</p>
+                <div class="lh-empty-state-actions mt-4 d-flex justify-center ga-2">
+                  <v-btn color="primary" variant="flat" size="small" prepend-icon="mdi-format-list-bulleted-square" @click="toggleMucLucDrawer">
+                    Mở mục lục
+                  </v-btn>
+                  <v-btn color="secondary" variant="tonal" size="small" prepend-icon="mdi-arrow-left" @click="goBack">
+                    Quay lại
+                  </v-btn>
                 </div>
               </div>
             </div>

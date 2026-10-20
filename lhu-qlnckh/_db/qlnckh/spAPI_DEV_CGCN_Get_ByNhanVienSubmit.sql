@@ -33,6 +33,7 @@ BEGIN
         ) AS [FileData],
         cn.NamHoc,
         cn.NhanVienSubmit,
+        COALESCE(nv.HoTen, LTRIM(RTRIM(CONCAT(tk.HoNV, ' ', tk.TenNV))), cn.NhanVienSubmit) AS TenNhanVienSubmit,
         cn.TrangThai,
         cn.ThoiGianSubmit,
         cn.LyDoReject,
@@ -40,6 +41,8 @@ BEGIN
         cn.ThoiGianDuyet,
         cn.ThoiGianCapNhat
     FROM dbo.ChuyenGiaoCongNghe_DEV cn
+    LEFT JOIN dbo.NhanVien nv ON cn.NhanVienSubmit = nv.MaNV
+    LEFT JOIN dbo.TaiKhoan tk ON cn.NhanVienSubmit = tk.MaNV
     WHERE cn.Is_Xoa = 0
       AND (cn.NhanVienSubmit = @UserCheck OR cn.NhanVienCapNhat = @UserCheck)
       AND (@TrangThai IS NULL OR @TrangThai = 0 OR cn.TrangThai = @TrangThai)

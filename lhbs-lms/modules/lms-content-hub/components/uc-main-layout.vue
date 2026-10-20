@@ -83,7 +83,16 @@
 							</div>
 							<v-list density="compact" nav class="pa-0 profile-teacher-list">
 								<v-list-item v-for="teacher in filteredInitiativeTeachers" :key="teacher.UserID" rounded="lg" :active="selectedTeacherInitiative?.UserID === teacher.UserID" color="primary" class="mb-1 mx-2" @click="selectTeacherInitiative(teacher)">
-									<template #prepend><v-avatar size="28" color="primary" variant="tonal" class="text-caption font-weight-bold mr-2">{{ (teacher.FullName || teacher.UserID).charAt(0).toUpperCase() }}</v-avatar></template>
+									<template #prepend>
+										<v-avatar size="28" color="primary" variant="tonal" class="text-caption font-weight-bold mr-2">
+											<!-- Avatar dùng GiaoVienID để ghép đúng endpoint ảnh; lỗi hoặc chưa có ảnh thì quay về chữ cái đầu. -->
+											<v-img v-if="teacherAvatarUrl(teacher)" :src="teacherAvatarUrl(teacher)" :alt="teacher.FullName || teacher.UserID" cover>
+												<template #placeholder><span>{{ teacherInitial(teacher) }}</span></template>
+												<template #error><span>{{ teacherInitial(teacher) }}</span></template>
+											</v-img>
+											<span v-else>{{ teacherInitial(teacher) }}</span>
+										</v-avatar>
+									</template>
 									<v-list-item-title class="text-body-2 font-weight-medium">{{ teacher.FullName }}</v-list-item-title>
 									<v-list-item-subtitle class="text-caption text-medium-emphasis">{{ teacher.UserID }} · {{ teacher.fileCount }} sáng kiến</v-list-item-subtitle>
 								</v-list-item>
@@ -116,7 +125,16 @@
 							</div>
 							<v-list density="compact" nav class="pa-0 profile-teacher-list">
 								<v-list-item v-for="teacher in filteredProfileTeachers" :key="teacher.UserID" rounded="lg" :active="selectedTeacherProfile?.UserID === teacher.UserID" color="primary" class="mb-1 mx-2" @click="selectTeacherProfile(teacher)">
-									<template #prepend><v-avatar size="28" color="primary" variant="tonal" class="text-caption font-weight-bold mr-2">{{ (teacher.FullName || teacher.UserID).charAt(0).toUpperCase() }}</v-avatar></template>
+									<template #prepend>
+										<v-avatar size="28" color="primary" variant="tonal" class="text-caption font-weight-bold mr-2">
+											<!-- Hồ sơ và Sáng kiến dùng chung quy tắc avatar để mã giáo viên luôn map về đúng ảnh. -->
+											<v-img v-if="teacherAvatarUrl(teacher)" :src="teacherAvatarUrl(teacher)" :alt="teacher.FullName || teacher.UserID" cover>
+												<template #placeholder><span>{{ teacherInitial(teacher) }}</span></template>
+												<template #error><span>{{ teacherInitial(teacher) }}</span></template>
+											</v-img>
+											<span v-else>{{ teacherInitial(teacher) }}</span>
+										</v-avatar>
+									</template>
 									<v-list-item-title class="text-body-2 font-weight-medium">{{ teacher.FullName }}</v-list-item-title>
 									<v-list-item-subtitle class="text-caption text-medium-emphasis">{{ teacher.UserID }} · {{ teacher.fileCount }} file</v-list-item-subtitle>
 								</v-list-item>
@@ -248,9 +266,8 @@
 										<!-- Badge tách video có mốc câu hỏi khỏi video thường ngay ở danh sách tài liệu. -->
 										<v-chip v-if="isInteractiveVideo(item)" size="x-small" color="deep-purple" variant="tonal" prepend-icon="mdi-timeline-text-outline">Video tương tác</v-chip>
 									</div>
-									<div class="text-caption text-medium-emphasis">
-										<span v-if="isInteractiveVideo(item)">{{ getInteractiveQuestionCount(item) }} câu hỏi theo mốc thời gian</span>
-										<span v-else>{{ item.contentType || 'Tệp tin' }}</span>
+									<div v-if="isInteractiveVideo(item)" class="text-caption text-medium-emphasis">
+										{{ getInteractiveQuestionCount(item) }} câu hỏi theo mốc thời gian
 									</div>
 								</div>
 							</div>
@@ -268,8 +285,8 @@
 								<!-- Video tương tác mở editor timeline để chỉnh mốc/câu hỏi; các loại video khác vẫn giữ thao tác mở nguồn phát. -->
 								<v-btn v-if="activeBranch !== 'initiative' || isInitiativeOwner(item) || isInitiativeInspectionMode" icon size="small" variant="text" color="primary" @click="isInteractiveVideo(item) && !isInitiativeInspectionMode ? openInteractiveVideoEditor(item) : openFile(item)"><v-icon>{{ isInteractiveVideo(item) && !isInitiativeInspectionMode ? 'mdi-pencil-outline' : (isImage(item) ? 'mdi-image-outline' : (isOfficeDoc(item) ? 'mdi-file-document-edit-outline' : (isPdf(item) ? 'mdi-file-eye-outline' : 'mdi-open-in-new'))) }}</v-icon><v-tooltip activator="parent" location="top">{{ isInteractiveVideo(item) && !isInitiativeInspectionMode ? 'Chỉnh sửa video tương tác' : (isImage(item) ? 'Xem ảnh' : (isOfficeDoc(item) ? 'Xem tài liệu Office' : (isPdf(item) ? 'Xem PDF' : 'Mở file'))) }}</v-tooltip></v-btn>
 								<v-icon v-else size="small" color="medium-emphasis"><v-tooltip activator="parent" location="top">Chỉ người tải lên mới được xem và xóa</v-tooltip>mdi-lock-outline</v-icon>
-								<!-- Chỉ chủ sở hữu mới xóa được; người giám sát luôn là chỉ đọc. -->
-								<v-btn v-if="!isProfileInspectionMode && !isInitiativeInspectionMode && isContentHubDocument(item) && (activeBranch !== 'initiative' || isInitiativeOwner(item))" icon size="small" variant="text" color="error" :loading="deletingDocumentId === item.NoiDungID" :disabled="Boolean(deletingDocumentId)" @click="deleteDocument(item)"><v-icon>mdi-delete-outline</v-icon><v-tooltip activator="parent" location="top">Xóa tài liệu khỏi kho</v-tooltip></v-btn>
+								<!-- Chỉ người upload mới được xóa file CONTENT_HUB; file của giáo viên khác vẫn chỉ được xem. -->
+								<v-btn v-if="!isProfileInspectionMode && !isInitiativeInspectionMode && isContentHubDocument(item) && isContentOwner(item)" icon size="small" variant="text" color="error" :loading="deletingDocumentId === item.NoiDungID" :disabled="Boolean(deletingDocumentId)" @click="deleteDocument(item)"><v-icon>mdi-delete-outline</v-icon><v-tooltip activator="parent" location="top">Xóa tài liệu khỏi kho</v-tooltip></v-btn>
 							</div>
 						</template>
 					</GlobalDataTable>
@@ -510,7 +527,7 @@
 					<!-- type="number" bị trình duyệt đổi dấu thập phân theo locale (0.25 thành 0,25); Tin học dùng text để giữ đúng dấu chấm khi hiển thị. -->
 					<v-col cols="3"><v-text-field v-model="questionForm.Points" label="Điểm" :type="isComputerSubjectContext ? 'text' : 'number'" inputmode="decimal" min="0" :step="isComputerSubjectContext ? 0.25 : 0.5" variant="outlined" density="compact" hide-details /></v-col>
 					<!-- Đồng bộ với Soạn bài tập: chỉ câu hỏi QUIZ cho phép đổi cách chấm; câu tự luận/nộp file/ghi âm luôn chấm thủ công. -->
-					<v-col cols="3"><v-select v-model="questionForm.GradingType" :items="gradingTypeOptions" label="Cách chấm" item-title="title" item-value="value" variant="outlined" density="compact" hide-details :disabled="!isQuestionAutoGradable(questionForm.Type)" :clearable="false" /></v-col>
+					<v-col cols="3"><v-select v-model="questionForm.GradingType" :items="gradingTypeOptions" label="Cách chấm" item-title="title" item-value="value" variant="outlined" density="compact" hide-details :disabled="!isQuestionAutoGradable(questionForm.Type) || questionForm.Type === 'QUIZ_ORDERING'" :clearable="false" /></v-col>
 				</v-row>
 				<!-- Câu hỏi Tiểu học không còn gán mức độ; không chỉ ẩn label mà còn bỏ mapping khi lưu. -->
 				<v-select v-if="!isPrimarySchoolContext" v-model="questionForm._skillIds" :items="DSSkill" item-title="TenKyNang" item-value="KyNang_MonHoc_ChiTietID" label="Mức độ câu hỏi" multiple chips closable-chips :loading="skillsLoading" variant="outlined" density="compact" no-data-text="Chưa có mức độ câu hỏi" class="mb-3">
@@ -840,8 +857,33 @@
 					<v-btn size="small" variant="tonal" prepend-icon="mdi-plus" @click="questionForm._matchingPairs.push({ left: '', right: '' })">Thêm cặp nối</v-btn>
 				</template>
 
+				<!-- ==================== ĐÁP ÁN: QUIZ_ORDERING (Sắp xếp thứ tự) ==================== -->
+				<template v-else-if="questionForm.Type === 'QUIZ_ORDERING'">
+					<div class="text-subtitle-2 font-weight-bold mb-2">Các ý theo thứ tự đúng</div>
+					<p class="text-caption text-medium-emphasis mb-2">Thứ tự đang hiển thị là đáp án đúng; học sinh sẽ sắp xếp lại các ý khi làm bài.</p>
+					<div v-for="(entry, i) in questionForm._orderingItems" :key="entry.id || i" class="d-flex align-start ga-2 mb-2">
+						<v-chip size="small" color="primary" variant="tonal" class="mt-2 flex-shrink-0">{{ i + 1 }}</v-chip>
+						<v-text-field v-model="entry.text" label="Nội dung ý" variant="outlined" density="compact" hide-details class="flex-grow-1" />
+						<div class="d-flex align-center mt-1">
+							<v-btn icon="mdi-arrow-up" size="small" variant="text" :disabled="i === 0" @click="moveQuestionOrderingItem(i, -1)" />
+							<v-btn icon="mdi-arrow-down" size="small" variant="text" :disabled="i === questionForm._orderingItems.length - 1" @click="moveQuestionOrderingItem(i, 1)" />
+							<v-btn v-if="questionForm._orderingItems.length > 2" icon="mdi-delete-outline" size="small" variant="text" color="error" @click="removeQuestionOrderingItem(i)" />
+						</div>
+					</div>
+					<v-btn size="small" variant="tonal" color="primary" prepend-icon="mdi-plus" @click="addQuestionOrderingItem">Thêm ý</v-btn>
+					<p class="text-caption text-medium-emphasis mt-2 mb-0">Chấm đều: mỗi ý đúng vị trí = tổng điểm câu / số ý.</p>
+				</template>
+
 				<!-- ==================== CÁC LOẠI CÂU HỎI TỰ LUẬN / CHẤM TAY ==================== -->
 				<template v-else-if="['SHORT_ANSWER', 'ESSAY', 'FILE_UPLOAD', 'AUDIO_RESPONSE'].includes(questionForm.Type)">
+					<!-- referenceAnswer chỉ dành cho hai dạng giáo viên chấm tay; không dùng làm đáp án tự động. -->
+					<uc-rich-text-editor v-if="['SHORT_ANSWER', 'ESSAY'].includes(questionForm.Type)"
+						:key="'reference-answer-' + (questionForm.Id || 'new')"
+						v-model="questionForm._referenceAnswer"
+						label="Đáp án tham khảo (chỉ giáo viên xem)"
+						placeholder="Nhập ý chính hoặc đáp án tham khảo để giáo viên đối chiếu khi chấm..."
+						:imageapi="vueData.v_Set && (vueData.v_Set.apiFile || vueData.v_Set.apiImageAdapter)"
+						variant="outlined" rows="4" auto-grow class="mb-2" />
 					<v-alert density="compact" variant="tonal" color="info" class="mb-2">Loại câu hỏi này học sinh sẽ làm bài tự luận hoặc nộp tệp / ghi âm; giáo viên sẽ chấm điểm thủ công.</v-alert>
 				</template>
 
@@ -1047,7 +1089,7 @@
 						<v-col cols="6"><v-select v-model="interactiveEditing.question.type" :items="TypeOptions" item-title="label" item-value="value" label="Loại câu hỏi *" variant="outlined" density="compact" hide-details @update:modelValue="onInteractiveQuestionTypeChange" /></v-col>
 						<!-- Video tương tác cũng giữ text cho môn Tin học để không bị locale đổi dấu chấm thành dấu phẩy. -->
 						<v-col cols="3"><v-text-field v-model="interactiveEditing.question.config.points" label="Điểm" :type="isComputerSubjectContext ? 'text' : 'number'" inputmode="decimal" min="0" :step="isComputerSubjectContext ? 0.25 : 0.5" variant="outlined" density="compact" hide-details /></v-col>
-						<v-col cols="3"><v-select v-model="interactiveEditing.question.config.gradingType" :items="gradingTypeOptions" label="Cách chấm" item-title="title" item-value="value" variant="outlined" density="compact" hide-details :disabled="!isQuestionAutoGradable(interactiveEditing.question.type)" :clearable="false" /></v-col>
+						<v-col cols="3"><v-select v-model="interactiveEditing.question.config.gradingType" :items="gradingTypeOptions" label="Cách chấm" item-title="title" item-value="value" variant="outlined" density="compact" hide-details :disabled="!isQuestionAutoGradable(interactiveEditing.question.type) || interactiveEditing.question.type === 'QUIZ_ORDERING'" :clearable="false" /></v-col>
 					</v-row>
 					<uc-rich-text-editor :key="'interactive-question-' + interactiveEditing.id" v-model="interactiveEditing.question.content.prompt" label="Nội dung câu hỏi *" :imageapi="vueData.v_Set && (vueData.v_Set.apiFile || vueData.v_Set.apiImageAdapter)" variant="outlined" rows="3" auto-grow class="mb-3" @update:modelValue="interactiveEditing.question.config.questionText = $event" />
 
@@ -1116,10 +1158,26 @@
 						<v-btn size="small" variant="tonal" prepend-icon="mdi-plus" @click="interactiveEditing.question.config.columnA.push(''); interactiveEditing.question.config.columnB.push('')">Thêm cặp nối</v-btn>
 					</template>
 
+					<template v-else-if="interactiveEditing.question.type === 'QUIZ_ORDERING'">
+						<div class="text-subtitle-2 font-weight-bold mb-2">Các ý theo thứ tự đúng</div>
+						<p class="text-caption text-medium-emphasis mb-2">Thứ tự đang hiển thị là đáp án đúng.</p>
+						<div v-for="(entry, index) in interactiveEditing.question.config.items" :key="entry.id || index" class="d-flex align-center ga-2 mb-2">
+							<v-chip size="small" color="primary" variant="tonal">{{ index + 1 }}</v-chip>
+							<v-text-field v-model="entry.text" label="Nội dung ý" variant="outlined" density="compact" hide-details class="flex-grow-1" />
+							<v-btn icon="mdi-arrow-up" size="small" variant="text" :disabled="index === 0" @click="moveInteractiveOrderingItem(index, -1)" />
+							<v-btn icon="mdi-arrow-down" size="small" variant="text" :disabled="index === interactiveEditing.question.config.items.length - 1" @click="moveInteractiveOrderingItem(index, 1)" />
+							<v-btn v-if="interactiveEditing.question.config.items.length > 2" icon="mdi-delete-outline" size="small" variant="text" color="error" @click="removeInteractiveOrderingItem(index)" />
+						</div>
+						<v-btn size="small" variant="tonal" color="primary" prepend-icon="mdi-plus" @click="addInteractiveOrderingItem">Thêm ý</v-btn>
+						<p class="text-caption text-medium-emphasis mt-2 mb-0">Chấm đều: mỗi ý đúng vị trí = tổng điểm câu / số ý.</p>
+					</template>
+
 					<!-- Tự luận và trả lời ngắn không có đáp án đúng để chấm tự động; vẫn cần lưu hướng dẫn làm bài để màn hình học sinh dùng đúng cấu hình. -->
 					<template v-else-if="interactiveEditing.question.type === 'SHORT_ANSWER'">
 						<v-textarea v-model="interactiveEditing.question.config.instruction" label="Hướng dẫn trả lời (không bắt buộc)" placeholder="Ví dụ: Trả lời ngắn gọn trong 1–2 câu..." variant="outlined" density="compact" rows="2" auto-grow hide-details="auto" />
 						<v-text-field v-model.number="interactiveEditing.question.config.maxLength" label="Số ký tự tối đa (0 = không giới hạn)" type="number" min="0" variant="outlined" density="compact" hide-details="auto" class="mt-2" />
+						<!-- Đáp án tham khảo được lưu trong config để giáo viên xem khi chấm, học sinh không nhận được trường này trong form trả lời. -->
+						<uc-rich-text-editor v-model="interactiveEditing.question.config.referenceAnswer" label="Đáp án tham khảo (chỉ giáo viên xem)" placeholder="Nhập câu trả lời hoặc các ý chính tham khảo..." :imageapi="vueData.v_Set && (vueData.v_Set.apiFile || vueData.v_Set.apiImageAdapter)" variant="outlined" rows="3" auto-grow class="mt-2" />
 						<v-alert density="compact" variant="tonal" color="info" class="mt-2">Học sinh nhập câu trả lời ngắn; giáo viên sẽ chấm thủ công.</v-alert>
 					</template>
 
@@ -1129,6 +1187,8 @@
 							<v-col cols="6"><v-text-field v-model.number="interactiveEditing.question.config.minWords" label="Số từ tối thiểu" type="number" min="0" variant="outlined" density="compact" hide-details="auto" /></v-col>
 							<v-col cols="6"><v-text-field v-model.number="interactiveEditing.question.config.maxLength" label="Số ký tự tối đa" type="number" min="0" variant="outlined" density="compact" hide-details="auto" /></v-col>
 						</v-row>
+						<!-- Tự luận dùng cùng key referenceAnswer với câu hỏi trong ngân hàng để trang chấm bài đọc được một schema duy nhất. -->
+						<uc-rich-text-editor v-model="interactiveEditing.question.config.referenceAnswer" label="Đáp án tham khảo (chỉ giáo viên xem)" placeholder="Nhập ý chính hoặc đáp án tham khảo..." :imageapi="vueData.v_Set && (vueData.v_Set.apiFile || vueData.v_Set.apiImageAdapter)" variant="outlined" rows="3" auto-grow class="mt-2" />
 						<v-alert density="compact" variant="tonal" color="info" class="mt-2">Học sinh soạn câu trả lời tự luận; giáo viên sẽ chấm thủ công.</v-alert>
 					</template>
 
@@ -1580,6 +1640,7 @@
 				{ value: 'QUIZ_MULTIPLE_TRUE_FALSE', label: 'Nhiều mệnh đề Đúng / Sai' },
 				{ value: 'QUIZ_FILL_IN_BLANK', label: 'Điền chỗ trống' },
 				{ value: 'QUIZ_MATCHING', label: 'Nối đáp án' },
+				{ value: 'QUIZ_ORDERING', label: 'Sắp xếp thứ tự' },
 				{ value: 'SHORT_ANSWER', label: 'Trả lời ngắn' },
 				{ value: 'ESSAY', label: 'Tự luận' },
 				{ value: 'FILE_UPLOAD', label: 'Nộp file' },
@@ -1670,17 +1731,17 @@
 		isInitiativeInspectionMode() {
 			return Boolean(this.isBGHUser && this.activeBranch === 'initiative' && this.initiativeMode === 'teachers' && this.selectedTeacherInitiative)
 		},
-		profileTeachers() {
-			const profileLibs = this.libraries.filter(item => Number(item.KhoiID || 0) === 0 && Number(item.MonHocID || 0) === 0 && (String(item.TenHocLieu || '').trim() === 'Hồ sơ của tôi' || item.TaiNguyenLoaiCode === 'TAI_LIEU_THAM_KHAO'))
-			const libMap = new Map()
-			profileLibs.forEach(lib => {
-				const userId = String(lib.CreateUser || lib.NguoiUploadID || '').trim()
-				if (userId) libMap.set(userId.toUpperCase(), { UserID: userId, FullName: lib.NguoiUploadName || userId, HocLieuID: lib.HocLieuID, fileCount: Number(lib.SoLuongFile || 0) })
+						profileTeachers() {
+							const profileLibs = this.libraries.filter(item => Number(item.KhoiID || 0) === 0 && Number(item.MonHocID || 0) === 0 && (String(item.TenHocLieu || '').trim() === 'Hồ sơ của tôi' || item.TaiNguyenLoaiCode === 'TAI_LIEU_THAM_KHAO'))
+							const libMap = new Map()
+							profileLibs.forEach(lib => {
+								const userId = String(lib.CreateUser || lib.NguoiUploadID || '').trim()
+								if (userId) libMap.set(userId.toUpperCase(), { GiaoVienID: userId, UserID: userId, FullName: lib.NguoiUploadName || userId, HocLieuID: lib.HocLieuID, fileCount: Number(lib.SoLuongFile || 0) })
 			})
 			if (this.assignedTeachers.length) {
 				return this.assignedTeachers.map(teacher => {
 					const info = libMap.get(String(teacher.UserID || '').trim().toUpperCase())
-					return { UserID: teacher.UserID, FullName: teacher.FullName || info?.FullName || teacher.UserID, HocLieuID: info?.HocLieuID || null, fileCount: info?.fileCount || 0 }
+					return { GiaoVienID: teacher.GiaoVienID || teacher.UserID, UserID: teacher.UserID, FullName: teacher.FullName || info?.FullName || teacher.UserID, HocLieuID: info?.HocLieuID || null, fileCount: info?.fileCount || 0 }
 				}).sort((a, b) => (b.fileCount || 0) - (a.fileCount || 0) || a.FullName.localeCompare(b.FullName))
 			}
 			return Array.from(libMap.values()).sort((a, b) => (b.fileCount || 0) - (a.fileCount || 0) || a.FullName.localeCompare(b.FullName))
@@ -1704,10 +1765,10 @@
 			if (this.assignedTeachers.length) {
 				return this.assignedTeachers.map(teacher => {
 					const key = String(teacher.UserID || '').trim().toUpperCase()
-					return { UserID: teacher.UserID, FullName: teacher.FullName || nameMap.get(key) || teacher.UserID, fileCount: countMap.get(key) || 0 }
+					return { GiaoVienID: teacher.GiaoVienID || teacher.UserID, UserID: teacher.UserID, FullName: teacher.FullName || nameMap.get(key) || teacher.UserID, fileCount: countMap.get(key) || 0 }
 				}).sort((a, b) => (b.fileCount || 0) - (a.fileCount || 0) || a.FullName.localeCompare(b.FullName))
 			}
-			return Array.from(countMap.entries()).map(([key, count]) => ({ UserID: key, FullName: nameMap.get(key) || key, fileCount: count })).sort((a, b) => (b.fileCount || 0) - (a.fileCount || 0) || a.FullName.localeCompare(b.FullName))
+			return Array.from(countMap.entries()).map(([key, count]) => ({ GiaoVienID: key, UserID: key, FullName: nameMap.get(key) || key, fileCount: count })).sort((a, b) => (b.fileCount || 0) - (a.fileCount || 0) || a.FullName.localeCompare(b.FullName))
 		},
 		filteredInitiativeTeachers() {
 			const query = String(this.initiativeTeacherSearchQuery || '').trim().toLowerCase()
@@ -1740,6 +1801,9 @@
 		},
 		isPrimarySchoolContext() {
 			const selectedKhoi = this.treeKhoi.find(item => String(item?.KhoiID) === String(this.selectedMon?.KhoiID)) || {}
+			// API có thể chỉ trả KhoiID; sidebar vẫn hiển thị fallback "Khối N", nên dùng cùng nhãn fallback để nhận diện Tiểu học.
+			const selectedKhoiId = selectedKhoi?.KhoiID ?? this.selectedMon?.KhoiID
+			const selectedKhoiDisplayName = selectedKhoi?.TenKhoiHoc || selectedKhoi?.KhoiName || (selectedKhoiId ? 'Khối ' + selectedKhoiId : '')
 			const contextValues = [
 				this.vueData?.CapID,
 				this.vueData?.CapHocID,
@@ -1758,6 +1822,7 @@
 				selectedKhoi?.CapHocName,
 				selectedKhoi?.TenKhoiHoc,
 				selectedKhoi?.KhoiName,
+				selectedKhoiDisplayName,
 			]
 			// Chỉ tắt mức độ khi metadata xác định rõ Tiểu học/Cấp 1 hoặc tên khối là Khối 1–5; cấp khác vẫn dùng taxonomy.
 			return contextValues.some(value => /tiểu\s*học|tieu\s*hoc|cấp\s*1|cap\s*1|primary|elementary|khối\s*[1-5]\b|khoi\s*[1-5]\b/i.test(String(value || ''))) || contextValues.some(value => Number(value) === 1 && ['1', 1].includes(value))
@@ -2037,8 +2102,16 @@
 		this.destroyInteractiveYoutubePlayer()
 		this.restorePreviewScroll()
 	},
-	methods: {
-		lockPreviewScroll() {
+		methods: {
+			// Mã giáo viên là khóa chuẩn của endpoint avatar; UserID chỉ là fallback cho các nguồn dữ liệu cũ.
+			teacherAvatarUrl(teacher) {
+				const giaoVienId = String(teacher?.GiaoVienID || teacher?.UserID || '').trim()
+				return giaoVienId ? `https://file.lhbs.vn/me/avatarOrigin/${encodeURIComponent(giaoVienId)}.jpg` : ''
+			},
+			teacherInitial(teacher) {
+				return String(teacher?.FullName || teacher?.GiaoVienID || teacher?.UserID || '?').charAt(0).toUpperCase()
+			},
+			lockPreviewScroll() {
 			if (typeof document === 'undefined' || this._previewScrollLocked) return
 			this._previewBodyOverflow = document.body?.style?.overflow || ''
 			this._previewHtmlOverflow = document.documentElement?.style?.overflow || ''
@@ -2123,7 +2196,7 @@
 					const id = String(item.GiaoVienID || '').trim()
 					if (!id || map.has(id.toUpperCase())) return
 					const fullName = String(item.HoTen || item.HoTenGV || `${item.HoGV || ''} ${item.TenGV || ''}`).trim()
-					map.set(id.toUpperCase(), { UserID: id, FullName: fullName || id })
+					map.set(id.toUpperCase(), { GiaoVienID: id, UserID: id, FullName: fullName || id })
 				})
 				if (!map.size) {
 					const fallbackRows = await fetchPromise('lms/GiaoVien_Get', {}, { cache: false, suppressError: true }).catch(() => [])
@@ -2132,7 +2205,7 @@
 						const id = String(item.GiaoVienID || '').trim()
 						if (!id || map.has(id.toUpperCase())) return
 						const fullName = String(item.HoTenGV || item.HoTen || `${item.HoGV || ''} ${item.TenGV || ''}`).trim()
-						map.set(id.toUpperCase(), { UserID: id, FullName: fullName || id })
+						map.set(id.toUpperCase(), { GiaoVienID: id, UserID: id, FullName: fullName || id })
 					})
 				}
 				this.assignedTeachers = Array.from(map.values()).sort((a, b) => a.FullName.localeCompare(b.FullName))
@@ -2155,14 +2228,11 @@
 			const candidates = this.libraries.filter(item => item.TaiNguyenLoaiCode === 'TAI_LIEU_THAM_KHAO'
 				&& Number(item.KhoiID) === Number(mon.KhoiID)
 				&& Number(item.MonHocID) === Number(mon.MonHocID))
-			const currentUserId = this.getCurrentUserId().toUpperCase()
-			// Đọc tài liệu được chia sẻ theo Khối/Môn, nhưng ưu tiên kho do giáo viên hiện tại tạo
-			// để upload vẫn đi vào kho mà tài khoản đó có quyền sở hữu.
-			return candidates.sort((a, b) => {
-				const aOwner = String(a.CreateUser || a.NguoiUploadID || '').trim().toUpperCase()
-				const bOwner = String(b.CreateUser || b.NguoiUploadID || '').trim().toUpperCase()
-				return Number(bOwner === currentUserId) - Number(aOwner === currentUserId)
-			})[0] || null
+			// Tài liệu Khối/Môn là một kho dùng chung cho mọi giáo viên được phân công
+			// cùng context; không ưu tiên kho theo người tạo vì điều đó biến tài liệu
+			// chia sẻ thành kho riêng và có thể làm Node_Save từ giáo viên khác bị từ chối.
+			const sharedLibraryName = 'Tài liệu chia sẻ/tham khảo'
+			return candidates.find(item => String(item.TenHocLieu || '').trim() === sharedLibraryName) || candidates[0] || null
 		},
 		async loadSourceFiles(mon = this.selectedMon) {
 			if (!mon) {
@@ -2723,6 +2793,18 @@
 			// Các loại câu hỏi tự luận/ghi âm/nộp file do giáo viên chấm tay nên không bắt buộc có đáp án tự động
 			const manualGradingTypes = ['ESSAY', 'SHORT_ANSWER', 'FILE_UPLOAD', 'AUDIO_RESPONSE']
 			if (manualGradingTypes.includes(type)) return false
+			if (type === 'QUIZ_ORDERING') {
+				const config = this.getQuestionConfig(question)
+				const items = Array.isArray(config.items) ? config.items : []
+				const itemIds = items.map(item => String(item?.id ?? ''))
+				const correctOrder = Array.isArray(config.correctOrder) ? config.correctOrder.map(id => String(id)) : []
+				return items.length < 2
+					|| itemIds.some(id => !id)
+					|| items.some(item => !this.normalizeQuestionFieldText(item?.text || '').trim())
+					|| correctOrder.length !== items.length
+					|| new Set(correctOrder).size !== items.length
+					|| correctOrder.some(id => !itemIds.includes(id))
+			}
 			const answers = this.getQuestionAnswerItems(question)
 			return !answers || answers.length === 0
 		},
@@ -2967,6 +3049,12 @@
 					parts: [{ type: 'text', value: '' }, { type: 'blank', id: 'blank_1', correctAnswer: '', acceptedAnswers: [] }],
 					columnA: ['', ''],
 					columnB: ['', ''],
+					items: [
+						{ id: 'ordering_1', text: '' },
+						{ id: 'ordering_2', text: '' },
+					],
+					correctOrder: ['ordering_1', 'ordering_2'],
+					scoringMode: 'equal',
 				},
 			}
 		},
@@ -2978,6 +3066,13 @@
 			const config = { ...defaults.config, ...(value.config || {}) }
 			config.questionText = content.prompt || config.questionText || fallbackPrompt
 			config.points = this.normalizeQuestionPoints(config.points)
+			const questionType = value.type || defaults.type
+			if (['SHORT_ANSWER', 'ESSAY'].includes(questionType)) {
+				// Chỉ hai dạng chấm tay có đáp án tham khảo; quiz tự động không mang theo key này.
+				config.referenceAnswer = this.normalizeQuestionFieldText(config.referenceAnswer || '')
+			} else {
+				delete config.referenceAnswer
+			}
 			
 			// Đảm bảo options là mảng chuỗi thuần túy để v-text-field binding chính xác
 			const rawOptions = Array.isArray(config.options) ? config.options : [...defaults.config.options]
@@ -3013,6 +3108,13 @@
 			config.parts = Array.isArray(config.parts) ? config.parts : [...defaults.config.parts]
 			config.columnA = Array.isArray(config.columnA) ? config.columnA : [...defaults.config.columnA]
 			config.columnB = Array.isArray(config.columnB) ? config.columnB : [...defaults.config.columnB]
+			// Interactive question dùng cùng schema với Question Bank để có thể chuyển đổi giữa video và ngân hàng câu hỏi.
+			config.items = this.normalizeOrderingItems(config.items, config.correctOrder)
+			config.correctOrder = config.items.map(item => item.id)
+			if ((value.type || defaults.type) === 'QUIZ_ORDERING') {
+				config.scoringMode = 'equal'
+				config.gradingType = 'auto'
+			}
 			return { ...defaults, ...value, id: value.id || defaults.id, content, config }
 		},
 		// Chuẩn hóa cả dữ liệu mới (marker.questions[]) và dữ liệu cũ (mỗi item có một question) về một mốc duy nhất theo giây.
@@ -3079,6 +3181,12 @@
 				const answer = optionText(config.columnB?.[index])
 				return optionText(left) && answer ? `${optionText(left)} → ${answer}` : ''
 			}).filter(Boolean).join(' · ')
+			if (question.type === 'QUIZ_ORDERING') {
+				const items = Array.isArray(config.items) ? config.items : []
+				const itemById = new Map(items.map(item => [String(item?.id), item]))
+				const order = Array.isArray(config.correctOrder) && config.correctOrder.length ? config.correctOrder : items.map(item => item?.id)
+				return order.map(id => optionText(itemById.get(String(id)))).filter(Boolean).join(' → ')
+			}
 			// Câu trả lời ngắn/tự luận không có đáp án đúng; không trả về nhãn này để UI không hiện "Đáp án đúng: Chấm thủ công".
 			return ''
 		},
@@ -3102,6 +3210,10 @@
 			if (type === 'QUIZ_MULTIPLE_TRUE_FALSE' && (question.config.options.length < 2 || question.config.options.some(option => !option || typeof option !== 'object'))) question.config.options = [{ text: '', correctAnswer: false, inCorrectAnswer: false }, { text: '', correctAnswer: false, inCorrectAnswer: false }]
 			if (type === 'QUIZ_FILL_IN_BLANK' && !question.config.parts.length) question.config.parts = [{ type: 'text', value: '' }, { type: 'blank', id: 'blank_' + Date.now(), correctAnswer: '', acceptedAnswers: [] }]
 			if (type === 'QUIZ_MATCHING' && !question.config.columnA.length) { question.config.columnA = ['', '']; question.config.columnB = ['', ''] }
+			if (type === 'QUIZ_ORDERING' && (!question.config.items || question.config.items.length < 2)) {
+				question.config.items = [{ id: 'ordering_' + Date.now() + '_1', text: '' }, { id: 'ordering_' + Date.now() + '_2', text: '' }]
+				question.config.correctOrder = question.config.items.map(item => item.id)
+			}
 		},
 		addInteractiveMarker() {
 			const previous = this.interactiveVideoInteractions[this.interactiveVideoInteractions.length - 1]
@@ -3289,7 +3401,9 @@
 			this.$nextTick(() => this.$refs.uploadFileInput?.click())
 		},
 		async ensureUploadLibrary() {
-			if (this.selectedLibraryId) return this.selectedLibraryId
+			// Hồ sơ/Sáng kiến có kho riêng theo nghiệp vụ; chỉ nhánh Khối/Môn mới
+			// phải resolve lại kho dùng chung theo cặp KhoiID + MonHocID.
+			if (this.activeBranch !== 'subject' && this.selectedLibraryId) return this.selectedLibraryId
 			if (this.activeBranch === 'initiative') {
 				// Người dùng không chọn library ở nhánh Sáng kiến; dùng library đầu tiên làm đích lưu mặc định.
 				const library = this.innovationLibraries[0]
@@ -3300,13 +3414,9 @@
 				return null
 			}
 			if (!this.selectedMon) return null
-			// Mỗi Khối/Môn có một kho tài liệu tham khảo dùng chung cho upload từ Content Hub.
+			// Không kiểm tra CreateUser/NguoiUploadID ở đây: mọi giáo viên cùng Khối/Môn
+			// đều được phép thêm tài liệu vào kho context chung.
 			let library = this.findSubjectResourceLibrary(this.selectedMon)
-			const currentUserId = this.getCurrentUserId().toUpperCase()
-			const libraryOwnerId = String(library?.CreateUser || library?.NguoiUploadID || '').trim().toUpperCase()
-			// Kho của đồng nghiệp được phép đọc chung, nhưng không dùng làm đích ghi nếu tài khoản hiện tại
-			// chưa sở hữu kho đó; khi đó tạo kho riêng để không phá quyền cập nhật/xóa hiện có.
-			if (library && currentUserId && libraryOwnerId && libraryOwnerId !== currentUserId) library = null
 			if (!library) {
 				const typeInfo = this.resourceTypes.find(item => (item.TaiNguyenLoaiCode || item.Code) === 'TAI_LIEU_THAM_KHAO')
 				const result = await fetchPromise('lms/FP_TaiNguyen_Save', { HocLieuID: 0, TenHocLieu: `Tài liệu ${this.selectedMon.TenMonHoc_HienThi || this.selectedMon.MonHocName || ''}`.trim(), TaiNguyenLoaiID: typeInfo?.TaiNguyenLoaiID, KhoiID: this.selectedMon.KhoiID, MonHocID: this.selectedMon.MonHocID, TinhTrang: 'Private' }, { cache: false })
@@ -3352,7 +3462,20 @@
 			if (!hocLieuId) throw new Error('Không xác định được kho tài liệu của context hiện tại.')
 			const displayName = String(metadata.fileName || metadata.title || fallbackName).trim() || fallbackName
 			// getFileUrl dùng metadata.url để mở tài liệu; iSpring dùng tên trường riêng nên cần đồng bộ về url khi lưu.
-			const normalizedMetadata = { ...metadata, fileName: metadata.fileName || displayName, title: metadata.title || displayName, origin: 'CONTENT_HUB', resourceType: this.pendingUploadType }
+			// Upload từ Khối/Môn phải mang scope CONTEXT để các giáo viên cùng Khối/Môn
+			// đọc được tài liệu; các nhánh Hồ sơ/Sáng kiến vẫn giữ scope riêng của chúng.
+			// Chỉ gán ownerUserId mặc định khi tạo node mới; khi cập nhật node cũ không được
+			// đổi chủ file sang người đang mở editor.
+			const ownerUserId = metadata.ownerUserId || (!existingNodeId ? this.getCurrentUserId() : '')
+			const normalizedMetadata = {
+				...metadata,
+				fileName: metadata.fileName || displayName,
+				title: metadata.title || displayName,
+				origin: 'CONTENT_HUB',
+				resourceType: this.pendingUploadType,
+				visibilityScope: this.activeBranch === 'subject' ? 'CONTEXT' : (metadata.visibilityScope || 'OWNER_ONLY'),
+				...(ownerUserId ? { ownerUserId, ownerUserName: metadata.ownerUserName || this.getCurrentUserName() } : {}),
+			}
 			if (!normalizedMetadata.url && normalizedMetadata.iSpringURL) normalizedMetadata.url = normalizedMetadata.iSpringURL
 			await fetchPromise('lms/FP_TaiNguyen_Node_Save', { NoiDungID: existingNodeId || 0, HocLieuID: hocLieuId, ParentID: null, TenNoiDung: displayName, LoaiNoiDung: this.pendingUploadType, NguonTaiNguyenCode: 'CONTENT_HUB', ThuTu: 0, DataJson: JSON.stringify(normalizedMetadata) }, { cache: false })
 			this.dialogUpload = false
@@ -3756,6 +3879,22 @@
 				level.KyNang_MonHoc_ChiTietID, level.SkillCode, level.MucDoCode, level.TenKyNang
 			].some(value => String(value || '') === candidate || this.normalizeSkillText(value) === this.normalizeSkillText(candidate)))) || null
 		},
+		normalizeOrderingItems(rawItems, rawOrder) {
+			const items = (Array.isArray(rawItems) ? rawItems : []).map((item, index) => ({
+				id: String(item?.id ?? item?.value ?? ('ordering_' + (index + 1))),
+				text: this.getQuestionEditorText(item?.text ?? item?.label ?? item?.content ?? item?.value ?? item ?? ''),
+			}))
+			const itemById = new Map(items.map(item => [String(item.id), item]))
+			const orderValues = Array.isArray(rawOrder) && rawOrder.length ? rawOrder : items.map(item => item.id)
+			const orderedIds = orderValues.map(value => {
+				const direct = items.find(item => String(item.id) === String(value))
+				if (direct) return direct.id
+				const index = Number(value)
+				return Number.isInteger(index) && items[index] ? items[index].id : null
+			}).filter(Boolean)
+			const missingIds = items.map(item => item.id).filter(id => !orderedIds.includes(id))
+			return [...orderedIds, ...missingIds].map(id => itemById.get(id)).filter(Boolean)
+		},
 		createQuestionForm(item) {
 			const config = this.parseJson(item?.ConfigJson, {})
 			const type = item?.Type || 'QUIZ_SINGLE_CHOICE'
@@ -3822,6 +3961,9 @@
 			} else {
 				matchingPairs = [{ left: '', right: '' }, { left: '', right: '' }]
 			}
+			// Form luôn hiển thị theo thứ tự đúng; khi lưu sẽ ghi lại cả items và correctOrder để không mất ID mapping.
+			const rawOrderingItems = Array.isArray(config.items) ? config.items : (Array.isArray(config.options) ? config.options : [])
+			const orderingItems = this.normalizeOrderingItems(rawOrderingItems, config.correctOrder)
 
 			// Cờ Nâng cao (isAdvanced) phục vụ việc soạn thảo LaTeX/công thức cho phần Đáp án (options).
 			// Ưu tiên cờ do người dùng đã lưu (config.isAdvanced hoặc item.IsAdvanced).
@@ -3843,6 +3985,8 @@
 				_originalPlainQuestionText: this.getQuestionEditorText(rawQuestionText),
 				Points: this.normalizeQuestionPoints(item?.Points),
 				ConfigJson: typeof item?.ConfigJson === 'string' ? item.ConfigJson : '',
+				// Tách field khỏi JSON thô để giáo viên chỉnh sửa trực quan; buildQuestionConfig sẽ ghi lại đúng key referenceAnswer.
+				_referenceAnswer: ['SHORT_ANSWER', 'ESSAY'].includes(type) ? this.normalizeQuestionFieldText(config.referenceAnswer || '') : '',
 				_options: options,
 				_plainOptions: plainOptions,
 				_originalOptions: [...options],
@@ -3854,6 +3998,7 @@
 				_tfAnswer: tfAnswer,
 				_blankParts: blankParts,
 				_matchingPairs: matchingPairs,
+				_orderingItems: orderingItems,
 				_isAdvanced: isAdvanced,
 				_skillIds: this.getQuestionSkills(item).map(skill => skill.KyNang_MonHoc_ChiTietID),
 				_media: this.normalizeQuestionMedia(config.media)
@@ -3863,6 +4008,10 @@
 			if (!this.questionForm) return
 			// Khi đổi sang nhóm câu hỏi chấm tay, khóa giá trị thủ công; khi đổi về QUIZ thì phục hồi mặc định tự động nếu giá trị chưa hợp lệ.
 			this.questionForm.GradingType = this.getQuestionGradingType(newType, this.questionForm.GradingType)
+			if (['SHORT_ANSWER', 'ESSAY'].includes(newType) && this.questionForm._referenceAnswer === undefined) {
+				// Khởi tạo key ngay khi chuyển loại để câu hỏi mới luôn có schema thống nhất với Soạn bài tập.
+				this.questionForm._referenceAnswer = ''
+			}
 			if ((newType === 'QUIZ_TRUE_FALSE' || newType === 'QUIZ_MULTIPLE_TRUE_FALSE') && (!this.questionForm._tfOptions || !this.questionForm._tfOptions.length)) {
 				this.questionForm._tfOptions = newType === 'QUIZ_MULTIPLE_TRUE_FALSE'
 					? [{ text: '', correctAnswer: false, inCorrectAnswer: false }, { text: '', correctAnswer: false, inCorrectAnswer: false }]
@@ -3876,12 +4025,20 @@
 				this.questionForm._blankParts = [{ type: 'text', value: '' }, { type: 'blank', id: 'blank_1', correctAnswer: '', acceptedAnswers: [] }]
 				this.blankInputs = {}
 			}
+			if (newType === 'QUIZ_ORDERING' && (!this.questionForm._orderingItems || !this.questionForm._orderingItems.length)) {
+				this.questionForm._orderingItems = [
+					{ id: 'ordering_' + Date.now() + '_1', text: '' },
+					{ id: 'ordering_' + Date.now() + '_2', text: '' },
+				]
+			}
 		},
 		isQuestionAutoGradable(type) {
 			return String(type || '').startsWith('QUIZ_')
 		},
 		getQuestionGradingType(type, value) {
 			if (!this.isQuestionAutoGradable(type)) return 'manual'
+			// Ordering có đáp án chuẩn theo từng vị trí nên luôn dùng luồng quiz tự chấm.
+			if (type === 'QUIZ_ORDERING') return 'auto'
 			return String(value || 'auto').toLowerCase() === 'manual' ? 'manual' : 'auto'
 		},
 		onMultipleTrueFalseScoringModeChange(value) {
@@ -3920,6 +4077,43 @@
 			if (!this.questionForm?._blankParts) return
 			this.questionForm._blankParts.splice(index, 1)
 			delete this.blankInputs[index]
+		},
+		moveQuestionOrderingItem(index, direction) {
+			const items = this.questionForm?._orderingItems || []
+			const targetIndex = index + direction
+			if (targetIndex < 0 || targetIndex >= items.length) return
+			const moved = items.splice(index, 1)[0]
+			items.splice(targetIndex, 0, moved)
+		},
+		addQuestionOrderingItem() {
+			if (!this.questionForm) return
+			if (!Array.isArray(this.questionForm._orderingItems)) this.questionForm._orderingItems = []
+			this.questionForm._orderingItems.push({ id: 'ordering_' + Date.now() + '_' + this.questionForm._orderingItems.length, text: '' })
+		},
+		removeQuestionOrderingItem(index) {
+			if (!this.questionForm?._orderingItems || this.questionForm._orderingItems.length <= 2) return
+			this.questionForm._orderingItems.splice(index, 1)
+		},
+		moveInteractiveOrderingItem(index, direction) {
+			const items = this.interactiveEditing?.question?.config?.items || []
+			const targetIndex = index + direction
+			if (targetIndex < 0 || targetIndex >= items.length) return
+			const moved = items.splice(index, 1)[0]
+			items.splice(targetIndex, 0, moved)
+			this.interactiveEditing.question.config.correctOrder = items.map(item => item.id)
+		},
+		addInteractiveOrderingItem() {
+			const question = this.interactiveEditing?.question
+			if (!question) return
+			if (!Array.isArray(question.config.items)) question.config.items = []
+			question.config.items.push({ id: 'ordering_' + Date.now() + '_' + question.config.items.length, text: '' })
+			question.config.correctOrder = question.config.items.map(item => item.id)
+		},
+		removeInteractiveOrderingItem(index) {
+			const question = this.interactiveEditing?.question
+			if (!question?.config?.items || question.config.items.length <= 2) return
+			question.config.items.splice(index, 1)
+			question.config.correctOrder = question.config.items.map(item => item.id)
 		},
 		openAddQuestion(level = null) {
 			if (!this.selectedMon) return this.notify('Vui lòng chọn Khối/Môn trước.', 'warning')
@@ -4163,6 +4357,15 @@
 				const columnB = Array.isArray(config.columnB) ? config.columnB : []
 				return (Array.isArray(config.correctPairs) ? config.correctPairs : []).map((pair, index) => ({ label: 'Cặp ' + (index + 1), text: (columnA.find(item => String(item?.id) === String(pair?.from))?.text || '') + ' → ' + (columnB.find(item => String(item?.id) === String(pair?.to))?.text || '') })).filter(item => item.text !== ' → ')
 			}
+			if (type === 'QUIZ_ORDERING') {
+				const items = Array.isArray(config.items) ? config.items : []
+				const itemById = new Map(items.map(item => [String(item?.id), item]))
+				const order = Array.isArray(config.correctOrder) && config.correctOrder.length ? config.correctOrder : items.map(item => item?.id)
+				return order.map((id, index) => ({
+					label: 'Thứ tự ' + (index + 1),
+					text: valueToText(itemById.get(String(id))),
+				})).filter(item => item.text)
+			}
 			const fallbackAnswer = hasValue(config.correctAnswer) ? config.correctAnswer : config.answer
 			return hasValue(fallbackAnswer) ? [{ label: 'Đáp án đúng', text: valueToText(fallbackAnswer) }] : []
 		},
@@ -4170,6 +4373,12 @@
 			const form = this.questionForm
 			const questionText = questionTextOverride === null ? this.getQuestionTextForSave() : this.normalizeQuestionFieldText(questionTextOverride)
 			const baseConfig = { ...this.parseJson(form.ConfigJson, {}), questionText, isAdvanced: Boolean(form._isAdvanced), media: this.serializeQuestionMedia(form._media) }
+			if (['SHORT_ANSWER', 'ESSAY'].includes(form.Type)) {
+				// Chỉ câu chấm tay mới lưu referenceAnswer; các dạng quiz không nhận key này để tránh hiểu nhầm là đáp án tự động.
+				baseConfig.referenceAnswer = this.normalizeQuestionFieldText(form._referenceAnswer || '')
+			} else {
+				delete baseConfig.referenceAnswer
+			}
 			if (this.isPrimarySchoolContext) {
 				// Dọn các khóa mức độ cũ khi sửa câu hỏi Tiểu học, tránh ẩn giao diện nhưng vẫn giữ mapping trong ConfigJson.
 				delete baseConfig.questionLevel; delete baseConfig.QuestionLevel; delete baseConfig.MucDo; delete baseConfig.MucDoCode; delete baseConfig.Level; delete baseConfig.LevelCode
@@ -4230,6 +4439,14 @@
 				const correctPairs = pairs.map((p, idx) => ({ from: 'a_' + idx, to: 'b_' + idx }))
 				return { ...baseConfig, columnA, columnB, correctPairs }
 			}
+			if (form.Type === 'QUIZ_ORDERING') {
+				// Thứ tự trên form là đáp án đúng; lưu đồng thời nội dung và ID order để các module khác không phải đoán theo text.
+				const items = (form._orderingItems || []).map((item, index) => ({
+					id: String(item?.id || ('ordering_' + (index + 1))),
+					text: this.isComputerSubjectContext ? (item?.text || '') : this.normalizeQuestionFieldText(item?.text || ''),
+				}))
+				return { ...baseConfig, items, correctOrder: items.map(item => item.id), scoringMode: 'equal' }
+			}
 			return baseConfig
 		},
 		async saveQuestion() {
@@ -4240,10 +4457,16 @@
 				if (!this.questionForm.GroupId) this.questionForm.GroupId = await this.ensureQuestionGroup()
 				const isEdit = Boolean(this.questionForm.Id)
 				const questionConfig = this.buildQuestionConfig(questionText)
+				if (this.questionForm.Type === 'QUIZ_ORDERING') {
+					const items = Array.isArray(questionConfig.items) ? questionConfig.items : []
+					if (items.length < 2 || items.some(item => !this.normalizeQuestionFieldText(item?.text).trim())) {
+						return this.notify('Câu sắp xếp phải có ít nhất 2 ý và không được để trống.', 'warning')
+					}
+				}
 				const payload = {
 					...(isEdit ? { Id: this.questionForm.Id, OrdinalNumber: this.questionForm.OrdinalNumber ?? null } : {}), GroupId: this.questionForm.GroupId || null,
 					SourceId: this.questionForm.SourceId || ('question_' + Date.now()), Type: this.questionForm.Type, QuestionText: questionText,
-					Points: this.normalizeEditableQuestionPoints(this.questionForm.Points), GradingType: this.questionForm.GradingType || 'auto', IsAdvanced: this.questionForm._isAdvanced ? 1 : 0,
+					Points: this.normalizeEditableQuestionPoints(this.questionForm.Points), GradingType: this.questionForm.Type === 'QUIZ_ORDERING' ? 'auto' : (this.questionForm.GradingType || 'auto'), IsAdvanced: this.questionForm._isAdvanced ? 1 : 0,
 					// Không lưu lại mapping mức độ cũ khi sửa/tạo câu hỏi cho Tiểu học.
 					ConfigJson: JSON.stringify(questionConfig), SkillsJson: JSON.stringify(this.isPrimarySchoolContext ? [] : (this.questionForm._skillIds || []).map(id => this.serializeQuestionSkill(id)).filter(Boolean)), RawJson: this.questionForm.RawJson || null, User: this.vueData.user?.UserID,
 				}
@@ -4261,7 +4484,7 @@
 							QuestionText: questionText,
 							Type: this.questionForm.Type,
 							Points: this.normalizeEditableQuestionPoints(this.questionForm.Points),
-							GradingType: this.questionForm.GradingType || 'auto',
+							GradingType: this.questionForm.Type === 'QUIZ_ORDERING' ? 'auto' : (this.questionForm.GradingType || 'auto'),
 							IsAdvanced: this.questionForm._isAdvanced ? 1 : 0,
 							ConfigJson: payload.ConfigJson,
 							UpdateTime: new Date().toISOString().replace('T', ' ').slice(0, 19),
@@ -4348,7 +4571,8 @@
 		async deleteDocument(item) {
 			if (this.deletingDocumentId || !this.isContentHubDocument(item) || !item?.NoiDungID) return
 			if (this.isProfileInspectionMode || this.isInitiativeInspectionMode) return this.notify('Chế độ giám sát không thể xóa tài liệu của giáo viên.', 'warning')
-			if (this.activeBranch === 'initiative' && !this.isInitiativeOwner(item)) return this.notify('Chỉ người tải lên mới được xóa file này.', 'warning')
+			// Chặn cả UI lẫn lời gọi trực tiếp trong component; không tin vào việc nút xóa đã bị ẩn.
+			if (!this.isContentOwner(item)) return this.notify('Chỉ người tải lên mới được xóa file này.', 'warning')
 			const ok = await this.confirmRef?.value?.show?.({ title: 'Xóa tài liệu "' + (item.displayName || '') + '" khỏi kho?' })
 			if (!ok) return
 			this.deletingDocumentId = item.NoiDungID
@@ -4356,7 +4580,7 @@
 				// Xóa tài nguyên ngoài trước; nếu thất bại thì giữ node để người dùng có thể thử lại, tránh tạo liên kết mồ côi.
 				await this.deleteExternalDocument(item)
 				// Node_Delete đánh dấu node đã xóa; phía server dọn cả dbo.FileData hoặc LMS-LHBS-file khi file không còn được tham chiếu.
-				const result = await fetchPromise('lms/FP_TaiNguyen_Node_Delete', { NoiDungID: item.NoiDungID, User: this.vueData.user?.UserID }, { cache: false })
+				const result = await fetchPromise('lms/FP_TaiNguyen_Node_Delete', { NoiDungID: item.NoiDungID, User: this.getCurrentUserId() }, { cache: false })
 				if (!this.isApiSuccess(result)) return this.notify('Không thể xóa tài liệu khỏi kho.', 'error')
 				if (this.activeBranch === 'initiative') await this.loadInnovationResources()
 				else if (this.selectedLibraryId) await this.loadTree()
@@ -4598,7 +4822,7 @@
 				return [...(composite.questions || []).map(question => ({ question, groupTitle: '' })), ...grouped].map(({ question, groupTitle }, index) => ({ ...base, _key: String(item.NoiDungID) + '_' + index, CompositeQuestionID: question.id || String(item.NoiDungID) + '_' + index, TenNoiDung: (item.TenNoiDung || 'Quiz') + (groupTitle ? ' — ' + groupTitle : '') + ' — Câu ' + (index + 1), LoaiNoiDung: question.type, Points: this.normalizeQuestionPoints(question.points), _content: question.content || {}, _supported: this.isSupportedImportType(question.type) }))
 			})
 		},
-		isSupportedImportType(type) { return ['QUIZ_SINGLE_CHOICE', 'QUIZ_MULTIPLE_CHOICE', 'QUIZ_TRUE_FALSE', 'QUIZ_MULTIPLE_TRUE_FALSE', 'QUIZ_FILL_IN_BLANK', 'QUIZ_MATCHING'].includes(type) },
+		isSupportedImportType(type) { return ['QUIZ_SINGLE_CHOICE', 'QUIZ_MULTIPLE_CHOICE', 'QUIZ_TRUE_FALSE', 'QUIZ_MULTIPLE_TRUE_FALSE', 'QUIZ_FILL_IN_BLANK', 'QUIZ_MATCHING', 'QUIZ_ORDERING'].includes(type) },
 		buildImportedConfig(question) {
 			const data = question._content || {}
 			const type = question.LoaiNoiDung === 'QUIZ_TRUE_FALSE' ? 'QUIZ_MULTIPLE_TRUE_FALSE' : question.LoaiNoiDung
@@ -4608,6 +4832,11 @@
 			if (type === 'QUIZ_MULTIPLE_TRUE_FALSE') config.options = (data.options || []).map(option => ({ ...option, correctAnswer: option.correctAnswer ?? option.isTrue === true, inCorrectAnswer: option.inCorrectAnswer ?? option.isTrue === false }))
 			if (type === 'QUIZ_FILL_IN_BLANK') config.parts = data.parts || []
 			if (type === 'QUIZ_MATCHING') { config.columnA = data.columnA || []; config.columnB = data.columnB || []; config.correctPairs = data.correctPairs || [] }
+			if (type === 'QUIZ_ORDERING') {
+				config.items = Array.isArray(data.items) ? data.items : (Array.isArray(data.options) ? data.options : [])
+				config.correctOrder = Array.isArray(data.correctOrder) && data.correctOrder.length ? data.correctOrder : config.items.map(item => item?.id)
+				config.scoringMode = 'equal'
+			}
 			return { type, config }
 		},
 		buildImportedSkills(question) {
@@ -4692,6 +4921,18 @@
 			const candidates = [meta.ownerUserId, meta.OwnerUserID, meta.ownerId, item?.ownerUserId, item?.createdByLabel, item?.ownerLabel, item?.NguoiUploadID, item?.CreateUserID, item?.CreatedByID, item?.CreateByID, item?.CreatorID]
 			return candidates.map(value => String(value ?? '').trim()).find(Boolean) || ''
 		},
+		getDocumentOwnerIdForDelete(item) {
+			const meta = this.getMeta(item)
+			// Xóa là thao tác phá dữ liệu nên chỉ dùng các trường định danh, không dùng tên hiển thị làm owner.
+			// Nếu API không trả được owner ID thì trả rỗng để UI khóa xóa an toàn.
+			const candidates = [meta.ownerUserId, meta.OwnerUserID, meta.ownerId, item?.ownerUserId, item?.NguoiUploadID, item?.CreateUserID, item?.CreatedByID, item?.CreateByID, item?.CreatorID, item?.CreateUser]
+			return candidates.map(value => String(value ?? '').trim()).find(Boolean) || ''
+		},
+		isContentOwner(item) {
+			const currentUserId = this.getCurrentUserId().toUpperCase()
+			const ownerUserId = this.getDocumentOwnerIdForDelete(item).toUpperCase()
+			return Boolean(currentUserId && ownerUserId && currentUserId === ownerUserId)
+		},
 		isInitiativeOwner(item) {
 			if (this.activeBranch !== 'initiative') return true
 			const currentUserId = this.getCurrentUserId().toUpperCase()
@@ -4720,7 +4961,8 @@
 				updatedLabel: updatedAt,
 				// Giữ ownerLabel để autocomplete media cũ vẫn hiển thị tương thích với dữ liệu đã chuẩn hóa.
 				ownerLabel: createdBy,
-				ownerUserId: this.getDocumentOwnerId({ ...item, DataJson: meta }),
+				// Không dùng tên hiển thị làm owner cho thao tác xóa; thiếu ID thì khóa xóa an toàn.
+				ownerUserId: this.getDocumentOwnerIdForDelete({ ...item, DataJson: meta }),
 				fileUrl: item.FileURL || item.FileUrl || item.Url || item.URL || item.Link || item.DetailUrl || meta.url || meta.FILE_URL || '',
 				_meta: meta,
 			}
@@ -4758,6 +5000,7 @@
 				SHORT_ANSWER: 'Trả lời ngắn',
 				ESSAY: 'Tự luận',
 				QUIZ_MATCHING: 'Nối đáp án',
+				QUIZ_ORDERING: 'Sắp xếp thứ tự',
 			}
 			return labels[type] || type || 'Chưa phân loại'
 		},

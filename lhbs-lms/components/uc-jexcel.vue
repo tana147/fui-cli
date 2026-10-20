@@ -67,6 +67,11 @@
 			comments: {
 				type: Object
 			},
+			// Cho phép module chủ động mở context menu theo từng ô mà không ảnh hưởng các module đang dùng uc-jexcel.
+			contextMenu: {
+				type: Function,
+				default: null
+			},
 			tableHeader: {
 				type: Boolean,
 				default: true,
@@ -142,7 +147,7 @@
 						lazyLoading: isLazyLoading,
 						freezeColumns: this.freezeColumns,
 						columnSorting: true,
-						contextMenu: false,
+						contextMenu: this.contextMenu || false,
 						stripHTML: false,
 						wordWrap: true,
 						allowComments: true,
@@ -161,7 +166,7 @@
 				]
 				return {
 					worksheets,
-					contextMenu: function () { return false; },
+					contextMenu: this.contextMenu || function () { return false; },
 					onbeforechange: this.beforeChange,
 					onchange: this.changed,
 					onload: this.onLoad ? this.onLoad : this.onload,

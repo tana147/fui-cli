@@ -15,8 +15,8 @@
 </template>
 
 <script>
-export default {
-	name: 'uc-resource-row',
+	export default {
+		name: 'uc-resource-row',
 	props: {
 		item: {
 			type: Object,
@@ -49,14 +49,17 @@ export default {
 			return this.item.ResourceType === 'LESSON' ? 'Vào học' : 'Làm bài';
 		}
 	},
-	methods: {
-		onOpenWindow() {
-			let url = null
-			if (this.item.ResourceType === 'LESSON') {
-				url = `/lms-student-lesson-viewer?AssignToClassID=${this.item.AssignToClassID}`
-			} else {
-				url = `/lms-student-assignment?AssignToClassID=${this.item.AssignToClassID}`
-			}
+		methods: {
+			onOpenWindow() {
+				const hocSinhID = Number(vueData?.HocSinhID || 0);
+				// Giữ đúng học sinh khi mở cửa sổ mới; lesson progress không được suy đoán từ tài khoản đăng nhập.
+				const hocSinhQuery = hocSinhID > 0 ? `&HocSinhID=${hocSinhID}` : '';
+				let url = null
+				if (this.item.ResourceType === 'LESSON') {
+					url = `/lms-student-lesson-viewer?AssignToClassID=${this.item.AssignToClassID}${hocSinhQuery}`
+				} else {
+					url = `/lms-student-assignment?AssignToClassID=${this.item.AssignToClassID}${hocSinhQuery}`
+				}
 			openWindow({
 				title: 'Xem lại ' + `${this.item.ResourceType === 'LESSON' ? 'bài học ' : 'bài tập '}` + this.item.Title,
 				url: url,
@@ -69,5 +72,5 @@ export default {
 			return new Date(dateString).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
 		}
 	}
-}
+	}
 </script>

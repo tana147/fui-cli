@@ -55,7 +55,7 @@
 			<!-- Cột hành động -->
 			<div class="assignment-actions">
 				<v-btn size="small" variant="outlined" color="primary" @click="chamBai(assignment)"
-					class="font-weight-medium" v-if="assignment.ResourceType === 'ASSIGNMENT'">
+						class="font-weight-medium" v-if="assignment.ResourceType === 'ASSIGNMENT' && canGradeAssignment">
 					<v-icon start class="me-1">mdi-clipboard-check-outline</v-icon>
 					{{
 					assignment.GradedCount == assignment.TotalStudentsInClass ? $t('message.ReviewGraded') :
@@ -63,7 +63,7 @@
 					}}
 				</v-btn>
 				<v-btn size="small" variant="outlined" color="primary" @click="LearningProgress(assignment)"
-					v-if="assignment.ResourceType === 'LESSON'" class="font-weight-medium">
+						v-if="assignment.ResourceType === 'LESSON' && canGradeAssignment" class="font-weight-medium">
 					{{ $t('message.ViewProgress') }}
 				</v-btn>
 			</div>
@@ -73,14 +73,14 @@
 			<!-- Cột hành động -->
 			<div class="assignment-actions">
 				<v-btn size="small" variant="outlined" color="primary" @click="chamBai(assignment)"
-					class="font-weight-medium" v-if="assignment.ResourceType === 'ASSIGNMENT'">
+						class="font-weight-medium" v-if="assignment.ResourceType === 'ASSIGNMENT' && canGradeAssignment">
 					{{
 					assignment.GradedCount == assignment.TotalStudentsInClass ? $t('message.ReviewGraded') :
 					$t('message.GradeNow')
 					}}
 				</v-btn>
 				<v-btn size="small" variant="outlined" color="primary" @click="LearningProgress(assignment)"
-					v-if="assignment.ResourceType === 'LESSON'" class="font-weight-medium">
+						v-if="assignment.ResourceType === 'LESSON' && canGradeAssignment" class="font-weight-medium">
 					{{ $t('message.ViewProgress') }}
 				</v-btn>
 			</div>
@@ -105,6 +105,11 @@
 			}
 		},
 		computed: {
+			// Quyền SUBJECT chỉ xem không được mở thao tác chấm/xem tiến độ.
+			// Fallback true giữ tương thích với response cache cũ chưa có CanGrade.
+			canGradeAssignment() {
+				return this.assignment?.CanGrade === undefined || Number(this.assignment.CanGrade) === 1
+			},
 			isDelegatedContent() {
 				return this.assignment?.IsMyContent === 0 || String(this.assignment?.IsMyContent) === '0'
 			}

@@ -209,7 +209,8 @@ function apiCall1() {
 };
 function apiCall2() {
     return new Promise((resolve, reject) => {
-        ajaxCALL("lms/EL_Teacher_GetRecentActivities", { PageSize: 10 ,HocKi: vueData.NienKhoaItem?.HocKi}, response => {
+        // API cần đủ bộ lọc; null nghĩa là không giới hạn lớp/môn, còn niên khóa lấy từ state đã chọn.
+        ajaxCALL("lms/EL_Teacher_GetRecentActivities", { NienKhoa: vueData.NienKhoa, LopID: null, MonHocID: null, PageSize: 10, HocKi: vueData.NienKhoaItem?.HocKi }, response => {
             vueData.activities = response.data;
             resolve();
         }, reject);

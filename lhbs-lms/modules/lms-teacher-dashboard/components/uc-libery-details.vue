@@ -117,6 +117,8 @@
 					</template>
 					<template v-slot:item.actions="{ item }">
 						<v-btn style="font-weight: 500;" size="small" variant="outlined" color="primary"
+							:loading="Number(openingLessonAssignToClassID) === Number(item.AssignToClassID)"
+							:disabled="openingLessonAssignToClassID !== null"
 							@click="editGiaoBaiTapDialog(item)">
 							{{ $t('message.EditContent') }}
 						</v-btn>
@@ -152,6 +154,7 @@
 			editDataLimitAssigned: [],
 			editData: [],
 			editIndex: null,
+			openingLessonAssignToClassID: null,
 			statusItems: [
 				{ text: 'Đã giao', value: 1 },
 				{ text: 'Đang khóa', value: 0 }
@@ -385,7 +388,7 @@
 			this.editDialog[index] = true
 		},
 
-		editGiaoBaiTapDialog(item) {
+		async editGiaoBaiTapDialog(item) {
 			const isEn = this.$i18n?.locale === 'en' || localStorage.getItem('IsLanguage') === 'true'
 			if (item?.ResourceType == "ASSIGNMENT") {
 				if (item.Is_AssignedToClass === 1) {
@@ -404,11 +407,35 @@
 
 			}
 			else if (item?.ResourceType == "LESSON") {
-				this.iframeRef.value.openWindow({
-					title: "Sửa bài học",
-					url: `lms_tc_lesson_builder?LessonID=${item?.ResourceID}`,
-					onclose: () => this.refreshSelectedLibery()
-				});
+				const assignToClassID = Number(item?.AssignToClassID || 0)
+				if (!assignToClassID) {
+					this.snackbarRef.value.showSnackbar({ message: 'Không tìm thấy lớp được giao bài học.', color: 'error' })
+					return
+				}
+				this.openingLessonAssignToClassID = assignToClassID
+				try {
+					// Mỗi AssignToClassID giữ một bản bài học riêng; ResourceID gốc vẫn giữ nguyên cho các lớp còn lại.
+					const response = await fetchPromise('/lms/EL_Teacher_Lesson_CopyForClass', {
+						AssignToClassID: assignToClassID
+					}, { cache: false })
+					const responseData = Array.isArray(response?.data) ? response.data : response
+					const firstResult = Array.isArray(responseData) ? responseData[0] : null
+					const lessonRow = Array.isArray(firstResult) ? firstResult[0] : firstResult
+					const lessonID = Number(lessonRow?.LessonID || 0)
+					if (!lessonID) {
+						throw new Error(response?.Message || response?.message || 'Không tạo được bản bài học riêng cho lớp.')
+					}
+					this.iframeRef.value.openWindow({
+						title: `Sửa bài học${item?.TenLopHoacNhom ? ` - ${item.TenLopHoacNhom}` : ''}`,
+						url: `lms_tc_lesson_builder?LessonID=${lessonID}&_v=${Date.now()}`,
+						onclose: () => this.refreshSelectedLibery()
+					})
+				} catch (error) {
+					const message = error?.response?.data?.Message || error?.message || 'Mở bài học để sửa thất bại.'
+					this.snackbarRef.value.showSnackbar({ message, color: 'error' })
+				} finally {
+					this.openingLessonAssignToClassID = null
+				}
 			}
 		},
 		async saveEditAssign(item) {

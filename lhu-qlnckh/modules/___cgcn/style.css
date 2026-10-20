@@ -31,3 +31,17 @@
     max-height: 220px;
     scrollbar-width: thin;
 }
+/* Bo góc đồng bộ nút bấm 2px */
+.v-btn {
+    border-radius: 2px !important;
+}
+/* Nút tải file upload nhỏ gọn đồng bộ */
+.compact-upload-wrapper .v-btn {
+    height: 32px !important;
+    font-size: 13px !important;
+    padding: 0 14px !important;
+    text-transform: none !important;
+    font-weight: 500 !important;
+    border-radius: 2px !important;
+    box-shadow: none !important;
+}

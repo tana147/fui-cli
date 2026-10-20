@@ -9,14 +9,6 @@
     "filePath": "imports/custom-css-E1B858413F834A0C95534E75E1BC6207.css"
   },
   {
-    "name": "/include/vue-advanced-cropper/style.css",
-    "type": ".css",
-    "contentType": "comp-link",
-    "fileID": "BDFAC095449C427592D8E4C418C0FD81",
-    "scope": "module",
-    "sort": 25
-  },
-  {
     "name": "/include/plupload-2.3.7/plupload.full.min.js",
     "type": ".js",
     "contentType": "comp-link",
@@ -25,7 +17,7 @@
     "sort": 26
   },
   {
-    "name": "/include/vue-advanced-cropper/index.umd.js",
+    "name": "/include/vue-advanced-cropper/fui-custom.js",
     "type": ".js",
     "contentType": "comp-link",
     "fileID": "0C2688CBD05E42A38FC7DCDAFF3FC93D",

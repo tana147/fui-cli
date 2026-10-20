@@ -95,14 +95,70 @@
 							</v-col>
 
 							<v-col cols="12" sm="6" class="py-1">
-								<v-text-field v-model="editItem.ThoiGianBatDau" label="Ngày bắt đầu tiếp nhận *"
-									type="date" outlined dense hide-details="auto"
-									:rules="[v => !!v || 'Bắt buộc chọn ngày bắt đầu']"></v-text-field>
+								<v-menu
+									v-model="menuThoiGianBatDau"
+									:close-on-content-click="false"
+									transition="scale-transition"
+									offset-y
+									max-width="290px"
+									min-width="290px"
+								>
+									<template v-slot:activator="{ on, attrs }">
+										<v-text-field
+											v-model="inputThoiGianBatDau"
+											label="Ngày bắt đầu tiếp nhận *"
+											placeholder="DD/MM/YYYY"
+											prepend-inner-icon="mdi-calendar"
+											outlined
+											dense
+											hide-details="auto"
+											v-bind="attrs"
+											:rules="[v => !!v || 'Bắt buộc chọn ngày bắt đầu', v => !v || isValidDate(v) || 'Ngày không đúng định dạng DD/MM/YYYY']"
+											@click:prepend-inner="menuThoiGianBatDau = !menuThoiGianBatDau"
+											@click="menuThoiGianBatDau = true"
+											@blur="onThoiGianBatDauBlur"
+										></v-text-field>
+									</template>
+									<v-date-picker
+										v-model="pickerThoiGianBatDau"
+										locale="vi-vn"
+										no-title
+										@input="onPickerThoiGianBatDau"
+									></v-date-picker>
+								</v-menu>
 							</v-col>
 							<v-col cols="12" sm="6" class="py-1">
-								<v-text-field v-model="editItem.ThoiGianKetThuc" label="Ngày kết thúc tiếp nhận *"
-									type="date" outlined dense hide-details="auto"
-									:rules="[v => !!v || 'Bắt buộc chọn ngày kết thúc']"></v-text-field>
+								<v-menu
+									v-model="menuThoiGianKetThuc"
+									:close-on-content-click="false"
+									transition="scale-transition"
+									offset-y
+									max-width="290px"
+									min-width="290px"
+								>
+									<template v-slot:activator="{ on, attrs }">
+										<v-text-field
+											v-model="inputThoiGianKetThuc"
+											label="Ngày kết thúc tiếp nhận *"
+											placeholder="DD/MM/YYYY"
+											prepend-inner-icon="mdi-calendar"
+											outlined
+											dense
+											hide-details="auto"
+											v-bind="attrs"
+											:rules="[v => !!v || 'Bắt buộc chọn ngày kết thúc', v => !v || isValidDate(v) || 'Ngày không đúng định dạng DD/MM/YYYY']"
+											@click:prepend-inner="menuThoiGianKetThuc = !menuThoiGianKetThuc"
+											@click="menuThoiGianKetThuc = true"
+											@blur="onThoiGianKetThucBlur"
+										></v-text-field>
+									</template>
+									<v-date-picker
+										v-model="pickerThoiGianKetThuc"
+										locale="vi-vn"
+										no-title
+										@input="onPickerThoiGianKetThuc"
+									></v-date-picker>
+								</v-menu>
 							</v-col>
 
 							<v-col cols="12" class="py-1">
@@ -114,19 +170,27 @@
 
 							<!-- Khu vực Upload File Hướng dẫn kèm theo -->
 							<v-col cols="12" class="py-2">
-								<v-card outlined class="pa-3 rounded-xs" style="background: #fafafa;">
+								<v-card outlined class="pa-3 rounded-xs dot-file-card">
 									<div class="d-flex flex-wrap align-center justify-space-between mb-2">
-										<div class="font-weight-medium text-subtitle-2 primary--text d-flex align-center">
-											<v-icon small color="primary" class="mr-1">mdi-paperclip</v-icon>
-											File hướng dẫn & quy chế đính kèm (Giảng viên tải xem trên Banner):
+										<div>
+											<div class="font-weight-medium text-subtitle-2 primary--text d-flex align-center">
+												<v-icon small color="primary" class="mr-1">mdi-paperclip</v-icon>
+												File hướng dẫn & quy chế đính kèm:
+												<v-chip x-small color="blue lighten-5" text-color="primary" class="ml-2 font-weight-medium">
+													Chỉ nhận .pdf, .docx
+												</v-chip>
+											</div>
+											<div class="caption grey--text text--darken-2 mt-1">
+												Định dạng cho phép: <strong>.pdf</strong>, <strong>.docx</strong> (tối đa 25MB - hiển thị trên Banner cho người nộp tải xem).
+											</div>
 										</div>
 										<f-file-upload v-model="tempFileID" :filters="filtersFile" label="Chọn tệp hướng dẫn"
 											:url="apiFileUploadUrl" color="primary" @input="onFileUploadSuccess" />
 									</div>
 
-									<div v-if="editItem.FileHuongDan" class="d-flex align-center mt-2 px-2 py-1 rounded border" style="background: #fff;">
+									<div v-if="editItem.FileHuongDan" class="d-flex align-center mt-2 px-2 py-1 rounded-xs border dot-file-badge">
 										<v-icon small color="primary" class="mr-2">mdi-file-pdf-box</v-icon>
-										<span class="font-weight-medium text-body-2 mr-3 text-truncate" style="max-width: 380px;">
+										<span class="font-weight-medium text-body-2 mr-3 text-truncate dot-file-name">
 											{{ editItem.FileNameHuongDan || editItem.FileHuongDan }}
 										</span>
 										<v-btn icon x-small color="primary" :href="getFileUrl(editItem.FileHuongDan)" target="_blank" title="Tải xem thử file">
@@ -138,7 +202,7 @@
 										</v-btn>
 									</div>
 									<div v-else class="caption grey--text text-center py-2">
-										Chưa có file hướng dẫn nào. Nhấn <strong>"Chọn tệp hướng dẫn"</strong> để đính kèm file (.pdf, .docx).
+										Chưa có file hướng dẫn nào. Nhấn <strong>"Chọn tệp hướng dẫn"</strong> để đính kèm file (.pdf, .docx - tối đa 25MB).
 									</div>
 								</v-card>
 							</v-col>
@@ -177,7 +241,14 @@
 				loading: false,
 				saving: false,
 				formDialog: false,
+				menuThoiGianBatDau: false,
+				menuThoiGianKetThuc: false,
+				inputThoiGianBatDau: '',
+				inputThoiGianKetThuc: '',
 				tempFileID: '',
+				newUploadedFileIDs: [],
+				initialFileID: '',
+				pendingDeleteOldFile: '',
 				headers: [
 					{ text: '#', value: 'DotID', width: 60, align: 'center' },
 					{ text: 'Tên đợt đề xuất', value: 'TenDot', width: 240 },
@@ -209,24 +280,214 @@
 		},
 		computed: {
 			apiFileUploadUrl() {
-				return (window.vueData && window.vueData.v_Set && window.vueData.v_Set.apiFile) || ''
+				return (window.vueData && window.vueData.v_Set && window.vueData.v_Set.apiFile) || 'https://file.lhu.edu.vn/qlnckh/upload/FileData'
 			},
 			fileReturnUrl() {
-				return (window.vueData && window.vueData.v_Set && window.vueData.v_Set.urlReturnFile) || ''
+				return (window.vueData && window.vueData.v_Set && window.vueData.v_Set.urlReturnFile) || 'https://file.lhu.edu.vn/qlnckh'
 			},
-		},
-		watch: {
-			value(val) {
-				if (val) {
-					this.loadData()
+			displayThoiGianBatDau() {
+				const val = this.editItem && this.editItem.ThoiGianBatDau
+				if (!val) return ''
+				const m = moment(val, ['YYYY-MM-DD', 'YYYY-MM-DDTHH:mm:ss', 'DD/MM/YYYY'])
+				if (m.isValid()) return m.format('DD/MM/YYYY')
+				return val
+			},
+			pickerThoiGianBatDau: {
+				get() {
+					if (this.inputThoiGianBatDau && typeof moment !== 'undefined') {
+						const m = moment(this.inputThoiGianBatDau, ['DD/MM/YYYY', 'D/M/YYYY', 'D/MM/YYYY', 'DD/M/YYYY'], true)
+						if (m.isValid()) return m.format('YYYY-MM-DD')
+					}
+					const val = this.editItem && this.editItem.ThoiGianBatDau
+					if (!val) return ''
+					const m = moment(val, ['YYYY-MM-DD', 'YYYY-MM-DDTHH:mm:ss', 'DD/MM/YYYY'])
+					if (m.isValid()) return m.format('YYYY-MM-DD')
+					return ''
+				},
+				set(val) {
+					if (this.editItem) {
+						this.editItem.ThoiGianBatDau = val
+						if (typeof moment !== 'undefined') {
+							this.inputThoiGianBatDau = moment(val).format('DD/MM/YYYY')
+						}
+					}
+				}
+			},
+			displayThoiGianKetThuc() {
+				const val = this.editItem && this.editItem.ThoiGianKetThuc
+				if (!val) return ''
+				const m = moment(val, ['YYYY-MM-DD', 'YYYY-MM-DDTHH:mm:ss', 'DD/MM/YYYY'])
+				if (m.isValid()) return m.format('DD/MM/YYYY')
+				return val
+			},
+			pickerThoiGianKetThuc: {
+				get() {
+					if (this.inputThoiGianKetThuc && typeof moment !== 'undefined') {
+						const m = moment(this.inputThoiGianKetThuc, ['DD/MM/YYYY', 'D/M/YYYY', 'D/MM/YYYY', 'DD/M/YYYY'], true)
+						if (m.isValid()) return m.format('YYYY-MM-DD')
+					}
+					const val = this.editItem && this.editItem.ThoiGianKetThuc
+					if (!val) return ''
+					const m = moment(val, ['YYYY-MM-DD', 'YYYY-MM-DDTHH:mm:ss', 'DD/MM/YYYY'])
+					if (m.isValid()) return m.format('YYYY-MM-DD')
+					return ''
+				},
+				set(val) {
+					if (this.editItem) {
+						this.editItem.ThoiGianKetThuc = val
+						if (typeof moment !== 'undefined') {
+							this.inputThoiGianKetThuc = moment(val).format('DD/MM/YYYY')
+						}
+					}
 				}
 			},
 		},
+		watch: {
+			inputThoiGianBatDau(val) {
+				if (val && typeof moment !== 'undefined') {
+					const m = moment(val, ['DD/MM/YYYY', 'D/M/YYYY', 'D/MM/YYYY', 'DD/M/YYYY'], true)
+					if (m.isValid()) {
+						const iso = m.format('YYYY-MM-DD')
+						if (this.editItem && this.editItem.ThoiGianBatDau !== iso) {
+							this.editItem.ThoiGianBatDau = iso
+						}
+					}
+				}
+			},
+			inputThoiGianKetThuc(val) {
+				if (val && typeof moment !== 'undefined') {
+					const m = moment(val, ['DD/MM/YYYY', 'D/M/YYYY', 'D/MM/YYYY', 'DD/M/YYYY'], true)
+					if (m.isValid()) {
+						const iso = m.format('YYYY-MM-DD')
+						if (this.editItem && this.editItem.ThoiGianKetThuc !== iso) {
+							this.editItem.ThoiGianKetThuc = iso
+						}
+					}
+				}
+			},
+			value(val) {
+				if (val) {
+					this.loadData()
+				} else {
+					this.cleanGarbageFiles()
+				}
+			},
+			formDialog(isOpen) {
+				if (!isOpen) {
+					this.cleanGarbageFiles()
+				}
+			},
+			'editItem.ThoiGianBatDau': {
+				immediate: true,
+				handler(val) {
+					if (val && typeof moment !== 'undefined') {
+						const m = moment(val, ['YYYY-MM-DD', 'YYYY-MM-DDTHH:mm:ss', 'DD/MM/YYYY'])
+						if (m.isValid()) {
+							const formatted = m.format('YYYY-MM-DD')
+							if (this.editItem.ThoiGianBatDau !== formatted) {
+								this.editItem.ThoiGianBatDau = formatted
+							}
+							const display = m.format('DD/MM/YYYY')
+							if (this.inputThoiGianBatDau !== display) {
+								this.inputThoiGianBatDau = display
+							}
+						}
+					} else if (!val) {
+						this.inputThoiGianBatDau = ''
+					}
+				},
+			},
+			'editItem.ThoiGianKetThuc': {
+				immediate: true,
+				handler(val) {
+					if (val && typeof moment !== 'undefined') {
+						const m = moment(val, ['YYYY-MM-DD', 'YYYY-MM-DDTHH:mm:ss', 'DD/MM/YYYY'])
+						if (m.isValid()) {
+							const formatted = m.format('YYYY-MM-DD')
+							if (this.editItem.ThoiGianKetThuc !== formatted) {
+								this.editItem.ThoiGianKetThuc = formatted
+							}
+							const display = m.format('DD/MM/YYYY')
+							if (this.inputThoiGianKetThuc !== display) {
+								this.inputThoiGianKetThuc = display
+							}
+						}
+					} else if (!val) {
+						this.inputThoiGianKetThuc = ''
+					}
+				},
+			},
+		},
+		beforeDestroy() {
+			this.cleanGarbageFiles()
+		},
 		methods: {
+			isValidDate(val) {
+				if (!val) return true
+				if (typeof moment === 'undefined') return true
+				const m = moment(val, ['DD/MM/YYYY', 'D/M/YYYY', 'D/MM/YYYY', 'DD/M/YYYY', 'YYYY-MM-DD'], true)
+				return m.isValid()
+			},
+			onThoiGianBatDauBlur() {
+				if (!this.inputThoiGianBatDau) {
+					if (this.editItem) this.editItem.ThoiGianBatDau = ''
+					return
+				}
+				if (typeof moment !== 'undefined') {
+					const m = moment(this.inputThoiGianBatDau, ['DD/MM/YYYY', 'D/M/YYYY', 'D/MM/YYYY', 'DD/M/YYYY', 'YYYY-MM-DD'], true)
+					if (m.isValid()) {
+						const iso = m.format('YYYY-MM-DD')
+						if (this.editItem) this.editItem.ThoiGianBatDau = iso
+						this.inputThoiGianBatDau = m.format('DD/MM/YYYY')
+					}
+				}
+			},
+			onPickerThoiGianBatDau(val) {
+				if (this.editItem) {
+					this.editItem.ThoiGianBatDau = val
+					if (typeof moment !== 'undefined') {
+						this.inputThoiGianBatDau = moment(val).format('DD/MM/YYYY')
+					}
+				}
+				this.menuThoiGianBatDau = false
+			},
+			onThoiGianKetThucBlur() {
+				if (!this.inputThoiGianKetThuc) {
+					if (this.editItem) this.editItem.ThoiGianKetThuc = ''
+					return
+				}
+				if (typeof moment !== 'undefined') {
+					const m = moment(this.inputThoiGianKetThuc, ['DD/MM/YYYY', 'D/M/YYYY', 'D/MM/YYYY', 'DD/M/YYYY', 'YYYY-MM-DD'], true)
+					if (m.isValid()) {
+						const iso = m.format('YYYY-MM-DD')
+						if (this.editItem) this.editItem.ThoiGianKetThuc = iso
+						this.inputThoiGianKetThuc = m.format('DD/MM/YYYY')
+					}
+				}
+			},
+			onPickerThoiGianKetThuc(val) {
+				if (this.editItem) {
+					this.editItem.ThoiGianKetThuc = val
+					if (typeof moment !== 'undefined') {
+						this.inputThoiGianKetThuc = moment(val).format('DD/MM/YYYY')
+					}
+				}
+				this.menuThoiGianKetThuc = false
+			},
+			cleanGarbageFiles() {
+				if (this.newUploadedFileIDs && this.newUploadedFileIDs.length > 0) {
+					ajaxCALL('/FILE_FileDeleteMulti', { FileIDs: this.newUploadedFileIDs.join(',') }, () => {})
+					this.newUploadedFileIDs = []
+				}
+				this.pendingDeleteOldFile = ''
+				this.initialFileID = ''
+			},
 			close() {
+				this.cleanGarbageFiles()
 				this.$emit('input', false)
 			},
 			closeForm() {
+				this.cleanGarbageFiles()
 				this.formDialog = false
 			},
 			async loadData() {
@@ -254,7 +515,10 @@
 				return val
 			},
 			openForm(item) {
+				this.newUploadedFileIDs = []
+				this.pendingDeleteOldFile = ''
 				if (item) {
+					this.initialFileID = item.FileHuongDan || ''
 					this.editItem = {
 						DotID: item.DotID,
 						TenDot: item.TenDot || '',
@@ -267,6 +531,7 @@
 						TinhTrang: item.TinhTrang !== undefined ? item.TinhTrang : 1,
 					}
 				} else {
+					this.initialFileID = ''
 					this.editItem = {
 						DotID: null,
 						TenDot: '',
@@ -282,26 +547,54 @@
 				this.formDialog = true
 			},
 			onFileUploadSuccess(res) {
-				if (!res || !res.Files || !res.Files[0]) return
-				const file = res.Files[0]
-				const fileName = (file.FILE_NAME || '').trim()
+				if (!res) return
+				let payload = res
+				if (typeof res === 'string') {
+					try {
+						payload = JSON.parse(res)
+					} catch (e) {
+						payload = { FILE_ID: res, FILE_NAME: res }
+					}
+				}
+				const file = (payload.Files && payload.Files[0]) ? payload.Files[0] : (Array.isArray(payload) ? payload[0] : payload)
+				if (!file) return
+
+				const fileId = file.FILE_ID || file.FileID || (typeof file === 'string' ? file : '')
+				const fileName = (file.FILE_NAME || file.FileName || file.FileTitle || file.name || '').trim()
 				const lowerName = fileName.toLowerCase()
 
-				if (!lowerName.endsWith('.docx') && !lowerName.endsWith('.pdf')) {
+				if (fileName && !lowerName.endsWith('.docx') && !lowerName.endsWith('.pdf')) {
 					Vue.$toast.error('Chỉ chấp nhận file định dạng .docx hoặc .pdf!', { position: 'top' })
-					if (file.FILE_ID) {
-						ajaxCALL('/FILE_FileDelete', { FileID: file.FILE_ID }, () => {})
+					if (fileId) {
+						ajaxCALL('/FILE_FileDelete', { FileID: fileId }, () => {})
 					}
 					return
 				}
 
-				this.editItem.FileHuongDan = file.FILE_ID
+				// Nếu đã upload file mới trong phiên này trước đó, xóa file tạm cũ đi
+				if (this.newUploadedFileIDs.length > 0) {
+					ajaxCALL('/FILE_FileDeleteMulti', { FileIDs: this.newUploadedFileIDs.join(',') }, () => {})
+					this.newUploadedFileIDs = []
+				}
+
+				if (fileId) {
+					this.newUploadedFileIDs.push(fileId)
+				}
+				this.editItem.FileHuongDan = fileId
 				this.editItem.FileNameHuongDan = fileName
-				Vue.$toast.success('Đã tải lên tệp hướng dẫn: ' + fileName, { position: 'top' })
+				Vue.$toast.success('Đã tải lên tệp hướng dẫn: ' + (fileName || 'thành công'), { position: 'top' })
+				this.$nextTick(() => {
+					this.tempFileID = ''
+				})
 			},
 			removeFileHuongDan() {
 				if (this.editItem.FileHuongDan) {
-					ajaxCALL('/FILE_FileDelete', { FileID: this.editItem.FileHuongDan }, () => {})
+					if (this.newUploadedFileIDs.includes(this.editItem.FileHuongDan)) {
+						ajaxCALL('/FILE_FileDelete', { FileID: this.editItem.FileHuongDan }, () => {})
+						this.newUploadedFileIDs = this.newUploadedFileIDs.filter(id => id !== this.editItem.FileHuongDan)
+					} else {
+						this.pendingDeleteOldFile = this.editItem.FileHuongDan
+					}
 				}
 				this.editItem.FileHuongDan = ''
 				this.editItem.FileNameHuongDan = ''
@@ -318,11 +611,16 @@
 				try {
 					const isNew = !this.editItem.DotID
 					const url = isNew ? '/ThiKHCN_Dot_Ins' : '/ThiKHCN_Dot_Udp'
+					const formatToISO = (val) => {
+						if (!val) return ''
+						const m = moment(val, ['YYYY-MM-DD', 'YYYY-MM-DDTHH:mm:ss', 'DD/MM/YYYY'])
+						return m.isValid() ? m.format('YYYY-MM-DD') : val
+					}
 					const payload = {
 						TenDot: this.editItem.TenDot,
 						NamHoc: this.editItem.NamHoc,
-						ThoiGianBatDau: this.editItem.ThoiGianBatDau,
-						ThoiGianKetThuc: this.editItem.ThoiGianKetThuc,
+						ThoiGianBatDau: formatToISO(this.editItem.ThoiGianBatDau),
+						ThoiGianKetThuc: formatToISO(this.editItem.ThoiGianKetThuc),
 						ThongBao: this.editItem.ThongBao,
 						FileHuongDan: this.editItem.FileHuongDan || '',
 						FileNameHuongDan: this.editItem.FileNameHuongDan || '',
@@ -333,6 +631,17 @@
 					}
 
 					await ajaxCALLPromise(url, payload)
+
+					// Dọn dẹp file cũ trên server khi đã lưu thành công
+					if (this.pendingDeleteOldFile) {
+						ajaxCALL('/FILE_FileDelete', { FileID: this.pendingDeleteOldFile }, () => {})
+					} else if (this.initialFileID && this.editItem.FileHuongDan && this.initialFileID !== this.editItem.FileHuongDan) {
+						ajaxCALL('/FILE_FileDelete', { FileID: this.initialFileID }, () => {})
+					}
+					this.newUploadedFileIDs = []
+					this.pendingDeleteOldFile = ''
+					this.initialFileID = ''
+
 					Vue.$toast.success(isNew ? 'Thêm mới đợt đề xuất thành công!' : 'Cập nhật đợt đề xuất thành công!', { position: 'top' })
 					this.formDialog = false
 					await this.loadData()
@@ -350,6 +659,9 @@
 					message: 'Bạn có chắc chắn muốn xóa đợt "' + item.TenDot + '" không?',
 					action: async function () {
 						await ajaxCALLPromise('/ThiKHCN_Dot_Del', { DotID: item.DotID })
+						if (item.FileHuongDan) {
+							ajaxCALL('/FILE_FileDelete', { FileID: item.FileHuongDan }, () => {})
+						}
 						Vue.$toast.success('Đã xóa đợt đề xuất thành công', { position: 'top' })
 						$this.loadData()
 						$this.$emit('on-reload')

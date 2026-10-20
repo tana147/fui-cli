@@ -17,7 +17,7 @@
 		<template v-slot:default="{ isActive }">
 			<v-card :title="$t('message.EditContent')">
 				<v-card-text>
-					<f-editor v-model="contentEditor" :imageapi="vueData.v_Set.apiImageAdapter" :height="400" variant="outlined"
+					<uc-rich-text-editor v-model="contentEditor" :image-api="vueData.v_Set.apiImageAdapter" :height="400" variant="outlined"
 						rows="6" auto-grow :label="$t('message.ContentHtmlLatex')"
 						@update:modelValue="val => console.log('upd', val)" @input="v => console.log('v', v)" />
 					<!-- Không lặp preview trong popup; canvas bên ngoài đã hiển thị nội dung sau khi lưu. -->

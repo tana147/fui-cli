@@ -229,11 +229,14 @@
 	
 			},
 			onOpenWindow(item) {
+				const hocSinhID = Number(vueData?.HocSinhID || 0);
+				// Truyền ID học sinh qua route để lesson viewer cập nhật đúng bản ghi tiến độ.
+				const hocSinhQuery = hocSinhID > 0 ? `&HocSinhID=${hocSinhID}` : '';
 				let url = null
 				if (item.ResourceType === 'LESSON') {
-					url = `/lms-student-lesson-viewer?AssignToClassID=${item.AssignToClassID}`
+					url = `/lms-student-lesson-viewer?AssignToClassID=${item.AssignToClassID}${hocSinhQuery}`
 				} else {
-					url = `/lms-student-assignment?AssignToClassID=${item.AssignToClassID}&LanNop=${item.LanNop ?? 1}&Is_SendToClass=${item.Is_SendToClass}`
+					url = `/lms-student-assignment?AssignToClassID=${item.AssignToClassID}&LanNop=${item.LanNop ?? 1}&Is_SendToClass=${item.Is_SendToClass}${hocSinhQuery}`
 				}
 				openWindow({
 					title: 'Xem lại ' + `${item.ResourceType === 'LESSON' ? 'bài học ' : 'bài tập '}` + item.Title,

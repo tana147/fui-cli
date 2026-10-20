@@ -48,7 +48,7 @@
 						</div>
 						<div class="lb-pod-name">{{ shortName(students[1].HoTen) }}</div>
 						<div class="lb-pod-score-wrap">
-							<div class="lb-pod-score lb-pod-score--2">{{ students[1].Score }}</div>
+							<div class="lb-pod-score lb-pod-score--2">{{ formatScore(students[1].Score) }} điểm</div>
 							<!-- Tag hiển thị lần nộp đạt điểm cao nhất của học sinh Top 2 -->
 							<span v-if="students[1].LanNop" class="lb-pod-lannop lb-pod-lannop--2">Lần {{ students[1].LanNop }}</span>
 						</div>
@@ -66,7 +66,7 @@
 						</div>
 						<div class="lb-pod-name lb-pod-name--1">{{ shortName(students[0].HoTen) }}</div>
 						<div class="lb-pod-score-wrap">
-							<div class="lb-pod-score lb-pod-score--1">{{ students[0].Score }}</div>
+							<div class="lb-pod-score lb-pod-score--1">{{ formatScore(students[0].Score) }} điểm</div>
 							<!-- Tag hiển thị lần nộp đạt điểm cao nhất của Quán quân Top 1 -->
 							<span v-if="students[0].LanNop" class="lb-pod-lannop lb-pod-lannop--1">Lần {{ students[0].LanNop }}</span>
 						</div>
@@ -81,7 +81,7 @@
 						</div>
 						<div class="lb-pod-name">{{ shortName(students[2].HoTen) }}</div>
 						<div class="lb-pod-score-wrap">
-							<div class="lb-pod-score lb-pod-score--3">{{ students[2].Score }}</div>
+							<div class="lb-pod-score lb-pod-score--3">{{ formatScore(students[2].Score) }} điểm</div>
 							<!-- Tag hiển thị lần nộp đạt điểm cao nhất của học sinh Top 3 -->
 							<span v-if="students[2].LanNop" class="lb-pod-lannop lb-pod-lannop--3">Lần {{ students[2].LanNop }}</span>
 						</div>
@@ -117,7 +117,7 @@
 				</div>
 
 				<!-- Rows: Danh sách từ hạng 4 trở đi, hiển thị điểm, lần nộp và thời gian hoàn thành -->
-				<div v-else v-for="(student, idx) in remainingStudents" :key="student.HocSinhID" class="lb-row"
+				<div v-else v-for="(student, idx) in remainingStudents" :key="studentKey(student, idx)" class="lb-row"
 					:class="{ 'lb-row--me': isMe(student) }" :style="{ animationDelay: (idx * 0.035 + 0.1) + 's' }">
 					<div class="lb-row-rank">{{ idx + 4 }}</div>
 
@@ -137,7 +137,7 @@
 						<div class="lb-bar-wrap">
 							<div class="lb-bar" :style="{ width: scorePct(student.Score) + '%' }"></div>
 						</div>
-						<div class="lb-row-score">{{ student.Score }}</div>
+						<div class="lb-row-score">{{ formatScore(student.Score) }} điểm</div>
 					</div>
 				</div>
 			</div>
@@ -181,6 +181,16 @@
 			avatarUrl(id) {
 				if (!id) return '';
 				return vueData.v_Set.urlAvatarHocSinh + id + '/' + this.avatarTimestamp;
+			},
+			// Một học sinh có thể xuất hiện nhiều lần vì bảng xếp hạng đang xếp theo từng submission.
+			// Key phải bám theo submission (fallback thêm index) để Vue không tái sử dụng nhầm dòng khi trùng HocSinhID.
+			studentKey(student, index) {
+				return (student.SubmissionID || student.HocSinhID || 'student') + '-' + (student.LanNop || 'attempt') + '-' + index;
+			},
+			formatScore(score) {
+				if (score === null || score === undefined || score === '') return '—';
+				const numericScore = Number(score);
+				return Number.isFinite(numericScore) ? numericScore.toString() : String(score);
 			},
 			shortName(fullName) {
 				if (!fullName) return '';

@@ -13,19 +13,23 @@
     min-height: 84px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 8px;
     padding: 12px;
     color: #607d8b;
     background: #f8fafb;
 }
-.lesson-file-link {
-    max-width: 190px;
-    color: #1565c0;
-    text-decoration: none;
+.lesson-file-name {
+    min-width: 0;
+    overflow: hidden;
+    color: #263238;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
-.lesson-file-link:hover {
-    text-decoration: underline;
+.lesson-file-link {
+    max-width: min(100%, 420px);
+    cursor: pointer;
 }
 .lesson-file-footer {
     min-height: 42px;

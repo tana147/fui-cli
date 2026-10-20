@@ -14,9 +14,16 @@
 			style="flex: 0 0 auto; min-height: auto;">
 			Lý do từ chối: {{ reasonReject }}
 		</v-alert>
-		<div v-if="selectedLopID !== '__ALL__' && !loading" class="w-100 h-100 overflow-hidden so-gvcn-sheet so-gvcn-sheet-wrap" style="min-height: 0;">
+		<div v-if="selectedLopID !== '__ALL__' && !loading" class="w-100 h-100 overflow-hidden so-gvcn-sheet so-gvcn-sheet-wrap so-gvcn-c1-desktop-only" style="min-height: 0;">
 			<div ref="sheetRef" class="w-100 h-100 overflow-hidden" style="min-height: 0;"></div>
 		</div>
+		<!-- Phone inputs keep every period field while avoiding the wide spreadsheet grid. -->
+		<uc-so-gvcn-mobile-sheet-editor v-if="selectedLopID !== '__ALL__' && !loading" ref="mobileEditorRef"
+			class="so-gvcn-c1-mobile-editor flex-column flex-grow-1" :rows="rows" :columns="columns"
+			:nested-headers="nestedHeaders" :plain-text-indices="[2, 4, 6, 7, 8]"
+			:title-index="1" :subtitle-indices="[0]" :read-only="readOnly" :searchable="true"
+			empty-title="Học sinh" empty-text="Chưa có nhận xét cho học sinh này."
+			@cell-changed="$emit('changed')" />
 	</div>
 </template>
 
@@ -35,7 +42,7 @@
 			loading: { type: Boolean, default: false }
 		},
 		data() {
-			return { instance: null, timer: null }
+		return { instance: null, timer: null, isMobileViewport: false, pendingRows: null }
 		},
 		watch: {
 			selectedLopID() { this.scheduleInit() },
@@ -44,12 +51,35 @@
 			loading() { this.scheduleInit() },
 			sheetKey() { this.scheduleInit() }
 		},
-		mounted() { this.scheduleInit() },
+		mounted() {
+			this.isMobileViewport = window.matchMedia('(max-width: 959.98px)').matches
+			window.addEventListener('resize', this.onWindowResize)
+			this.scheduleInit()
+		},
 		beforeUnmount() {
+			window.removeEventListener('resize', this.onWindowResize)
 			if (this.timer) clearTimeout(this.timer)
 			this.destroySheet()
 		},
 		methods: {
+			// The hidden legacy mobile summary renders stored HTML as plain text so markup cannot leak into a card.
+			plainText(value) {
+				if (value == null) return ''
+				const source = typeof value === 'object'
+					? (Array.isArray(value) ? value.join(', ') : JSON.stringify(value))
+					: String(value)
+				return source.replace(/<br\s*\/?\s*>/gi, '\n').replace(/<\/p\s*>/gi, '\n')
+					.replace(/<[^>]*>/g, '').replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&')
+					.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"')
+					.replace(/&#39;/gi, "'").trim()
+			},
+			onWindowResize() {
+				const nextIsMobile = window.matchMedia('(max-width: 959.98px)').matches
+				if (nextIsMobile === this.isMobileViewport) return
+				this.pendingRows = this.getRows()
+				this.isMobileViewport = nextIsMobile
+				this.scheduleInit()
+			},
 			// Nhận xét tháng thường có ít dòng hơn chiều cao viewport; chỉ phần vượt quá
 			// số dòng thực tế mới tạo scrollbar dọc trong JSpreadsheet.
 			getContentTableHeight(container, rowCount, nestedHeaderCount = 0) {
@@ -64,9 +94,16 @@
 					? Math.min(naturalHeight, viewportHeight)
 					: naturalHeight}px`
 			},
-			getInstance() { return Array.isArray(this.instance) ? this.instance[0] : this.instance },
+			getSheetInstance() { return Array.isArray(this.instance) ? this.instance[0] : this.instance },
+			getInstance() {
+				if (this.isMobileViewport) {
+					return { getData: () => this.$refs.mobileEditorRef?.getRows?.() || (this.rows || []), closeEditor: () => {} }
+				}
+				return this.getSheetInstance()
+			},
 			getRows() {
-				const sheet = this.getInstance()
+				if (this.isMobileViewport) return this.$refs.mobileEditorRef?.getRows?.() || (this.rows || [])
+				const sheet = this.getSheetInstance()
 				return sheet && typeof sheet.getData === 'function' ? sheet.getData() : []
 			},
 			scheduleInit() {
@@ -81,7 +118,7 @@
 			destroySheet() {
 				if (!this.instance) return
 				try {
-					const sheet = this.getInstance()
+					const sheet = this.getSheetInstance()
 					if (sheet && typeof sheet.destroy === 'function') sheet.destroy()
 				} catch (error) {}
 				this.instance = null
@@ -91,6 +128,14 @@
 					this.destroySheet()
 					return
 				}
+				if (this.isMobileViewport) {
+					this.destroySheet()
+					const rows = this.pendingRows || this.rows || []
+					this.pendingRows = null
+					this.$nextTick(() => this.$refs.mobileEditorRef?.setRows?.(rows))
+					return
+				}
+				// Desktop remains a spreadsheet; mobile uses the same row data and honors the workflow lock.
 				const container = this.$refs.sheetRef
 				if (!container) return
 				this.destroySheet()
@@ -99,7 +144,7 @@
 				const data = this.rows || []
 				this.instance = soGvcnJspreadsheet.create(container, {
 					worksheets: [{
-						data: data,
+						data: this.pendingRows || data,
 						columns: (this.columns || []).map(column => {
 							const normalizedColumn = this.readOnly ? { ...column, readOnly: true } : column
 							return !normalizedColumn.readOnly && normalizedColumn.type !== 'numeric' && normalizedColumn.align !== 'center'
@@ -123,9 +168,10 @@
 					}],
 					contextMenu: () => false,
 					onload: () => {
+						this.pendingRows = null
 						this.$nextTick(() => {
 							setTimeout(() => {
-								const sheet = this.getInstance()
+							const sheet = this.getSheetInstance()
 								if (!sheet || typeof sheet.setHeight !== 'function') return
 								;(this.rows || []).forEach((_, rowIndex) => sheet.setHeight(rowIndex, 96))
 							}, 100)

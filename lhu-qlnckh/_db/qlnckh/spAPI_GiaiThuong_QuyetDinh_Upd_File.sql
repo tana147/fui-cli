@@ -1,4 +1,4 @@
-CREATE PROC [dbo].[spAPI_GiaiThuong_QuyetDinh_Upd_File]   
+CREATE PROC [dbo].[spAPI_GiaiThuong_QuyetDinh_Upload_File]   
 	@Sys_UserId VARCHAR(9),
 	@QDID INT,
 	@DS_FileID NVARCHAR(2000)

@@ -152,15 +152,15 @@ function useAutoSave() {
 					this.saveDraft();
 				}, 1000);
 			},
-			async saveDraft() {
+			async saveDraft(force = false) {
 				if (this.isSaving) {
 					this.pendingSave = true;
-					return;
+					return false;
 				}
-				if (this.isSubmitted) return;
-				if (!this.assignment?.AssignToClassID && !this.assignment?.AssignToStudentID) return;
+				if (this.isSubmitted) return true;
+				if (!this.assignment?.AssignToClassID && !this.assignment?.AssignToStudentID) return false;
 				const now = Date.now();
-				if (now - this.lastSaveTime < this.MIN_SAVE_INTERVAL) {
+				if (!force && now - this.lastSaveTime < this.MIN_SAVE_INTERVAL) {
 					if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
 					this.autoSaveTimer = setTimeout(
 						() => {
@@ -188,6 +188,7 @@ function useAutoSave() {
 					this.saveStatus = 'Đã lưu';
 					this.saveStatusColor = 'grey';
 					this.saveStatusIcon = 'mdi-cloud-check-outline';
+					return true;
 				} catch (error) {
 					console.error('Lỗi lưu bài:', error);
 					this.pendingSave = true;
@@ -198,6 +199,7 @@ function useAutoSave() {
 						this.autoSaveTimer = null;
 						this.saveDraft();
 					}, 3000);
+					return false;
 				} finally {
 					this.isSaving = false;
 					if (this.pendingSave && !this.isSubmitted && !this.autoSaveTimer) {
@@ -207,6 +209,39 @@ function useAutoSave() {
 						}, 0);
 					}
 				}
+			},
+			// Flush đáp án cuối trước khi submit; không coi request kết thúc là thành công
+			// nếu API trả 401 hoặc trạng thái vẫn còn pending.
+			async flushPendingSave() {
+				if (this.isSubmitted) return true;
+				if (this.autoSaveTimer) {
+					clearTimeout(this.autoSaveTimer);
+					this.autoSaveTimer = null;
+				}
+				if (this.isSaving) {
+					await new Promise(resolve => {
+						const startedAt = Date.now();
+						const waitForSave = () => {
+							if (!this.isSaving || Date.now() - startedAt >= 15000) {
+								resolve();
+								return;
+							}
+							setTimeout(waitForSave, 50);
+						};
+						waitForSave();
+					});
+				}
+				for (let attempt = 0; attempt < 3; attempt++) {
+					if (this.isSaving) return false;
+					if (!this.pendingSave && this.saveStatus === 'Đã lưu') return true;
+					if (this.autoSaveTimer) {
+						clearTimeout(this.autoSaveTimer);
+						this.autoSaveTimer = null;
+					}
+					const saved = await this.saveDraft(true);
+					if (!saved) return false;
+				}
+				return !this.isSaving && !this.pendingSave && this.saveStatus === 'Đã lưu';
 			},
 			// Lưu flag sau khi học sinh đã nộp bài — không reset SubmissionStatus
 			async saveFlagsOnly(answers) {
@@ -375,13 +410,26 @@ function useTimeTracking() {
 	return {
 		methods: {
 			async insertDurationTime(submitionInfo) {
+				// Mỗi submission chỉ được có một request duration đang chạy;
+				// interval 5 giây không được tạo request chồng khi mạng/DB phản hồi chậm.
+				if (this.durationTimeTrackingStopped || this.durationTimeRequestInFlight) return;
 				if (vueData.user?.UserID === 'NA0000022') return;
 				if (!this._isActiveSubmission(submitionInfo?.SubmissionStatus)) return;
-				await fetchPromise(
-					'lms/EL_Student_UpdateDurationTime',
-					{ SubmissionID: submitionInfo.SubmissionID },
-					{ silent: true, cache: false }
-				);
+				this.durationTimeRequestInFlight = true;
+				try {
+					await fetchPromise(
+						'lms/EL_Student_UpdateDurationTime',
+						{ SubmissionID: submitionInfo.SubmissionID },
+						{ silent: true, cache: false }
+					);
+				} catch (error) {
+					// Timeout/network error thì dừng timer để không tạo chuỗi retry liên tục.
+					this.durationTimeTrackingStopped = true;
+					if (typeof this._stopTimeTracking === 'function') this._stopTimeTracking();
+					console.warn('[Assignment] dừng cập nhật thời lượng do request lỗi:', error);
+				} finally {
+					this.durationTimeRequestInFlight = false;
+				}
 			},
 			insertAccessTime(submitionInfo) {
 				if (vueData.user?.UserID === 'NA0000022') return;

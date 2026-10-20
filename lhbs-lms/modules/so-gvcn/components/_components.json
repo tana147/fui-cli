@@ -82,5 +82,9 @@
   {
     "comID": 10631,
     "comName": "uc-main-layout"
+  },
+  {
+    "comID": 12558,
+    "comName": "uc-so-gvcn-mobile-sheet-editor"
   }
 ]

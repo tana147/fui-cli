@@ -1,4 +1,4 @@
-CREATE PROC [dbo].[___spAPI_AnPhamTacGia_Get_ByAnPhamID]
+CREATE PROC [dbo].[spAPI_AnPhamTacGia_Get_ByAnPhamID]
 @AnPhamID INT
 AS
 BEGIN

@@ -1,0 +1,472 @@
+<template>
+	<v-navigation-drawer :model-value="isOpen" @update:model-value="val => { if (!val) CloseLiberies() }" temporary
+		location="end" width="400">
+		<div class="lib-root">
+
+			<!-- Header -->
+			<v-list-item prepend-icon="" class="bg-white"
+				style="flex-shrink:0; height:50px; border-bottom:1px solid var(--border-color)">
+				<template #prepend>
+					<v-icon size="small">mdi-library-shelves</v-icon>
+				</template>
+				<span class="text-subtitle-1 font-weight-bold">{{ $t('message.MyDocument') }}</span>
+				<template v-slot:append>
+					<v-btn icon="mdi-close" variant="text" size="small" color="grey-darken-2"
+						aria-label="Đóng" @click="CloseLiberies" />
+				</template>
+			</v-list-item>
+
+			<!-- Subject filter pills -->
+			<div class="lib-filter-row">
+				<button v-for="(item, index) in DSMonHoc" :key="index" class="lib-pill"
+					:class="{ active: item.MonHocName === selected.MonHocName }" @click="getLiberies(item)">
+					{{ item.MonHocName == 'Ngoại ngữ' ? ($i18n.locale == 'en' ? 'English' : item.MonHocName) :
+					item.MonHocName }}
+				</button>
+				<span v-if="DSMonHoc.length === 0" class="text-red text-caption">{{ $t('message.NotFoundSubject')
+					}}</span>
+			</div>
+
+			<!-- Khoi filter pills -->
+					<div class="lib-filter-row lib-filter-row--khoi" v-if="availableKhois.length > 1">
+						<v-chip size="small" :variant="selectedKhoi === null ? 'flat' : 'outlined'"
+							:color="selectedKhoi === null ? 'primary' : undefined" @click="selectedKhoi = null">
+							{{ $t('message.All') }}
+						</v-chip>
+						<v-chip v-for="k in availableKhois" :key="k.id" size="small"
+							:variant="selectedKhoi === k.id ? 'flat' : 'outlined'"
+							:color="k.hasShared ? 'warning' : (selectedKhoi === k.id ? 'primary' : undefined)"
+							:prepend-icon="k.hasShared ? 'mdi-account-arrow-left-outline' : undefined"
+							@click="selectedKhoi = k.id">
+							{{ $t('message.Grade') }} {{ k.id }}
+						</v-chip>
+			</div>
+
+			<!-- Owner filter -->
+			<div class="lib-filter-row" v-if="selectedLibraries.length > 0">
+				<v-chip size="small" :variant="libraryOwnerFilter === 'all' ? 'flat' : 'outlined'"
+					:color="libraryOwnerFilter === 'all' ? 'primary' : undefined"
+					@click="libraryOwnerFilter = 'all'">{{ $t('message.All') }}</v-chip>
+				<v-chip size="small" :variant="libraryOwnerFilter === 'mine' ? 'flat' : 'outlined'"
+					:color="libraryOwnerFilter === 'mine' ? 'success' : undefined"
+					prepend-icon="mdi-account-check-outline"
+					@click="libraryOwnerFilter = 'mine'">{{ $i18n.locale === 'en' ? 'Created by me' : 'Tôi tạo' }}</v-chip>
+				<v-chip size="small" :variant="libraryOwnerFilter === 'shared' ? 'flat' : 'outlined'"
+					:color="libraryOwnerFilter === 'shared' ? 'warning' : undefined"
+					prepend-icon="mdi-account-arrow-left-outline"
+					@click="libraryOwnerFilter = 'shared'">{{ $i18n.locale === 'en' ? 'Shared with me' : 'Được chia sẻ' }}</v-chip>
+			</div>
+
+			<!-- Actions -->
+			<div class="lib-actions" v-if="DSMonHoc.length > 0">
+				<v-btn color="brown" variant="outlined" size="small" @click="onOpenKhoNoiDung()"
+					v-tooltip="$t('message.ContentLibrary')">
+					<v-icon>mdi-archive-outline</v-icon>
+					<span style="font-size:.775rem">{{ $t('message.ContentLibrary') }}</span>
+				</v-btn>
+				<v-menu transition="slide-y-transition">
+					<template v-slot:activator="{ props }">
+						<v-btn color="primary" variant="outlined" size="small" v-bind="props">
+							<v-icon>mdi-plus</v-icon>
+							<span style="font-size:.775rem">{{ $t('message.CreateContent') }}</span>
+						</v-btn>
+					</template>
+					<v-list>
+						<v-list-item v-for="KhoiItem in selectedGroups" :value="KhoiItem.KhoiID" :key="KhoiItem.KhoiID"
+							@click="OpenModalAddNoiDung(KhoiItem)">
+							<v-list-item-title>{{ $t('message.Grade') }} {{ KhoiItem.KhoiID }}</v-list-item-title>
+						</v-list-item>
+					</v-list>
+				</v-menu>
+			</div>
+
+			<!-- Search -->
+			<div class="lib-search">
+				<v-text-field v-model="librarySearch" density="compact" variant="outlined" hide-details
+					:placeholder="$t('message.Search')" prepend-inner-icon="mdi-magnify" />
+			</div>
+
+			<!-- Flat item list -->
+			<div class="lib-body">
+				<!-- Skeleton loading -->
+				<template v-if="isLibraryLoading">
+					<div v-for="n in 5" :key="'skel-' + n" class="lib-bt-item" style="pointer-events:none;opacity:.7">
+						<div class="lib-bt-icon" style="background:#EAF2FC;flex-shrink:0">
+							<v-skeleton-loader type="avatar" width="15" height="15" style="margin:auto" />
+						</div>
+						<div class="lib-bt-body" style="flex:1;gap:4px">
+							<v-skeleton-loader type="text" width="72%" />
+							<v-skeleton-loader type="text" width="40%" />
+							<v-skeleton-loader type="chip" width="80px" />
+						</div>
+					</div>
+				</template>
+				<template v-else>
+					<div v-if="flatLibraryItems.length === 0" class="lib-empty">
+						<v-icon size="36" class="mb-2 opacity-40">mdi-book-open-blank-variant-outline</v-icon>
+						<span>{{ flatLibraryItems.length === 0 && selected ? $t('message.NoDocument') :
+							$t('message.SelectSubjectToView') }}</span>
+					</div>
+					<div v-for="item in flatLibraryItems" :key="item.ResourceID" class="lib-bt-item"
+						@click="onSelectedLibery(item, item._siblings)">
+						<div class="lib-bt-icon"
+							:style="{ background: item._info.color === 'blue' ? '#EAF2FC' : '#E8F5E9' }">
+							<v-icon size="15" :color="item._info.color">{{ item._info.icon }}</v-icon>
+						</div>
+						<div class="lib-bt-body">
+							<div class="lib-bt-name">{{ item.Title }}</div>
+							<div class="lib-bt-meta">{{ item._monHocName === 'Ngoại ngữ' ? ($i18n.locale === 'en' ? 'English' : item._monHocName) : item._monHocName }} · {{ $t('message.Grade') }} {{ item._khoi }}
+								· {{ formatTuanHienThi(item._week) }}</div>
+							<div class="d-flex flex-wrap ga-1 align-center">
+								<span v-if="isDelegatedItem(item) && item.NguoiUploadName" class="text-caption text-medium-emphasis">
+									{{ $i18n.locale === 'en' ? 'Created by:' : 'Người tạo:' }} {{ item.NguoiUploadName }}
+								</span>
+								<span class="lib-pill-status" :style="getStatusStyle(item._status.color)">{{
+									item._status.text }}</span>
+								<v-chip v-if="isHocLieuMappingLoaded(item) && !isHocLieuLinked(item)" size="x-small"
+									color="warning" variant="tonal" prepend-icon="mdi-file-tree-outline"
+									v-tooltip="$i18n.locale === 'en' ? 'Digital curriculum index not linked' : 'Bài này chưa gán mục lục học liệu số'">
+									{{ $i18n.locale === 'en' ? 'Digital curriculum not linked' : 'Chưa gán mục lục học liệu số' }}
+								</v-chip>
+							</div>
+						</div>
+						<v-menu transition="slide-y-transition">
+							<template v-slot:activator="{ props }">
+								<v-btn size="x-small" variant="text" icon="mdi-dots-vertical" v-bind="props"
+									@click.stop />
+							</template>
+							<v-list density="compact">
+								<v-list-item @click.stop="onRedirectToASM(item)">
+									<v-list-item-title class="text-subtitle-2">
+										<v-icon color="primary" size="small" class="mr-1">mdi-archive-eye-outline
+										</v-icon>
+										{{ $t('message.ViewDetail') }}
+									</v-list-item-title>
+								</v-list-item>
+								<v-list-item @click.stop="onDeleteItem(item)">
+									<v-list-item-title class="text-subtitle-2">
+										<v-icon color="red" size="small" class="mr-1">mdi-trash-can-outline</v-icon>
+										{{ $t('message.Delete') }} {{ item.ResourceType == 'LESSON' ?
+										$t('message.Lesson').toLowerCase() : $t('message.Assignment').toLowerCase() }}
+									</v-list-item-title>
+								</v-list-item>
+							</v-list>
+						</v-menu>
+					</div>
+				</template>
+			</div>
+
+			<uc-libery-details v-if="isShowModalLiberyDetails" v-model:isOpen="isShowModalLiberyDetails"
+				v-model:selectedLibery="selectedLibery" :key="keyComp" :DSAssignedClass="DSAssignedClass"
+				@update:selectedLibery="handleLibraryItemUpdated" />
+
+		</div>
+	</v-navigation-drawer>
+</template>
+
+<script>
+	export default {
+		inject: ['snackbarRef', 'iframeRef', 'confirmRef'],
+	emits: ['update:isOpen', 'create-content'],
+	props: {
+		isOpen: {
+			type: Boolean,
+			default: false
+		},
+		dsMonHocActive: {
+			type: Array,
+			default: () => []
+		},
+		teachingGroups: {
+			type: Array,
+			default: () => []
+		},
+		contentLibrary: {
+			type: Array,
+			default: () => []
+		}
+	},
+	mounted() {
+		document.body.classList.add('no-scroll');
+		this.DSMonHoc = [...this.dsMonHocActive]
+		this.$nextTick(() => {
+			if (this.DSMonHoc.length > 0) this.selected = this.DSMonHoc[0];
+		})
+
+	},
+	computed: {
+		tooltipCreateContent() {
+			return 'Tạo nội dung cho môn học ' + this.selected.MonHocName
+		},
+		selectedGroups() {
+			if (!this.selected?.MonHocName) return []
+			const seen = new Set()
+			return this.teachingGroups
+				.filter(item =>
+					item.MonHocName == this.selected.MonHocName &&
+					(item.IsDirectTeacher === 1 || item.IsDirectTeacher === true || item.IsDirectTeacher === undefined)
+				)
+				.filter(item => {
+					if (seen.has(item.KhoiID)) return false
+					seen.add(item.KhoiID)
+					return true
+				})
+				.sort((a, b) => Number(a.KhoiID) - Number(b.KhoiID))
+		},
+		selectedLibraries() {
+			if (!this.selected?.MonHocName) return []
+			return this.contentLibrary
+				.filter(khoi => khoi.MonHocName == this.selected.MonHocName)
+				.map(khoi => ({
+					...khoi,
+					allIndices: khoi.weeks?.map((_, i) => i) ?? [],
+					weeks: khoi.weeks?.map(w => ({
+						...w,
+						flatItems: w.chapters.flatMap(c => c.items.map(item => ({
+							...item,
+							_info: item.ResourceType === 'ASSIGNMENT'
+								? { icon: 'mdi-notebook-edit-outline', color: 'blue' }
+								: { icon: 'mdi-presentation-play', color: 'green' },
+							_status: (() => {
+								const m = {
+									1: { text: this.$t('message.Drafting'), color: 'grey' },
+									2: { text: this.$t('message.ReadyToAssign'), color: 'orange' },
+									3: { text: this.$t('message.AssignedLabel'), color: 'success' },
+								}
+								return m[item.Status] || m[1]
+							})()
+						})))
+					}))
+				}))
+		},
+		availableKhois() {
+			return this.selectedLibraries.reduce((result, khoi) => {
+				if (result.some(k => k.id === khoi.KhoiID)) return result
+				const items = khoi.weeks?.flatMap(w => w.flatItems || []) || []
+				result.push({ id: khoi.KhoiID, hasShared: items.some(item => this.isDelegatedItem(item)) })
+				return result
+			}, [])
+		},
+		flatLibraryItems() {
+			const s = this.librarySearch.toLowerCase()
+			const libs = this.selectedKhoi !== null
+				? this.selectedLibraries.filter(k => k.KhoiID === this.selectedKhoi)
+				: this.selectedLibraries
+			return libs.flatMap(khoi =>
+				khoi.weeks.flatMap(week => {
+					const siblings = week.flatItems
+					return week.flatItems.map(item => ({ ...item, _khoi: khoi.KhoiID, _week: week.title, _monHocName: khoi.MonHocName, _siblings: siblings }))
+				})
+			).filter(item => {
+				const ownerMatch = this.libraryOwnerFilter === 'all'
+					|| (this.libraryOwnerFilter === 'shared' && this.isDelegatedItem(item))
+					|| (this.libraryOwnerFilter === 'mine' && !this.isDelegatedItem(item))
+				return ownerMatch && (!s || item.Title.toLowerCase().includes(s))
+			})
+		},
+	},
+	watch: {
+		dsMonHocActive(newVal) {
+			this.DSMonHoc = [...newVal]
+			this.$nextTick(() => {
+				if (this.DSMonHoc.length > 0 && !this.DSMonHoc.find(m => m.MonHocName === this.selected?.MonHocName)) {
+					this.selected = this.DSMonHoc[0]
+				}
+			})
+		},
+		contentLibrary: function (newVal) {
+			this.$nextTick(() => {
+				this.loadHocLieuMappings(this.flatLibraryItems)
+				if (this.isShowModalLiberyDetails && this.selectedLibery) {
+					const id = this.selectedLibery.ResourceID || this.selectedLibery.AssignmentID
+					const type = this.selectedLibery.ResourceType
+					const found = this.flatLibraryItems.find(x => (x.ResourceID === id || x.AssignmentID === id) && x.ResourceType === type)
+					if (found) {
+						this.selectedLibery = { ...found }
+					}
+				}
+			})
+		},
+		selected() {
+			this.selectedKhoi = null
+			this.$nextTick(() => this.loadHocLieuMappings(this.flatLibraryItems))
+		},
+	},
+	data() {
+
+		return {
+			keyComp: 0,
+			isLibraryLoading: false,
+			selectedKhoi: null,
+			libraryOwnerFilter: 'mine',
+			indentLines: 'default',
+			separateRoots: false,
+			actionIcons: false,
+			prependIcons: true,
+			isShowModalLiberyDetails: false,
+			DSMonHoc: [],
+			selected: '',
+			librarySearch: '',
+			selectedLibery: {},
+			vueData,
+			DSAssignedClass: [],
+			hocLieuMappings: {}
+		}
+	},
+	methods: {
+		isDelegatedItem(item) {
+			const creator = item?.NguoiUploadID
+			const selectedTeacher = this.vueData?.GiaoVienID_Selected
+			return creator != null && selectedTeacher != null && String(creator) !== String(selectedTeacher)
+		},
+		getHocLieuMappingKey(item) {
+			return (item?.ResourceType || '') + ':' + (item?.ResourceID || '')
+		},
+		isHocLieuMappingLoaded(item) {
+			return Object.prototype.hasOwnProperty.call(this.hocLieuMappings, this.getHocLieuMappingKey(item))
+		},
+		isHocLieuLinked(item) {
+			return this.hocLieuMappings[this.getHocLieuMappingKey(item)] === true
+		},
+		loadHocLieuMappings(items) {
+			(items || []).forEach(item => {
+				const key = this.getHocLieuMappingKey(item)
+				if (!item?.ResourceType || !item?.ResourceID || this.isHocLieuMappingLoaded(item)) return
+				if (item.HocLieuID && item.NoiDungID) {
+					this.hocLieuMappings = { ...this.hocLieuMappings, [key]: true }
+					return
+				}
+				ajaxCALL('lms/EL_HocLieuResource_Get', {
+					ResourceType: item.ResourceType,
+					ResourceID: item.ResourceID
+				}, response => {
+					const rows = response?.data ?? response ?? []
+					const mapping = Array.isArray(rows?.[0]) ? rows[0][0] : (Array.isArray(rows) ? rows[0] : rows)
+					this.hocLieuMappings = {
+						...this.hocLieuMappings,
+						[key]: !!(mapping?.HocLieuID && mapping?.NoiDungID)
+					}
+				})
+			})
+		},
+		isDeletedItemInSelectedWeek(item) {
+			const selectedWeekId = vueData.cascadeTuanID
+			if (selectedWeekId != null && item?.TuanHocID != null) {
+				return String(item.TuanHocID) === String(selectedWeekId)
+			}
+			if (vueData.cascadeTuanHienThi && item?.Tuan_HienThi) {
+				return String(item.Tuan_HienThi) === String(vueData.cascadeTuanHienThi)
+			}
+			return false
+		},
+		async refreshFocusAfterDeleteIfNeeded(item) {
+			const isAssigned = Number(item?.Status) === 3 || Number(item?.AssignedClassCount || 0) > 0
+			if (!isAssigned) return
+			if (!this.isDeletedItemInSelectedWeek(item)) return
+			await Promise.resolve(vueData.reloadFocusApis?.())
+		},
+		getStatusStyle(color) {
+			const m = { grey: { bg: '#F3F4F6', text: '#6B7280' }, orange: { bg: '#FAEEDA', text: '#BA7517' }, success: { bg: '#EAF3DE', text: '#3B6D11' } }
+			const c = m[color] || m.grey
+			return `background:${c.bg}; color:${c.text}; padding:2px 7px; border-radius:20px; font-size:10px; font-weight:600`
+		},
+		CloseLiberies() {
+			this.$emit('update:isOpen', false);
+			document.body.classList.remove('no-scroll');
+		},
+		getLiberies(item) {
+			this.selected = item;
+		},
+		itemInfo(item) {
+			return item.ResourceType === 'ASSIGNMENT'
+				? { icon: 'mdi-notebook-edit-outline', color: 'blue' }
+				: { icon: 'mdi-presentation-play', color: 'green' };
+		},
+		statusInfo(item) {
+			const statusMap = {
+				1: { text: this.$t('message.Drafting'), color: 'grey' },
+				2: { text: this.$t('message.ReadyToAssign'), color: 'orange' },
+				3: { text: this.$t('message.AssignedLabel'), color: 'success' },
+			};
+			return statusMap[item.Status] || statusMap[1];
+		},
+		onSelectedLibery(item, DSAssignedClass) {
+			this.selectedLibery = item
+			this.DSAssignedClass = DSAssignedClass
+			this.isShowModalLiberyDetails = true
+		},
+		OpenModalAddNoiDung(item) {
+			this.$emit('create-content', item)
+		},
+		onRedirectToASM(item) {
+			let url = null
+			if (item.ResourceType === 'ASSIGNMENT') {
+				url = `/lms_tc_asm_builder?AssignmentID=${item.ResourceID}&_v=${Date.now()}`
+			} else if (item.ResourceType === 'LESSON') {
+				url = `/lms_tc_lesson_builder?LessonID=${item.ResourceID}`
+			}
+			this.iframeRef.value.openWindow({
+				title: item.Title,
+				url,
+				onclose: () => this.refreshLibrary()
+			});
+
+		},
+		async refreshLibrary() {
+			this.isLibraryLoading = true
+			try {
+				await Promise.all([
+					Promise.resolve(vueData.apiCall1?.()),
+					Promise.resolve(vueData.apiCall3?.())
+				])
+			} finally { this.isLibraryLoading = false }
+		},
+		async handleLibraryItemUpdated() {
+			this.hocLieuMappings = {}
+			await this.refreshLibrary()
+		},
+		onDeleteItem(item) {
+			this.confirmRef.value.show({
+				title: `Xác nhận xóa ${item.ResourceType === 'ASSIGNMENT' ? 'bài tập' : 'bài học'} - ${item.Title}`
+			}).then(ok => {
+				if (!ok) return
+				if (item.ResourceType === 'ASSIGNMENT') {
+					ajaxCALL('lms/EL_Assignment_Delete', {
+						AssignmentID: item.ResourceID
+					}, async res => {
+						await this.refreshLibrary()
+						await this.refreshFocusAfterDeleteIfNeeded(item)
+						this.snackbarRef.value.showSnackbar({ message: 'Xóa bài tập thành công!', color: 'success' })
+					})
+				} else {
+					ajaxCALL('lms/EL_Lesson_Delete', {
+						LessonID: item.ResourceID
+					}, async res => {
+						await this.refreshLibrary()
+						await this.refreshFocusAfterDeleteIfNeeded(item)
+						this.snackbarRef.value.showSnackbar({ message: 'Xóa bài học thành công!', color: 'success' })
+					})
+				}
+			})
+		},
+		formatTuanHienThi(text) {
+			if (!text) return ''
+			if (this.$i18n.locale === 'en') {
+				return text.replace(/^Tuần\s+/i, 'Week ')
+					.replace(/-\s*Tháng\s+/gi, '- Month ')
+			}
+			return text
+		},
+		onOpenKhoNoiDung() {
+			this.iframeRef.value.openWindow({
+				title: 'Kho nội dung',
+				url: 'https://lms.lhbs.vn/kho-noi-dung-cong-khai?NienKhoa=' + vueData.NienKhoa,
+				onclose: () => {
+					vueData.apiCall1?.()
+					vueData.apiCall3?.()
+				}
+			})
+		},
+	}
+	}
+</script>

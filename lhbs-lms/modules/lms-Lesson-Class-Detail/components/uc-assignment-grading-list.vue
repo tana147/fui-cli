@@ -72,11 +72,30 @@
 						{{ statusTexts[item.Status] }}
 					</v-chip>
 				</template>
-				<template #item.CompletedDate="{ item }">
-					<span v-if="item.CompletedDate">{{ formatDate(item.CompletedDate) }}</span>
-					<span v-else class="text-medium-emphasis">—</span>
-				</template>
-				<template #item.Score="{ item }">
+			<template #item.CompletedDate="{ item }">
+				<span v-if="item.CompletedDate">{{ formatDate(item.CompletedDate) }}</span>
+				<span v-else class="text-medium-emphasis">—</span>
+			</template>
+			<template #item.CompletedBy="{ item }">
+				<!-- CompletionSource mới phân biệt người hoàn thành; bản ghi cũ không có audit thì không suy đoán. -->
+				<span v-if="item.CompletionSource === 'AUTO_TIME'">Học sinh: {{ item.HoTen }}</span>
+				<span v-else-if="item.CompletionSource === 'TEACHER_MANUAL'">
+					Giáo viên<span v-if="item.CompletedByUserID">: {{ item.CompletedByUserID }}</span>
+					<span v-else>: chưa xác định</span>
+				</span>
+				<span v-else class="text-medium-emphasis">—</span>
+			</template>
+			<template #item.Actions="{ item }">
+				<!-- Chỉ cho xác nhận thủ công khi học sinh đã có tiến trình IN_PROCESS; NOT_COMPLETED nghĩa là chưa bắt đầu. -->
+				<v-btn v-if="item.Status === 'IN_PROCESS'" size="small" color="success" variant="text"
+					prepend-icon="mdi-check-circle-outline" :loading="markingHocSinhID === item.HocSinhID"
+					:disabled="markingHocSinhID !== null" @click="markStudentCompleted(item)">
+					Hoàn thành
+				</v-btn>
+				<span v-else-if="item.Status === 'COMPLETED'" class="text-medium-emphasis">Đã hoàn thành</span>
+				<span v-else class="text-medium-emphasis">Chưa bắt đầu</span>
+			</template>
+			<template #item.Score="{ item }">
 					<span class="font-weight-bold" :class="getScoreColor(item.Score)">
 						{{ item.Score != null ? item.Score : '—' }}
 					</span>
@@ -92,13 +111,36 @@
 				</template>
 			</v-data-table>
 		</v-card>
+		<!-- Fallback cho màn hình không nhận được confirmRef từ app shell; vẫn phải xác nhận trước khi ghi nhận thủ công. -->
+		<v-dialog v-model="completionConfirmVisible" max-width="460" persistent>
+			<v-card>
+				<v-card-title class="text-warning">Xác nhận hoàn thành</v-card-title>
+				<v-card-text>
+					Bạn có chắc muốn đánh dấu hoàn thành bài học cho
+					<strong>{{ pendingCompletionStudent?.HoTen }}</strong>?
+					<div class="text-body-2 text-medium-emphasis mt-2">
+						Thao tác này sẽ ghi nhận giáo viên là người xác nhận hoàn thành bài học.
+					</div>
+				</v-card-text>
+				<v-card-actions>
+					<v-spacer />
+					<v-btn variant="text" :disabled="markingHocSinhID !== null" @click="cancelMarkStudentCompleted">
+						Hủy
+					</v-btn>
+					<v-btn color="success" variant="flat" :loading="markingHocSinhID !== null"
+						@click="confirmMarkStudentCompleted">
+						Hoàn thành
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</div>
-
 </template>
 
 <script>
 	export default {
 		name: 'uc-baocaobaitapdanop',
+		inject: ['confirmRef'],
 		props: {
 			assigntoclassid: Number,
 			assignmentid: Number,
@@ -120,16 +162,21 @@
 				headers: [
 					{ title: 'Mã HS', key: 'HocSinhID', sortable: true },
 					{ title: 'Số danh bộ', key: 'SoDanhBo', sortable: true },
-					{ title: 'Học sinh', key: 'HoTen', sortable: true },
-					{ title: 'Trạng thái', key: 'Status', sortable: true },
-					{ title: 'Thời gian hoàn thành', key: 'CompletedDate', sortable: true },
-				],
+						{ title: 'Học sinh', key: 'HoTen', sortable: true },
+						{ title: 'Trạng thái', key: 'Status', sortable: true },
+						{ title: 'Thời gian hoàn thành', key: 'CompletedDate', sortable: true },
+						{ title: 'Người hoàn thành', key: 'CompletedBy', sortable: true },
+						{ title: 'Thao tác', key: 'Actions', sortable: false, align: 'center' },
+					],
 				statusColors: { 'COMPLETED': 'success', 'NOT_COMPLETED': 'grey', 'IN_PROCESS': 'blue' },
 				statusTexts: { 'COMPLETED': 'Đã hoàn thành', 'NOT_COMPLETED': 'Chưa hoàn thành', 'IN_PROCESS': 'Đang học' },
 				isOpen: false,
 				url: "",
 				isMobile: mobile,
-				stats: {}
+				stats: {},
+				markingHocSinhID: null,
+				completionConfirmVisible: false,
+				pendingCompletionStudent: null
 			}
 		},
 		computed: {
@@ -143,8 +190,10 @@
 					SoDanhBo: item.SoDanhBo,
 					HoTen: item.HoTen || 'Lỗi dữ liệu',
 					Status: item.Status || 'NOT_SUBMITTED',
-					CompletedDate: item.CompletedDate,
-					ProgressID: item.ProgressID,
+						CompletedDate: item.CompletedDate,
+						CompletedByUserID: item.CompletedByUserID,
+						CompletionSource: item.CompletionSource,
+						ProgressID: item.ProgressID,
 				}));
 			},
 			completionRate() {
@@ -208,6 +257,61 @@
 				this.studentLearning = await ajaxCALLPromise("lms/EL_Teacher_GetLearning_ProgressByStudent", { AssignToClassID: assignToClassID })
 				vueData.loading = false;
 			},
+			// Cho phép giáo viên xác nhận hoàn thành khi học sinh đã học xong nội dung sớm hơn mốc thời gian cấu hình.
+			async markStudentCompleted(item) {
+				if (!item?.HocSinhID || item.Status === 'COMPLETED') return;
+
+				const confirmDialog = this.confirmRef?.value;
+				// Ưu tiên dialog chung của FUI; một số màn hình module chạy tách shell nên cần fallback cục bộ.
+				if (confirmDialog?.show) {
+					const confirmed = await confirmDialog.show({
+					title: `Xác nhận hoàn thành bài học cho ${item.HoTen}?`,
+					text: 'Thao tác này sẽ ghi nhận giáo viên là người xác nhận hoàn thành bài học.',
+					type: 'warning',
+					confirmText: 'Hoàn thành',
+					cancelText: 'Hủy'
+					});
+					if (!confirmed) return;
+					await this.submitStudentCompletion(item);
+					return;
+				}
+
+				this.pendingCompletionStudent = item;
+				this.completionConfirmVisible = true;
+			},
+			// Chỉ gọi API sau khi giáo viên xác nhận trong dialog fallback.
+			async confirmMarkStudentCompleted() {
+				const item = this.pendingCompletionStudent;
+				if (!item?.HocSinhID || item.Status === 'COMPLETED') {
+					this.cancelMarkStudentCompleted();
+					return;
+				}
+
+				this.completionConfirmVisible = false;
+				this.pendingCompletionStudent = null;
+				await this.submitStudentCompletion(item);
+			},
+			cancelMarkStudentCompleted() {
+				if (this.markingHocSinhID !== null) return;
+				this.completionConfirmVisible = false;
+				this.pendingCompletionStudent = null;
+			},
+			async submitStudentCompletion(item) {
+				this.markingHocSinhID = item.HocSinhID;
+				try {
+					await ajaxCALLPromise('lms/EL_Teacher_MarkLearningProgressCompleted', {
+						AssignToClassID: this.selectedAssignToClassID,
+						HocSinhID: item.HocSinhID
+					});
+					Vue.$toast.success(`Đã đánh dấu hoàn thành cho ${item.HoTen}.`, { position: 'top' });
+					await this.initialize();
+				} catch (error) {
+					console.error('[LESSON_PROGRESS] Không thể đánh dấu hoàn thành:', error);
+					Vue.$toast.error(error?.message || 'Không thể đánh dấu hoàn thành.', { position: 'top' });
+				} finally {
+					this.markingHocSinhID = null;
+				}
+			},
 			getScoreColor(score) {
 				if (score == null) return '';
 				if (score < 5.0) return 'score-bad'; if (score < 7.0) return 'score-average'; return 'score-good';
@@ -242,11 +346,11 @@
 		async mounted() {
 			await this.initialize();
 		},
-	
 	}
 </script>
+
 <style scoped>
-	.submission-lessonInfo-card .v-col {
+.submission-lessonInfo-card .v-col {
 		padding: 16px;
 	}
 
@@ -255,5 +359,4 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-
 </style>

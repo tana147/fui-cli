@@ -12,9 +12,10 @@ _publishState.json
 
 # Modules containing hardcoded 3rd party API keys
 lhbs-lms/modules/dashboard-phat-trien-nang-luc*
+_history/**/dashboard-phat-trien-nang-luc*
 
 # ============================================
-# OS & Editor
+# OS & Editor & Cache
 # ============================================
 .DS_Store
 Thumbs.db
@@ -22,3 +23,6 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+_cache/
+_componentPreview/
+

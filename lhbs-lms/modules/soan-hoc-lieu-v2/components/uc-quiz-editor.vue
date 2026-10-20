@@ -191,6 +191,15 @@
 			</div>
 			<v-btn prepend-icon="mdi-plus" variant="text" color="primary" @click="addOption('items')">Thêm mục</v-btn>
 		</div>
+		<!-- ==================== 8. SHORT_ANSWER / ESSAY ==================== -->
+		<div v-else-if="['SHORT_ANSWER', 'ESSAY'].includes(loaiNoiDung)">
+			<uc-rich-text-editor label="Câu hỏi/Yêu cầu" v-model="editableData.prompt"
+				:imageapi="vueData.v_Set.apiFile" variant="outlined" rows="2" auto-grow />
+			<!-- Key này được lưu trong content để giáo viên có đáp án tham khảo khi chấm tay; không hiển thị cho học sinh. -->
+			<uc-rich-text-editor class="mt-4" label="Đáp án tham khảo (chỉ giáo viên xem)"
+				v-model="editableData.referenceAnswer" :imageapi="vueData.v_Set.apiFile"
+				variant="outlined" rows="4" auto-grow />
+		</div>
 		<!-- ==================== Soạn thảo: QUIZ_COMPOSITE (Bài kiểm tra / Bài thi) ==================== -->
 		<div v-else-if="loaiNoiDung === 'QUIZ_COMPOSITE'" class="quiz-composite-wrap">
 			<!-- 1. THIẾT LẬP CHUNG NHÓM CÂU HỎI -->
@@ -490,13 +499,17 @@
 					{ value: 'QUIZ_FILL_IN_BLANK', title: 'Điền từ' },
 					{ value: 'QUIZ_CONNECTION', title: 'Nối nhóm' },
 					{ value: 'QUIZ_TRUE_FALSE', title: 'Đúng sai' },
+					{ value: 'SHORT_ANSWER', title: 'Trả lời ngắn' },
+					{ value: 'ESSAY', title: 'Tự luận' },
 				],
 				quickQuizShortcuts: [
 					{ value: 'QUIZ_SINGLE_CHOICE', title: 'Trắc nghiệm đơn' },
 					{ value: 'QUIZ_MULTIPLE_CHOICE', title: 'Đa lựa chọn' },
 					{ value: 'QUIZ_TRUE_FALSE', title: 'Đúng / Sai' },
 					{ value: 'QUIZ_MATCHING', title: 'Ghép cặp' },
-					{ value: 'QUIZ_FILL_IN_BLANK', title: 'Điền từ' }
+					{ value: 'QUIZ_FILL_IN_BLANK', title: 'Điền từ' },
+					{ value: 'SHORT_ANSWER', title: 'Trả lời ngắn' },
+					{ value: 'ESSAY', title: 'Tự luận' }
 				],
 				isAdvanced: false,
 				isOpenDialogImport_QUIZ_COMPOSITE: false,

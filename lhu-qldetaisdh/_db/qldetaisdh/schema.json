@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-05T07:49:11.950Z",
+  "fetchedAt": "2026-10-20T03:02:49.083Z",
   "tables": [
     "CREATE TABLE ChucTrach (ChucTrachID int(4) NOT NULL PRIMARY KEY IDENTITY,ChucTrach nvarchar(50) NULL,LoaiID int(4) NULL,Sort int(4) NULL);",
     "CREATE TABLE Decision (Decision_ID int(4) NOT NULL PRIMARY KEY IDENTITY,Decision_SoQD nvarchar(50) NULL,Decision_NgayQD varchar(2) NULL,Decision_ThangQD varchar(2) NULL,Decision_NamQD varchar(4) NULL,Decision_TieuDe nvarchar(500) NULL,Decision_NganhID int(4) NULL,Decision_Nganh nvarchar(200) NULL,Decision_NienKhoa nvarchar(20) NULL,Decision_Dot nvarchar(10) NULL,Decision_MaSo nvarchar(50) NULL,Decision_Type nvarchar(20) NULL,Decision_Description nvarchar(max) NULL,DecisionFile_ID nvarchar(50) NULL,DecisionFile_Url nvarchar(500) NULL,DecisionFile_Name nvarchar(255) NULL,Decision_TemplateID tinyint(1) NULL,Decision_Status tinyint(1) NOT NULL,Created_By varchar(20) NULL,Created_At datetime(8) NULL,Updated_By varchar(20) NULL,Updated_At datetime(8) NULL,HoiDong_ID int(4) NULL);",
@@ -82,6 +82,7 @@
     "CREATE PROCEDURE spAPI_Decision_Change_Thesis_Ins (@JsonStudentData nvarchar(max),@Decision_SoQD nvarchar(50),@Decision_NgayQD varchar(2),@Decision_ThangQD varchar(2),@Decision_NamQD varchar(4),@Decision_TieuDe nvarchar(500),@Decision_NganhID int(4),@Decision_NienKhoa nvarchar(20),@Decision_FileID nvarchar(50),@Decision_Url nvarchar(50),@DecisionFile_Name nvarchar(50),@SYS_UserID varchar(9),@Sys_GroupID int(4),@sys_SystemRight int(4));",
     "CREATE PROCEDURE spAPI_Decision_Del (@Decision_ID int(4),@SYS_UserID varchar(9),@sys_SystemRight int(4));",
     "CREATE PROCEDURE spAPI_Decision_Get_ByDecisionID (@Decision_ID int(4),@sys_SystemRight int(4));",
+    "CREATE PROCEDURE spAPI_Decision_Get_ByDecisionID_Backup (@Decision_ID int(4),@sys_SystemRight int(4));",
     "CREATE PROCEDURE spAPI_Decision_Get_ByStatus (@Decision_Status int(4),@sys_SystemRight int(4));",
     "CREATE PROCEDURE spAPI_Decision_Graduate_Ins (@JsonStudentData nvarchar(max),@Decision_SoQD nvarchar(50),@Decision_NgayQD varchar(2),@Decision_ThangQD varchar(2),@Decision_NamQD varchar(4),@Decision_TieuDe nvarchar(500),@Decision_Dot nvarchar(10),@Decision_NienKhoa nvarchar(20),@SYS_UserID varchar(9),@Sys_GroupID int(4),@sys_SystemRight int(4));",
     "CREATE PROCEDURE spAPI_Decision_Ins (@Decision_Obj nvarchar(max),@Student_Obj nvarchar(max),@SYS_UserID varchar(9),@sys_SystemRight int(4));",
@@ -106,6 +107,7 @@
     "CREATE PROCEDURE spAPI_Get_RootFlow (@StudentID varchar(9),@Process_Student_ID int(4),@Process_Tree int(4));",
     "CREATE PROCEDURE spAPI_Get_RootFlow_His (@StudentID varchar(9));",
     "CREATE PROCEDURE spAPI_Get_SimiliarPaper (@TenDeTai nvarchar(500));",
+    "CREATE PROCEDURE spAPI_Get_SimiliarPaper_BK (@TenDeTai nvarchar(500));",
     "CREATE PROCEDURE spAPI_Get_StudentWaitForThesisConfirm (@Process_ID int(4),@Nganh_ID int(4),@Nien_Khoa varchar(9));",
     "CREATE PROCEDURE spAPI_GetALLGiangVienHuongDan (@Nganh_ID int(4),@HeDaoTao int(4));",
     "CREATE PROCEDURE spAPI_GetDetaiByGiaoVien (@GiaoVien nvarchar(200));",
@@ -186,7 +188,7 @@
     "CREATE PROCEDURE spAPI_Student_Process_Get_TS (@Student_ID varchar(9),@IsFull bit(1),@Sys_UserId varchar(9));",
     "CREATE PROCEDURE spAPI_Student_Remove (@StudentID varchar(9),@sys_SystemRight int(4),@sys_FunctionRight varchar(2000));",
     "CREATE PROCEDURE spAPI_Student_Update_StudentID_Batch_TS (@JsonData nvarchar(max),@sys_UserID varchar(9),@sys_SystemRight int(4),@sys_GroupID int(4),@sys_FunctionRight varchar(2000));",
-    "CREATE PROCEDURE spAPI_Student_Update_StudentID_By_MaHoSo (@MaHoSo varchar(20),@NewStudentID varchar(9),@sys_UserID varchar(9),@sys_SystemRight int(4),@sys_GroupID int(4),@sys_FunctionRight varchar(2000));",
+    "CREATE PROCEDURE spAPI_Student_Update_StudentID_By_MaHoSo (@MaHoSo varchar(20),@NewStudentID varchar(9),@NienKhoa varchar(10),@sys_UserID varchar(9),@sys_SystemRight int(4),@sys_GroupID int(4),@sys_FunctionRight varchar(2000));",
     "CREATE PROCEDURE spAPI_Student_XetTotNghiep_Get (@Nganh_ID int(4),@Flow_Status varchar(2),@TrangThaiTotNghiep int(4));",
     "CREATE PROCEDURE spAPI_Student_XuLyHocVu (@Student_ID varchar(9),@Sys_UserId varchar(9),@sys_SystemRight int(4),@sys_FunctionRight varchar(2000));",
     "CREATE PROCEDURE spAPI_StudentInfo_CongNhanTotNghiep_Update (@JsonStudentID nvarchar(max),@SYS_UserID varchar(9),@sys_SystemRight int(4));",

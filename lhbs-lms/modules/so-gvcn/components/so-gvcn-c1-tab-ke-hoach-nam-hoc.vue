@@ -4,8 +4,8 @@
 		<v-alert v-if="selectedLopID === '__ALL__'" type="info" variant="tonal" density="compact">
 			Chọn một lớp ở thanh trên để lập kế hoạch chủ nhiệm năm học.
 		</v-alert>
-		<div v-else class="d-flex ga-3" style="flex: 1 1 auto; min-height: 0; min-width: 0; max-width: 100%; overflow: hidden;">
-			<div v-if="!sidebarCollapsed" class="flex-shrink-0 overflow-y-auto"
+		<div v-else class="d-flex ga-3 so-gvcn-c1-desktop-only" style="flex: 1 1 auto; min-height: 0; min-width: 0; max-width: 100%; overflow: hidden;">
+			<div v-if="!sidebarCollapsed" class="d-none d-md-block flex-shrink-0 overflow-y-auto"
 				style="width: 260px; border-right: 1px solid rgba(0, 0, 0, 0.12);">
 				<v-list density="compact" nav color="primary" class="pa-0">
 					<v-list-subheader class="text-caption font-weight-bold text-primary px-3">
@@ -67,7 +67,7 @@
 			<!-- min-height: 0 cho phép vùng này thu nhỏ theo tab; nhờ đó chỉ một scrollbar nội dung được tạo. -->
 			<div ref="scrollContainer" class="flex-grow-1 overflow-y-auto" style="min-width: 0; min-height: 0; overflow-x: hidden;" @wheel.capture="onSheetWheel">
 				<div class="d-flex align-center text-h6 text-center font-weight-bold py-2">
-					<v-btn icon variant="text" size="small" class="mr-2"
+					<v-btn icon variant="text" size="small" class="d-none d-md-inline-flex mr-2"
 						:aria-label="sidebarCollapsed ? 'Hiện menu mục' : 'Ẩn menu mục'"
 						@click="sidebarCollapsed = !sidebarCollapsed">
 						<v-icon>{{ sidebarCollapsed ? 'mdi-chevron-right' : 'mdi-chevron-left' }}</v-icon>
@@ -193,6 +193,30 @@
 				</v-row>
 			</div>
 		</div>
+		<!-- Phones edit one planning section at a time with full-width native inputs. -->
+		<div v-if="selectedLopID !== '__ALL__'" class="so-gvcn-c1-mobile-editor flex-column flex-grow-1 overflow-y-auto">
+			<v-expansion-panels multiple class="pa-2">
+				<v-expansion-panel v-for="section in mobilePlanCards" :key="section.key" :value="section.key">
+					<v-expansion-panel-title>{{ section.title }}</v-expansion-panel-title>
+					<v-expansion-panel-text>
+						<uc-so-gvcn-mobile-sheet-editor v-if="section.sheetRows.length"
+							:ref="'mobilePlanEditor_' + section.key" :rows="getInitialPlanRows(section)"
+							:columns="section.columns" :nested-headers="section.nestedHeaders"
+							:title-index="0" :searchable="section.sheetRows.length > 8"
+							empty-title="Dòng" empty-text="Chưa có dữ liệu cho mục này."
+							@cell-changed="onMobilePlanCellChanged(section.key, $event)" />
+						<div v-if="section.textFields.length" class="d-flex flex-column ga-3 mt-3">
+							<v-textarea v-for="field in section.textFields" :key="field.key"
+								v-model="planText[field.key]" :label="field.label" rows="3" auto-grow
+								variant="outlined" density="compact" hide-details />
+						</div>
+						<div v-if="!section.sheetRows.length && !section.textFields.length" class="text-body-2 text-medium-emphasis">
+							Chưa có nội dung cho mục này.
+						</div>
+					</v-expansion-panel-text>
+				</v-expansion-panel>
+			</v-expansion-panels>
+		</div>
 	</v-card-text>
 </template>
 
@@ -209,6 +233,7 @@
 		data() {
 			return {
 				activeCardKey: 'dac-diem',
+				isMobileViewport: false,
 				sidebarCollapsed: false,
 				sheetInstances: {},
 				qualityCompetencySubjects: this.getDefaultQualityCompetencySubjects(),
@@ -231,14 +256,95 @@
 			}
 		},
 		async mounted() {
+			this.isMobileViewport = window.matchMedia('(max-width: 959.98px)').matches
+			window.addEventListener('resize', this.onWindowResize)
 			await this.loadQualityCompetencySubjects()
 			this.planCards = this.buildPlanCards(this.annualPlan)
 			this.initAllSheets()
 		},
 		beforeUnmount() {
+			window.removeEventListener('resize', this.onWindowResize)
 			this.destroyAllSheets()
 		},
+		computed: {
+			mobilePlanCards() {
+				const textFieldsByCard = {
+					'dac-diem': [['Thuận lợi', 'advantages'], ['Khó khăn', 'difficulties']],
+					'duy-tri-so-luong': [['Chỉ tiêu phấn đấu', 'attendanceTarget'], ['Nhiệm vụ và giải pháp', 'attendanceSolution']],
+					'pham-chat-nang-luc': [['Nhiệm vụ và giải pháp', 'qualitySolution']],
+					'mon-hoc-hoat-dong': [['Nhiệm vụ và giải pháp', 'academicSolution']],
+					'phong-trao-vo-sach': [['Chỉ tiêu phấn đấu', 'handwritingTarget'], ['Nhiệm vụ và giải pháp', 'handwritingSolution']],
+					'hoat-dong-khac': [
+						['Hoạt động ngoài giờ lên lớp — Chỉ tiêu', 'extracurricularTarget'],
+						['Hoạt động ngoài giờ lên lớp — Nhiệm vụ và giải pháp', 'extracurricularSolution'],
+						['Trang trí lớp, bảo quản cơ sở vật chất — Chỉ tiêu', 'classroomTarget'],
+						['Trang trí lớp, bảo quản cơ sở vật chất — Nhiệm vụ và giải pháp', 'classroomSolution'],
+						['Công tác lao động — Chỉ tiêu', 'laborTarget'],
+						['Công tác lao động — Nhiệm vụ và giải pháp', 'laborSolution'],
+						['Xã hội hóa giáo dục — Chỉ tiêu', 'socializationTarget'],
+						['Xã hội hóa giáo dục — Nhiệm vụ và giải pháp', 'socializationSolution']
+					]
+				}
+				return (this.planCards || []).map(card => {
+					const rows = (card.rows || []).map((sourceRow, rowIndex) => {
+						const row = Array.isArray(sourceRow) ? sourceRow : []
+						const fields = row.slice(1).map((value, fieldIndex) => {
+							const columnIndex = fieldIndex + 1
+							const nestedTitle = (card.nestedHeaders || []).slice().reverse()
+								.map(header => header?.[columnIndex]?.title).find(title => title && title !== card.columns?.[columnIndex]?.title)
+							const columnTitle = card.columns?.[columnIndex]?.title || ('Cột ' + (columnIndex + 1))
+							return { label: nestedTitle ? nestedTitle + ' — ' + columnTitle : columnTitle, value: this.readableValue(value) }
+						}).filter(field => field.value !== '')
+						return {
+							key: card.key + '-' + rowIndex,
+							title: this.readableValue(row[0]) || ('Dòng ' + (rowIndex + 1)),
+							fields
+						}
+					}).filter(row => row.title || row.fields.length)
+					const textFields = (textFieldsByCard[card.key] || []).map(([label, key]) => ({
+						label,
+						key,
+						value: this.readableValue(this.planText[key])
+					}))
+					return {
+						key: card.key,
+						title: card.navTitle,
+						rows,
+						sheetRows: card.rows || [],
+						columns: card.columns || [],
+						nestedHeaders: card.nestedHeaders || [],
+						textFields
+					}
+				})
+			}
+		},
 		methods: {
+			readableValue(value) {
+				if (value == null) return ''
+				if (typeof value === 'object') {
+					try { return JSON.stringify(value) } catch (error) { return '' }
+				}
+				return String(value).trim()
+			},
+			// Compact short statistics into equal columns; keep long labels and multiline notes readable across the card.
+			mobilePlanFieldColumns(field) {
+				const label = String(field?.label || '').trim()
+				const value = String(field?.value || '').trim()
+				if (label.length > 32 || value.length > 48 || value.includes('\n')) return 12
+				return 6
+			},
+			onWindowResize() {
+				const nextIsMobile = window.matchMedia('(max-width: 959.98px)').matches
+				if (nextIsMobile === this.isMobileViewport) return
+				this.planCards.filter(card => !card.textOnly).forEach(card => {
+					card.rows = this.getPlanCardRows(card)
+				})
+				this.isMobileViewport = nextIsMobile
+				this.$nextTick(() => {
+					if (nextIsMobile) this.planCards.forEach(card => this.$refs['mobilePlanEditor_' + card.key]?.setRows?.(card.rows))
+					this.initAllSheets()
+				})
+			},
 			onSheetWheel(event) {
 				// JSpreadsheet bắt wheel ngay cả khi bảng không có scrollbar dọc
 				// (CSS của tab này cho bảng giãn theo nội dung). Chuyển wheel đó
@@ -290,16 +396,16 @@
 						title: 'I. ĐẶC ĐIỂM TÌNH HÌNH\n1. THỐNG KÊ TÌNH HÌNH LỚP HỌC',
 						columns: [
 							{ title: 'Thời điểm / Nội dung', width: 190, readOnly: true },
-							{ title: 'Tổng số', width: 85 },
-							{ title: 'Nữ', width: 70 },
-							{ title: 'Dân tộc', width: 85 },
-							{ title: 'Lưu ban', width: 85 },
-							{ title: 'Cần quan tâm', width: 120 },
-							{ title: 'Con thương binh', width: 130 },
-							{ title: 'Con liệt sĩ', width: 110 },
-							{ title: 'Hộ nghèo', width: 90 },
-							{ title: 'Hộ cận nghèo', width: 110 },
-							{ title: 'CB/CCVC', width: 90 },
+							{ title: 'Tổng số', width: 85, type: 'numeric' },
+							{ title: 'Nữ', width: 70, type: 'numeric' },
+							{ title: 'Dân tộc', width: 85, type: 'numeric' },
+							{ title: 'Lưu ban', width: 85, type: 'numeric' },
+							{ title: 'Cần quan tâm', width: 120, type: 'numeric' },
+							{ title: 'Con thương binh', width: 130, type: 'numeric' },
+							{ title: 'Con liệt sĩ', width: 110, type: 'numeric' },
+							{ title: 'Hộ nghèo', width: 90, type: 'numeric' },
+							{ title: 'Hộ cận nghèo', width: 110, type: 'numeric' },
+							{ title: 'CB/CCVC', width: 90, type: 'numeric' },
 							{ title: 'Ghi chú', width: 240 }
 						],
 						rows: situationRows,
@@ -651,6 +757,26 @@
 			destroyAllSheets() {
 				Object.keys(this.sheetInstances).forEach(key => this.destroySheet(key))
 			},
+			getInstances() {
+				return Object.values(this.sheetInstances)
+					.flatMap(instance => Array.isArray(instance) ? instance : [instance])
+					.filter(Boolean)
+			},
+			// Chốt ô đang sửa trước khi đọc dữ liệu, vì getData() của JSpreadsheet
+			// có thể chưa đưa giá trị ô cuối cùng vào data nếu editor vẫn đang mở.
+			closeEditors(save = true) {
+				this.getInstances().forEach(sheet => {
+					if (!sheet || typeof sheet.closeEditor !== 'function') return
+					try {
+						const editorCell = sheet.edition ? sheet.edition[0] : null
+						if (editorCell !== null && editorCell !== undefined) sheet.closeEditor(editorCell, save)
+						else sheet.closeEditor(save)
+					} catch (error) {
+						// Một số phiên bản JSpreadsheet có chữ ký closeEditor khác nhau.
+						try { sheet.closeEditor(save) } catch (fallbackError) {}
+					}
+				})
+			},
 			initSheet(card) {
 				this.$nextTick(() => {
 					let container = this.$refs[card.refName]
@@ -690,7 +816,27 @@
 					this.destroyAllSheets()
 					return
 				}
+				if (this.isMobileViewport) {
+					this.destroyAllSheets()
+					this.planCards.forEach(card => this.$refs['mobilePlanEditor_' + card.key]?.setRows?.(card.rows))
+					return
+				}
+				// Desktop keeps JSpreadsheet; mobile form rows retain the same saved array shape.
 				this.planCards.filter(card => !card.textOnly).forEach(card => this.initSheet(card))
+			},
+			getPlanCardRows(card) {
+				if (this.isMobileViewport) return this.$refs['mobilePlanEditor_' + card.key]?.getRows?.() || card.rows || []
+				const instance = this.sheetInstances[card.key]
+				const sheet = Array.isArray(instance) ? instance[0] : instance
+				return sheet && typeof sheet.getData === 'function' ? sheet.getData() : (card.rows || [])
+			},
+			getInitialPlanRows(section) {
+				const card = this.planCards.find(item => item.key === section.key)
+				return card?.rows || section.sheetRows || []
+			},
+			onMobilePlanCellChanged(key, change) {
+				const card = this.planCards.find(item => item.key === key)
+				if (card) card.rows = change.rows
 			},
 			toNullableNumber(value) {
 				if (value === '' || value === null || value === undefined) return null
@@ -753,13 +899,12 @@
 				})
 			},
 			getPlanData() {
+				// getPlanData() còn được dùng cho xuất dữ liệu, nên tự bảo vệ cả khi
+				// caller không đi qua luồng lưu chung của component cha.
+				this.closeEditors(true)
 				const result = this.planCards.reduce((data, card) => {
 					if (card.textOnly) return data
-					const instance = this.sheetInstances[card.key]
-					const sheet = Array.isArray(instance) ? instance[0] : instance
-					data[card.key] = sheet && typeof sheet.getData === 'function'
-						? sheet.getData()
-						: card.rows
+					data[card.key] = this.getPlanCardRows(card)
 					return data
 				}, {})
 				result.version = 3

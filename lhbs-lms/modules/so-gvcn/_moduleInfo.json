@@ -5,10 +5,10 @@
   "ProjectID": "lhbs-lms",
   "ModuleID": "so-gvcn",
   "ModuleName": "Sổ GVCN",
-  "UpdateTime": "2026-09-29 20:38:46",
+  "UpdateTime": "2026-10-19 15:33:55",
   "UpdateUser": "DEV000037",
-  "LastLoad": "2026-10-04",
-  "LoadCount": 5550,
+  "LastLoad": "2026-10-19",
+  "LoadCount": 6319,
   "HTMLOnly": false,
   "Framework": "V3",
   "mTitle": "Sổ GVCN"

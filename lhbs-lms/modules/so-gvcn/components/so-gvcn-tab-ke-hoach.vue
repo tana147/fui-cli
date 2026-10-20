@@ -43,9 +43,9 @@
 				</v-expansion-panel>
 			</v-expansion-panels>
 
-			<div class="so-gvcn-sheet-wrap flex-grow-1 overflow-hidden" style="min-height: 0; height: 100%;">
-				<div class="wrapper-jexcel h-100" style="min-height: 0; height: 100%;">
-					<div ref="sheetRef" class="w-100 h-100" style="height: 100%; min-height: 0;"></div>
+			<div class="so-gvcn-sheet-wrap flex-grow-1" style="min-height: 0; height: 100%; overflow: auto !important;">
+				<div class="wrapper-jexcel" style="min-height: 100%; height: auto; overflow: visible !important;">
+					<div ref="sheetRef" class="w-100" style="min-height: 100%;"></div>
 				</div>
 			</div>
 		</template>
@@ -71,7 +71,9 @@
 		data() {
 			return {
 				activeMonthIndex: 0,
-				localDataAoA: []
+				localDataAoA: [],
+				editorDoubleClickHandler: null,
+				editorMouseDownHandler: null
 			}
 		},
 		computed: {
@@ -88,6 +90,9 @@
 		created() {
 			this.instance = null
 			this.layoutObserver = null
+			// Lưu snapshot ngoài data reactive để Vue không proxy các DOM element trong snapshot.
+			this.pendingDoubleClickScrollSnapshot = null
+			this.lastPreparedDoubleClickEditor = null
 			if (Array.isArray(this.dataAoA) && this.dataAoA.length > 0) {
 				this.localDataAoA = JSON.parse(JSON.stringify(this.dataAoA))
 			}
@@ -123,6 +128,9 @@
 		},
 		beforeUnmount() {
 			this.commitCurrentSheet()
+			this.detachEditorDoubleClickListener()
+			this.pendingDoubleClickScrollSnapshot = null
+			this.lastPreparedDoubleClickEditor = null
 			if (this.layoutObserver) {
 				this.layoutObserver.disconnect()
 				this.layoutObserver = null
@@ -203,16 +211,193 @@
 			getTableHeight() {
 				return '100%'
 			},
+			getEditorCellFromEvent(event) {
+				const container = this.$refs.sheetRef
+				const target = event && event.target
+				const cell = target && typeof target.closest === 'function'
+					? target.closest('td[data-x][data-y]')
+					: null
+				return container && cell && container.contains(cell) ? cell : null
+			},
+			// JSpreadsheet tạo editor rồi focus() trong handler dblclick. Với bảng có
+			// scrollbar dọc riêng, focus mặc định có thể kéo .jspreadsheet_content về đầu.
+			// Chụp cả bảng và các container cha để khôi phục đúng vị trí người dùng đang xem.
+			captureScrollSnapshot() {
+				const container = this.$refs.sheetRef
+				if (!container) return []
+				const snapshot = []
+				const remember = element => {
+					if (!element || snapshot.some(item => item.element === element)) return
+					snapshot.push({
+						element,
+						top: element.scrollTop,
+						left: element.scrollLeft
+					})
+				}
+				remember(this.getScrollElement())
+				remember(this.$el)
+				let parent = container.parentElement
+				while (parent && parent !== document.body) {
+					remember(parent)
+					parent = parent.parentElement
+				}
+				return snapshot
+			},
+			getScrollElement() {
+				const container = this.$refs.sheetRef
+				if (!container) return null
+				return container.querySelector('.jss_content, .jspreadsheet_content, .jexcel_content')
+					|| container.querySelector('.jss_container, .jspreadsheet_container, .jexcel_container')
+					|| container
+			},
+			restoreScrollSnapshot(snapshot) {
+				if (!Array.isArray(snapshot)) return
+				snapshot.forEach(({ element, top, left }) => {
+					try {
+						element.scrollTop = top
+						element.scrollLeft = left
+					} catch (error) {}
+				})
+
+				// JSpreadsheet đôi khi thay node content khi mở editor; nếu vậy, áp dụng
+				// lại tọa độ cho node mới thay vì chỉ ghi vào node cũ đã bị loại khỏi DOM.
+				const currentContent = this.getScrollElement()
+				const savedContent = snapshot.find(item => item.element?.classList?.contains('jss_content')
+					|| item.element?.classList?.contains('jspreadsheet_content')
+					|| item.element?.classList?.contains('jexcel_content'))
+				if (currentContent && savedContent && currentContent !== savedContent.element) {
+					currentContent.scrollTop = savedContent.top
+					currentContent.scrollLeft = savedContent.left
+				}
+			},
+			restoreDoubleClickEditor(snapshot) {
+				const container = this.$refs.sheetRef
+				if (!container) return false
+				const editor = container.querySelector('td.editor input, td.editor textarea, td.editor [contenteditable="true"]')
+					|| container.querySelector('td[data-x][data-y] input, td[data-x][data-y] textarea, td[data-x][data-y] [contenteditable="true"]')
+				if (!editor) return false
+				if (this.lastPreparedDoubleClickEditor !== editor) {
+					// preventScroll giữ editor ở đúng ô đang nhập; fallback vẫn được chặn
+					// bằng restoreScrollSnapshot nếu trình duyệt cũ không nhận option này.
+					try {
+						editor.focus({ preventScroll: true })
+					} catch (error) {
+						try { editor.focus() } catch (focusError) {}
+					}
+					// JSpreadsheet thường select toàn bộ giá trị khi mở editor bằng
+					// double-click. Đặt con trỏ ở cuối để nhập tiếp không thay thế nội dung
+					// cũ; người dùng vẫn có thể click hoặc dùng phím mũi tên để sửa giữa chuỗi.
+					if (typeof editor.setSelectionRange === 'function') {
+						const value = editor.value == null ? '' : String(editor.value)
+						const end = value.length
+						editor.setSelectionRange(end, end)
+					} else if (editor.isContentEditable && typeof window !== 'undefined') {
+						const selection = window.getSelection()
+						const range = document.createRange()
+						range.selectNodeContents(editor)
+						range.collapse(false)
+						selection?.removeAllRanges()
+						selection?.addRange(range)
+					}
+					this.lastPreparedDoubleClickEditor = editor
+				}
+				this.restoreScrollSnapshot(snapshot)
+				return true
+			},
+			handleEditorMouseDown(event) {
+				// dblclick đến sau mousedown lần hai; chỉ lưu viewport ngoài ở đây để
+				// khôi phục sau khi native editor của JSpreadsheet đã mở xong.
+				if (!this.getEditorCellFromEvent(event)) return
+				const container = this.$refs.sheetRef
+				const scrollElement = container?.closest?.('.so-gvcn-sheet-wrap')
+				if (!scrollElement) return
+				this.pendingDoubleClickScrollSnapshot = {
+					element: scrollElement,
+					top: scrollElement.scrollTop,
+					left: scrollElement.scrollLeft
+				}
+			},
+			handleEditorDoubleClick() {
+				const container = this.$refs.sheetRef
+				if (!container) return
+				const snapshot = this.pendingDoubleClickScrollSnapshot
+				this.pendingDoubleClickScrollSnapshot = null
+				// Native JSpreadsheet tự mở editor; component chỉ đặt caret cuối và
+				// khôi phục viewport ngoài đúng một lần sau khi editor xuất hiện.
+				let restored = false
+				const prepareCaretAndScroll = () => {
+					if (restored) return
+					const editor = container.querySelector('td.editor input, td.editor textarea, td.editor [contenteditable="true"]')
+						|| container.querySelector('td[data-x][data-y] input, td[data-x][data-y] textarea, td[data-x][data-y] [contenteditable="true"]')
+					if (!editor) return
+					restored = true
+					try {
+						editor.focus({ preventScroll: true })
+					} catch (error) {
+						try { editor.focus() } catch (focusError) {}
+					}
+					if (typeof editor.setSelectionRange === 'function') {
+						const value = editor.value == null ? '' : String(editor.value)
+						const end = value.length
+						editor.setSelectionRange(end, end)
+					} else if (editor.isContentEditable && typeof window !== 'undefined') {
+						const selection = window.getSelection()
+						const range = document.createRange()
+						range.selectNodeContents(editor)
+						range.collapse(false)
+						selection?.removeAllRanges()
+						selection?.addRange(range)
+					}
+					if (snapshot?.element) {
+						try {
+							snapshot.element.scrollTop = snapshot.top
+							snapshot.element.scrollLeft = snapshot.left
+						} catch (error) {}
+					}
+				}
+				setTimeout(prepareCaretAndScroll, 0)
+				if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+					window.requestAnimationFrame(prepareCaretAndScroll)
+				}
+			},
+			attachEditorDoubleClickListener() {
+				const container = this.$refs.sheetRef
+				if (!container) return
+				// Bind rõ ràng component context; callback addEventListener mặc định
+				// nhận `this` là DOM element, không phải Vue component.
+				if (!this.editorDoubleClickHandler) {
+					this.editorDoubleClickHandler = event => this.handleEditorDoubleClick(event)
+					// Đăng ký bubble-phase sau khi JSpreadsheet đã tạo bảng để handler
+					// native của CE mở editor trước callback đặt caret này.
+					container.addEventListener('dblclick', this.editorDoubleClickHandler)
+				}
+				if (!this.editorMouseDownHandler) {
+					this.editorMouseDownHandler = event => this.handleEditorMouseDown(event)
+					container.addEventListener('mousedown', this.editorMouseDownHandler, true)
+				}
+			},
+				detachEditorDoubleClickListener() {
+				const container = this.$refs.sheetRef
+				if (container && this.editorDoubleClickHandler) {
+					container.removeEventListener('dblclick', this.editorDoubleClickHandler)
+				}
+				if (container && this.editorMouseDownHandler) {
+					container.removeEventListener('mousedown', this.editorMouseDownHandler, true)
+				}
+				this.editorDoubleClickHandler = null
+				this.editorMouseDownHandler = null
+				this.pendingDoubleClickScrollSnapshot = null
+			},
 			syncTableHeight() {
 				const container = this.$refs.sheetRef
 				if (!container) return
 
-				const tableHeight = '100%'
 				container.querySelectorAll(
 					'.jss_container, .jspreadsheet_container, .jexcel_container, .jss_content, .jspreadsheet_content, .jexcel_content'
 				).forEach(content => {
-					content.style.setProperty('height', tableHeight, 'important')
-					content.style.setProperty('max-height', tableHeight, 'important')
+					content.style.setProperty('height', 'auto', 'important')
+					content.style.setProperty('max-height', 'none', 'important')
+					content.style.setProperty('overflow', 'visible', 'important')
 				})
 			},
 			initSheet() {
@@ -220,7 +405,7 @@
 				this.$nextTick(() => {
 					const container = this.$refs.sheetRef
 					if (!container) return
-					const tableHeight = '100%'
+					const tableHeight = 'auto'
 
 					if (this.instance) {
 						try {
@@ -230,7 +415,6 @@
 						this.instance = null
 					}
 					container.innerHTML = ''
-
 					const data = this.getActiveMonthRows()
 
 					if (typeof soGvcnJspreadsheet === 'object' && typeof soGvcnJspreadsheet.create === 'function') {
@@ -246,7 +430,9 @@
 								rowResize: true,
 								columnDrag: false,
 								tableWidth: '100%',
-								tableOverflow: true,
+								// CE không tự quản lý viewport nội bộ ở tab này; wrapper ngoài
+								// là vùng scroll duy nhất để editor không làm co/reflow viewport.
+								tableOverflow: false,
 								tableHeight,
 								lazyLoading: false,
 								wordWrap: true,
@@ -265,6 +451,7 @@
 							onload: () => {
 								this.$nextTick(() => {
 									this.syncTableHeight()
+									this.attachEditorDoubleClickListener()
 									setTimeout(() => {
 										this.applyLayout()
 									}, 100)

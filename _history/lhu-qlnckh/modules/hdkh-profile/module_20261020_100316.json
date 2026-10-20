@@ -1,0 +1,37 @@
+{
+  "data": [
+    {
+      "userProfile": null
+    },
+    {
+      "getUserProfile": {
+        "API": "/HDKH_Profile_GetByNhanVien",
+        "IN": {
+          "Nhanvienid": "vueData.user.UserID"
+        },
+        "OUT": "userProfile"
+      }
+    },
+    {
+      "CALL": "getUserProfile"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main",
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

@@ -1,19 +1,24 @@
-CREATE PROC [dbo].[spAPI_Get_NienKhoa_StudentWaitForThesisConfirm]-- 1, 37
+CREATE PROC [dbo].[spAPI_Get_NienKhoa_StudentWaitForThesisConfirm]
 @Process_ID INT,
 @Nganh_ID INT
 AS
 BEGIN
-	 select  NienKhoa AS Nien_Khoa
-	
-	from flow_detail a INNER JOIN task_detail b on a.task_id = b.task_id and a.task_detail_id = b.task_detail_id and b.fieldname ='ThesisConfirm'
-					   INNER JOIN flow c on a.flow_id = c.flow_id and c.process_id = @Process_ID  and c.use_yn = 1
-					   INNER JOIN StudentInfo d on c.student_id = d.studentID AND ( D.NganhID = @Nganh_ID OR @Nganh_ID = 0)
-					   LEFT JOIN (select c.Student_id, MAX(CASE WHEN fieldname='ThesisName' then text_content else ' ' end) ThesisName,max(case when fieldname='ThesisesProf1' then text_content else ' ' end) ThesisesProf1
-									from flow_detail a INNER JOIN task_detail b on a.task_id = b.task_id and a.task_detail_id = b.task_detail_id and b.fieldname in('ThesisName','ThesisesProf1') 
-													   INNER JOIN flow c on a.flow_id = c.flow_id and c.process_id = @Process_ID and c.use_yn = 1
-									where   a.use_yn = 1 --AND a.flow_detail_status ='C' 
-									group by c.student_id
-								   ) f on c.student_id = f.student_id
-	where  a.use_yn = 1-- AND a.flow_detail_status ='P'
-
+	SELECT DISTINCT d.NienKhoa AS Nien_Khoa
+	FROM flow_detail a 
+	INNER JOIN task_detail b ON a.task_id = b.task_id 
+							AND a.task_detail_id = b.task_detail_id 
+							AND b.fieldname = 'ThesisConfirm'
+	INNER JOIN flow c ON a.flow_id = c.flow_id 
+					 AND c.use_yn = 1
+					 AND (
+						 (@Process_ID IN (1, 4) AND c.process_id IN (1, 4))
+						 OR c.process_id = @Process_ID 
+						 OR @Process_ID = 0
+					 )
+	INNER JOIN StudentInfo d ON c.student_id = d.studentID 
+							AND (d.NganhID = @Nganh_ID OR @Nganh_ID = 0)
+	WHERE a.use_yn = 1
+	  AND d.NienKhoa IS NOT NULL 
+	  AND d.NienKhoa <> ''
+	ORDER BY d.NienKhoa DESC;
 END

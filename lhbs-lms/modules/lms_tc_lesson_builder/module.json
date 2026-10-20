@@ -3,6 +3,7 @@
     {
       "dataReady": false,
       "isEditMode": false,
+      "canEdit": true,
       "lesson": null,
       "selectedElementIndex": null
     },
@@ -37,10 +38,12 @@
           "cols": [
             {
               "el": "uc-lesson-builder",
+              "w": 12,
               "attr": {
                 "v-if": "dataReady",
                 ":initial-lesson": "lesson",
                 ":is-edit-mode": "isEditMode",
+                ":can-edit": "canEdit",
                 ":on-save": "saveLesson"
               }
             }

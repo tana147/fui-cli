@@ -1,21 +1,5 @@
 {
-  "data": [
-    {
-      "userProfile": null
-    },
-    {
-      "getUserProfile": {
-        "API": "/HDKH_Profile_GetByNhanVien",
-        "IN": {
-          "Nhanvienid": "vueData.user.UserID"
-        },
-        "OUT": "userProfile"
-      }
-    },
-    {
-      "CALL": "getUserProfile"
-    }
-  ],
+  "data": [],
   "watch": {},
   "controls": [
     {
@@ -26,7 +10,8 @@
           "cols": [
             {
               "el": "uc-main",
-              "attr": {}
+              "attr": {},
+              "w": 12
             }
           ]
         }

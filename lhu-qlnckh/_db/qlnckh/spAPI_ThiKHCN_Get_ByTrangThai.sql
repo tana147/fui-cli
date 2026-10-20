@@ -82,7 +82,7 @@ BEGIN
         K.LyDoReject,
         K.GhiChu,
         K.NhanVienSubmit,
-        NV.HoTen AS TenNguoiSubmit,
+        COALESCE(NV.HoTen, LTRIM(RTRIM(CONCAT(TK.HoNV, ' ', TK.TenNV))), K.NhanVienSubmit) AS TenNguoiSubmit,
         CONVERT(VARCHAR(16), K.ThoiGianSubmit, 120) AS ThoiGianSubmit,
         STUFF((
             SELECT ', ' + TV.HoTen + ' (' + 
@@ -101,7 +101,8 @@ BEGIN
     LEFT JOIN ThiKHCN_Dot D ON K.DotID = D.DotID
     LEFT JOIN ThiKHCN_DotDuyet DD ON K.DotDuyetID = DD.DotDuyetID
     LEFT JOIN ThiKHCN_CongThucKhenThuong CT ON K.CongThucID = CT.CongThucID
-    LEFT JOIN NhanVien NV ON K.NhanVienSubmit = NV.MaNV
+    LEFT JOIN dbo.NhanVien NV ON K.NhanVienSubmit = NV.MaNV
+    LEFT JOIN dbo.TaiKhoan TK ON K.NhanVienSubmit = TK.MaNV
     WHERE K.Is_Xoa = 0
       AND (
           K.TrangThai IN (SELECT TrangThai FROM @tt)

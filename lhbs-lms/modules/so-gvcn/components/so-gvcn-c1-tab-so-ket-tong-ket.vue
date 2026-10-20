@@ -5,8 +5,8 @@
 		<v-alert v-if="selectedLopID === '__ALL__'" type="info" variant="tonal" density="compact" class="ma-2">
 			Chọn một lớp ở thanh trên để theo dõi sơ kết Học KÌ I.
 		</v-alert>
-		<div v-else class="d-flex flex-grow-1 ga-3" style="min-height: 0; min-width: 0;">
-			<div class="flex-shrink-0 overflow-y-auto"
+		<div v-else class="d-flex flex-grow-1 ga-3 so-gvcn-c1-desktop-only" style="min-height: 0; min-width: 0;">
+			<div class="d-none d-md-block flex-shrink-0 overflow-y-auto"
 				style="width: 260px; min-height: 0; border-right: 1px solid rgba(0, 0, 0, 0.12);">
 				<v-list density="compact" nav color="primary" class="pa-0">
 					<v-list-subheader class="text-caption font-weight-bold text-primary px-3">
@@ -83,6 +83,29 @@
 				</v-card>
 			</div>
 		</div>
+		<!-- Native phone controls keep notes and every result column editable in focused sections. -->
+		<div v-if="selectedLopID !== '__ALL__'" class="so-gvcn-c1-mobile-editor flex-column flex-grow-1 overflow-y-auto">
+			<v-expansion-panels multiple>
+				<v-expansion-panel value="notes">
+					<v-expansion-panel-title>Đánh giá hoạt động lớp</v-expansion-panel-title>
+					<v-expansion-panel-text>
+						<v-textarea v-for="card in cards.filter(item => item.inputType === 'textarea')" :key="card.key"
+							v-model="noteValues[card.key]" :label="card.title" variant="outlined" rows="3"
+							auto-grow density="compact" class="mb-3" hide-details />
+					</v-expansion-panel-text>
+				</v-expansion-panel>
+				<v-expansion-panel v-for="card in cards.filter(item => item.type === 'quality' || item.type === 'subject')"
+					:key="card.key" :value="card.key">
+					<v-expansion-panel-title>{{ card.title }}</v-expansion-panel-title>
+					<v-expansion-panel-text>
+						<uc-so-gvcn-mobile-sheet-editor :ref="'mobileResult_' + card.key"
+							:rows="getInitialResultRows(card)" :columns="buildCardConfig(card).columns"
+							:nested-headers="buildCardConfig(card).nestedHeaders" :title-index="0"
+							empty-title="Mức đánh giá" @cell-changed="onMobileResultCellChanged(card.key, $event)" />
+					</v-expansion-panel-text>
+				</v-expansion-panel>
+			</v-expansion-panels>
+		</div>
 	</v-card-text>
 </template>
 
@@ -99,6 +122,8 @@
 			return {
 				instances: {},
 				noteValues: {},
+				isMobileViewport: false,
+				mobileResultRows: {},
 				activeCardKey: 'duy-tri-si-so',
 				cards: [
 					{
@@ -158,12 +183,14 @@
 		},
 		watch: {
 			selectedLopID() {
+				this.mobileResultRows = {}
 				this.syncNoteValues()
 				this.initSheets()
 			},
 			savedRows: {
 				deep: false,
 				handler() {
+				this.mobileResultRows = {}
 					this.syncNoteValues()
 					this.initSheets()
 				}
@@ -173,12 +200,73 @@
 			this.syncNoteValues()
 		},
 		mounted() {
+			this.isMobileViewport = window.matchMedia('(max-width: 959.98px)').matches
+			window.addEventListener('resize', this.onWindowResize)
 			this.initSheets()
 		},
 		beforeUnmount() {
+			window.removeEventListener('resize', this.onWindowResize)
 			this.destroySheets()
 		},
+		computed: {
+			mobileNoteCards() {
+				return this.cards.filter(card => card.inputType === 'textarea').map(card => ({
+					key: card.key,
+					title: card.title,
+					value: this.noteValues[card.key]
+				}))
+			},
+			mobileResultCards() {
+				const definitions = [
+					{
+						key: 'ket-qua-nl-pc',
+						title: 'Kết quả năng lực, phẩm chất',
+						card: this.cards.find(card => card.type === 'quality'),
+						categories: [
+							{ title: 'Phẩm chất', items: ['Yêu nước', 'Nhân ái', 'Chăm chỉ', 'Trung thực', 'Trách nhiệm'] },
+							{ title: 'Năng lực', items: ['Tự chủ và tự học', 'Giao tiếp và hợp tác', 'GQVĐ và sáng tạo', 'Ngôn ngữ', 'Tính toán', 'Khoa học', 'Công nghệ', 'Tin học', 'Thẩm mĩ', 'Thể chất'] }
+						]
+					},
+					{
+						key: 'ket-qua-mon-hoc',
+						title: 'Kết quả môn học và hoạt động giáo dục',
+						card: this.cards.find(card => card.type === 'subject'),
+						categories: [{
+							title: 'Môn học và hoạt động giáo dục',
+							items: ['Tiếng Việt', 'Toán', 'Tiếng Anh', 'Lịch sử & Địa lí', 'Khoa học', 'Tin học - Công nghệ', 'Đạo đức', 'Giáo dục thể chất', 'Âm nhạc', 'Mĩ thuật', 'Hoạt động trải nghiệm']
+						}]
+					}
+				]
+				return definitions.map(section => {
+					const config = this.buildCardConfig(section.card)
+					let groupIndex = 0
+					const items = section.categories.flatMap(category => category.items.map(title => {
+						const currentIndex = groupIndex++
+						return {
+							key: `${section.key}-${currentIndex}`,
+							category: category.title,
+							title,
+							ratings: config.data.map(row => ({
+								label: row[0],
+								count: row[1 + currentIndex * 2],
+								rate: row[2 + currentIndex * 2]
+							}))
+						}
+					}))
+					return { key: section.key, title: section.title, items }
+				})
+			}
+		},
 		methods: {
+			onWindowResize() {
+				const nextIsMobile = window.matchMedia('(max-width: 959.98px)').matches
+				if (nextIsMobile === this.isMobileViewport) return
+				this.cards.filter(card => card.type === 'quality' || card.type === 'subject').forEach(card => {
+					this.mobileResultRows[card.key] = this.getResultRows(card.key)
+				})
+				this.isMobileViewport = nextIsMobile
+				this.$nextTick(() => this.initSheets())
+			},
 			getInstance() {
 				return this.instances
 			},
@@ -204,14 +292,7 @@
 				})
 			},
 			getData() {
-				const readSheet = key => {
-					const instance = this.instances[key]
-					const sheet = Array.isArray(instance) ? instance[0] : instance
-					if (sheet && typeof sheet.closeEditor === 'function') {
-						try { sheet.closeEditor(true) } catch (error) {}
-					}
-					return sheet && typeof sheet.getData === 'function' ? sheet.getData() : []
-				}
+				const readSheet = key => this.getResultRows(key)
 				return {
 					version: 1,
 					type: 'c1-semester-1-summary',
@@ -221,14 +302,7 @@
 				}
 			},
 			getStructuredRatings(allMonHoc = []) {
-				const readSheet = key => {
-					const instance = this.instances[key]
-					const sheet = Array.isArray(instance) ? instance[0] : instance
-					if (sheet && typeof sheet.closeEditor === 'function') {
-						try { sheet.closeEditor(true) } catch (error) {}
-					}
-					return sheet && typeof sheet.getData === 'function' ? sheet.getData() : []
-				}
+				const readSheet = key => this.getResultRows(key)
 
 				const ratings = []
 				const qualityRows = readSheet('ket-qua-nl-pc')
@@ -401,6 +475,28 @@
 				}
 				return this.buildNoteConfig(card)
 			},
+			getResultRows(key) {
+				const card = this.cards.find(item => item.key === key)
+				if (this.isMobileViewport) {
+					return this.$refs['mobileResult_' + key]?.getRows?.()
+						|| this.mobileResultRows[key]
+						|| this.buildCardConfig(card || {}).data
+				}
+				const instance = this.instances[key]
+				const sheet = Array.isArray(instance) ? instance[0] : instance
+				if (sheet && typeof sheet.closeEditor === 'function') {
+					try { sheet.closeEditor(true) } catch (error) {}
+				}
+				return sheet && typeof sheet.getData === 'function'
+					? sheet.getData()
+					: (this.mobileResultRows[key] || this.buildCardConfig(card || {}).data)
+			},
+			getInitialResultRows(card) {
+				return this.mobileResultRows[card.key] || this.buildCardConfig(card).data
+			},
+			onMobileResultCellChanged(key, change) {
+				this.mobileResultRows[key] = change.rows
+			},
 			destroySheets() {
 				Object.values(this.instances).forEach(instance => {
 					try {
@@ -415,6 +511,16 @@
 					this.destroySheets()
 					return
 				}
+				if (this.isMobileViewport) {
+					this.destroySheets()
+					this.cards.filter(card => card.type === 'quality' || card.type === 'subject').forEach(card => {
+						this.$refs['mobileResult_' + card.key]?.setRows?.(
+							this.mobileResultRows[card.key] || this.buildCardConfig(card).data
+						)
+					})
+					return
+				}
+				// Desktop keeps JSpreadsheet; the phone editor writes the same row arrays.
 				this.$nextTick(() => {
 					this.destroySheets()
 					if (typeof jspreadsheet !== 'function') return
@@ -424,6 +530,7 @@
 						if (!container) return
 						container.innerHTML = ''
 						const config = this.buildCardConfig(card)
+						config.data = this.mobileResultRows[card.key] || config.data
 						this.instances[card.key] = soGvcnJspreadsheet.create(container, {
 							worksheets: [{
 								...config,

@@ -213,7 +213,39 @@
 				this.DSLopHoc = await ajaxCALLPromise("quansinh/TKB_LopHocSelectByHocSinh", { HocSinhID: this.HocSinh.HocSinhID })
 				await this.getAllTKB()
 			},
-	
+
+			// Dữ liệu tuần hiện tại đang có thể trả CLB tiểu học sai buổi/tiết;
+			// chỉ chuẩn hóa tạm vị trí hiển thị trong tuần này, không sửa payload API.
+			getStudentGrade(lh) {
+				// Luồng mở trực tiếp có thể chỉ truyền HocSinhID; ưu tiên khối rõ ràng rồi mới đọc lớp chính.
+				const explicitValues = [this.HocSinh?.Khoi, this.HocSinh?.KhoiID, lh?.Khoi, lh?.KhoiID]
+				for (const value of explicitValues) {
+					if (value === undefined || value === null || String(value).trim() === '') continue
+					const grade = Number(value)
+					if (Number.isFinite(grade)) return grade
+				}
+
+				// Bản ghi lớp chính như 01B/05A là fallback cho route thiếu Khoi; bỏ qua các lớp 26CLB-.
+				const classNames = [
+					this.HocSinh?.TenLop,
+					...this.DSLopHoc
+						.filter(item => !/^26CLB-/i.test(String(item?.TenLop ?? '').trim()))
+						.map(item => item?.TenLop)
+				]
+				for (const className of classNames) {
+					const match = String(className ?? '').trim().match(/^0*([1-9]|1[0-2])\D/)
+					if (match) return Number(match[1])
+				}
+				return null
+			},
+
+			isPrimarySchoolClubClass(lh) {
+				if (!this.isCurrentWeek) return false
+				const tenLop = String(lh?.TenLop ?? '').trim()
+				const khoi = this.getStudentGrade(lh)
+				return /^26CLB-/i.test(tenLop) && Number.isFinite(khoi) && khoi >= 1 && khoi <= 5
+			},
+
 			isOtherClass(tenLop) {
 				if (!tenLop) return false
 				return tenLop !== this.HocSinh?.TenLop
@@ -270,18 +302,31 @@
 					for (const { lh, tkb } of results) {
 						const kb = tkb[2].map(x => ({
 							...x,
-							jsonTiet: JSON.parse(x.jsonTiet).map(t => ({
-								...t,
-								TenLop: lh.TenLop,
-								LopHocID: lh.LopHocID
+								jsonTiet: JSON.parse(x.jsonTiet).map(t => ({
+									...t,
+									TenLop: lh.TenLop,
+									LopHocID: lh.LopHocID
+								}))
 							}))
-						}))
 						for (const row of kb) {
-							const { Thu, Buoi, TenBuoi } = row
-							const displayTenBuoi = Buoi === 3 ? 'Tối' : TenBuoi
+							const { Thu } = row
+							const isPrimaryClubClass = this.isPrimarySchoolClubClass(lh)
+							const targetBuoi = isPrimaryClubClass ? 2 : row.Buoi
+							const displayTenBuoi = targetBuoi === 2 ? 'Chiều' : targetBuoi === 3 ? 'Tối' : row.TenBuoi
 							if (!mergedByThu[Thu]) mergedByThu[Thu] = {}
-							if (!mergedByThu[Thu][Buoi]) mergedByThu[Thu][Buoi] = { Buoi, TenBuoi: displayTenBuoi, jsonTiet: [] }
-							mergedByThu[Thu][Buoi].jsonTiet.push(...row.jsonTiet)
+							if (!mergedByThu[Thu][targetBuoi]) mergedByThu[Thu][targetBuoi] = { Buoi: targetBuoi, TenBuoi: displayTenBuoi, jsonTiet: {} }
+
+							// Desktop ghi đè ô trùng tiết theo lớp xử lý sau cùng; mobile phải dùng cùng quy tắc
+							// để không hiển thị môn của lớp đầu tiên khi học sinh có nhiều lớp học.
+							for (const tiet of row.jsonTiet) {
+								// Chỉ tuần hiện tại, CLB của khối 1–5 được ép về chiều tiết 5 theo yêu cầu nghiệp vụ tạm thời.
+								const targetTiet = isPrimaryClubClass ? 5 : Number(tiet.Tiet)
+								mergedByThu[Thu][targetBuoi].jsonTiet[targetTiet] = {
+									...tiet,
+									Buoi: targetBuoi,
+									Tiet: targetTiet
+								}
+							}
 						}
 					}
 	
@@ -291,9 +336,9 @@
 							Thu,
 							DSBuoi: Object.values(mergedByThu[Thu])
 								.sort((a, b) => a.Buoi - b.Buoi)
-								.map(buoi => ({
-									...buoi,
-									jsonTiet: [...buoi.jsonTiet].sort((a, b) => a.Tiet - b.Tiet)
+							.map(buoi => ({
+								...buoi,
+									jsonTiet: Object.values(buoi.jsonTiet).sort((a, b) => a.Tiet - b.Tiet)
 								}))
 						}))
 	
@@ -346,7 +391,7 @@
 				}, { silent: true, forceRefresh: true })
 			},
 			getTiet(jsonTiet, slotNum) {
-				return jsonTiet?.find(t => t.Tiet === slotNum) ?? null
+					return jsonTiet?.find(t => Number(t.Tiet) === Number(slotNum)) ?? null
 			},
 		}
 	}

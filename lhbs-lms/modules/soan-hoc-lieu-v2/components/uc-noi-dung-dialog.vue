@@ -293,14 +293,35 @@
 		</div>
 		<!-- Hình ảnh từ Content Hub cũng là media trực tiếp, không dùng office viewer. -->
 		<div v-else-if="isImage">
-			<v-row>
-				<v-col cols="12">
-					<v-text-field label="Đường dẫn hình ảnh" v-model="tempImageUrl"
+			<!-- Ảnh và nội dung được đặt cạnh nhau trên desktop, tự xếp dọc trên màn hình hẹp để giảm cuộn và giữ quan hệ trực quan. -->
+			<v-row dense align="start" class="px-3">
+				<v-col cols="12" md="5">
+					<v-card variant="outlined" class="pa-1">
+						<v-card-title class="text-subtitle-2 px-3 py-2">Xem trước hình ảnh</v-card-title>
+						<v-divider />
+						<v-card-text class="d-flex justify-center align-center pa-2">
+							<v-img v-if="tempImageUrl" :src="imageEmbedUrl" alt="Xem trước hình ảnh"
+								max-height="360" max-width="100%" contain />
+							<span v-else class="text-caption text-medium-emphasis">Chưa có hình ảnh</span>
+						</v-card-text>
+					</v-card>
+				</v-col>
+				<v-col cols="12" md="7">
+					<v-text-field label="Nguồn ảnh" v-model="tempImageUrl" class="mb-2"
 						variant="outlined" density="compact" append-inner-icon="mdi-link"
 						@update:modelValue="onImageUrlChange" />
-				</v-col>
-				<v-col v-if="tempImageUrl" cols="12" class="d-flex justify-center">
-					<img :src="imageEmbedUrl" alt="Xem trước hình ảnh" class="lh-content-image" />
+					<!-- Upload trực tiếp dùng cùng flow tài liệu: file cũ được dọn trước, file mới được lưu metadata và cập nhật URL preview. -->
+					<v-file-input accept="image/*" label="Tải ảnh từ máy tính"
+						placeholder="Chọn một file ảnh để tải lên"
+						prepend-icon="mdi-paperclip" variant="outlined" density="compact"
+						@update:modelValue="uploadFileGGDrive" />
+					<div class="text-caption text-medium-emphasis mb-3">
+						Ảnh tải lên mới sẽ thay thế ảnh hiện tại của mục này.
+					</div>
+					<v-divider class="mb-3" />
+					<!-- Nội dung mô tả được lưu riêng trong textContent, không trộn với URL ảnh. -->
+					<uc-rich-text-editor :imageapi="vueData.v_Set.apiFile || 'https://file.lhbs.vn/lms/upload/FileData'"
+						v-model="textContent" label="Nội dung hình ảnh" variant="outlined" :height="300" />
 				</v-col>
 			</v-row>
 		</div>
@@ -355,8 +376,10 @@
 
 							<v-tabs-window v-model="slideUploadTab">
 								<v-tabs-window-item value="upload">
+					<!-- Vuetify/FUI có thể phát update:modelValue hoặc change tùy bản runtime; handler dùng token để không upload trùng. -->
 									<v-file-input accept=".doc,.docx,.ppt,.pptx,.pdf" label="Tải tài liệu"
-										@update:modelValue="uploadFileGGDrive" />
+									@update:modelValue="onDocumentFileSelected"
+									@change="onDocumentFileSelected" />
 								</v-tabs-window-item>
 								<v-tabs-window-item value="link">
 									<div class="d-flex ga-2 align-center">
@@ -369,8 +392,9 @@
 								</v-tabs-window-item>
 							</v-tabs-window>
 
-							<v-chip v-if="editableItem.DataJson && Object.keys(editableItem.DataJson).length > 0" class="mt-4">
-								{{editableItem.DataJson.fileName || 'Đã liên kết link'}} <v-icon @click.stop="onCloseFile"> mdi-close</v-icon>
+							<!-- Chỉ báo đã có tài liệu khi metadata có reference thật; archiveFileId/fileName là dữ liệu hợp lệ của file cũ. -->
+							<v-chip v-if="hasSlideReference" class="mt-4">
+								{{ slideReferenceLabel }} <v-icon @click.stop="onCloseFile"> mdi-close</v-icon>
 							</v-chip>
 						</div>
 
@@ -581,6 +605,9 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 				tempImageUrl: '',
 				localVideoBlobUrl: null,
 				currentUploadTaskId: null,
+				// Một lần chọn file có thể phát đồng thời hai event; dùng khóa file để tránh tạo hai bản lưu LMS.
+				lastDocumentUploadKey: '',
+				lastDocumentUploadAt: 0,
 				videoInteractions: [],
 				isInteractionDetailOpen: false,
 				editingInteraction: null,
@@ -602,8 +629,9 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 					{ value: 'QUIZ_ORDERING', title: 'Sắp xếp thứ tự' },
 					{ value: 'QUIZ_DRAG_DROP_CATEGORIZE', title: 'Kéo thả phân loại' },
 					{ value: 'QUIZ_FILL_IN_BLANK', title: 'Điền từ vào chỗ trống' },
-					{ value: 'QUIZ_COMPOSITE', title: 'Tổ hợp nhiều câu hỏi' },
-					{ value: 'ESSAY', title: 'Tự luận (Viết câu trả lời)' }
+						{ value: 'QUIZ_COMPOSITE', title: 'Tổ hợp nhiều câu hỏi' },
+						{ value: 'SHORT_ANSWER', title: 'Trả lời ngắn' },
+						{ value: 'ESSAY', title: 'Tự luận (Viết câu trả lời)' }
 				]
 			};
 		},
@@ -664,6 +692,19 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 			isImage() { return this.editableItem?.LoaiNoiDung === 'IMAGE'; },
 			isHtml() { return ['HTML', 'READING'].includes(this.editableItem?.LoaiNoiDung); },
 			isSlide() { return ['SLIDE'].includes(this.editableItem?.LoaiNoiDung) },
+			hasSlideReference() {
+				const data = this.editableItem?.DataJson;
+				if (!data || typeof data !== 'object') return false;
+				return Boolean(
+					data.fileName || data.archiveFileName || data.title || data.url ||
+					data.fileId || data.archiveFileId || data.driveFileId
+				);
+			},
+			slideReferenceLabel() {
+				const data = this.editableItem?.DataJson || {};
+				return data.fileName || data.archiveFileName || data.title ||
+					(data.archiveFileId ? 'Tài liệu lưu trữ' : 'Đã liên kết tài liệu');
+			},
 			isISpring() {
 				const data = this.editableItem?.DataJson;
 				const metadata = data && typeof data === 'object' ? data : {};
@@ -842,10 +883,22 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 						this.tempVideoUrl = '';
 						this.tempAudioUrl = '';
 						this.videoInteractions = [];
+					} else if (initialData && initialData.LoaiNoiDung === 'SLIDE') {
+						const slideData = initialData.DataJson || {};
+						const savedUrl = String(slideData.url || slideData.source || slideData.externalSource || '');
+						// Chỉ nạp lại ô link cho Google Slides/Canva; file archive không phải URL nhập tay.
+						this.inputSlideLink = /google\.com|canva\.com/i.test(savedUrl) ? savedUrl : '';
+						this.slideUploadTab = this.inputSlideLink ? 'link' : 'upload';
+						this.tempVideoUrl = '';
+						this.tempAudioUrl = '';
+						this.tempImageUrl = '';
+						this.videoInteractions = [];
 					} else {
 						this.tempVideoUrl = '';
 						this.tempAudioUrl = '';
 						this.tempImageUrl = '';
+						this.inputSlideLink = '';
+						this.slideUploadTab = 'upload';
 						this.videoInteractions = [];
 					}
 				} else {
@@ -904,8 +957,9 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 			async convertQuestionFile(event) {
 				const file = event?.target?.files?.[0];
 				if (!file) return;
-				const supportedQuestionTypes = ['QUIZ_SINGLE_CHOICE', 'QUIZ_MULTIPLE_CHOICE', 'QUIZ_TRUE_FALSE',
-					'QUIZ_MATCHING', 'QUIZ_ORDERING', 'QUIZ_DRAG_DROP_CATEGORIZE', 'QUIZ_FILL_IN_BLANK', 'QUIZ_CONNECTION'];
+					const supportedQuestionTypes = ['QUIZ_SINGLE_CHOICE', 'QUIZ_MULTIPLE_CHOICE', 'QUIZ_TRUE_FALSE',
+						'QUIZ_MATCHING', 'QUIZ_ORDERING', 'QUIZ_DRAG_DROP_CATEGORIZE', 'QUIZ_FILL_IN_BLANK',
+						'QUIZ_CONNECTION', 'SHORT_ANSWER', 'ESSAY'];
 				const currentType = this.questionList.find(item => supportedQuestionTypes.includes(item.LoaiNoiDung))?.LoaiNoiDung;
 				const questionType = currentType || 'QUIZ_SINGLE_CHOICE';
 				const prompt = this.questionImportPrompt.replaceAll('{{QUESTION_TYPE}}', questionType);
@@ -1063,6 +1117,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 						dataObj.isTeacherOnly = Boolean(q.isTeacherOnly);
 					}
 					const cleanObj = {
+						NoiDungID: q.NoiDungID ?? this.item?.NoiDungID,
 						HocLieuID: q.HocLieuID || this.item?.HocLieuID,
 						TenHocLieu: q.TenHocLieu || this.item?.TenHocLieu,
 						ParentID: q.ParentID ?? this.item?.ParentID ?? 0,
@@ -1519,8 +1574,9 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 				return item?.question ? [item.question] : [];
 			},
 			isSupportedInteractionType(type) {
-				return ['QUIZ_SINGLE_CHOICE', 'QUIZ_MULTIPLE_CHOICE', 'QUIZ_TRUE_FALSE', 'QUIZ_MATCHING',
-					'QUIZ_ORDERING', 'QUIZ_DRAG_DROP_CATEGORIZE', 'QUIZ_FILL_IN_BLANK', 'QUIZ_CONNECTION'].includes(String(type || '').toUpperCase());
+					return ['QUIZ_SINGLE_CHOICE', 'QUIZ_MULTIPLE_CHOICE', 'QUIZ_TRUE_FALSE', 'QUIZ_MATCHING',
+						'QUIZ_ORDERING', 'QUIZ_DRAG_DROP_CATEGORIZE', 'QUIZ_FILL_IN_BLANK', 'QUIZ_CONNECTION',
+						'SHORT_ANSWER', 'ESSAY'].includes(String(type || '').toUpperCase());
 			},
 			getInactiveInteractionQuestionCount(item) {
 				return this.getInteractionQuestions(item).filter(question => question?.isActive === false || !this.isSupportedInteractionType(question?.type)).length;
@@ -1661,10 +1717,12 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 							{ type: 'blank', correctAnswer: 'đáp án' }
 						]
 					};
-				} else if (newType === 'ESSAY') {
-					this.editingInteraction.question.content = {
-						prompt: prompt
-					};
+					} else if (newType === 'SHORT_ANSWER' || newType === 'ESSAY') {
+						this.editingInteraction.question.content = {
+							prompt: prompt,
+							// Đáp án tham khảo chỉ được dùng ở màn giáo viên chấm bài.
+							referenceAnswer: ''
+						};
 				} else if (newType === 'QUIZ_COMPOSITE') {
 					this.editingInteraction.question.content = {
 						title: prompt || 'Bộ câu hỏi tương tác',
@@ -1821,7 +1879,21 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 				}
 				nodeData.DataJson = JSON.stringify(mergedMetadata);
 				await fetchPromise('lms/FP_NoiDung_Save', this.buildSavePayload(nodeData, targetItem), { cache: false });
-				targetItem.DataJson = mergedMetadata;
+
+				// Upload thành công chưa đủ: phải đọc lại node để chắc chắn FILE_ID đã được ghi vào
+				// tblNoiDungHocLieu_FP. Nếu bước Save bị lỗi/ngắt, không báo thành công giả cho người dùng.
+				const verifyList = await fetchPromise('lms/FP_NoiDung_GetDetail', {
+					NoiDungID: targetItem.NoiDungID,
+				}, { cache: false });
+				const verifyNode = Array.isArray(verifyList) ? verifyList[0] : verifyList;
+				const verifyMetadata = this.ensureDataJsonObject(verifyNode);
+				const expectedFileId = metadata.fileId || metadata.FILE_ID;
+				const savedFileId = verifyMetadata.fileId || verifyMetadata.FILE_ID || verifyMetadata.FileID;
+				if (expectedFileId && String(savedFileId || '') !== String(expectedFileId)) {
+					throw new Error('File đã upload nhưng chưa gắn được vào nội dung LMS (NoiDungID ' + targetItem.NoiDungID + ').');
+				}
+				targetItem.DataJson = verifyMetadata;
+				return verifyMetadata;
 			},
 			async saveArchiveReferenceToNode(targetItem, archiveMetadata) {
 				const nodeDataList = await fetchPromise('lms/FP_NoiDung_GetDetail', {
@@ -1860,13 +1932,13 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 				metadata.resourceLibraryId = registered?.HocLieuID || null;
 				return metadata;
 			},
-			archiveFileToLmsInBackground(file, targetItem) {
+			archiveFileToLmsInBackground(file, targetItem, uploadToken) {
 				const uploadManager = this.getUploadManager();
 				if (!uploadManager) return;
 
 				uploadManager.uploadLmsFile(file, {
-					onComplete: async response => {
-						try {
+						onComplete: async response => {
+							try {
 							const uploaded = response?.Files?.[0];
 							if (!uploaded?.FILE_ID) throw new Error('API lưu trữ không trả về FILE_ID.');
 
@@ -1876,6 +1948,15 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 								publishSource: targetItem.LoaiNoiDung === 'VIDEO' ? 'youtube' : 'ggdrive',
 							};
 							await this.registerUploadedFileInResourceLibrary(targetItem, archiveMetadata);
+							// Upload archive chạy nền nên có thể hoàn tất sau khi người dùng đã chọn file mới.
+							// Nếu token không còn khớp, dọn ngay bản archive cũ để không tạo file mồ côi.
+							if (uploadToken && this.ensureDataJsonObject(targetItem).uploadToken !== uploadToken) {
+								if (archiveMetadata.resourceNodeId) {
+									await fetchPromise('lms/FP_TaiNguyen_Node_Delete', { NoiDungID: archiveMetadata.resourceNodeId }, { cache: false });
+								}
+								await this.deleteDbUploadedFile({ fileId: archiveMetadata.fileId });
+								return;
+							}
 							await this.saveArchiveReferenceToNode(targetItem, archiveMetadata);
 							this.notify(`Đã lưu bản kiểm tra “${archiveMetadata.fileName}” vào kho LMS.`);
 						} catch (error) {
@@ -1919,6 +2000,24 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 					return false;
 				}
 			},
+			onDocumentFileSelected(value) {
+				// Chuẩn hóa cả native change event, File, File[] và FileList để không phụ thuộc phiên bản Vuetify/FUI.
+				const selectedFile = value?.target?.files?.[0]
+					|| (Array.isArray(value) ? value[0] : value?.[0] || value);
+				if (!selectedFile || typeof selectedFile !== 'object') return;
+
+				const uploadKey = [
+					selectedFile.name || '',
+					selectedFile.size || 0,
+					selectedFile.lastModified || 0,
+				].join('|');
+				const now = Date.now();
+				// Cùng một lần chọn file có thể gọi cả update:modelValue và change; chỉ cho phép một request upload.
+				if (this.lastDocumentUploadKey === uploadKey && now - this.lastDocumentUploadAt < 1500) return;
+				this.lastDocumentUploadKey = uploadKey;
+				this.lastDocumentUploadAt = now;
+				return this.uploadFileGGDrive(selectedFile);
+			},
 			async uploadFileGGDrive(file) {
 				const selectedFile = Array.isArray(file) ? file[0] : file;
 				if (!selectedFile) return;
@@ -1926,6 +2025,44 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 				if (!uploadManager) return;
 				const targetItem = this.editableItem;
 				if (!await this.prepareCurrentResourceForReplacement()) return;
+				const uploadToken = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+				// Ghi token tạm ngay khi bắt đầu upload để callback archive cũ nhận biết việc thay file.
+				targetItem.DataJson = { ...this.ensureDataJsonObject(targetItem), uploadToken };
+
+				const isWordDocument = /\.docx?$/i.test(selectedFile.name || '')
+					|| /msword|wordprocessingml/.test(String(selectedFile.type || '').toLowerCase());
+				if (isWordDocument) {
+					// DOC/DOCX phải lưu trực tiếp vào tblFileData như PDF để viewer dùng FileID LMS;
+					// không đưa Word qua Google Drive vì Drive ID không phải FileID của viewer nội bộ.
+					this.ensureDraftNode(selectedFile).then(ok => {
+						if (!ok) return;
+						this.notify('Đang lưu ' + selectedFile.name + ' vào kho file LMS...', 'info');
+						uploadManager.uploadLmsFile(selectedFile, {
+						onComplete: async response => {
+								try {
+									const uploaded = response?.Files?.[0];
+									if (!uploaded?.FILE_ID) throw new Error('API lưu trữ không trả về FILE_ID.');
+
+									const metadata = this.buildLmsFileMetadata(uploaded, selectedFile, targetItem);
+									if (this.ensureDataJsonObject(targetItem).uploadToken !== uploadToken) {
+										this.deleteDbUploadedFile({ fileId: uploaded.FILE_ID });
+										return;
+									}
+
+									await this.savePublishedMetadata(targetItem, metadata);
+									this.notify('Đã lưu “' + selectedFile.name + '” vào kho file LMS.');
+								} catch (error) {
+									this.notify(error.message || 'Không thể lưu file Word vào LMS.', 'error');
+								}
+							},
+							onError: error => this.notify(
+									error?.message || ('Lưu ' + selectedFile.name + ' vào LMS thất bại.'),
+								'error'
+							),
+						});
+					}).catch(error => this.notify(error.message || 'Không thể tạo mục nội dung để lưu file LMS.', 'error'));
+					return;
+				}
 
 				// Redefine selectedFile.type so Google Drive API automatically converts PPTX/PPT files to native Google Slides format
 				const isPPT = /\.pptx?$/i.test(selectedFile.name || '') || /powerpoint|presentation/.test(String(selectedFile.type || '').toLowerCase());
@@ -1942,7 +2079,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 				}
 
 				if (!await this.ensureDraftNode(selectedFile)) return;
-				this.archiveFileToLmsInBackground(selectedFile, targetItem);
+				this.archiveFileToLmsInBackground(selectedFile, targetItem, uploadToken);
 				this.notify(`Đang phát hành ${selectedFile.name} lên Google Drive...`, 'info');
 				uploadManager.uploadLmsGoogleDrive(selectedFile, {
 					folderPath: `${targetItem.TenHocLieu || this.item?.TenHocLieu || 'HocLieu'}/${vueData.user.UserID}`,
@@ -1963,11 +2100,18 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 								contentType: selectedFile.type || '',
 								fileSize: Number(selectedFile.size || 0),
 								uploadSource: 'ggdrive',
+								uploadToken,
 								driveFileId: fileDrive.id,
 								url: driveUrl,
-								slideType: slideType,
+							slideType: slideType,
 								mediaType: ['AUDIO', 'IMAGE'].includes(targetItem.LoaiNoiDung) ? targetItem.LoaiNoiDung.toLowerCase() : undefined,
 							};
+							// Nếu người dùng đã chọn file khác trong lúc Drive upload này còn chạy, dọn file vừa tạo
+							// và không cho callback cũ ghi đè metadata của file mới.
+							if (this.ensureDataJsonObject(targetItem).uploadToken !== uploadToken) {
+								await this.deleteGoogleDriveFile(metadata);
+								return;
+							}
 							await this.savePublishedMetadata(targetItem, metadata);
 							if (targetItem.LoaiNoiDung === 'AUDIO') this.tempAudioUrl = metadata.url;
 							if (targetItem.LoaiNoiDung === 'IMAGE') this.tempImageUrl = metadata.url;

@@ -312,9 +312,10 @@
 					TenTinhTrang: x.TenTinhTrangQLHS,
 				}))
 	
+				// Gửi niên khóa đang chọn cùng LopID để ghi đúng bản ghi học sinh-lớp.
 				const promise = Promise.all([
 					fetchPromise("lms/IO_IN_HocSinh_Ins", { HocSinhObjArr: payload }, { cache: false, suppressError: true }),
-					fetchPromise("lms/IO_IN_HocSinhLop_Ins", { HocSinhLopObjArr: payload }, { cache: false, suppressError: true }),
+					fetchPromise("lms/IO_IN_HocSinhLop_Ins", { HocSinhLopObjArr: payload, NienKhoa: vueData.NienKhoa }, { cache: false, suppressError: true }),
 				])
 	
 				// Tách getHocSinh ra — không để nó kéo dài promise

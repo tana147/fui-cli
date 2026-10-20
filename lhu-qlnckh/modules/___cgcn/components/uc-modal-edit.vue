@@ -1,6 +1,6 @@
 <template>
-	<v-dialog v-model="dialog" max-width="850" persistent>
-		<v-card>
+	<v-dialog v-model="dialog" max-width="1050" persistent>
+		<v-card class="rounded-xs d-flex flex-column">
 			<v-card-title class="py-2 px-4 d-flex align-center">
 				<span class="primary--text font-weight-bold text-subtitle-1">
 					Cập nhật & Thẩm định dự án / hợp đồng CGCN
@@ -118,8 +118,9 @@
 					</v-col>
 
 					<v-col cols="6" md="2">
-						<v-text-field
+						<v-select
 							v-model="form.NamHoc"
+							:items="namHocOptions"
 							label="Năm học"
 							outlined
 							dense
@@ -156,7 +157,7 @@
 
 					<v-col cols="12" md="6">
 						<v-text-field
-							v-model="form.NhanVienSubmit"
+							:value="form.TenNhanVienSubmit || form.NhanVienSubmit"
 							label="Người nộp hồ sơ"
 							outlined
 							dense
@@ -184,13 +185,16 @@
 
 				<div class="d-flex align-center justify-space-between mb-2">
 					<span class="font-weight-bold text-body-2">Danh sách tập tin đính kèm</span>
-					<f-file-upload
-						v-model="uploadResult"
-						label="Tải lên tập tin"
-						:filters="fileFilters"
-						:url="vSet.apiFile"
-						@input="handleFileUploaded"
-					/>
+					<div class="compact-upload-wrapper">
+						<f-file-upload
+							v-model="uploadResult"
+							label="Tải lên tập tin"
+							color="primary"
+							:filters="fileFilters"
+							:url="vSet.apiFile"
+							@input="handleFileUploaded"
+						/>
+					</div>
 				</div>
 
 				<v-data-table
@@ -231,18 +235,15 @@
 				</v-data-table>
 			</v-card-text>
 
-			<v-divider />
-
-			<v-card-actions class="py-2 px-4">
+			<v-card-actions class="pa-3 flex-grow-0 border-top">
 				<!-- Nút Thẩm định trực tiếp: Từ chối / Bổ sung -->
 				<v-btn
 					v-if="form.TrangThai === 2"
 					color="red darken-1"
-					dark
 					small
-					depressed
+					outlined
+					class="text-capitalize px-3 mr-2 font-weight-medium rounded-xs"
 					:loading="saving"
-					class="mr-2"
 					@click="rejectDirectly"
 				>
 					<v-icon left small>mdi-close-circle-outline</v-icon>
@@ -252,12 +253,11 @@
 				<!-- Nút Thẩm định trực tiếp: Phê duyệt -->
 				<v-btn
 					v-if="form.TrangThai === 2"
-					color="green darken-1"
-					dark
+					color="success"
 					small
-					depressed
+					elevation="0"
+					class="text-capitalize px-3 mr-2 font-weight-medium rounded-xs"
 					:loading="saving"
-					class="mr-2"
 					@click="approveDirectly"
 				>
 					<v-icon left small>mdi-check-circle-outline</v-icon>
@@ -265,14 +265,18 @@
 				</v-btn>
 
 				<v-spacer />
-				<v-btn text small @click="closeModal">Đóng</v-btn>
+				<v-btn small text color="grey darken-2" class="text-capitalize px-3 rounded-xs" @click="closeModal">
+					Đóng
+				</v-btn>
 				<v-btn
 					color="primary"
 					small
-					depressed
+					elevation="0"
+					class="text-capitalize px-4 ml-2 font-weight-medium rounded-xs"
 					:loading="saving"
 					@click="saveItem"
 				>
+					<v-icon left small>mdi-content-save-outline</v-icon>
 					Lưu thay đổi
 				</v-btn>
 			</v-card-actions>
@@ -304,6 +308,8 @@
 		data() {
 			return {
 				attachedFiles: [],
+				uploadedFileIDs: [],
+				pendingDeleteFileIDs: [],
 				fileHeaders: [
 					{ text: "Tập tin", value: "FILE_NAME" },
 					{ text: "Xóa", value: "actions", align: "right", sortable: false, width: 80 }
@@ -334,6 +340,7 @@
 					NamThucHien: null,
 					TrangThai: 1,
 					NhanVienSubmit: "",
+					TenNhanVienSubmit: "",
 					LyDoReject: ""
 				}
 			}
@@ -346,12 +353,29 @@
 				set(val) {
 					this.$emit("input", val)
 				}
+			},
+			namHocOptions() {
+				const currentYear = new Date().getFullYear()
+				const list = []
+				for (let y = currentYear + 1; y >= currentYear - 7; y--) {
+					list.push(`${y - 1}-${y}`)
+				}
+				if (this.form && this.form.NamHoc && !list.includes(this.form.NamHoc)) {
+					list.unshift(this.form.NamHoc)
+				}
+				return list
 			}
 		},
 		watch: {
 			value(isOpen) {
 				if (isOpen && this.editItem) {
 					this.syncFormFromItem(this.editItem)
+				} else if (!isOpen) {
+					if (this.uploadedFileIDs && this.uploadedFileIDs.length > 0) {
+						ajaxCALL('/FILE_FileDeleteMulti', { FileIDs: this.uploadedFileIDs.join(',') }, () => {})
+						this.uploadedFileIDs = []
+					}
+					this.pendingDeleteFileIDs = []
 				}
 			},
 			editItem: {
@@ -419,9 +443,12 @@
 					NamThucHien: item.NamThucHien || null,
 					TrangThai: item.TrangThai || 1,
 					NhanVienSubmit: item.NhanVienSubmit || "",
+					TenNhanVienSubmit: item.TenNhanVienSubmit || item.NhanVienSubmit || "",
 					LyDoReject: item.LyDoReject || ""
 				}
 				this.attachedFiles = this.parseFileData(item.FileData)
+				this.uploadedFileIDs = []
+				this.pendingDeleteFileIDs = []
 				this.uploadResult = null
 			},
 			formatMoney(val) {
@@ -459,6 +486,11 @@
 						LyDoReject: this.form.LyDoReject || ""
 					}
 					await ajaxCALLPromise("/DEV_CGCN_Upd", params)
+					if (this.pendingDeleteFileIDs && this.pendingDeleteFileIDs.length > 0) {
+						ajaxCALL('/FILE_FileDeleteMulti', { FileIDs: this.pendingDeleteFileIDs.join(',') }, () => {})
+					}
+					this.uploadedFileIDs = []
+					this.pendingDeleteFileIDs = []
 					Vue.$toast.success("Cập nhật thông tin thành công!", { position: "top" })
 					this.$emit("on-reload")
 					this.closeModal()
@@ -509,18 +541,34 @@
 				const result = payload || this.uploadResult
 				if (result && Array.isArray(result.Files) && result.Files.length > 0) {
 					result.Files.forEach(file => {
-						const exists = this.attachedFiles.some(item => item.FILE_ID === file.FILE_ID)
-						if (!exists) {
-							this.attachedFiles.push(file)
+						if (file && file.FILE_ID) {
+							const exists = this.attachedFiles.some(item => item.FILE_ID === file.FILE_ID)
+							if (!exists) {
+								this.attachedFiles.push(file)
+								this.uploadedFileIDs.push(file.FILE_ID)
+							}
 						}
 					})
 					this.uploadResult = null
 				}
 			},
 			removeAttachedFile(file) {
+				if (file && file.FILE_ID) {
+					if (this.uploadedFileIDs.includes(file.FILE_ID)) {
+						ajaxCALL('/FILE_FileDelete', { FileID: file.FILE_ID }, () => {})
+						this.uploadedFileIDs = this.uploadedFileIDs.filter(id => id !== file.FILE_ID)
+					} else {
+						this.pendingDeleteFileIDs.push(file.FILE_ID)
+					}
+				}
 				this.attachedFiles = this.attachedFiles.filter(item => item.FILE_ID !== file.FILE_ID)
 			},
 			closeModal() {
+				if (this.uploadedFileIDs && this.uploadedFileIDs.length > 0) {
+					ajaxCALL('/FILE_FileDeleteMulti', { FileIDs: this.uploadedFileIDs.join(',') }, () => {})
+				}
+				this.uploadedFileIDs = []
+				this.pendingDeleteFileIDs = []
 				this.dialog = false
 			}
 		}

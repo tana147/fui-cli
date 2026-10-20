@@ -1,118 +1,68 @@
 <template>
-	<div>
-		<h3 class="text-primary mb-2 mt-2 font-weight-bold">
-			II. Quá trình đào tạo:
-		</h3>
-		<f-table :items="QuaTrinhDaoTao" :headers="headers" :update-form="updateForm" :update-api="updateApi"
-			:excel="false" dense></f-table>
-	</div>
+	<uc-llkh-muc title="II. Quá trình đào tạo" nguon="HRM" anchor="coban-II"
+		note="Gồm cả học hàm GS/PGS. Năm tốt nghiệp lấy theo ngày cập nhật bằng trong HRM (cần TCNS xác nhận)."
+		:actions="[{ label: 'Thêm', icon: 'mdi-plus' }, { label: 'Lịch sử', icon: 'mdi-history' }]">
+		<f-table :items="rows" :headers="headers" :excel="false"></f-table>
+		<div class="text-subtitle-2 text-medium-emphasis mt-4 mb-1">Ngoại ngữ – Tin học – Chứng chỉ</div>
+		<f-table :items="rowsCC" :headers="headersCC" :excel="false"></f-table>
+	</uc-llkh-muc>
 </template>
 
 <script>
 	export default {
-		props: [],
-		data() {
+		props: {
+			d: { type: Object, default: function () { return { daoTao: [], hocHam: [], chungChi: [] } } }
+		},
+		data: function () {
 			return {
-				vueData,
-				QuaTrinhDaoTao: vueData.userProfile[1] ?? {},
 				headers: [
-					{ "title": "Học vị", "value": "HocVi", "align": "left" },
-					{ "title": "Chuyên ngành", "value": "ChuyenNganh", "align": "left" },
-					{ "title": "Nơi đào tạo", "value": "NoiDaoTao", "align": "left" },
-					{ "title": "Năm tốt nghiệp", "value": "NamTotNghiep", "align": "center" },
-					{ "title": "Chức năng", "value": "ctrl-update", "align": "center" }
+					{ title: "Bậc", key: "TenBac" },
+					{ title: "Trình độ", key: "TenTrinhDo" },
+					{ title: "Ngành / chuyên ngành", key: "TenChuyenNganh" },
+					{ title: "Cơ sở đào tạo", key: "TenTruongDH" },
+					{ title: "Nước", key: "NuocDaoTao" },
+					{ title: "Hình thức", key: "TenLHDT" },
+					{ title: "Ngày bắt đầu", key: "NgayBatDau" },
+					{ title: "Ngày cấp bằng", key: "NgayCap" },
+					{ title: "Học lực", key: "XepLoai" },
+					{ title: "Tên luận văn / luận án", key: "LuanAn" }
 				],
-				updateForm: [
-					{
-						el: "v-select",
-						attr: {
-							"v-model": "HocVi",
-							"label": "Học vị",
-							":rules": "[vueData.rules.required]",
-							":items": "['Cử nhân', 'Kỹ sư', 'Thạc sĩ', 'Tiến sĩ', 'Giáo sư']"
-						},
-						w: 6,
-					},
-					{
-						el: "v-text-field",
-						attr: {
-							"v-model": "ChuyenNganh",
-							"label": "Chuyên ngành",
-							":rules": "[vueData.rules.required]"
-						},
-						w: 6,
-					},
-					{
-						el: "v-text-field",
-						attr: {
-							"v-model": "NoiDaoTao",
-							"label": "Nơi đào tạo",
-							":rules": "[vueData.rules.required]"
-						},
-						w: 8,
-					},
-					{
-						el: "v-text-field",
-						attr: {
-							"v-model": "NamTotNghiep",
-							"label": "Năm tốt nghiệp",
-							"type": "number",
-							":rules": "[vueData.rules.required, vueData.rules.year]"
-						},
-						w: 4,
-					},
-	
-				],
-				updateApi: {
-					new: {
-						API: "/HDKH_Profile_DaoTao_Save",
-						IN: {
-							DaoTaoID: 0,
-							HocVi: "item.HocVi",
-							ChuyenNganh: "item.ChuyenNganh",
-							NoiDaoTao: "item.NoiDaoTao",
-							NamTotNghiep: "item.NamTotNghiep"
-						},
-						MESS: "Thêm mới học vị thành công",
-						CALLBACK: [
-							{
-								CALL: "getUserProfile",
-							},
-						],
-					},
-					edit: {
-						API: "/HDKH_Profile_DaoTao_Save",
-						IN: {
-							DaoTaoID: "item.DaoTaoID",
-							HocVi: "item.HocVi",
-							ChuyenNganh: "item.ChuyenNganh",
-							NoiDaoTao: "item.NoiDaoTao",
-							NamTotNghiep: "item.NamTotNghiep"
-						},
-						MESS: "Cập nhật học vị thành công",
-						CALLBACK: [
-							{
-								CALL: "getUserProfile",
-							},
-						],
-					},
-					delete: {
-						CONFIRM: "Bạn có muốn xóa học vị <br /><b>{{item.HocVi}}</b>",
-						API: "",
-						IN: {},
-						MESS: "CHUA CO API",
-						CALLBACK: [
-							{
-								CALL: "getUserProfile",
-							},
-						],
-					},
-				},
+				headersCC: [
+					{ title: "Loại", key: "TenLoaiChungChi" },
+					{ title: "Chứng chỉ", key: "TenChungChi" },
+					{ title: "Điểm / mức độ", key: "Diem" },
+					{ title: "Số hiệu", key: "SoHieuBang" },
+					{ title: "Nơi cấp", key: "NoiCap" },
+					{ title: "Ngày cấp", key: "NgayCapCC" }
+				]
 			}
 		},
-		mounted() { },
-		computed: {},
-		watch: {},
-		methods: {},
+		computed: {
+			rows: function () {
+				var L = window.LLKH
+				return this.d.hocHam.concat(this.d.daoTao).map(function (r) {
+					var coLuanAn = r.Bac === "ThS" || r.Bac === "TS"
+					return Object.assign({}, r, {
+						TenChuyenNganh: L.show(r.TenChuyenNganh),
+						TenTruongDH: L.show(r.TenTruongDH),
+						NuocDaoTao: L.show(r.NuocDaoTao),
+						TenLHDT: L.show(r.TenLHDT),
+						XepLoai: r.XepLoai && r.XepLoai !== "Không XĐ" ? r.XepLoai : L.CHUA_CO,
+						NgayCap: L.show(L.dmy(r.NgayCapBang)),
+						NgayBatDau: L.CHUA_CO,
+						LuanAn: coLuanAn ? L.CHUA_CO : ""
+					})
+				})
+			},
+			rowsCC: function () {
+				var L = window.LLKH
+				return this.d.chungChi.map(function (c) {
+					return Object.assign({}, c, {
+						Diem: L.show(c.Diem), SoHieuBang: L.show(c.SoHieuBang), NoiCap: L.show(c.NoiCap),
+						NgayCapCC: L.show(L.dmy(c.NgayCap))
+					})
+				})
+			}
+		}
 	}
 </script>

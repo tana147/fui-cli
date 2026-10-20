@@ -5,10 +5,10 @@
   "ProjectID": "lhbs-lms",
   "ModuleID": "lms_tc_asm_builder",
   "ModuleName": "Soạn bài tập",
-  "UpdateTime": "2026-10-01 14:03:58",
+  "UpdateTime": "2026-10-06 17:33:29",
   "UpdateUser": "DEV000037",
-  "LastLoad": "2026-10-04",
-  "LoadCount": 9981,
+  "LastLoad": "2026-10-19",
+  "LoadCount": 10267,
   "HTMLOnly": false,
   "Framework": "V3",
   "mTitle": ""

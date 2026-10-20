@@ -1,7 +1,8 @@
 {
   "data": [
     {
-      "MonHocID": "MonHocID"
+      "MonHocID": "MonHocID",
+      "HocSinhID": "parseInt(HocSinhID ?? 0)"
     }
   ],
   "watch": {},

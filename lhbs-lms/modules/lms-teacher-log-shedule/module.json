@@ -12,12 +12,16 @@
               "el": "uc-main-layout",
               "attr": {
                 "v-if": "NienKhoa"
-              }
+              },
+              "w": 12
             }
           ]
         }
       ]
     }
   ],
-  "set": {}
+  "set": {
+    "menu": false,
+    "menuLeft": false
+  }
 }

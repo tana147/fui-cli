@@ -4,7 +4,62 @@
 			<!-- Host chiếm 100% chiều cao tab trong viewport; JSpreadsheet giữ trọn vẹn cả hai thanh cuộn ngang/dọc bên trong. -->
 			<v-card-text class="pa-0 h-100 overflow-hidden d-flex flex-column flex-grow-1" style="min-height: 0;">
 				<template v-if="rows && rows.length">
+				<div class="w-100 h-100 overflow-hidden d-none d-md-flex">
 					<div ref="sheetRef" class="w-100 h-100 overflow-hidden so-gvcn-sheet so-gvcn-sheet-wrap so-gvcn-student-sheet" style="min-height: 0;"></div>
+				</div>
+				<div class="d-flex d-md-none flex-column flex-grow-1 overflow-y-auto">
+					<div class="pa-2 flex-shrink-0">
+						<div class="d-flex align-center justify-space-between mb-1">
+							<div class="text-subtitle-2 font-weight-bold">Thông tin học sinh</div>
+							<div class="text-caption text-medium-emphasis">{{ mobileStudentRows.length }} / {{ rows.length }} học sinh</div>
+						</div>
+						<v-text-field v-model="mobileSearch" label="Tìm học sinh" prepend-inner-icon="mdi-magnify"
+							density="compact" variant="outlined" hide-details clearable />
+					</div>
+					<div v-if="!mobileStudentRows.length" class="text-body-2 text-medium-emphasis pa-3">
+						{{ mobileSearch ? 'Không tìm thấy học sinh phù hợp.' : 'Chưa có thông tin học sinh.' }}
+					</div>
+					<div v-else class="px-2 pb-2">
+						<v-card v-for="student in mobileStudentRows" :key="student.key" variant="outlined" class="mb-2">
+							<v-card-text class="pa-3">
+								<div class="d-flex align-start justify-space-between ga-2">
+									<div class="min-width-0">
+										<div class="font-weight-medium">{{ student.name !== '—' ? student.name : 'Chưa có họ tên' }}</div>
+										<div class="text-caption text-medium-emphasis">STT {{ student.stt }} · Mã HS: {{ student.id }}</div>
+									</div>
+								</div>
+								<v-divider class="my-2" />
+								<div v-if="student.basicFields.length">
+									<div class="text-caption font-weight-bold text-primary mb-1">Thông tin cơ bản</div>
+									<v-row dense>
+										<v-col v-for="field in student.basicFields" :key="field.label" :cols="field.cols" class="py-1">
+											<div class="text-caption text-medium-emphasis">{{ field.label }}</div>
+											<div class="text-body-2 text-break">{{ field.value }}</div>
+										</v-col>
+									</v-row>
+								</div>
+								<div v-if="student.resultFields.length" class="mt-2">
+									<div class="text-caption font-weight-bold text-primary mb-1">Kết quả và đặc điểm</div>
+									<v-row dense>
+										<v-col v-for="field in student.resultFields" :key="field.label" :cols="field.cols" class="py-1">
+											<div class="text-caption text-medium-emphasis">{{ field.label }}</div>
+											<div class="text-body-2 text-break" style="white-space: pre-line;">{{ field.value }}</div>
+										</v-col>
+									</v-row>
+								</div>
+								<div v-if="student.familyFields.length" class="mt-2">
+									<div class="text-caption font-weight-bold text-primary mb-1">Gia đình và liên hệ</div>
+									<v-row dense>
+										<v-col v-for="field in student.familyFields" :key="field.label" :cols="field.cols" class="py-1">
+											<div class="text-caption text-medium-emphasis">{{ field.label }}</div>
+											<div class="text-body-2 text-break" style="white-space: pre-line;">{{ field.value }}</div>
+										</v-col>
+									</v-row>
+								</div>
+							</v-card-text>
+						</v-card>
+					</div>
+				</div>
 				</template>
 				<uc-card-empty v-else />
 			</v-card-text>
@@ -127,6 +182,8 @@
 			sheetInstance: null,
 			resizeTimer: null,
 			layoutRetry: 0,
+			isMobileViewport: false,
+			mobileSearch: '',
 			localCanBoRows: [],
 			localParentRows: [],
 			localGroupRows: [],
@@ -197,9 +254,66 @@
 					width: col.width ? Math.max(col.width, autoWidth) : Math.ceil(autoWidth)
 				}
 			})
+		},
+		// Keep all 20 desktop columns visible on mobile; long narrative fields span both columns so the card stays compact.
+		mobileStudentRows() {
+			const basicColumns = [
+				{ index: 3, label: 'Ngày sinh' },
+				{ index: 4, label: 'Nữ', format: value => value ? 'Có' : '—' },
+				{ index: 5, label: 'Dân tộc' }
+			]
+			const resultColumns = [
+				{ index: 6, label: 'Xếp loại kết quả giáo dục' },
+				{ index: 7, label: 'Khen thưởng' },
+				{ index: 8, label: 'Nhận xét của GVCN', cols: 12 },
+				{ index: 9, label: 'Sở thích, năng khiếu, hoàn cảnh gia đình', cols: 12 }
+			]
+			const familyColumns = [
+				{ index: 10, label: 'Họ và tên cha' },
+				{ index: 11, label: 'Nghề nghiệp cha' },
+				{ index: 12, label: 'Số điện thoại cha' },
+				{ index: 13, label: 'Họ và tên mẹ' },
+				{ index: 14, label: 'Nghề nghiệp mẹ' },
+				{ index: 15, label: 'Số điện thoại mẹ' },
+				{ index: 16, label: 'Người đỡ đầu' },
+				{ index: 17, label: 'Số điện thoại người đỡ đầu' },
+				{ index: 18, label: 'Địa chỉ', cols: 12 },
+				{ index: 19, label: 'Ghi chú', cols: 12 }
+			]
+			const query = String(this.mobileSearch || '').trim().toLocaleLowerCase('vi')
+			return (this.rows || []).map((row, index) => {
+				const cell = columnIndex => Array.isArray(row) ? row[columnIndex] : row?.[columnIndex]
+				const stt = this.displayMobileValue(cell(0))
+				const name = this.displayMobileValue(cell(1))
+				const id = this.displayMobileValue(cell(2))
+				const mapFields = columns => columns.map(field => ({
+					label: field.label,
+					value: field.format ? field.format(cell(field.index)) : this.displayMobileValue(cell(field.index)),
+					cols: field.cols || 6
+				}))
+				const basicFields = mapFields(basicColumns)
+				const resultFields = mapFields(resultColumns)
+				const familyFields = mapFields(familyColumns)
+				const searchableText = [name, id, ...basicFields, ...resultFields, ...familyFields]
+					.map(value => typeof value === 'string' ? value : value.value)
+					.join(' ').toLocaleLowerCase('vi')
+				return { key: `${id}-${index}`, stt, name, id, basicFields, resultFields, familyFields, searchableText }
+			}).filter(student => !query || student.searchableText.includes(query))
 		}
 	},
 	methods: {
+		// Convert values from imported rows so the mobile view never renders objects as [object Object].
+		displayMobileValue(value) {
+			if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) return '—'
+			if (Array.isArray(value)) {
+				const items = value.map(item => this.displayMobileValue(item)).filter(item => item !== '—')
+				return items.length ? items.join(', ') : '—'
+			}
+			if (typeof value === 'object') {
+				try { return JSON.stringify(value) || '—' } catch (error) { return '—' }
+			}
+			return String(value).trim() || '—'
+		},
 		// Tính chiều cao tự nhiên theo số dòng nhưng không vượt phần viewport còn lại;
 		// JSpreadsheet vẫn là nơi giữ scrollbar khi danh sách học sinh dài.
 		getContentTableHeight(container, rowCount, nestedHeaderCount = 0) {
@@ -288,7 +402,11 @@
 		},
 		onWindowResize() {
 			clearTimeout(this.resizeTimer)
-			this.resizeTimer = setTimeout(() => this.initSheet(), 120)
+			this.resizeTimer = setTimeout(() => {
+				this.isMobileViewport = window.matchMedia('(max-width: 959.98px)').matches
+				if (this.isMobileViewport) this.destroySheet()
+				else this.initSheet()
+			}, 120)
 		},
 		waitForHostLayout() {
 			if (this.layoutRetry >= 8) return
@@ -305,6 +423,10 @@
 		},
 		// Khởi tạo JSpreadsheet với chiều cao 100% tự động co giãn theo flexbox viewport cha
 		initSheet() {
+			if (this.isMobileViewport) {
+				this.destroySheet()
+				return
+			}
 			this.$nextTick(() => {
 				const container = this.$refs.sheetRef
 				if (!container || !this.rows || !this.rows.length) {
@@ -385,9 +507,10 @@
 		}
 	},
 	mounted() {
+		this.isMobileViewport = window.matchMedia('(max-width: 959.98px)').matches
 		this.syncOrganizationRows()
 		window.addEventListener('resize', this.onWindowResize)
-		this.initSheet()
+		if (!this.isMobileViewport) this.initSheet()
 	},
 	beforeUnmount() {
 		window.removeEventListener('resize', this.onWindowResize)

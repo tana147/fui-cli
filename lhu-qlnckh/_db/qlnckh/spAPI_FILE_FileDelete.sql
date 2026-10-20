@@ -1,4 +1,4 @@
-CREATE PROCEDURE [dbo].[spAPI_FILE_FileDelete]
+CREATE PROCEDURE [dbo].[spAPIFILE_FileDelete]
     @FileID CHAR(32)
 AS
     BEGIN

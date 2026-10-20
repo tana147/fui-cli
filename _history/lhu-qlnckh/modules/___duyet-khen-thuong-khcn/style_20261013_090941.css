@@ -1,0 +1,190 @@
+.v-messages__message {
+  font-size: 16px;
+  line-height: unset;
+}
+
+/* Thu gọn khoảng cách padding giữa các v-col và v-row */
+.compact-form-row > .v-col,
+.compact-form-row > [class*="col-"] {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+.compact-form-row .v-text-field__details {
+  margin-bottom: 2px !important;
+  min-height: 0px !important;
+}
+
+.v-text-field--outlined.v-input--dense .v-label .change-color {
+  color: yellow;
+}
+
+.div-window {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+@media only screen and (max-width: 600px) {
+  .v-data-table .v-data-table__mobile-row {
+    min-height: 48px !important;
+    height: fit-content !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
+
+  .v-data-table .v-data-table__mobile-row .v-data-table__mobile-row__header {
+    width: 80%;
+  }
+
+  .div-mobile {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start;
+  }
+}
+
+.table-custom .v-data-footer {
+  position: sticky;
+  bottom: 0;
+  background-color: white;
+}
+
+.publication-type-menu {
+  min-width: 1060px;
+}
+
+.publication-type-item-active {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.publication-type-item-active:before {
+  opacity: 0.08 !important;
+}
+
+/* Khóa chặt cuộn toàn trang, chỉ cuộn nội bộ trong bảng */
+.duyet-main-container {
+  height: calc(100vh - 72px);
+  max-height: calc(100vh - 72px);
+  overflow: hidden !important;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.duyet-main-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.duyet-main-card .v-data-table__wrapper {
+  overflow-y: auto !important;
+}
+
+/* Ngăn chặn nhảy dòng header table trong dialog và toàn module */
+.v-dialog .v-data-table th,
+.nowrap-table th {
+  white-space: nowrap !important;
+  font-weight: 600 !important;
+}
+
+/* Khung chọn công thức khen thưởng & ghi chú giải thích */
+.formula-select-card {
+  background-color: #fafbfc;
+  border: 1px solid #e0e0e0;
+  border-radius: 2px;
+}
+
+.formula-explain-box {
+  background-color: #f0f7ff;
+  border-left: 3px solid #1976d2;
+  border-radius: 2px;
+}
+
+/* Khung hiển thị các mức tiền thưởng */
+.reward-stat-card {
+  background-color: #fafbfc !important;
+  border: 1px solid #e0e0e0 !important;
+  width: 100%;
+  min-height: 86px;
+}
+
+.reward-stat-sub {
+  min-height: 18px;
+  line-height: 18px;
+}
+
+.gap-2 {
+  gap: 8px;
+}
+
+/* Định dạng mở rộng kích thước v-select đợt duyệt chi tiền */
+.select-dot-duyet {
+  width: 380px !important;
+  min-width: 320px !important;
+}
+
+.select-filter-dotduyet {
+  width: 280px !important;
+  min-width: 240px !important;
+}
+
+/* Chuẩn hóa class thay thế inline styles theo AGENTS.md */
+.duyet-modal-card {
+  min-height: 680px;
+}
+
+.duyet-modal-body {
+  max-height: calc(85vh - 150px);
+  overflow-y: auto;
+}
+
+.lichsu-modal-body {
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.form-section-banner {
+  background: #eef2f6;
+  border-left: 4px solid #1976d2;
+}
+
+.dot-file-card {
+  background: #fafafa !important;
+}
+
+.dot-file-badge {
+  background: #ffffff !important;
+}
+
+.dot-file-name {
+  max-width: 380px !important;
+}
+
+.menu-export-card {
+  width: 300px !important;
+}
+
+.duyet-search-input {
+  max-width: 250px !important;
+}
+
+.filter-select-loaihinh {
+  max-width: 200px !important;
+}
+
+.filter-select-capdo {
+  max-width: 180px !important;
+}
+
+.total-cost-banner {
+  background: #f5f5f5 !important;
+}
+
+/* Bo góc đồng bộ nút bấm 2px */
+.v-btn {
+  border-radius: 2px !important;
+}

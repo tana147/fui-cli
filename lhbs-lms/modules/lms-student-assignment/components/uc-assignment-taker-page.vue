@@ -1,7 +1,8 @@
 <template>
 	<div>
 		<!-- Loading State -->
-		<div v-if="!dataReady" class="page-loading">
+		<!-- Khi làm lại, ẩn snapshot cũ trong lúc tạo/tải lượt mới để không nháy câu cũ. -->
+		<div v-if="!dataReady || isReloadingAttempt" class="page-loading">
 			<div class="loader-ring">
 				<v-progress-circular indeterminate size="52" width="3" color="primary" />
 			</div>
@@ -123,6 +124,13 @@
 
             // Guard flag — chặn loadAssignmentData chạy đồng thời
             isLoadingAssignment: false,
+
+            // Không cho auto-grade recovery ghi trạng thái GRADED xen giữa phase 1 và phase 2.
+            isSubmittingAssignment: false,
+
+            // Giữ màn hình loading trong toàn bộ khoảng tạo submission mới và tải
+            // snapshot mới; nếu không, snapshot của lượt trước sẽ hiện thoáng qua.
+            isReloadingAttempt: false,
 
             // Guard cho beforeunload
             beforeunloadHandler: null,
@@ -286,34 +294,48 @@
                     ? 'lms/EL_Student_GetAssignmentDetail_AssignToStudent'
                     : 'lms/EL_Student_GetAssignmentDetail';
 
-                // Tách rõ 2 case thay vì dùng computed key — tránh null khi key sai
-                params = isSendToStudent
-                    ? {
-                        AssignToStudentID: parseInt(AssignToStudentID),
-                        HocSinhID: this.HocSinhDetail.HocSinhID,
-                        LanNop: this.LanNop ?? 1,
-                    }
-                    : {
-                        AssignToClassID: parseInt(AssignToClassID),
-                        HocSinhID: this.HocSinhDetail.HocSinhID,
-                        LanNop: this.LanNop ?? 1,
-                    };
+                // Khi mở lượt làm lại, API InsertSubmission tạo submission mới trong
+                // lúc request detail hiện tại vẫn đang chạy. Phải tải lại detail ngay
+                // trong cùng chuỗi async sau khi có LanNop mới; gọi initPage() lồng vào
+                // đây sẽ bị guard isLoadingAssignment chặn và giữ lại bộ câu cũ.
+                let shouldReloadForNewAttempt = true;
+                while (shouldReloadForNewAttempt) {
+                    shouldReloadForNewAttempt = false;
+                    params = isSendToStudent
+                        ? {
+                            AssignToStudentID: parseInt(AssignToStudentID),
+                            HocSinhID: this.HocSinhDetail.HocSinhID,
+                            LanNop: this.LanNop ?? 1,
+                        }
+                        : {
+                            AssignToClassID: parseInt(AssignToClassID),
+                            HocSinhID: this.HocSinhDetail.HocSinhID,
+                            LanNop: this.LanNop ?? 1,
+                        };
 
-                console.debug('[Assignment] loadAssignmentData request', {
-                    endpoint,
-                    params,
-                    isSendToStudent,
-                });
-                const data = await fetchPromise(endpoint, params, { cache: false, suppressError: true });
-                console.debug('[Assignment] loadAssignmentData response', {
-                    endpoint,
-                    responseType: Array.isArray(data) ? 'array' : typeof data,
-                    responseKeys: data && typeof data === 'object' ? Object.keys(data) : [],
-                    arrayLengths: Array.isArray(data) ? data.map(item => Array.isArray(item) ? item.length : null) : undefined,
-                });
-                await this.processAssignmentResponse({ data });
-                if (!this.loadError) this.keyComp++;
+                    console.debug('[Assignment] loadAssignmentData request', {
+                        endpoint,
+                        params,
+                        isSendToStudent,
+                    });
+                    const data = await fetchPromise(endpoint, params, { cache: false, suppressError: true });
+                    console.debug('[Assignment] loadAssignmentData response', {
+                        endpoint,
+                        responseType: Array.isArray(data) ? 'array' : typeof data,
+                        responseKeys: data && typeof data === 'object' ? Object.keys(data) : [],
+                        arrayLengths: Array.isArray(data) ? data.map(item => Array.isArray(item) ? item.length : null) : undefined,
+                    });
+                    const result = await this.processAssignmentResponse({ data });
+                    if (result?.reloadForNewAttempt) {
+                        // processAssignmentResponse đã cập nhật LanNop và Is_Resubmit.
+                        // Vòng lặp này dùng đúng LanNop mới để lấy config rồi bốc lại câu.
+                        shouldReloadForNewAttempt = true;
+                    } else if (!this.loadError) {
+                        this.keyComp++;
+                    }
+                }
             } catch (err) {
+                this.isReloadingAttempt = false;
                 console.error('Lỗi loadAssignmentData:', err);
                 const errorDetails = this.describeAssignmentApiError(err, {
                     endpoint,
@@ -330,7 +352,18 @@
         },
 
         async processAssignmentResponse(response) {
+            const isResubmitResponse = this.Is_Resubmit === 1;
+            if (isResubmitResponse) {
+                // Response đầu tiên khi bấm "Làm lại" vẫn chứa dữ liệu lượt cũ.
+                // Ẩn UI ngay từ đây, chỉ mở lại sau khi vòng tải LanNop mới hoàn tất.
+                this.isReloadingAttempt = true;
+                // Lượt mới phải bắt đầu với state đáp án riêng; không để autosave cũ
+                // hoặc payload nộp tiếp theo mang question-id của lượt trước sang.
+                this.puseranswers = {};
+                this.userAnswersSubmitted = {};
+            }
             if (!this.isValidResponse(response)) {
+                this.isReloadingAttempt = false;
                 this.handleInvalidResponse(response?.data);
                 return;
             }
@@ -343,21 +376,49 @@
             // Khi làm lại, không được xử lý cấu hình của lần 1 trước.
             // Submission mới phải được tạo trước, sau đó lần tải lại mới bốc bộ câu mới.
             if (this.Is_Resubmit === 1) {
-                await this.insertSubmissionForResubmit();
-                return;
+                const inserted = await this.insertSubmissionForResubmit();
+                if (inserted) {
+                    this.initializeParams();
+                    return { reloadForNewAttempt: true };
+                }
+                this.isReloadingAttempt = false;
+                return { reloadForNewAttempt: false };
             }
 
             const config = this.assignmentData[0][0];
             // Is_Shuffle chỉ phản ánh submission đã có AssignmentConfig snapshot ở backend;
             // loại bài RANDOM được nhận diện từ AssignmentConfig.questionSelection bên dưới.
             this.attemptConfigPersisted = this.toBoolean(config.Is_Shuffle);
-            config.groups = JSON.parse(config.AssignmentConfig).groups || [];
+            // Store đã bảo vệ JSON, nhưng client vẫn phải chặn payload lỗi để không làm văng
+            // toàn bộ màn hình khi dữ liệu cũ hoặc proxy trả về chuỗi không hợp lệ.
+            const parsedAssignmentConfig = this.parseAssignmentJson(config.AssignmentConfig, 'AssignmentConfig');
+            if (!parsedAssignmentConfig) {
+                this.isReloadingAttempt = false;
+                this.handleInvalidResponse({ Message: 'Dữ liệu cấu hình bài tập không hợp lệ.' });
+                return { reloadForNewAttempt: false };
+            }
+            config.groups = Array.isArray(parsedAssignmentConfig.groups)
+                ? parsedAssignmentConfig.groups
+                : [];
             await this.processAssignmentConfig(config);
             this.loadSubmittedAnswers(response);
+            this.isReloadingAttempt = false;
+            return { reloadForNewAttempt: false };
         },
 
         isValidResponse(response) {
             return response?.data?.length > 0 && response.data[0]?.length > 0;
+        },
+
+        parseAssignmentJson(value, fieldName = 'AssignmentConfig') {
+            if (value && typeof value === 'object') return value;
+            try {
+                const parsed = JSON.parse(value);
+                return parsed && typeof parsed === 'object' ? parsed : null;
+            } catch (error) {
+                console.error(`[Assignment] Không parse được ${fieldName}:`, error);
+                return null;
+            }
         },
 
         handleInvalidResponse(errorResponse = null, errorDetails = null) {
@@ -385,6 +446,8 @@
         },
 
         ensureAutoGradeScoresInSubmissionContent() {
+            // Submit có luồng save GRADED riêng; recovery chỉ chạy khi tải lại một submission cũ.
+            if (this.isSubmittingAssignment) return;
             if (!this.isFullQuizAutoGrade) return;
             if (![this.SUBMISSION_STATUS.SUBMITTED, this.SUBMISSION_STATUS.GRADED].includes(this.submitionInfo?.SubmissionStatus)) return;
 
@@ -518,6 +581,121 @@
                 ? `${studentId}_${assignmentId}`
                 : `${studentId}_${assignmentId}_attempt_${attemptNumber}`;
 
+            const parseHistoryJson = value => {
+                if (!value) return null;
+                try {
+                    return typeof value === 'string' ? JSON.parse(value) : value;
+                } catch (_) {
+                    return null;
+                }
+            };
+            const getQuestionId = question => String(
+                question?.sourceTracking?.questionId
+                ?? question?.sourceTracking?.sourceQuestionId
+                ?? question?.id
+            );
+
+            // Lịch sử cũ chỉ có AssignmentConfig; lịch sử mới có thêm SubmissionContent
+            // để biết câu nào học sinh đã làm sai. Không có dữ liệu chấm thì không tự đoán
+            // là sai, tránh ưu tiên lại các câu chỉ mới được lưu nháp.
+            const isWrongHistoricalAnswer = (question, answerItem) => {
+                const grading = answerItem?.grading || {};
+                if (typeof grading.isCorrect === 'boolean') return !grading.isCorrect;
+
+                const scoreValue = grading.manualScore ?? grading.autoScore;
+                const score = Number(scoreValue);
+                if (!Number.isFinite(score)) return false;
+
+                const points = Number(question?.points);
+                return Number.isFinite(points) && points > 0
+                    ? score < points
+                    : score <= 0;
+            };
+
+            const getWrongQuestionRepeatRate = selection => {
+                const rawRate = selection?.wrongQuestionRepeatRate
+                    ?? selection?.wrongAnswerRepeatRate
+                    ?? 0.2;
+                const rate = Number(rawRate);
+                return Number.isFinite(rate) ? Math.min(Math.max(rate, 0), 1) : 0.2;
+            };
+
+            const buildSelectionState = group => {
+                const exposure = new Map();
+                const wrongQuestionIds = new Set();
+                if (limitAssigned <= 1) return { exposure, wrongQuestionIds };
+
+                assignmentHistory.forEach(entry => {
+                    const snapshot = parseHistoryJson(entry?.AssignmentConfig ?? entry);
+                    if (!snapshot) return;
+
+                    const historyGroup = snapshot?.groups?.find(item => item.id === group.id);
+                    const historyQuestions = historyGroup?.questions || [];
+                    const submissionContent = parseHistoryJson(entry?.SubmissionContent);
+                    const answers = submissionContent?.answers || {};
+
+                    historyQuestions.forEach(question => {
+                        const id = getQuestionId(question);
+                        exposure.set(id, (exposure.get(id) || 0) + 1);
+
+                        const answerItem = answers?.[question?.id] || answers?.[id];
+                        if (isWrongHistoricalAnswer(question, answerItem)) {
+                            wrongQuestionIds.add(id);
+                        }
+                    });
+                });
+
+                return { exposure, wrongQuestionIds };
+            };
+
+            const selectFromRandomPool = (pool, requestedCount, seedSuffix, selection, state) => {
+                const count = Math.min(
+                    Math.max(Math.floor(Number(requestedCount) || 0), 0),
+                    pool.length
+                );
+                if (!count) return [];
+                if (count >= pool.length) return [...pool];
+
+                const seed = `${studentSeedPrefix}_${seedSuffix}`;
+                const seededPool = seededShuffle(pool, seed);
+                const { exposure, wrongQuestionIds } = state;
+                const selectedIds = new Set();
+                const wrongCandidates = seededPool
+                    .filter(question => {
+                        const id = getQuestionId(question);
+                        return wrongQuestionIds.has(id) && (exposure.get(id) || 0) > 0;
+                    })
+                    .sort((left, right) => (
+                        (exposure.get(getQuestionId(left)) || 0)
+                        - (exposure.get(getQuestionId(right)) || 0)
+                    ));
+
+                // Mặc định dành khoảng 20% số câu cho câu đã làm sai. Phần lẻ được
+                // quyết định bằng seed để tỷ lệ vẫn ngẫu nhiên nhưng ổn định khi reload.
+                const repeatRate = getWrongQuestionRepeatRate(selection);
+                const expectedWrongCount = count * repeatRate;
+                const baseWrongCount = Math.floor(expectedWrongCount);
+                const fractionalPart = expectedWrongCount - baseWrongCount;
+                const quotaRandom = createSeededRandom(`${seed}_wrong_quota`)();
+                const wrongCount = Math.min(
+                    wrongCandidates.length,
+                    baseWrongCount + (quotaRandom < fractionalPart ? 1 : 0)
+                );
+                const selectedWrong = wrongCandidates.slice(0, wrongCount);
+                selectedWrong.forEach(question => selectedIds.add(getQuestionId(question)));
+
+                // Sau khi dành quota cho câu sai, phần còn lại vẫn ưu tiên câu chưa
+                // từng xuất hiện (exposure = 0), rồi mới đến câu đã xuất hiện ít nhất.
+                const remaining = seededPool
+                    .filter(question => !selectedIds.has(getQuestionId(question)))
+                    .sort((left, right) => (
+                        (exposure.get(getQuestionId(left)) || 0)
+                        - (exposure.get(getQuestionId(right)) || 0)
+                    ));
+
+                return selectedWrong.concat(remaining.slice(0, count - selectedWrong.length));
+            };
+
             groups.forEach(group => {
                 // Random selection happens once per attempt. The resulting config is
                 // persisted in tblEL_Submissions, so reload/resume never reselects questions.
@@ -530,32 +708,16 @@
                         // Ma trận bốc độc lập theo từng nguồn nhóm, nhờ đó 2-3 nhóm có thể đóng góp
                         // số câu khác nhau cho cùng một mức độ mà không bị gộp thành một quota chung.
                         const allQuestions = Array.isArray(group.questions) ? group.questions : [];
-                        const getQuestionId = question => String(question?.sourceTracking?.questionId ?? question?.sourceTracking?.sourceQuestionId ?? question?.id);
-                        
-                        // Đối với limitAssigned > 1: Lấy lịch sử làm bài các lần trước của học sinh để né câu cũ
-                        const exposure = new Map();
-                        if (limitAssigned > 1) {
-                            assignmentHistory.forEach(entry => {
-                                let snapshot = entry?.AssignmentConfig ?? entry;
-                                try { snapshot = typeof snapshot === 'string' ? JSON.parse(snapshot) : snapshot; } catch (_) { return; }
-                                const historyGroup = snapshot?.groups?.find(item => item.id === group.id);
-                                (historyGroup?.questions || []).forEach(question => {
-                                    const id = getQuestionId(question);
-                                    exposure.set(id, (exposure.get(id) || 0) + 1);
-                                });
-                            });
-                        }
+                        const selectionState = buildSelectionState(group);
 
                         const pickFromPool = (pool, requestedCount, levelKey = '') => {
-                            const count = Math.min(Math.max(Math.floor(Number(requestedCount) || 0), 0), pool.length);
-                            if (!count) return [];
-                            if (count >= pool.length) return [...pool];
-                            const seededPool = seededShuffle(pool, `${studentSeedPrefix}_${group.id || ''}_${levelKey}`);
-                            const prioritized = limitAssigned > 1
-                                ? seededPool.sort((left, right) => (exposure.get(getQuestionId(left)) || 0) - (exposure.get(getQuestionId(right)) || 0))
-                                : seededPool;
-                            // Giữ đúng danh sách câu hỏi theo thứ tự ưu tiên
-                            return prioritized.slice(0, count);
+                            return selectFromRandomPool(
+                                pool,
+                                requestedCount,
+                                `${group.id || ''}_${levelKey}`,
+                                selection,
+                                selectionState
+                            );
                         };
                         const selectedIds = new Set();
                         matrixConfigs.forEach(mCfg => {
@@ -578,32 +740,14 @@
                         Math.max(Number.isFinite(requestedCount) ? Math.floor(requestedCount) : pool.length, 1),
                         pool.length
                     );
-                    const exposure = new Map();
-                    if (limitAssigned > 1) {
-                        assignmentHistory.forEach(entry => {
-                            let snapshot = entry?.AssignmentConfig ?? entry;
-                            try { snapshot = typeof snapshot === 'string' ? JSON.parse(snapshot) : snapshot; } catch (_) { return; }
-                            const historyGroup = snapshot?.groups?.find(item => item.id === group.id);
-                            (historyGroup?.questions || []).forEach(question => {
-                                const id = String(question?.sourceTracking?.questionId ?? question?.sourceTracking?.sourceQuestionId ?? question?.id);
-                                exposure.set(id, (exposure.get(id) || 0) + 1);
-                            });
-                        });
-                    }
-                    const createSelection = () => {
-                        if (count >= pool.length) return [...pool];
-                        const seededPool = seededShuffle(pool, `${studentSeedPrefix}_${group.id || ''}_standard_pool`);
-                        const prioritized = limitAssigned > 1
-                            ? seededPool.sort((left, right) => {
-                                const leftId = String(left?.sourceTracking?.questionId ?? left?.sourceTracking?.sourceQuestionId ?? left?.id);
-                                const rightId = String(right?.sourceTracking?.questionId ?? right?.sourceTracking?.sourceQuestionId ?? right?.id);
-                                return (exposure.get(leftId) || 0) - (exposure.get(rightId) || 0);
-                            })
-                            : seededPool;
-                        // Giữ đúng danh sách câu hỏi đã được chọn và ưu tiên né câu cũ
-                        return prioritized.slice(0, count);
-                    };
-                    group.questions = createSelection();
+                    const selectionState = buildSelectionState(group);
+                    group.questions = selectFromRandomPool(
+                        pool,
+                        count,
+                        `${group.id || ''}_standard_pool`,
+                        selection,
+                        selectionState
+                    );
                     }
                 }
 
@@ -726,8 +870,15 @@
         },
 
         async mapAnswersForGradedAssignment(config) {
-            const configWithAnswers = JSON.parse(config.AssignmentConfig_HadAnswer);
-            const configNoAnswers = JSON.parse(config.AssignmentConfig);
+            // Không để payload chấm bài lỗi làm crash component; caller sẽ hiển thị lỗi có kiểm soát.
+            const configWithAnswers = this.parseAssignmentJson(
+                config.AssignmentConfig_HadAnswer,
+                'AssignmentConfig_HadAnswer'
+            );
+            const configNoAnswers = this.parseAssignmentJson(config.AssignmentConfig, 'AssignmentConfig');
+            if (!configWithAnswers || !configNoAnswers) {
+                throw new Error('Dữ liệu cấu hình đáp án bài tập không hợp lệ.');
+            }
             const mappedGroups = await this.handleMapingAnswer_For_Graded(configWithAnswers, configNoAnswers);
             config.groups = mappedGroups;
         },
@@ -792,16 +943,18 @@
         // ===========================
 
         async saveDraft(payload) {
-            if (this.Is_Resubmit === 1) return null;
+            if (this.Is_Resubmit === 1 || this.isReloadingAttempt) return null;
 
             const isSendToStudent = !this.isSendToClass;
             const endpoint = isSendToStudent
                 ? 'lms/EL_Student_SaveSubmission_AssignToStudent'
                 : 'lms/EL_Student_SaveSubmission';
+            const requestLanNop = this.LanNop;
+            const safePayload = this.filterSubmissionContentToCurrentAttempt(payload);
 
             const params = isSendToStudent
                 ? {
-                    ...payload,
+                    ...safePayload,
                     Is_Full_Quiz: this.isFullQuizAutoGrade,
                     Is_Resubmit: this.Is_Resubmit ?? 0,
                     Score: payload?.Score ?? null,
@@ -813,7 +966,7 @@
                     HocSinhID: this.HocSinhDetail.HocSinhID,
                 }
                 : {
-                    ...payload,
+                    ...safePayload,
                     Is_Full_Quiz: this.isFullQuizAutoGrade,
                     Is_Resubmit: this.Is_Resubmit ?? 0,
                     Score: payload?.Score ?? null,
@@ -825,8 +978,48 @@
                 };
 
             const data = await fetchPromise(endpoint, params, { cache: false });
+            // Bỏ qua response autosave cũ nếu trong lúc request đang chạy trang đã
+            // chuyển sang snapshot/lượt khác; response đó không được ghi đè state mới.
+            if (this.isReloadingAttempt || this.Is_Resubmit === 1 || requestLanNop !== this.LanNop) return null;
             await this.handleSaveResponse({ data });
             return data;
+        },
+
+        getQuestionIdsFromGroups(groups) {
+            const ids = new Set();
+            (groups || []).forEach(group => {
+                (group?.questions || []).forEach(question => {
+                    if (question?.id !== null && question?.id !== undefined && question?.id !== '') {
+                        ids.add(String(question.id));
+                    }
+                });
+            });
+            return ids;
+        },
+
+        filterAnswersToQuestionGroups(answers, groups) {
+            const source = answers && typeof answers === 'object' && !Array.isArray(answers) ? answers : {};
+            const ids = this.getQuestionIdsFromGroups(groups);
+            // Chưa có snapshot thì giữ payload để không làm mất dữ liệu ở các trạng thái
+            // tải dở; khi đã có danh sách câu, chỉ giữ đáp án thuộc đúng lượt hiện tại.
+            if (!ids.size) return source;
+            return Object.fromEntries(Object.entries(source).filter(([questionId]) => ids.has(String(questionId))));
+        },
+
+        filterSubmissionContentToCurrentAttempt(payload) {
+            if (!payload || typeof payload !== 'object' || !payload.SubmissionContent) return payload;
+            try {
+                const content = typeof payload.SubmissionContent === 'string'
+                    ? JSON.parse(payload.SubmissionContent)
+                    : payload.SubmissionContent;
+                if (!content || typeof content !== 'object' || !content.answers || typeof content.answers !== 'object') return payload;
+                const groups = this.AssignmentConfigAfterShuffle?.groups || this.assignmentData?.[0]?.[0]?.groups || [];
+                const answers = this.filterAnswersToQuestionGroups(content.answers, groups);
+                return { ...payload, SubmissionContent: JSON.stringify({ ...content, answers }) };
+            } catch (error) {
+                console.error('[Assignment] Không lọc được đáp án theo snapshot hiện tại:', error);
+                return payload;
+            }
         },
 
         async handleSaveResponse(response) {
@@ -838,13 +1031,13 @@
             );
 
             if (!isRandomQuestionPool) {
-                // Giữ nguyên flow cũ của bài soạn câu hỏi thường: lưu config rồi
-                // initPage() để đồng bộ lại state theo contract hiện tại.
+                // Cập nhật metadata của submission nhưng không gọi initPage() sau mỗi
+                // auto-save. Reload toàn bộ bài ở đây có thể lấy snapshot cũ từ server
+                // và ghi đè các câu học sinh vừa làm trong lúc request trước hoàn tất.
                 this.assignmentData = responseData;
                 this.loadSubmittedAnswers(response);
                 if (responseConfig?.Is_Shuffle !== 1) {
                     await this.saveAssignmentConfig(responseData?.[1]?.[0]?.SubmissionID);
-                    this.initPage();
                 }
                 return;
             }
@@ -888,6 +1081,10 @@
         },
 
         async submitAssignment(payload) {
+            if (this.isSubmittingAssignment) return;
+            payload = this.filterSubmissionContentToCurrentAttempt(payload);
+            this.isSubmittingAssignment = true;
+
             const isSendToStudent = !this.isSendToClass;
             const endpoint = isSendToStudent
                 ? 'lms/EL_Student_SaveSubmission_AssignToStudent'
@@ -1020,7 +1217,9 @@
                                 this.lastAssignmentError,
                                 'Vui lòng thử lại.'
                             ), { position: 'top' });
-                            this.initPage();
+                            // Phase 1 đã lưu bài; không reload ở lỗi phase 2 vì reload
+                            // có thể thay state đang hiển thị bằng snapshot cũ và làm
+                            // học sinh tưởng rằng các câu vừa làm đã bị mất.
                             return;
                         }
                         submitPhase = 'phase2-save-submission';
@@ -1081,6 +1280,8 @@
                     errorDetails,
                     'Vui lòng thử lại.'
                 ), { position: 'top' });
+            } finally {
+                this.isSubmittingAssignment = false;
             }
         },
 
@@ -1183,13 +1384,33 @@
 
         submitAssignmentFinal() {
             this.confirmSubmitDialog = false;
-            const payload = {
-                AssignToClassID: this.assignmentData[0][0].AssignToClassID,
-                SubmissionContent: JSON.stringify({ answers: this.puseranswers }),
-                SubmissionStatus: this.SUBMISSION_STATUS.SUBMITTED,
-                HocSinhID: this.HocSinhDetail.HocSinhID,
-            };
-            this.submitAssignment(payload);
+
+            // Chỉ xin one-time token sau khi request auto-save cuối cùng đã hoàn tất;
+            // nếu auto-save lỗi (đặc biệt 401 do session hết hạn), giữ bài trên màn hình.
+            const assignmentTaker = this.$refs.assignmentTaker;
+            const flushPromise = assignmentTaker?.flushPendingSave?.();
+            if (!flushPromise || typeof flushPromise.then !== 'function') {
+                Vue.$toast.error('Chưa thể nộp bài vì đáp án chưa được lưu thành công. Vui lòng đăng nhập lại rồi thử lại.', { position: 'top' });
+                return;
+            }
+
+            flushPromise.then(saved => {
+                if (!saved) {
+                    Vue.$toast.error('Chưa thể nộp bài vì đáp án chưa được lưu thành công. Vui lòng đăng nhập lại rồi thử lại.', { position: 'top' });
+                    return;
+                }
+
+                const payload = {
+                    AssignToClassID: this.assignmentData[0][0].AssignToClassID,
+                    SubmissionContent: JSON.stringify({ answers: this.puseranswers }),
+                    SubmissionStatus: this.SUBMISSION_STATUS.SUBMITTED,
+                    HocSinhID: this.HocSinhDetail.HocSinhID,
+                };
+                this.submitAssignment(payload);
+            }).catch(error => {
+                console.error('[Assignment] final save flush failed', error);
+                Vue.$toast.error('Chưa thể nộp bài vì không thể xác nhận trạng thái lưu. Vui lòng thử lại.', { position: 'top' });
+            });
         },
 
         toBoolean(value) {
@@ -1223,7 +1444,7 @@
 
             // Sau phase 1, SubmissionContent trong DB là nguồn chuẩn của lượt nộp.
             // Ưu tiên dữ liệu này để không chấm nhầm state UI cũ khi học sinh vừa nộp.
-            const answers = this.getLatestSubmissionAnswers();
+            const answers = this.filterAnswersToQuestionGroups(this.getLatestSubmissionAnswers(), groups);
             const graded = this.fn_AutoGradeSubmission({ answers: _.cloneDeep(answers) }, groups);
             if (typeof graded?.Score !== 'number' || Number.isNaN(graded.Score)) {
                 console.warn('Auto-grade fallback: tính điểm thất bại, chuyển về trạng thái đã nộp.');
@@ -1364,7 +1585,9 @@
         },
 
         fn_AutoGradeSubmission(submissionContentObj, asmGroups) {
-            let answers = submissionContentObj?.answers ?? {};
+            // Tính điểm và lưu payload theo đúng câu trong snapshot của lượt hiện tại;
+            // bỏ các key còn sót từ draft/lượt làm trước.
+            let answers = this.filterAnswersToQuestionGroups(submissionContentObj?.answers ?? {}, asmGroups);
             let score = 0;
 
             for (const group of asmGroups) {
@@ -1528,9 +1751,12 @@
                 const data = await fetchPromise(endpoint, payload, { cache: false });
                 this.urlParams.delete('Is_Resubmit');
                 this.urlParams.set('LanNop', data[1][0].LanNop.toString());
-                this.initPage();
+                // Không gọi initPage() ở đây: request detail hiện tại vẫn giữ
+                // isLoadingAssignment. Caller sẽ tải lại tuần tự bằng LanNop mới.
+                return true;
             } catch (err) {
                 console.error('Lỗi insertSubmissionForResubmit:', err);
+                return false;
             }
         },
 

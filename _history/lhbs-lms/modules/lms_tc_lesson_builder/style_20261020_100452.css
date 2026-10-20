@@ -1,0 +1,56 @@
+.lesson-file-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 10px;
+}
+.lesson-file-card {
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+}
+.lesson-file-main {
+    min-height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    color: #607d8b;
+    background: #f8fafb;
+}
+.lesson-file-link {
+    max-width: 190px;
+    color: #1565c0;
+    text-decoration: none;
+}
+.lesson-file-link:hover {
+    text-decoration: underline;
+}
+.lesson-file-footer {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-left: 10px;
+}
+.lesson-file-delete {
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    padding: 0;
+}
+.lesson-file-empty {
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #78909c;
+    border: 1px dashed #b0bec5;
+    border-radius: 8px;
+    background: #fafcfd;
+}

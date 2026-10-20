@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+	<v-container>
         <v-expansion-panels v-model="vueData.Panel" accordion>
             <v-expansion-panel v-for="(item, index) in rootflow" :key="index">
                 <v-expansion-panel-header
@@ -55,8 +55,8 @@
 </template>
 
 <script>
-export default {
-    props: ['defaultfLow', 'rootflow'],
+	export default {
+		props: ['defaultfLow', 'rootflow'],
     data() {
         return {
             student_id: null,
@@ -97,7 +97,7 @@ export default {
                     '/Process_Student_Ins',
                     {
                         Process_Action: 3,
-                        Student_ID: vueData.user.UserID,
+                        Student_ID: vueData.studentId || vueData.user.UserID,
                         Expire_Date: new Date().getFullYear().toString() + '-12-12',
                         insert_new: 1,
                     },
@@ -160,7 +160,7 @@ export default {
                         ajaxCALL(
                             '/FlowDetail_UpdateData',
                             {
-                                Student_ID: vueData.user.UserID,
+                                Student_ID: this.student_id || vueData.studentId || vueData.user.UserID,
                                 Process_ID: root.PROCESS_ID,
                                 Flow_ID: item.Flow_ID,
                                 Task_ID: item.Task_ID,
@@ -248,5 +248,5 @@ export default {
             }
         },
     },
-}
+	}
 </script>

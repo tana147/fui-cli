@@ -80,7 +80,9 @@
 				<v-btn
 					color="primary"
 					small
-					depressed
+					elevation="0"
+					class="text-capitalize font-weight-medium rounded-xs"
+					title="Kê khai hồ sơ chuyển giao công nghệ mới"
 					@click="handleAdd"
 				>
 					<v-icon left small>mdi-plus</v-icon>
@@ -125,6 +127,9 @@
 				<template v-slot:item.TenDuAn="{ item }">
 					<div class="py-1">
 						<div class="font-weight-medium text-body-2">{{ item.TenDuAn }}</div>
+						<div v-if="item.ThoiGianSubmit" class="text-caption grey--text">
+							Ngày nộp: {{ formatDateDisplay(item.ThoiGianSubmit) }}
+						</div>
 						<!-- Cảnh báo nếu cần bổ sung -->
 						<div
 							v-if="item.TrangThai === 4 && item.LyDoReject"
@@ -394,6 +399,7 @@
 						"Số HĐ": item.SoHopDong || "",
 						"Năm học": item.NamHoc || "",
 						"Năm TH": item.NamThucHien || "",
+						"Ngày nộp": this.formatDateDisplay(item.ThoiGianSubmit),
 						"Lý do trả về (nếu có)": item.LyDoReject || ""
 					}))
 					jsonToExcel({
@@ -404,6 +410,19 @@
 				} finally {
 					this.isLoadingExport = false
 				}
+			},
+			formatDateDisplay(val) {
+				if (!val) return ""
+				if (typeof val === "string" && /^\d{2}\/\d{2}\/\d{4}$/.test(val)) return val
+				if (typeof moment !== "undefined") {
+					const m = moment(val, ["YYYY-MM-DDTHH:mm:ss", "YYYY-MM-DD", "DD/MM/YYYY"])
+					if (m.isValid()) return m.format("DD/MM/YYYY")
+				}
+				const parts = String(val).substring(0, 10).split("-")
+				if (parts.length === 3 && parts[0].length === 4) {
+					return `${parts[2]}/${parts[1]}/${parts[0]}`
+				}
+				return val
 			}
 		}
 	}

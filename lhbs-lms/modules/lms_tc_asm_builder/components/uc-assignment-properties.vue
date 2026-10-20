@@ -162,7 +162,7 @@
 						<v-col cols="6"><v-select :model-value="selectedQuestionData.gradingType || 'auto'"
 							@update:model-value="updateQuestion('gradingType', $event)" :label="$t('message.GradingMethod')"
 							:items="[{ value: 'auto', title: IsEngLish ? 'Auto' : 'Tự động' }, { value: 'manual', title: IsEngLish ? 'Manual' : 'Chấm tay' }]"
-							variant="outlined" density="compact" :disabled="!isAutoGradable(selectedQuestionData.type)" :clearable="false" /></v-col>
+							variant="outlined" density="compact" :disabled="!isAutoGradable(selectedQuestionData.type) || selectedQuestionData.type === 'QUIZ_ORDERING'" :clearable="false" /></v-col>
 					</v-row>
 				</div>
 				<v-divider class="my-2" />
@@ -389,6 +389,29 @@
 						{{ $t('message.AddPair') }}
 					</v-btn>
 				</div>
+				<!-- QUIZ_ORDERING: danh sách đang hiển thị chính là thứ tự đúng; học sinh sẽ nhận các ý này để sắp xếp lại ở màn hình làm bài. -->
+				<div v-else-if="selectedQuestionData.type === 'QUIZ_ORDERING'">
+					<p class="text-caption mb-2">{{ IsEngLish ? 'Arrange the items in the correct order.' : 'Nhập các ý theo thứ tự đúng.' }}</p>
+					<div v-for="(entry, index) in (selectedQuestionData.config.items || [])" :key="entry.id || index" class="d-flex align-start ga-2 mb-2">
+						<v-chip size="small" color="primary" variant="tonal" class="mt-2 flex-shrink-0">{{ index + 1 }}</v-chip>
+						<v-textarea v-if="!selectedQuestionData.config.isAdvanced" :model-value="entry.text"
+							@update:model-value="updateOrderingItemText(index, $event)" variant="outlined" density="compact"
+							hide-details :clearable="false" rows="2" auto-grow class="flex-grow-1"
+							:placeholder="IsEngLish ? 'Enter item...' : 'Nhập ý cần sắp xếp...'" />
+						<uc-latex-edit v-else v-model:content="entry.text" class="flex-grow-1" />
+						<div class="d-flex align-center mt-1">
+							<v-btn icon="mdi-arrow-up" size="small" variant="text" :disabled="index === 0" @click="moveOrderingItem(index, -1)" />
+							<v-btn icon="mdi-arrow-down" size="small" variant="text" :disabled="index === (selectedQuestionData.config.items || []).length - 1" @click="moveOrderingItem(index, 1)" />
+							<v-btn v-if="(selectedQuestionData.config.items || []).length > 2" icon="mdi-delete-outline" size="small" variant="text" color="red" @click="removeOrderingItem(index)" />
+						</div>
+					</div>
+					<v-btn prepend-icon="mdi-plus" variant="tonal" color="primary" @click="addOrderingItem" class="mt-1">
+						{{ IsEngLish ? 'Add item' : 'Thêm ý' }}
+					</v-btn>
+					<p class="text-caption text-medium-emphasis mt-2 mb-0">
+						{{ orderingItemScoreLabel }}
+					</p>
+				</div>
 				<!-- FILE_UPLOAD -->
 				<div v-else-if="selectedQuestionData.type === 'FILE_UPLOAD'">
 					<div v-if="selectedQuestionData.config.media.type === 'VIDEO'">
@@ -397,11 +420,26 @@
 				</div>
 
 				<div v-else-if="selectedQuestionData.type === 'ESSAY'">
+					<!-- Đáp án tham khảo chỉ hỗ trợ giáo viên khi chấm tay; không phải đáp án để hệ thống tự chấm. -->
+					<uc-rich-text-editor :model-value="selectedQuestionData.config.referenceAnswer || ''"
+						label="Đáp án tham khảo (chỉ giáo viên xem)"
+						placeholder="Nhập ý chính hoặc đáp án tham khảo để đối chiếu khi chấm..."
+						@update:model-value="updateQuestionConfig('referenceAnswer', $event)"
+						:imageapi="vueData.v_Set.apiFile" variant="outlined" rows="4" auto-grow />
 					<v-number-input v-model="selectedQuestionData.config.maxLength" :label="$t('message.MaxCharacters')"
 						variant="outlined" density="compact" />
 				</div>
 
-				<div v-else-if="['SHORT_ANSWER', 'AUDIO_RESPONSE'].includes(selectedQuestionData.type)">
+				<div v-else-if="selectedQuestionData.type === 'SHORT_ANSWER'">
+					<!-- Câu trả lời ngắn cũng lưu cùng key referenceAnswer để Content Hub và trang chấm bài dùng chung schema. -->
+					<uc-rich-text-editor :model-value="selectedQuestionData.config.referenceAnswer || ''"
+						label="Đáp án tham khảo (chỉ giáo viên xem)"
+						placeholder="Nhập câu trả lời hoặc các ý chính tham khảo..."
+						@update:model-value="updateQuestionConfig('referenceAnswer', $event)"
+						:imageapi="vueData.v_Set.apiFile" variant="outlined" rows="4" auto-grow />
+				</div>
+
+				<div v-else-if="selectedQuestionData.type === 'AUDIO_RESPONSE'">
 					<p class="text-caption text-grey">
 						{{ $t('message.NoAnswerConfig') }}.
 					</p>
@@ -590,10 +628,14 @@
 					this.contentHubStatus = { kind: 'idle', fingerprint: '', questionId: null, groupId: null, groupTitle: '', message: '' }
 					this.scheduleContentHubStatusCheck()
 				},
-				selectedQuestionData: {
-					deep: true,
-					handler() { this.scheduleContentHubStatusCheck() }
+			selectedQuestionData: {
+				deep: true,
+				handler(value) {
+					// Dữ liệu cũ có thể từng lưu ordering là chấm tay; chuẩn hóa lại để câu có đáp án luôn đi qua quiz auto-grading.
+					if (value?.type === 'QUIZ_ORDERING' && value.gradingType !== 'auto') value.gradingType = 'auto'
+					this.scheduleContentHubStatusCheck()
 				}
+			}
 			},
 			computed: {
 			selectedGroupData() {
@@ -642,6 +684,17 @@
 				const type = this.selectedQuestionData.type;
 				if (!['QUIZ_MULTIPLE_CHOICE', 'QUIZ_MULTIPLE_TRUE_FALSE'].includes(type)) return false;
 				return (this.selectedQuestionData.config.scoringMode || 'equal') === 'partial';
+			},
+			orderingItemScoreLabel() {
+				const question = this.selectedQuestionData
+				if (!question || question.type !== 'QUIZ_ORDERING') return ''
+				const items = Array.isArray(question.config?.items) ? question.config.items : []
+				const totalPoints = Number(question.points) || 0
+				const pointsPerItem = items.length ? totalPoints / items.length : 0
+				const formatted = pointsPerItem.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1')
+				return this.IsEngLish
+					? 'Equal scoring: each correctly placed item = ' + formatted + ' pt.'
+					: 'Chấm đều: mỗi ý đúng vị trí = ' + formatted + ' điểm.'
 			},
 			cognitiveLevelsDefinition() {
 				return [
@@ -697,6 +750,7 @@
 						QUIZ_MULTIPLE_TRUE_FALSE: 'Multiple True / False',
 						QUIZ_FILL_IN_BLANK: 'Fill in the Blank',
 						QUIZ_MATCHING: 'Matching',
+						QUIZ_ORDERING: 'Ordering',
 						ESSAY: 'Essay',
 						SHORT_ANSWER: 'Short Answer',
 						AUDIO_RESPONSE: 'Audio Response',
@@ -710,6 +764,7 @@
 					QUIZ_MULTIPLE_TRUE_FALSE: 'Nhiều Đúng / Sai',
 					QUIZ_FILL_IN_BLANK: 'Điền vào chỗ trống',
 					QUIZ_MATCHING: 'Ghép nối',
+					QUIZ_ORDERING: 'Sắp xếp thứ tự',
 					ESSAY: 'Tự luận',
 					SHORT_ANSWER: 'Trả lời ngắn',
 					AUDIO_RESPONSE: 'Ghi âm trả lời',
@@ -770,6 +825,20 @@
 						return { key: 'pair_' + index, label: `${this.IsEngLish ? 'Pair' : 'Cặp'} ${index + 1}:`, text: `${optionText(left)} → ${optionText(right)}`, badge: '', badgeColor: 'success' }
 					})
 				}
+				if (type === 'QUIZ_ORDERING') {
+					const items = Array.isArray(config.items) ? config.items : []
+					const itemById = new Map(items.map(item => [String(item?.id), item]))
+					const order = Array.isArray(config.correctOrder) && config.correctOrder.length
+						? config.correctOrder
+						: items.map(item => item?.id)
+					return order.map((id, index) => ({
+						key: 'ordering_' + index,
+						label: (index + 1) + '.',
+						text: this.contentHubText(itemById.get(String(id))?.text),
+						badge: '',
+						badgeColor: 'success',
+					})).filter(item => item.text)
+				}
 				return []
 			},
 			contentHubScope() {
@@ -804,7 +873,7 @@
 			contentHubSupportedTypes() {
 				// Các dạng tự luận/trả lời ngắn/audio chỉ cần lưu nội dung câu hỏi
 				// và media (nếu có), không yêu cầu cấu hình đáp án đúng trong Kho soạn nội dung.
-				return ['QUIZ_SINGLE_CHOICE', 'QUIZ_MULTIPLE_CHOICE', 'QUIZ_TRUE_FALSE', 'QUIZ_MULTIPLE_TRUE_FALSE', 'QUIZ_FILL_IN_BLANK', 'QUIZ_MATCHING', 'ESSAY', 'SHORT_ANSWER', 'AUDIO_RESPONSE']
+				return ['QUIZ_SINGLE_CHOICE', 'QUIZ_MULTIPLE_CHOICE', 'QUIZ_TRUE_FALSE', 'QUIZ_MULTIPLE_TRUE_FALSE', 'QUIZ_FILL_IN_BLANK', 'QUIZ_MATCHING', 'QUIZ_ORDERING', 'ESSAY', 'SHORT_ANSWER', 'AUDIO_RESPONSE']
 			},
 			contentHubNormalizeType(type) {
 				return type === 'QUIZ_MATCHING_V2' ? 'QUIZ_MATCHING' : String(type || '').trim()
@@ -888,6 +957,10 @@
 					isAdvanced: Boolean(source.isAdvanced),
 					media: this.contentHubNormalizeMedia(source.media),
 				}
+				if (['SHORT_ANSWER', 'ESSAY'].includes(type)) {
+					// Chỉ giữ đáp án tham khảo cho hai dạng chấm tay; làm sạch object/rich-text để không lưu "[object Object]".
+					config.referenceAnswer = this.contentHubText(source.referenceAnswer)
+				}
 				if (type === 'QUIZ_SINGLE_CHOICE' || type === 'QUIZ_MULTIPLE_CHOICE') {
 					const options = (Array.isArray(source.options) ? source.options : []).map((option, index) => ({
 						id: this.contentHubText(option?.id ?? option?.value ?? String.fromCharCode(97 + index)),
@@ -945,6 +1018,28 @@
 						return left >= 0 && right >= 0 ? { from: 'a_' + left, to: 'b_' + right } : null
 					}).filter(Boolean)
 				}
+				if (type === 'QUIZ_ORDERING') {
+					// Chuẩn hóa cả schema mới (`items`) và dữ liệu thử nghiệm cũ dùng `options`.
+					// `correctOrder` chỉ tham chiếu ID, giúp đổi vị trí mà không phụ thuộc text của ý.
+					const sourceItems = Array.isArray(source.items) ? source.items : (Array.isArray(source.options) ? source.options : [])
+					const items = sourceItems.map((item, index) => ({
+						id: this.contentHubText(item?.id ?? item?.value ?? ('ordering_' + (index + 1))),
+						text: this.contentHubText(item?.text ?? item?.label ?? item?.content ?? item?.value ?? ''),
+					}))
+					const orderValues = Array.isArray(source.correctOrder) && source.correctOrder.length
+						? source.correctOrder
+						: items.map(item => item.id)
+					const resolveId = value => {
+						const direct = items.find(item => String(item.id) === String(value))
+						if (direct) return direct.id
+						const index = Number(value)
+						return Number.isInteger(index) && items[index] ? items[index].id : null
+					}
+					config.items = items
+					config.correctOrder = orderValues.map(resolveId).filter(Boolean)
+					// Ordering luôn là quiz tự chấm; điểm của mỗi vị trí được suy ra từ tổng điểm / số item.
+					config.scoringMode = 'equal'
+				}
 				return config
 			},
 			contentHubStableValue(value) {
@@ -999,6 +1094,19 @@
 						to: (config.columnB || []).findIndex(item => String(item?.id) === String(pair?.to)),
 					})).sort((a, b) => a.from - b.from)
 				}
+				if (type === 'QUIZ_ORDERING') {
+					const items = Array.isArray(config.items) ? config.items : []
+					const itemIndex = new Map(items.map((item, index) => [String(item?.id), index]))
+					semantic.items = items.map(item => this.contentHubNormalizeText(item?.text))
+					semantic.correctOrder = (Array.isArray(config.correctOrder) ? config.correctOrder : [])
+						.map(id => itemIndex.get(String(id)))
+						.filter(index => index !== undefined)
+					semantic.scoringMode = 'equal'
+				}
+				if (type === 'SHORT_ANSWER' || type === 'ESSAY') {
+					// Đáp án tham khảo là một phần nội dung cần theo dõi khi xác định câu hỏi đã thay đổi trong Content Hub.
+					semantic.referenceAnswer = this.contentHubNormalizeText(config.referenceAnswer)
+				}
 				return semantic
 			},
 			contentHubBuildPayload(question) {
@@ -1016,7 +1124,8 @@
 					config,
 					questionText,
 					points: Number(question?.points ?? 1) || 1,
-					gradingType: question?.gradingType || (type.startsWith('QUIZ_') ? 'auto' : 'manual'),
+					// Ordering có đáp án chuẩn và luôn đi theo luồng quiz tự chấm.
+					gradingType: type === 'QUIZ_ORDERING' ? 'auto' : (question?.gradingType || (type.startsWith('QUIZ_') ? 'auto' : 'manual')),
 					isAdvanced: config.isAdvanced ? 1 : 0,
 					skills: this.contentHubNormalizeSkills(question?.skills),
 					fingerprint,
@@ -1053,6 +1162,18 @@
 					const columnB = Array.isArray(config.columnB) ? config.columnB : []
 					if (!columnA.length || columnA.length !== columnB.length || columnA.some(item => !this.contentHubNormalizeText(item?.text)) || columnB.some(item => !this.contentHubNormalizeText(item?.text))) errors.push(this.IsEngLish ? 'Matching question must have both columns and cannot be empty.' : 'Câu nối đáp án phải có đủ hai cột và không được để trống.')
 					if (!Array.isArray(config.correctPairs) || config.correctPairs.length !== columnA.length) errors.push(this.IsEngLish ? 'Matching question does not have enough correct pairs.' : 'Câu nối đáp án chưa có đủ cặp đúng.')
+				}
+				if (payload?.type === 'QUIZ_ORDERING') {
+					const items = Array.isArray(config.items) ? config.items : []
+					const itemIds = items.map(item => String(item?.id ?? ''))
+					const correctOrder = Array.isArray(config.correctOrder) ? config.correctOrder.map(id => String(id)) : []
+					const uniqueItemIds = new Set(itemIds)
+					if (items.length < 2 || itemIds.some(id => !id) || uniqueItemIds.size !== items.length || items.some(item => !this.contentHubNormalizeText(item?.text))) {
+						errors.push(this.IsEngLish ? 'Ordering question needs at least 2 non-empty items.' : 'Câu sắp xếp phải có ít nhất 2 ý và không được để trống.')
+					}
+					if (correctOrder.length !== items.length || new Set(correctOrder).size !== items.length || correctOrder.some(id => !uniqueItemIds.has(id))) {
+						errors.push(this.IsEngLish ? 'Ordering question has an invalid correct order.' : 'Thứ tự đúng của câu sắp xếp chưa hợp lệ.')
+					}
 				}
 				return { valid: errors.length === 0, errors }
 			},
@@ -1451,6 +1572,41 @@
 			updateQuestion(key, value) { const ng = JSON.parse(JSON.stringify(this.groups)); ng[this.item.groupIndex].questions[this.item.qIndex][key] = value; this.updateGroups(ng); },
 			updateQuestionConfig(key, value) { const ng = JSON.parse(JSON.stringify(this.groups)); ng[this.item.groupIndex].questions[this.item.qIndex].config[key] = value; this.updateGroups(ng); },
 			updateOptionText(optionIndex, text) { const ng = JSON.parse(JSON.stringify(this.groups)); ng[this.item.groupIndex].questions[this.item.qIndex].config.options[optionIndex].text = text; this.updateGroups(ng); },
+			updateOrderingItemText(itemIndex, text) {
+				const ng = JSON.parse(JSON.stringify(this.groups));
+				const q = ng[this.item.groupIndex].questions[this.item.qIndex];
+				if (!Array.isArray(q.config.items)) q.config.items = [];
+				if (q.config.items[itemIndex]) q.config.items[itemIndex].text = text;
+				q.config.correctOrder = q.config.items.map(entry => entry.id);
+				this.updateGroups(ng);
+			},
+			addOrderingItem() {
+				const ng = JSON.parse(JSON.stringify(this.groups));
+				const q = ng[this.item.groupIndex].questions[this.item.qIndex];
+				if (!Array.isArray(q.config.items)) q.config.items = [];
+				q.config.items.push({ id: 'ordering_' + Date.now() + '_' + q.config.items.length, text: '' });
+				q.config.correctOrder = q.config.items.map(entry => entry.id);
+				this.updateGroups(ng);
+			},
+			moveOrderingItem(itemIndex, direction) {
+				const ng = JSON.parse(JSON.stringify(this.groups));
+				const q = ng[this.item.groupIndex].questions[this.item.qIndex];
+				const items = Array.isArray(q.config.items) ? q.config.items : [];
+				const targetIndex = itemIndex + direction;
+				if (targetIndex < 0 || targetIndex >= items.length) return;
+				const moved = items.splice(itemIndex, 1)[0];
+				items.splice(targetIndex, 0, moved);
+				q.config.correctOrder = items.map(entry => entry.id);
+				this.updateGroups(ng);
+			},
+			removeOrderingItem(itemIndex) {
+				const ng = JSON.parse(JSON.stringify(this.groups));
+				const q = ng[this.item.groupIndex].questions[this.item.qIndex];
+				if (!Array.isArray(q.config.items) || q.config.items.length <= 2) return;
+				q.config.items.splice(itemIndex, 1);
+				q.config.correctOrder = q.config.items.map(entry => entry.id);
+				this.updateGroups(ng);
+			},
 			addOption() {
 				const ng = JSON.parse(JSON.stringify(this.groups));
 				const q = ng[this.item.groupIndex].questions[this.item.qIndex];
