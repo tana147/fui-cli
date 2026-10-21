@@ -1,0 +1,273 @@
+{
+  "data": {
+    "ProjectName": "Quản lý nghiên cứu khoa học",
+    "apiDomain": "https://tapi.lhu.edu.vn/qlnckh",
+    "apiFile": "https://file.lhu.edu.vn/qlnckh/upload/FileData",
+    "login": "https://app.lhu.edu.vn",
+    "menu": [
+      {
+        "icon": "mdi-transfer",
+        "name": "Dashboard",
+        "right": {
+          "GroupID": [
+            1
+          ]
+        },
+        "url": "/dashboard"
+      },
+      {
+        "icon": "mdi-post",
+        "name": "Ấn phẩm của tôi",
+        "right": {
+          "GroupID": [
+            1,
+            2
+          ]
+        },
+        "submenu": [
+          {
+            "icon": "mdi-pencil-box-outline",
+            "name": "Gửi đề xuất Khen thưởng",
+            "url": "/papers-reward"
+          },
+          {
+            "icon": "mdi-post",
+            "name": "Ấn phẩm KH của tôi",
+            "url": "/my-papers"
+          }
+        ]
+      },
+      {
+        "icon": "mdi-post",
+        "name": "Hoạt động NCKH",
+        "right": {
+          "GroupID": [
+            1
+          ]
+        },
+        "submenu": [
+          {
+            "icon": "mdi-pencil-box-outline",
+            "name": "Hoạt động NCKH",
+            "url": "/hdkh-teacher-dashboard"
+          },
+          {
+            "icon": "mdi-pencil-box-outline",
+            "name": "Lí lịch Khoa học",
+            "url": "/hdkh-profile"
+          },
+          {
+            "icon": "mdi-pencil-box-outline",
+            "name": "Quản lí miễn giảm",
+            "right": {
+              "GroupID": [
+                1
+              ],
+              "SystemRight": [
+                9,
+                1,
+                2
+              ]
+            },
+            "url": "/hdkh-quan-ly-mien-giam"
+          },
+          {
+            "icon": "mdi-pencil-box-outline",
+            "name": "Hoạt động cấp Khoa",
+            "right": {
+              "GroupID": [
+                1
+              ],
+              "SystemRight": [
+                9,
+                1,
+                2
+              ]
+            },
+            "url": "/hdkh-khoa-dashboard"
+          },
+          {
+            "icon": "mdi-certificate",
+            "name": "Hoạt động cấp Trường",
+            "right": {
+              "GroupID": [
+                1
+              ],
+              "SystemRight": [
+                9,
+                2
+              ]
+            },
+            "url": "/hdkh-nckh-dashboard"
+          },
+          {
+            "icon": "mdi-certificate",
+            "name": "Quản lí Nhiệm vụ khoa học",
+            "right": {
+              "GroupID": [
+                1
+              ],
+              "SystemRight": [
+                9,
+                2
+              ]
+            },
+            "url": "/hdkh-form-definition"
+          },
+          {
+            "icon": "mdi-certificate",
+            "name": "Tổng kết năm học",
+            "right": {
+              "GroupID": [
+                1
+              ],
+              "SystemRight": [
+                9,
+                2
+              ]
+            },
+            "url": "/hdkh-tong-ket-nam-hoc"
+          }
+        ]
+      },
+      {
+        "icon": "mdi-post",
+        "name": "Quản lý Ấn Phẩm",
+        "right": {
+          "GroupID": [
+            1
+          ],
+          "SystemRight": [
+            9,
+            2
+          ]
+        },
+        "submenu": [
+          {
+            "icon": "mdi-check-decagram-outline",
+            "name": "Ấn phẩm chờ duyệt",
+            "url": "/approve-request"
+          },
+          {
+            "icon": "mdi-certificate-outline",
+            "name": "Khen thưởng",
+            "url": "/to-trinh"
+          },
+          {
+            "icon": "mdi-certificate-outline",
+            "name": "Bài báo Khoa học",
+            "url": "/bai-bao-khoa-hoc"
+          },
+          {
+            "icon": "mdi-certificate-outline",
+            "name": "Recover BBKH",
+            "url": "/papers-recovery"
+          }
+        ]
+      },
+      {
+        "icon": "mdi-trophy",
+        "name": "Giải thưởng",
+        "right": {
+          "GroupID": [
+            1
+          ],
+          "SystemRight": [
+            9,
+            2
+          ]
+        },
+        "submenu": [
+          {
+            "icon": "mdi-pencil-box-outline",
+            "name": "Quản lý Giải thưởng",
+            "url": "/giai-thuong"
+          },
+          {
+            "icon": "mdi-certificate",
+            "name": "Quản lý Quyết định",
+            "url": "/giai-thuong-quyet-dinh"
+          }
+        ]
+      },
+      {
+        "icon": "mdi-transfer",
+        "name": "Chuyển giao",
+        "right": {
+          "GroupID": [
+            1
+          ],
+          "SystemRight": [
+            9,
+            2
+          ]
+        },
+        "url": "/cgcn"
+      },
+      {
+        "icon": "mdi-trophy",
+        "name": "NCKH",
+        "right": {
+          "GroupID": [
+            1
+          ],
+          "SystemRight": [
+            9,
+            2
+          ]
+        },
+        "submenu": [
+          {
+            "icon": "mdi-pencil-box-outline",
+            "name": "NCKH Sinh viên",
+            "url": "/detai-nckh-sinhvien"
+          },
+          {
+            "icon": "mdi-certificate",
+            "name": "Đề tài cơ sở",
+            "url": "/detai-nckh-coso"
+          },
+          {
+            "icon": "mdi-certificate",
+            "name": "Quyết định cấp kinh phí",
+            "url": "/detai-coso-kinhphi"
+          }
+        ]
+      }
+    ],
+    "menustyle": {
+      "leftmenu": {
+        "bgcolor": "#1976d2",
+        "textcolor": "white"
+      },
+      "topmenu": {
+        "bgcolor": "#1976d2",
+        "textcolor": "white"
+      }
+    },
+    "themeStyle": {
+      "theme": {
+        "themes": {
+          "dark": {
+            "primary": "#262b3c",
+            "secondary": "#2a3042",
+            "tertiary": "#374263"
+          },
+          "light": {
+            "primary": "#1976d2"
+          }
+        }
+      }
+    },
+    "title": "Quản lý nghiên cứu khoa học",
+    "urlReadFile": "https://file.lhu.edu.vn/qlnckh/",
+    "urlReturnFile": "https://file.lhu.edu.vn/qlnckh",
+    "userInfo": "https://tapi.lhu.edu.vn/acc/UserInfo/qlnckh",
+    "userProfileSetting": {
+      "urlAvatar": "https://file.lhu.edu.vn/me/avatarOrigin/",
+      "urlChangePassword": "https://login.lhu.edu.vn.vn/ChangePassword",
+      "urlProfile": "https://login.lhu.edu.vn.vn",
+      "urlSignout": "https://user.lhu.edu.vn.vn/Signout"
+    }
+  }
+}
