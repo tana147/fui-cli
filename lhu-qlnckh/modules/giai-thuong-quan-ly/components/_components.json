@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "comID": 12604,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 12599,
+    "comName": "uc-main-view"
+  },
+  {
+    "comID": 12603,
+    "comName": "uc-modal-decision-detail"
+  },
+  {
+    "comID": 12602,
+    "comName": "uc-modal-proofs"
+  },
+  {
+    "comID": 12601,
+    "comName": "uc-modal-reward"
+  },
+  {
+    "comID": 12600,
+    "comName": "uc-modal-reward-type"
+  },
+  {
+    "comID": 12598,
+    "comName": "uc-stats"
+  }
+]
