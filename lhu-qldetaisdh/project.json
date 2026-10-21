@@ -16,7 +16,7 @@
           3
         ],
         "icon": "mdi-chart-bar",
-        "name": "Dashboard",
+        "name": "Tổng quan",
         "right": {
           "GroupID": [
             1
@@ -28,7 +28,7 @@
             3
           ]
         },
-        "url": "/dashboard"
+        "url": "/ths-tong-quan"
       },
       {
         "GroupID": [
@@ -46,17 +46,17 @@
           {
             "icon": "mdi-post",
             "name": "Đăng ký thực hiện Luận văn",
-            "url": "/my-thesis"
+            "url": "/ths-luan-van-cua-toi"
           },
           {
             "icon": "mdi-post",
             "name": "Thủ tục Đổi Đề tài/GVHD",
-            "url": "/Change_Topic"
+            "url": "/ths-doi-de-tai"
           },
           {
             "icon": "calendar-plus",
             "name": "Thủ tục Gia hạn Đề tài",
-            "url": "/extend-time-topic"
+            "url": "/ths-gia-han-de-tai"
           }
         ]
       },
@@ -76,7 +76,7 @@
           {
             "icon": "mdi-school-outline",
             "name": "Đăng ký & Quản lý Luận án",
-            "url": "/TS-my-thesis"
+            "url": "/ts-luan-an-cua-toi"
           }
         ]
       },
@@ -106,40 +106,40 @@
         "submenu": [
           {
             "name": "Danh sách đăng ký đề tài",
-            "url": "/Export-Topic-Registed"
+            "url": "/ths-danh-sach-dang-ky"
           },
           {
             "name": "Nộp đề cương",
-            "url": "/nop-de-cuong"
+            "url": "/ths-nop-de-cuong"
           },
           {
             "name": "Danh sách đăng ký bảo vệ",
-            "url": "/reckon-dky-bao-ve-ths"
+            "url": "/ths-danh-sach-bao-ve"
           },
           {
             "name": "Xét tốt nghiệp",
-            "url": "/xet-tot-nghiep"
+            "url": "/ths-xet-tot-nghiep"
           },
           {
             "name": "Mời giảng viên",
-            "url": "https://qldetaisdh.lhu.edu.vn/teacher-invite"
+            "url": "/ths-moi-giang-vien"
           },
           {
             "name": "Duyệt tiến độ thực hiện",
-            "url": "/approve-request"
+            "url": "/ths-duyet-tien-do"
           },
           {
             "icon": "mdi-post",
             "name": "Duyệt Đổi Đề tài",
-            "url": "/approve-change-request"
+            "url": "/ths-duyet-doi-de-tai"
           },
           {
             "icon": "calendar-plus",
             "name": "Duyệt Gia hạn Đề tài",
-            "url": "/approve-extend-time"
+            "url": "/ths-duyet-gia-han"
           }
         ],
-        "url": "/approve-request"
+        "url": "/ths-duyet-tien-do"
       },
       {
         "GroupID": [
@@ -167,14 +167,14 @@
         "submenu": [
           {
             "name": "Hội đồng Bảo vệ Thạc sĩ",
-            "url": "/council"
+            "url": "/ths-hoi-dong"
           },
           {
             "name": "Giảng viên Hội Đồng",
-            "url": "/teacher-manager"
+            "url": "/ths-quan-ly-giang-vien"
           }
         ],
-        "url": "/council"
+        "url": "/ths-hoi-dong"
       },
       {
         "GroupID": [
@@ -199,7 +199,7 @@
             3
           ]
         },
-        "url": "/decision"
+        "url": "/ths-quan-ly-quyet-dinh"
       },
       {
         "GroupID": [
@@ -227,19 +227,19 @@
         "submenu": [
           {
             "name": "Quản lý học viên",
-            "url": "/Student_Info"
+            "url": "/ths-quan-ly-hoc-vien"
           },
           {
             "name": "Thống kê tình hình hướng dẫn học viên",
-            "url": "/list-Thesis-ThesisProf"
+            "url": "/ths-thong-ke-huong-dan"
           },
           {
             "name": "Thống kê dữ liệu",
-            "url": "/thong-ke-quy-trinh"
+            "url": "/ths-thong-ke-quy-trinh"
           },
           {
             "name": "Cấu hình Process của Lớp",
-            "url": "/manage-class-process"
+            "url": "/ths-cau-hinh-quy-trinh-lop"
           }
         ]
       },
@@ -262,7 +262,7 @@
                 "2"
               ]
             },
-            "url": "/TS-student-info"
+            "url": "/ts-quan-ly-nghien-cuu-sinh"
           },
           {
             "icon": "mdi-pencil-box-outline",
@@ -273,7 +273,7 @@
                 "2"
               ]
             },
-            "url": "/TS-approve-request"
+            "url": "/ts-duyet-tien-do"
           },
           {
             "icon": "mdi-post",
@@ -284,7 +284,7 @@
                 "2"
               ]
             },
-            "url": "/TS-approve-change-request"
+            "url": "/ts-duyet-doi-de-tai"
           },
           {
             "icon": "mdi-calendar-plus",
@@ -295,7 +295,7 @@
                 "2"
               ]
             },
-            "url": "/TS-approve-extend-time"
+            "url": "/ts-duyet-gia-han"
           },
           {
             "icon": "mdi-file-document-multiple",
@@ -306,7 +306,7 @@
                 "2"
               ]
             },
-            "url": "/TS-council"
+            "url": "/ts-hoi-dong"
           },
           {
             "icon": "mdi-chart-box-outline",
@@ -317,7 +317,7 @@
                 "2"
               ]
             },
-            "url": "/TS-thong-ke-quy-trinh"
+            "url": "/ts-thong-ke-quy-trinh"
           }
         ]
       }

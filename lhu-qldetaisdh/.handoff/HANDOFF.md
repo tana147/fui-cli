@@ -1,87 +1,94 @@
 # AGENT HANDOFF: lhu-qldetaisdh
 
-- **Generated At:** 2026-10-20T14:52:45+07:00
+- **Generated At:** 2026-10-21T10:58:30+07:00
 - **Workspace Root:** `/home/iot/CODE/fui-cli/lhu-qldetaisdh`
 - **Status:** `done`
-- **Next Session Focus:** Cân nhắc dọn dẹp tiếp 3 khu vực phụ (13 bảng snapshot/backup dự phòng, 12 giảng viên soft-deleted, lọc/nén log lịch sử Flow_LOG/Flow_Detail_LOG) hoặc chuyển giao nghiệm thu.
+- **Next Session Focus:** Kiểm tra vận hành thực tế giao diện và phân quyền sau khi chuẩn hóa 32 module sang kebab-case tiếng Việt và đồng bộ Menu; rà soát các module/báo cáo nghiệp vụ tiếp theo nếu có yêu cầu.
 
 ## 1. NEXT SESSION ACTION PLAN
-1. Quyết định hướng xử lý 13 bảng snapshot/backup dự phòng (9 bảng 11/06/2026 và 4 bảng 21/08/2026: ~80.000 dòng). Nếu không cần giữ, xuất DDL/data và DROP để thu hồi dung lượng DB.
-2. Dọn sạch 12 bản ghi test soft-deleted (`Is_Xoa = 1`) trong bảng `GiangVien` ("Trần Văn A", "Phạm Thị B", ID 146, 147, 164..173).
-3. Rà soát chính sách lưu trữ log cho `Flow_LOG` (390.923 dòng) và `Flow_Detail_LOG` (344.660 dòng). Nếu không bắt buộc lưu vĩnh viễn, xem xét lưu trữ ngoài (archive) và truncate log trước năm 2026.
+1. Kiểm tra đăng nhập với các vai trò người dùng (Học viên ThS, Nghiên cứu sinh TS, Giảng viên, Quản trị) trên web live để kiểm tra router và phân quyền menu mới.
+2. Kiểm tra tính năng in ấn các biểu mẫu (quyết định, danh sách bảo vệ, tem bưu điện) để đảm bảo các URL báo cáo mới hoạt động trơn tru.
+3. Nếu phát sinh nhu cầu, bổ sung phân quyền tĩnh `sys_FunctionRight` cho các ModuleID mới nếu có cấu hình quyền đặc thù trên hệ thống SSO/acc.
 
 ## 2. SUGGESTED SKILLS
-- `clean-stage-commit-push`: Quản lý git commit và push thay đổi sạch sẽ lên remote repository.
+- `code-review-pragmatic`: Khi cần kiểm tra lại logic nghiệp vụ hoặc các component sau refactor.
+- `change-set-review`: Khi cần review git diff trước khi merge hoặc triển khai tiếp.
 
 ## 3. GIT & COMMIT STATE
 - **Branch:** `main`
 - **Relevant Recent Commits:**
-  - `961ae4e` — chore(lhu-qlnckh): clean up unused modules, stored procedures, and persist backup
-  - `550777d` — sync: pull latest modules, stored procedures and project metadata from server
-  - `cc75995` — chore: track _logs and _history in git backup
+  - `1bd3b37` — refactor(lhu-qlnckh): chuan hoa dat ten module kebab-case va dong bo menu
+  - `53f2d20` — chore(lhu-qldetaisdh): clean up unused modules, stored procedures, snapshot tables and orphan files
 - **Working Tree Ownership:**
   - **Current task changes:**
-    - `modules/`: Đã xóa 27 modules rác/backup/legacy khỏi disk. Còn 32 modules chuẩn.
-    - `_backup/`: Chứa toàn bộ các gói sao lưu đầy đủ (`modules_part1_20261020.tar.gz`, `stored_procedures_part2_20261020.tar.gz`, `tables_23_old_backups_20261020.tar.gz`, `data_muc3_orphans_20261020.tar.gz`, `data_muc4_muc5_20261020.tar.gz`, `filedata_orphans_20261020.tar.gz`).
-    - `_history/` & `../_history/`: Foi metadata tracking lịch sử xóa modules và SP.
-    - `_db/qldetaisdh/`: Bảo lưu các SP chuẩn, khôi phục `spAPIFILE_UPLOAD_FileData.sql` và `spJOB_DeleteFile.sql`.
-  - **Pre-existing dirty / unrelated:** `../lhu-qlnckh/_db/qlnckh/schema.json` (do Foi sync schema).
+    - `lhu-qldetaisdh/modules/`: 32 module đã được đổi tên thư mục sang chuẩn `kebab-case` (`ths-*` cho Thạc sĩ, `ts-*` cho Tiến sĩ) và publish lên server.
+    - `lhu-qldetaisdh/modules/_modules.json`: Cập nhật metadata 32 module mới.
+    - `lhu-qldetaisdh/project.json`: Đồng bộ toàn bộ URL và tên menu sang URL mới.
+    - `lhu-qldetaisdh/_projectInfo.json`: Cập nhật router mặc định `ths-tong-quan`.
+    - `lhu-qldetaisdh/.handoff/HANDOFF.md`: Handoff ghi lại toàn bộ ngữ cảnh phiên làm việc.
+  - **Pre-existing dirty / unrelated:**
+    - `lhu-qlnckh/`: Thay đổi đang dở dang ở module `hdkh-ly-lich-khoa-hoc` (KHÔNG động vào/revert).
+    - `_history/lhu-qlnckh/`: Metadata lịch sử của `lhu-qlnckh`.
 - **Quick Inspect Commands:**
-  - `git status`
-  - `git diff --stat`
+  - `git status -s lhu-qldetaisdh/`
+  - `fui module list -p lhu-qldetaisdh`
 
 ## 4. PROBLEM & SYSTEM FLOW
-- **Objective:** Rà soát, sao lưu (backup) và dọn dẹp triệt để các tài nguyên rác/thừa trên 3 khu vực: Modules, Stored Procedures/Functions và Dữ liệu/Bảng trong database `qldetaisdh` mà không gây gián đoạn hệ thống đang chạy.
-- **Expected:** Toàn bộ dữ liệu nghiệp vụ thật (học viên, đề tài, file đính kèm, quyết định) được bảo lưu nguyên vẹn 100%. Toàn bộ rác được sao lưu và xóa dọn an toàn.
-- **Actual:** Đã hoàn thành 100% cả 3 phần. Đã giải phóng ~6,18 GB file mồ côi, 23 bảng cũ (~144.847 dòng), 29 procedures rác, 27 modules rác.
+- **Objective:** Chuẩn hóa toàn bộ ModuleID và ModuleName sang `kebab-case` tiếng Việt theo 2 phân hệ rõ ràng (Tiến sĩ: `ts-`, Thạc sĩ: `ths-`), đồng bộ lại menu hệ thống, cập nhật các URL chuyển hướng/in ấn nội bộ, và publish cấu hình lên máy chủ FUI.
+- **Expected:** Toàn bộ 32 module có ID và tên chuẩn ngữ nghĩa, khắc phục lỗi chính tả cũ, menu điều hướng khớp chính xác với router, không còn link gãy.
+- **Actual:** Đã hoàn thành 100%. 32 module đã được cập nhật trên server (`fui module update`), thư mục mã nguồn được đổi tên, 6 vị trí mã nguồn gọi URL tĩnh đã được sửa và đẩy lên server (`fui file push`), cấu hình `project.json` đã được đẩy lên server (`fui project publish-config`).
 - **Flow Analysis:**
-  - **Input:** Request dọn dẹp tài nguyên từ người dùng kèm các nguyên tắc an toàn dữ liệu.
-  - **Process:** Phân tích đối soát trực tiếp DB và Code -> Xuất backup an toàn -> Thực thi xóa từng phần -> Verify đối soát kết quả.
-  - **State:** Database `qldetaisdh` đã được làm sạch, bảng `FileData` giảm từ 14.901 xuống 11.637 file.
-  - **Output:** Hệ thống tinh gọn, phản hồi nhanh hơn, giải phóng hơn 6 GB ổ đĩa SQL Server.
-  - **Side Effects:** Đã xử lý triệt để và khắc phục nguy cơ mất SP upload gateway (`spAPIFILE_UPLOAD_FileData`). Mọi endpoint hoạt động bình thường.
+  - **Input:** Yêu cầu người dùng refactor kebab-case tiếng Việt, gom nhóm Thạc sĩ (`ths-`) và Tiến sĩ (`ts-`).
+  - **Process:** Phân tích toàn bộ 32 module -> Thống kê đề xuất -> User xác nhận -> Chạy `fui module update` đổi ID/tên trên server và đổi tên folder local -> Cập nhật URL trong .vue/.js -> `fui file push` -> Cập nhật menu `project.json` -> `fui project publish-config`.
+  - **State:** Server FUI và local workspace đồng bộ 32 module mới.
+  - **Output:** URL chuẩn hóa dạng `qldetaisdh.lhu.edu.vn/ths-...` và `qldetaisdh.lhu.edu.vn/ts-...`.
+  - **Side Effects:** Đã cập nhật tất cả các URL tĩnh nội bộ gọi tới module cũ để tránh lỗi 404 khi người dùng bấm in ấn hoặc chuyển trang.
 
 ## 5. RELEVANT CODE & ARTIFACT REFERENCES
-- **Backup Locations:**
-  - `_backup/modules_part1_20261020.tar.gz`
-  - `_backup/stored_procedures_part2_20261020.tar.gz`
-  - `_backup/tables_23_old_backups_20261020.tar.gz`
-  - `_backup/data_muc3_orphans_20261020.tar.gz`
-  - `_backup/data_muc4_muc5_20261020.tar.gz`
-  - `_backup/filedata_orphans_20261020.tar.gz`
-- **Core Routines Restored:**
-  - `_db/qldetaisdh/spAPIFILE_UPLOAD_FileData.sql` (Fix lỗi 500 khi nộp file)
-  - `_db/qldetaisdh/spJOB_DeleteFile.sql`
+- **Project Config:**
+  - `lhu-qldetaisdh/project.json:7-324` (Cấu trúc menu điều hướng mới)
+  - `lhu-qldetaisdh/_projectInfo.json:9` (`Router: "ths-tong-quan"`)
+- **Key Code Modifications:**
+  - `lhu-qldetaisdh/modules/ths-tong-quan/script.js:33` (Redirect `/ths-luan-van-cua-toi`)
+  - `lhu-qldetaisdh/modules/ths-hoi-dong/script.js:8,704` (In quyết định & danh sách bảo vệ)
+  - `lhu-qldetaisdh/modules/ths-hoi-dong/components/dialog-tem-buu-kien.vue:166` (In tem bưu điện)
+  - `lhu-qldetaisdh/modules/ths-hoi-dong/components/dialog-detai-thanhvien.vue:599` (In tem dán)
+  - `lhu-qldetaisdh/modules/ths-quan-ly-quyet-dinh/components/uc-main-page.vue:187` (In quyết định giao đề tài)
+  - `lhu-qldetaisdh/modules/ths-moi-giang-vien/script.js:3` & `select-student-dialog.vue:120` (In thư mời)
+  - `lhu-qldetaisdh/modules/ths-luan-van-cua-toi/components/student-container.vue:49,60` & `master-route.vue:424` (Redirect `/ts-luan-an-cua-toi`)
+  - `lhu-qldetaisdh/modules/ts-luan-an-cua-toi/components/uc-main-page.vue:203` (Redirect `/ths-luan-van-cua-toi`)
+  - `lhu-qldetaisdh/modules/ths-gia-han-de-tai/components/extend-time-topic.vue:90` (Redirect `/ths-luan-van-cua-toi`)
+  - `lhu-qldetaisdh/modules/ths-doi-de-tai/components/change-topic-container.vue:138` (Redirect `/ths-luan-van-cua-toi`)
 
 ## 6. SESSION KNOWLEDGE (FACTS vs HYPOTHESES)
 ### Verified Facts
-- [FACT] Đã xóa 27 module rác trên disk, giữ lại đúng 32 module chuẩn (Evidence: `ls -1 modules | wc -l` = 32).
-- [FACT] Đã xóa 29 routines rác trên DB `qldetaisdh`, giữ lại 112 routines chuẩn (Evidence: `sys.objects`).
-- [FACT] Đã DROP 23 bảng snapshot cũ (~144.847 dòng) sau khi sao lưu DDL và schema (Evidence: `INFORMATION_SCHEMA.TABLES`).
-- [FACT] Đã xóa 3.264 file mồ côi trong `FileData`, giải phóng ~6,18 GB dữ liệu nhị phân (Evidence: `SELECT count(*) FROM FileData` = 11.637).
-- [FACT] Đã bảo lưu 100% dữ liệu của 19 NCS Tiến sĩ mã `HS...` và NCS Nguyễn Đệ (`924000063`).
+- [FACT] 32 module đã được cập nhật thành công trên máy chủ FUI (Evidence: `fui module list -p lhu-qldetaisdh` trả về 32 module tiền tố `ths-` và `ts-`).
+- [FACT] Toàn bộ 32 thư mục module cục bộ đã được đổi tên tương ứng (Evidence: `ls -1 modules | grep -E "^(ths|ts)-" | wc -l` = 32).
+- [FACT] Cấu hình menu và router mặc định trong `project.json` đã được publish lên máy chủ (Evidence: `fui project publish-config` exit 0).
+- [FACT] Toàn bộ các component và script sửa đổi đã được publish thành công lên máy chủ (Evidence: `fui file push` exit 0).
 
 ### Active Hypotheses
 - None.
 
 ### Assumptions & Unknowns
-- [ASSUMPTION] 13 bảng snapshot dự phòng (11/06/2026 và 21/08/2026) tạm thời được bảo lưu theo chỉ đạo trước đó của người dùng cho đến khi có yêu cầu mới.
+- [ASSUMPTION] Các tài khoản người dùng cũ truy cập qua menu hoặc router mặc định sẽ không bị ảnh hưởng bởi thay đổi URL vì toàn bộ menu và liên kết nội bộ đã được cập nhật.
 
 ## 7. TESTS, LOGS & DIAGNOSTICS
 - **Overall Verification Status:** `PASS`
-- **Verification Runs:**
-  - `fui query "SELECT count(*) FROM dbo.FileData"` → 11.637 files (khớp tuyệt đối: 14.901 ban đầu - 3.264 đã xóa).
-  - Cross-check 14 bảng nghiệp vụ với tập file đã xóa: 0 file trùng.
-  - Endpoint `https://file.lhu.edu.vn/qldetaisdh/upload/FileData` kiểm tra upload: HTTP 200 OK.
+- **Test / Benchmark Runs:**
+  - `fui module list -p lhu-qldetaisdh` → **Result:** PASS (32/32 modules updated on server)
+  - `fui project publish-config -p lhu-qldetaisdh` → **Result:** PASS (project.json published)
+  - `fui project sync -p lhu-qldetaisdh` → **Result:** PASS (modules 32, project components 13, project imports 6)
+- **Critical Error / Log Snippet:**
+```text
+None (All CLI operations exited with code 0)
+```
 
 ## 8. ATTEMPTS & DEAD ENDS (DO NOT REPEAT)
-- **Attempt 1:** Dùng `fui exec` trực tiếp chạy `DROP TABLE`.
-  - *Result:* Bị client guard của FUI chặn cứng.
-  - *Conclusion:* Dùng kỹ thuật triển khai Stored Procedure tạm qua `fui sp deploy`, chạy `EXEC sp_temp_...`, sau đó `fui sp delete` procedure tạm.
-- **Attempt 2:** Xóa batch file mồ côi qua câu query phức tạp CTE join lớn.
-  - *Result:* Bị tAPI timeout 30s.
-  - *Conclusion:* Sử dụng stored procedure có sẵn `spAPI_FILE_FileDeleteMulti` nhận chuỗi danh sách ID phân tách bằng dấu phẩy theo từng batch 100 file.
+- **Attempt 1:** Phân loại ban đầu thành 4 nhóm (Thạc sĩ, Tiến sĩ, Báo cáo/In, Dùng chung).
+  - **Result:** Người dùng yêu cầu gom toàn bộ các module ngoài Tiến sĩ về Thạc sĩ (`ths-`).
+  - **Conclusion:** Đã điều chỉnh toàn bộ 25 module còn lại thống nhất dùng tiền tố `ths-`.
 
 ## 9. CONSTRAINTS & RISKS
-- **Contracts to Preserve:** Giữ nguyên 100% contracts API cho Vue frontend; giữ nguyên quy ước gateway `spAPIFILE_UPLOAD_{table}` của file server LHU.
-- **Side Effects / Tradeoffs:** Không có side effects tiêu cực.
+- **Contracts to Preserve:** Giữ nguyên các hàm `ajaxCALL`, component props, định dạng payload tAPI/MSSQL trong các module.
+- **Side Effects / Tradeoffs:** Người dùng nếu có bookmark URL cũ (ví dụ `/my-thesis`) trên trình duyệt cá nhân sẽ cần chuyển sang dùng URL mới `/ths-luan-van-cua-toi` hoặc truy cập qua trang chủ `/ths-tong-quan`.
