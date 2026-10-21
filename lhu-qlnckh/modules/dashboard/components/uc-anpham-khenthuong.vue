@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<uc-dcard title="I. ẤN PHẨM KHOA HỌC" hrefDetailTitle="/bai-bao-khoa-hoc" detailTitle="Xem chi tiết">
+		<uc-dcard title="I. ẤN PHẨM KHOA HỌC" hrefDetailTitle="/an-pham-bai-bao" detailTitle="Xem chi tiết">
 			<template v-slot:rightTitle>
 				<uc-btn v-for="(btn, idx) in listButtons" :key="idx" @click="btn.click" :label="btn.label"></uc-btn>
 			</template>

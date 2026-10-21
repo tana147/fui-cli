@@ -28,12 +28,12 @@
           {
             "icon": "mdi-pencil-box-outline",
             "name": "Gửi đề xuất Khen thưởng",
-            "url": "/papers-reward"
+            "url": "/an-pham-khen-thuong"
           },
           {
             "icon": "mdi-post",
             "name": "Ấn phẩm KH của tôi",
-            "url": "/my-papers"
+            "url": "/an-pham-cua-toi"
           }
         ]
       },
@@ -49,12 +49,12 @@
           {
             "icon": "mdi-pencil-box-outline",
             "name": "Hoạt động NCKH",
-            "url": "/hdkh-teacher-dashboard"
+            "url": "/hdkh-giang-vien"
           },
           {
             "icon": "mdi-pencil-box-outline",
             "name": "Lí lịch Khoa học",
-            "url": "/hdkh-profile"
+            "url": "/hdkh-ly-lich-khoa-hoc"
           },
           {
             "icon": "mdi-pencil-box-outline",
@@ -84,7 +84,7 @@
                 2
               ]
             },
-            "url": "/hdkh-khoa-dashboard"
+            "url": "/hdkh-duyet-cap-khoa"
           },
           {
             "icon": "mdi-certificate",
@@ -98,7 +98,7 @@
                 2
               ]
             },
-            "url": "/hdkh-nckh-dashboard"
+            "url": "/hdkh-duyet-cap-truong"
           },
           {
             "icon": "mdi-certificate",
@@ -112,7 +112,7 @@
                 2
               ]
             },
-            "url": "/hdkh-form-definition"
+            "url": "/hdkh-bieu-mau-nhiem-vu"
           },
           {
             "icon": "mdi-certificate",
@@ -146,22 +146,22 @@
           {
             "icon": "mdi-check-decagram-outline",
             "name": "Ấn phẩm chờ duyệt",
-            "url": "/approve-request"
+            "url": "/an-pham-cho-duyet"
           },
           {
             "icon": "mdi-certificate-outline",
             "name": "Khen thưởng",
-            "url": "/to-trinh"
+            "url": "/an-pham-to-trinh"
           },
           {
             "icon": "mdi-certificate-outline",
             "name": "Bài báo Khoa học",
-            "url": "/bai-bao-khoa-hoc"
+            "url": "/an-pham-bai-bao"
           },
           {
             "icon": "mdi-certificate-outline",
-            "name": "Recover BBKH",
-            "url": "/papers-recovery"
+            "name": "Khôi phục dữ liệu",
+            "url": "/an-pham-khoi-phuc"
           }
         ]
       },
@@ -181,7 +181,7 @@
           {
             "icon": "mdi-pencil-box-outline",
             "name": "Quản lý Giải thưởng",
-            "url": "/giai-thuong"
+            "url": "/giai-thuong-quan-ly"
           },
           {
             "icon": "mdi-certificate",
@@ -192,7 +192,7 @@
       },
       {
         "icon": "mdi-transfer",
-        "name": "Chuyển giao",
+        "name": "Quản lý CGCN",
         "right": {
           "GroupID": [
             1
@@ -202,7 +202,7 @@
             2
           ]
         },
-        "url": "/cgcn"
+        "url": "/cgcn-quan-ly"
       },
       {
         "icon": "mdi-trophy",
@@ -220,17 +220,17 @@
           {
             "icon": "mdi-pencil-box-outline",
             "name": "NCKH Sinh viên",
-            "url": "/detai-nckh-sinhvien"
+            "url": "/de-tai-sinh-vien"
           },
           {
             "icon": "mdi-certificate",
             "name": "Đề tài cơ sở",
-            "url": "/detai-nckh-coso"
+            "url": "/de-tai-co-so"
           },
           {
             "icon": "mdi-certificate",
             "name": "Quyết định cấp kinh phí",
-            "url": "/detai-coso-kinhphi"
+            "url": "/de-tai-kinh-phi"
           }
         ]
       }

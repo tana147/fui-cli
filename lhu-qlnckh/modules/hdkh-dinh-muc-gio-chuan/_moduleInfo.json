@@ -5,11 +5,13 @@
   "ProjectID": "lhu-qlnckh",
   "ModuleID": "hdkh-dinh-muc-gio-chuan",
   "ModuleName": "Định mức giờ chuẩn",
-  "UpdateTime": "2025-08-28 14:27:09",
-  "UpdateUser": "DEV000050",
+  "UpdateTime": "2026-10-21 10:40:11",
+  "UpdateUser": "DEV000068",
   "LastLoad": "2026-05-18",
   "LoadCount": 145,
   "HTMLOnly": false,
   "Framework": "V3",
-  "mTitle": ""
+  "mTitle": "",
+  "UpdateInfo": "DEV000068 - 2026-10-21 10:40:11",
+  "LoadInfo": "2026-05-18 [145]"
 }

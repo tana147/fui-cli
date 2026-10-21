@@ -4,12 +4,14 @@
   "mDomain": "",
   "ProjectID": "lhu-qlnckh",
   "ModuleID": "hdkh-danh-muc-tap-chi",
-  "ModuleName": "HDKH/Danh mục tạp chí",
-  "UpdateTime": "2025-08-22 11:42:36",
-  "UpdateUser": "DEV000050",
+  "ModuleName": "Danh mục tạp chí",
+  "UpdateTime": "2026-10-21 10:40:11",
+  "UpdateUser": "DEV000068",
   "LastLoad": "2026-05-18",
   "LoadCount": 36,
   "HTMLOnly": false,
   "Framework": "V3",
-  "mTitle": ""
+  "mTitle": "",
+  "UpdateInfo": "DEV000068 - 2026-10-21 10:40:11",
+  "LoadInfo": "2026-05-18 [36]"
 }

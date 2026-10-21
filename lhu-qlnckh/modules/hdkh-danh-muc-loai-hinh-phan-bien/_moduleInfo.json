@@ -4,12 +4,14 @@
   "mDomain": "",
   "ProjectID": "lhu-qlnckh",
   "ModuleID": "hdkh-danh-muc-loai-hinh-phan-bien",
-  "ModuleName": "HDKH/Danh mục loại hình phản biện",
-  "UpdateTime": "2025-08-22 11:43:40",
-  "UpdateUser": "DEV000050",
+  "ModuleName": "Danh mục loại hình phản biện",
+  "UpdateTime": "2026-10-21 10:40:12",
+  "UpdateUser": "DEV000068",
   "LastLoad": "2026-05-18",
   "LoadCount": 44,
   "HTMLOnly": false,
   "Framework": "V3",
-  "mTitle": ""
+  "mTitle": "",
+  "UpdateInfo": "DEV000068 - 2026-10-21 10:40:12",
+  "LoadInfo": "2026-05-18 [44]"
 }

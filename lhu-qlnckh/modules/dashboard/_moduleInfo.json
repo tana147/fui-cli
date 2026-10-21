@@ -5,11 +5,13 @@
   "ProjectID": "lhu-qlnckh",
   "ModuleID": "dashboard",
   "ModuleName": "Tổng quan",
-  "UpdateTime": "2026-09-25 10:59:27",
+  "UpdateTime": "2026-10-21 10:40:12",
   "UpdateUser": "DEV000068",
   "LastLoad": "2026-10-20",
   "LoadCount": 30189,
   "HTMLOnly": false,
   "Framework": "V2",
-  "mTitle": ""
+  "mTitle": "",
+  "UpdateInfo": "DEV000068 - 2026-10-21 10:40:12",
+  "LoadInfo": "2026-10-20 [30189]"
 }
