@@ -4,7 +4,7 @@
 		:actions="[{ label: 'Thêm', icon: 'mdi-plus' }, { label: 'Lịch sử', icon: 'mdi-history' }]">
 		<f-table :items="rows" :headers="headers" :excel="false"></f-table>
 		<div class="text-subtitle-2 text-medium-emphasis mt-4 mb-1">Khi cần báo tin cho ai</div>
-		<uc-llkh-info :items="[{ label: 'Người báo tin (quan hệ, họ tên, điện thoại, địa chỉ)', value: null, why: lyDo, cols: 12 }]"></uc-llkh-info>
+		<uc-llkh-info :items="[{ label: 'Người báo tin (quan hệ, họ tên, điện thoại, địa chỉ)', value: null, ns: true, why: lyDo, cols: 12 }]"></uc-llkh-info>
 	</uc-llkh-muc>
 </template>
 
@@ -34,7 +34,7 @@
 					return Object.assign({}, g, {
 						NamSinhHT: L.show(g.NgaySinh ? L.dmy(g.NgaySinh) : g.NamSinh),
 						NgheNghiep: L.show(g.NgheNghiep), NoiCongTac: L.show(g.NoiCongTac),
-						ChoOHienNay: L.show(g.ChoOHienNay || g.DiaChiLienHe), DienThoai: L.CHUA_CO
+						ChoOHienNay: L.show(g.ChoOHienNay || g.DiaChiLienHe), DienThoai: L.KHONG_LUU
 					})
 				})
 			}

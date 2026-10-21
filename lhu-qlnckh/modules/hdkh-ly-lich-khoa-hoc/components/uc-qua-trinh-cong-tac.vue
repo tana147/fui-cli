@@ -7,7 +7,7 @@
 		</div>
 		<f-table :items="rows" :headers="headers" :excel="false"></f-table>
 		<div class="text-subtitle-2 text-medium-emphasis mt-4 mb-1">Trước khi về LHU</div>
-		<uc-llkh-info :items="[{ label: 'Quá trình công tác ngoài LHU', value: null, why: lyDo, cols: 12 }]"></uc-llkh-info>
+		<uc-llkh-info :items="[{ label: 'Quá trình công tác ngoài LHU', value: null, ns: true, why: lyDo, cols: 12 }]"></uc-llkh-info>
 	</uc-llkh-muc>
 </template>
 
@@ -35,7 +35,7 @@
 					return Object.assign({}, c, {
 						ThoiGian: L.my(c.NgayLamViec) + " – " + (c.NgayNghiViec ? L.my(c.NgayNghiViec) : "nay"),
 						TenChucVu: L.show(c.TenChucVu),
-						CongViec: L.CHUA_CO
+						CongViec: L.KHONG_LUU
 					})
 				})
 			}

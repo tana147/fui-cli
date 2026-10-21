@@ -19,8 +19,8 @@
 			var L = window.LLKH
 			return {
 				items: [
-					{ label: "Danh hiệu thi đua (TCNS công nhận)", value: null, why: L.LY_DO.hrmMigrating, cols: 6 },
-					{ label: "Giải thưởng, khen thưởng tự khai", value: null, why: L.LY_DO.noStore, cols: 6 }
+					{ label: "Danh hiệu thi đua (TCNS công nhận)", value: null, ns: true, why: L.LY_DO.hrmMigrating, cols: 6 },
+					{ label: "Giải thưởng, khen thưởng tự khai", value: null, ns: true, why: L.LY_DO.noStore, cols: 6 }
 				],
 				headers: [
 					{ title: "Tên công trình / giải pháp", key: "TenCuocThi_CongTrinh" },

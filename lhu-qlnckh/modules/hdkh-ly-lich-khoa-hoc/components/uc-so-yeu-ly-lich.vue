@@ -47,10 +47,10 @@
 					{ label: "Tình trạng hôn nhân", value: nt.HonNhan, cols: 2 },
 					{ label: "Nơi sinh", value: nt.NoiSinh },
 					{ label: "Quê quán", value: nt.QueQuan },
-					{ label: "Tình trạng sức khỏe", value: null, why: L.LY_DO.noStore },
+					{ label: "Tình trạng sức khỏe", value: null, ns: true, why: L.LY_DO.noStore },
 					{ label: "Địa chỉ thường trú", value: nt.ThuongTru, cols: 6 },
 					{ label: "Địa chỉ tạm trú", value: nt.TamTru, cols: 6 },
-					{ label: "Giấy phép lao động (người nước ngoài)", value: nt.GiayPhepLaoDong ? nt.GiayPhepLaoDong + " (" + L.dmy(nt.NgayCapGPLD) + " – " + L.dmy(nt.NgayHetHanGPLD) + ")" : "Không áp dụng", cols: 6 }
+					{ label: "Giấy phép lao động (người nước ngoài)", value: nt.GiayPhepLaoDong ? nt.GiayPhepLaoDong + " (" + L.dmy(nt.NgayCapGPLD) + " – " + L.dmy(nt.NgayHetHanGPLD) + ")" : (nt.QuocTich === "Việt Nam" ? "Không áp dụng" : null), cols: 6 }
 				]
 			},
 			lienHe: function () {
@@ -61,19 +61,19 @@
 					{ label: "Điện thoại văn phòng (đơn vị)", value: nt.DienThoaiVP, lock: khoa },
 					{ label: "Chức vụ, đơn vị công tác", value: nt.ChucVuPhongBan, lock: khoa, cols: 6 },
 					{ label: "Ngày vào làm việc tại LHU", value: L.dmy(nt.NgayLamViec), lock: khoa },
-					{ label: "Năm bắt đầu giảng dạy ĐH/ThS", value: null, why: L.LY_DO.hrmMigrating },
+					{ label: "Năm bắt đầu giảng dạy ĐH/ThS", value: null, ns: true, why: L.LY_DO.hrmMigrating },
 					{ label: "Học vị cao nhất (từ mục II)", value: L.F.hocVi.get(this.d), lock: "Lấy từ quá trình đào tạo" },
-					{ label: "Học hàm, năm phong (từ mục II)", value: L.F.hocHam.get(this.d) || "Không có", lock: "Lấy từ quá trình đào tạo", cols: 4 }
+					{ label: "Học hàm, năm phong (từ mục II)", value: L.F.hocHam.get(this.d) || "Không có trong HRM", lock: "Lấy từ quá trình đào tạo", cols: 4 }
 				]
 			},
 			khoaHoc: function () {
 				var why = window.LLKH.LY_DO.noStore
 				return [
-					{ label: "Tóm tắt kinh nghiệm chuyên môn (tối đa 100 từ)", value: null, why: why, cols: 12 },
-					{ label: "ORCID", value: null, why: why, cols: 3 },
-					{ label: "Google Scholar", value: null, why: why, cols: 3 },
-					{ label: "ResearchGate", value: null, why: why, cols: 3 },
-					{ label: "Mã LLKH STI", value: null, why: why, cols: 3 }
+					{ label: "Tóm tắt kinh nghiệm chuyên môn (tối đa 100 từ)", value: null, ns: true, why: why, cols: 12 },
+					{ label: "ORCID", value: null, ns: true, why: why, cols: 3 },
+					{ label: "Google Scholar", value: null, ns: true, why: why, cols: 3 },
+					{ label: "ResearchGate", value: null, ns: true, why: why, cols: 3 },
+					{ label: "Mã LLKH STI", value: null, ns: true, why: why, cols: 3 }
 				]
 			}
 		}

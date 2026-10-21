@@ -47,10 +47,10 @@
 						TenTruongDH: L.show(r.TenTruongDH),
 						NuocDaoTao: L.show(r.NuocDaoTao),
 						TenLHDT: L.show(r.TenLHDT),
-						XepLoai: r.XepLoai && r.XepLoai !== "Không XĐ" ? r.XepLoai : L.CHUA_CO,
+						XepLoai: r.XepLoai && r.XepLoai !== "Không XĐ" ? r.XepLoai : L.CHUA_NHAP,
 						NgayCap: L.show(L.dmy(r.NgayCapBang)),
-						NgayBatDau: L.CHUA_CO,
-						LuanAn: coLuanAn ? L.CHUA_CO : ""
+						NgayBatDau: L.KHONG_LUU,
+						LuanAn: coLuanAn ? L.KHONG_LUU : ""
 					})
 				})
 			},

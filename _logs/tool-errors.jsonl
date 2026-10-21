@@ -228,3 +228,8 @@
 {"ts":"2026-10-21T03:00:09.373Z","pid":47532,"tool":"fui query","message":"❌ tAPI HTTP 400: Invalid column name 'TenPhongBan'."}
 {"ts":"2026-10-21T03:04:54.754Z","pid":50420,"tool":"fui exec","message":"❌ ALTER TABLE ... DROP COLUMN\nblocked: no flag unlocks this; the user must run it by hand\n---\nEXEC sp_executesql N'ALTER TABLE AnPham DROP COLUMN TapSoTrang, ThangDang, TheLoaiBienSoanID'","kind":"guard"}
 {"ts":"2026-10-21T03:05:10.951Z","pid":50541,"tool":"fui exec","message":"❌ tAPI HTTP 400: The object 'FK_AnPham_TheLoaiBienSoan' is dependent on column 'TheLoaiBienSoanID'.\r\nALTER TABLE DROP COLUMN TheLoaiBienSoanID failed because one or more objects access this column."}
+{"ts":"2026-10-21T03:27:04.816Z","pid":64439,"tool":"fui skill ref","message":"❌ missing <path>; see references/INDEX.md"}
+{"ts":"2026-10-21T03:34:02.744Z","pid":68371,"tool":"fui use","message":"❌ pass both -p and -m"}
+{"ts":"2026-10-21T04:14:33.065Z","pid":103232,"tool":"fui component new","message":"❌ uc-khen-thuong.vue not found in /home/iot/CODE/fui-cli/lhu-qlnckh/modules/hdkh-ly-lich-khoa-hoc/components/"}
+{"ts":"2026-10-21T04:35:46.546Z","pid":116508,"tool":"fui sp deploy","message":"❌ tAPI does not support parameter default values; remove \"= ...\" and save before deploying:\n  - @TapSoTrang nvarchar(100) = NULL\n  - @ThangDang tinyint = NULL\n  - @VaiTroID int = NULL\n  - @Is_TacGiaLienHe bit = NULL\n  - @TheLoaiBienSoanID int = NULL\n  - @DoiLink nvarchar(500) = NULL"}
+{"ts":"2026-10-21T04:36:43.310Z","pid":118184,"tool":"fui library","message":"❌ unknown library \"table\"; choose component, component-table, default-function, fast-project, default-style"}
