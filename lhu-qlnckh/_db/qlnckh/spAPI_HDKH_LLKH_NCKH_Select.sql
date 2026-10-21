@@ -9,11 +9,12 @@ BEGIN
 	SELECT HuongNghienCuuChinh = (SELECT TOP 1 HuongNghienCuuChinh FROM tblHDKH_Profile_CaNhan
 		WHERE NhanVienID = @sys_UserID AND IsDeleted = 0)
 
-	-- [1] Đề tài, dự án: KHCN cấp cơ sở và hội đồng NCKH giảng viên
+	-- [1] Đề tài, dự án: KHCN cấp cơ sở, hội đồng NCKH giảng viên và đề tài ngoài trường tự khai
 	SELECT Nguon = N'Đề tài KHCN cấp cơ sở', D.MaSoDeTai, TenDeTai = D.TenDeTaiKHCN_Vi,
 		Cap = N'Cơ sở (Trường)', LinhVuc = LTRIM(N.TenNhomKHCN),
 		ThoiGian = CONCAT(D.ThangBatDau, IIF(D.ThangKetThuc IS NULL, '', N' – ' + D.ThangKetThuc)),
-		Nam = D.NamThucHien, VaiTro = IIF(TV.Is_ChuNhiem = 1, N'Chủ nhiệm', N'Thành viên')
+		Nam = D.NamThucHien, VaiTro = IIF(TV.Is_ChuNhiem = 1, N'Chủ nhiệm', N'Thành viên'),
+		DeTaiID = CAST(D.DeTaiKHCNID AS bigint), IsTuKhai = CAST(0 AS bit)
 	FROM KHCN_ThanhVien TV
 		INNER JOIN KHCN_DeTai D ON D.DeTaiKHCNID = TV.DeTaiKHCNID AND D.Is_Xoa = 0
 		LEFT JOIN KHCN_NhomDM N ON N.NhomKHCNID = D.NhomKHCNID
@@ -21,27 +22,39 @@ BEGIN
 	UNION ALL
 	SELECT N'Hội đồng NCKH ' + ISNULL(LHD.TenLoaiHoiDong, ''), NULL, D.TenDeTaiNCKH,
 		N'Cơ sở (Trường)', NULL, DT.NamHoc, NULL,
-		IIF(TV.Is_ChuNhiem = 1, N'Chủ nhiệm', N'Thành viên')
+		IIF(TV.Is_ChuNhiem = 1, N'Chủ nhiệm', N'Thành viên'),
+		CAST(D.DeTaiNCKHID AS bigint), CAST(0 AS bit)
 	FROM NCKH_ThanhVien TV
 		INNER JOIN NCKH_DeTai D ON D.DeTaiNCKHID = TV.DeTaiNCKHID AND D.Is_Xoa = 0
 		LEFT JOIN NCKH_Dot DT ON DT.DotID = D.DotID
 		LEFT JOIN NCKH_LoaiHoiDong LHD ON LHD.LoaiHoiDongID = DT.LoaiHoiDong
 	WHERE TV.MaThanhVien = @sys_UserID AND TV.Is_NhanVien = 1 AND TV.Is_Xoa = 0
+	UNION ALL
+	SELECT N'Tự khai (Đề tài ngoài trường)', NULL, T.TenDeTai,
+		Cap = ISNULL(T.CoQuanTaiTro, N'Ngoài trường'), NULL,
+		ThoiGian = T.ThoiGianThucHien,
+		Nam = NULL,
+		VaiTro = T.VaiTro,
+		DeTaiID = T.DeTaiID, IsTuKhai = CAST(1 AS bit)
+	FROM tblHDKH_Profile_DeTaiDaThamGia T
+	WHERE T.NhanVienID = @sys_UserID AND T.IsDeleted = 0
 	ORDER BY Nam DESC
 
 	-- [2] Công trình đã công bố (ấn phẩm), bỏ bản lưu tạm (1) và bị từ chối (5)
 	SELECT A.AnPhamID, A.TenAnPham, A.TenTapChi, A.NamDangBai, A.ISSN,
-		DuongDanBaiBao = COALESCE(C.DoiLink, A.DuongDanBaiBao),
+		DuongDanBaiBao = COALESCE(A.DoiLink, A.DuongDanBaiBao),
 		A.NoiDangBai,
 		A.LoaiAnPhamID, L.TenLoaiAnPham, S.TenLoaiSubAnPham, A.TenLoaiDanhMucTapChi, A.DiemHoiDong,
 		A.TongSoTacGia, T.Is_TacGiaChinh,
-		TapSoTrang = COALESCE(C.TapSoTrang, (SELECT TOP 1 C2.TapSoTrang FROM tblHDKH_LLKH_AnPham_ChiTiet C2 WHERE C2.AnPhamID = A.AnPhamID AND C2.TapSoTrang IS NOT NULL AND C2.IsDeleted = 0)),
-		ThangDang = COALESCE(C.ThangDang, (SELECT TOP 1 C2.ThangDang FROM tblHDKH_LLKH_AnPham_ChiTiet C2 WHERE C2.AnPhamID = A.AnPhamID AND C2.ThangDang IS NOT NULL AND C2.IsDeleted = 0)),
-		TheLoaiBienSoanID = COALESCE(C.TheLoaiBienSoanID, (SELECT TOP 1 C2.TheLoaiBienSoanID FROM tblHDKH_LLKH_AnPham_ChiTiet C2 WHERE C2.AnPhamID = A.AnPhamID AND C2.TheLoaiBienSoanID IS NOT NULL AND C2.IsDeleted = 0)),
+		TapSoTrang = A.TapSoTrang,
+		ThangDang = A.ThangDang,
+		TheLoaiBienSoanID = A.TheLoaiBienSoanID,
 		TheLoaiSach = BS.TenTheLoai,
-		VaiTroID = C.VaiTroID,
+		TenSachChuaChuong = A.TenSachChuaChuong,
+		VaiTroID = T.VaiTroID,
 		TenVaiTro = VT.TenVaiTro,
-		Is_TacGiaLienHe = C.Is_TacGiaLienHe,
+		Is_TacGiaLienHe = T.Is_TacGiaLienHe,
+		A.Is_DeNghiXetThuong,
 		NhomHienThi = CASE
 			WHEN A.LoaiAnPhamID IN (15, 16) THEN N'Tạp chí quốc tế (WoS/Scopus)'
 			WHEN A.LoaiAnPhamID = 3 THEN N'Tạp chí trong nước'
@@ -58,9 +71,8 @@ BEGIN
 		INNER JOIN AnPham A ON A.AnPhamID = T.AnPhamID AND A.Is_Xoa = 0 AND A.TrangThai NOT IN (1, 5)
 		LEFT JOIN AnPham_Loai L ON L.LoaiAnPhamID = A.LoaiAnPhamID
 		LEFT JOIN AnPham_Loai_Sub S ON S.LoaiSubAnPhamID = A.LoaiSubAnPhamID
-		LEFT JOIN tblHDKH_LLKH_AnPham_ChiTiet C ON C.AnPhamID = A.AnPhamID AND C.MaNhanVien = @sys_UserID AND C.IsDeleted = 0
-		LEFT JOIN tblHDKH_DM_VaiTro VT ON VT.ID = C.VaiTroID
-		LEFT JOIN tblHDKH_DM_TheLoaiBienSoan BS ON BS.ID = COALESCE(C.TheLoaiBienSoanID, (SELECT TOP 1 C2.TheLoaiBienSoanID FROM tblHDKH_LLKH_AnPham_ChiTiet C2 WHERE C2.AnPhamID = A.AnPhamID AND C2.TheLoaiBienSoanID IS NOT NULL AND C2.IsDeleted = 0))
+		LEFT JOIN tblHDKH_DM_VaiTro VT ON VT.ID = T.VaiTroID
+		LEFT JOIN tblHDKH_DM_TheLoaiBienSoan BS ON BS.ID = A.TheLoaiBienSoanID
 	WHERE T.MaNhanVien = @sys_UserID AND T.Is_Xoa = 0
 	ORDER BY A.NamDangBai DESC, A.AnPhamID DESC
 
@@ -100,7 +112,8 @@ BEGIN
 
 	-- [4] Cuộc thi KH&CN và sở hữu trí tuệ đã đề nghị khen thưởng
 	SELECT K.KhenThuongID, K.LoaiKhenThuong, K.TenCuocThi_CongTrinh, K.SoQuyetDinh_VanBang,
-		NoiCapVanBang = CAST(NULL AS nvarchar(255)),
+		NoiCapVanBang = K.NoiCapVanBang,
+		MaSoDeTai = K.MaSoDeTai,
 		K.Is_DauRaDeTaiCoSo,
 		SoMinhChung = (SELECT COUNT(*) FROM ThiKHCN_File F WHERE F.KhenThuongID = K.KhenThuongID AND F.Is_Xoa = 0),
 		NgayBanHanh = CONVERT(varchar(10), K.NgayBanHanh, 23),

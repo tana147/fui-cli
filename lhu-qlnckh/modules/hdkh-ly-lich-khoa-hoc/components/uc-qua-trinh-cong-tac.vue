@@ -1,6 +1,6 @@
 <template>
 	<uc-llkh-muc title="III. Quá trình công tác" nguon="HRM" anchor="coban-III"
-		:actions="[{ label: 'Thêm công tác ngoài LHU', icon: 'mdi-plus' }, { label: 'Lịch sử', icon: 'mdi-history' }]">
+		:actions="[{ label: 'Thêm công tác ngoài LHU', icon: 'mdi-plus', disabled: true, tooltip: 'Chức năng đang hoàn thiện trên HRM' }, { label: 'Lịch sử', icon: 'mdi-history', disabled: true, tooltip: 'Do Phòng TCNS quản lý' }]">
 		<div class="text-subtitle-2 text-medium-emphasis mb-1">
 			Tại Trường Đại học Lạc Hồng
 			<v-icon size="x-small" v-tooltip="'Do Phòng TCNS quản lý'">mdi-lock-outline</v-icon>

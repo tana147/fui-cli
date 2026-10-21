@@ -10,9 +10,7 @@
 				<v-icon size="x-small">mdi-database-off-outline</v-icon> Chưa có nơi lưu<span v-if="it.why && it.why !== lyDoMacDinh"
 					class="text-caption"> — {{ it.why }}</span>
 			</div>
-			<div v-else class="text-body-2 text-error font-italic">
-				<v-icon size="x-small" color="error">mdi-alert-circle-outline</v-icon> Chưa nhập
-			</div>
+			<div v-else class="text-body-2">&nbsp;</div>
 		</v-col>
 	</v-row>
 </template>

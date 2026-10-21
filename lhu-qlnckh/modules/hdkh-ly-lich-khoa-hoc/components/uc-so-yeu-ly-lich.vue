@@ -1,6 +1,6 @@
 <template>
 	<uc-llkh-muc title="I. Sơ lược lý lịch" nguon="HRM" anchor="coban-I"
-		:actions="[{ label: 'Cập nhật', icon: 'mdi-pencil' }, { label: 'Lịch sử', icon: 'mdi-history' }]">
+		:actions="[{ label: 'Cập nhật', icon: 'mdi-pencil', disabled: true, tooltip: 'Do Phòng TCNS quản lý' }, { label: 'Lịch sử', icon: 'mdi-history', disabled: true, tooltip: 'Do Phòng TCNS quản lý' }]">
 		<v-row>
 			<v-col cols="12" sm="3" md="2" class="d-flex flex-column align-center">
 				<v-avatar size="128" rounded="lg" color="grey-lighten-3">

@@ -1,7 +1,7 @@
 <template>
 	<uc-llkh-muc title="V. Gia đình, người báo tin" nguon="HRM" anchor="coban-V"
 		note="Dùng cho mẫu Sơ yếu lý lịch."
-		:actions="[{ label: 'Thêm', icon: 'mdi-plus' }, { label: 'Lịch sử', icon: 'mdi-history' }]">
+		:actions="[{ label: 'Thêm', icon: 'mdi-plus', disabled: true, tooltip: 'Do Phòng TCNS quản lý' }, { label: 'Lịch sử', icon: 'mdi-history', disabled: true, tooltip: 'Do Phòng TCNS quản lý' }]">
 		<f-table :items="rows" :headers="headers" :excel="false"></f-table>
 		<div class="text-subtitle-2 text-medium-emphasis mt-4 mb-1">Khi cần báo tin cho ai</div>
 		<uc-llkh-info :items="[{ label: 'Người báo tin (quan hệ, họ tên, điện thoại, địa chỉ)', value: null, ns: true, why: lyDo, cols: 12 }]"></uc-llkh-info>

@@ -1,7 +1,7 @@
 <template>
 	<uc-llkh-muc title="II. Quá trình đào tạo" nguon="HRM" anchor="coban-II"
 		note="Gồm cả học hàm GS/PGS. Năm tốt nghiệp lấy theo ngày cập nhật bằng trong HRM (cần TCNS xác nhận)."
-		:actions="[{ label: 'Thêm', icon: 'mdi-plus' }, { label: 'Lịch sử', icon: 'mdi-history' }]">
+		:actions="[{ label: 'Thêm', icon: 'mdi-plus', disabled: true, tooltip: 'Do Phòng TCNS quản lý' }, { label: 'Lịch sử', icon: 'mdi-history', disabled: true, tooltip: 'Do Phòng TCNS quản lý' }]">
 		<f-table :items="rows" :headers="headers" :excel="false"></f-table>
 		<div class="text-subtitle-2 text-medium-emphasis mt-4 mb-1">Ngoại ngữ – Tin học – Chứng chỉ</div>
 		<f-table :items="rowsCC" :headers="headersCC" :excel="false"></f-table>

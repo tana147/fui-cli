@@ -32,14 +32,14 @@
 					return {
 						Ten: s.TenCuocThi_CongTrinh, Loai: L.show(s.LoaiSHTT), SoVanBang: L.show(s.SoQuyetDinh_VanBang),
 						NamCap: L.show(L.year(s.NgayBanHanh)), NoiCap: L.show(s.NoiCapVanBang), VaiTro: L.show(s.VaiTro),
-						DauRa: s.Is_DauRaDeTaiCoSo ? "Đề tài cấp cơ sở" : "Không đánh dấu",
+						DauRa: s.Is_DauRaDeTaiCoSo ? "Đề tài cấp cơ sở" : "",
 						MinhChung: s.SoMinhChung ? s.SoMinhChung + " tệp" : L.CHUA_NHAP, Nguon: "Đề nghị khen thưởng KHCN"
 					}
 				})
 				var b = this.d.shttKeKhai.map(function (k) {
 					return {
-						Ten: L.show(k.Ten), Loai: L.show(k.LoaiSHTT), SoVanBang: L.KHONG_LUU, NamCap: L.KHONG_LUU,
-						NoiCap: L.KHONG_LUU, VaiTro: L.show(k.VaiTro), DauRa: "", MinhChung: "", Nguon: "Kê khai giờ NCKH (" + k.TrangThaiDuyet + ")"
+						Ten: L.show(k.Ten), Loai: L.show(k.LoaiSHTT), SoVanBang: L.CHUA_NHAP, NamCap: L.CHUA_NHAP,
+						NoiCap: L.CHUA_NHAP, VaiTro: L.show(k.VaiTro), DauRa: "", MinhChung: "", Nguon: "Kê khai giờ NCKH (" + k.TrangThaiDuyet + ")"
 					}
 				})
 				return a.concat(b)

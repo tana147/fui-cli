@@ -6,11 +6,22 @@ CREATE PROCEDURE [dbo].[spAPI_HDKH_LLKH_AnPham_ChiTiet_Save]
 	@Is_TacGiaLienHe bit,
 	@TheLoaiBienSoanID int,
 	@DoiLink nvarchar(500),
+	@TenSachChuaChuong nvarchar(500),
 	@sys_UserID varchar(9)
 AS
--- Lý lịch khoa học: bổ sung thông tin chi tiết cho ấn phẩm/bài báo mà không can thiệp bảng AnPham gốc
+-- Lý lịch khoa học: bổ sung thông tin chi tiết cho ấn phẩm/bài báo đồng bộ vào Single Source of Truth
 BEGIN
 	SET NOCOUNT ON;
+
+	-- Thêm cột TenSachChuaChuong nếu chưa có
+	IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('AnPham') AND name = 'TenSachChuaChuong')
+	BEGIN
+		EXEC('ALTER TABLE AnPham ADD TenSachChuaChuong nvarchar(500) NULL');
+	END;
+	IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('tblHDKH_LLKH_AnPham_ChiTiet') AND name = 'TenSachChuaChuong')
+	BEGIN
+		EXEC('ALTER TABLE tblHDKH_LLKH_AnPham_ChiTiet ADD TenSachChuaChuong nvarchar(500) NULL');
+	END;
 
 	-- 1. Kiểm tra quyền tác giả
 	IF NOT EXISTS (
@@ -31,8 +42,27 @@ BEGIN
 
 	SET @TapSoTrang = NULLIF(LTRIM(RTRIM(@TapSoTrang)), '');
 	SET @DoiLink = NULLIF(LTRIM(RTRIM(@DoiLink)), '');
+	SET @TenSachChuaChuong = NULLIF(LTRIM(RTRIM(@TenSachChuaChuong)), '');
 
-	-- 3. Upsert vào bảng mở rộng
+	-- 3. Cập nhật trực tiếp bảng AnPham & AnPham_TacGia (Single Source of Truth)
+	UPDATE AnPham
+	SET TapSoTrang = @TapSoTrang,
+		ThangDang = @ThangDang,
+		TheLoaiBienSoanID = @TheLoaiBienSoanID,
+		DoiLink = @DoiLink,
+		TenSachChuaChuong = @TenSachChuaChuong,
+		NhanVienCapNhat = @sys_UserID,
+		ThoiGianCapNhat = GETDATE()
+	WHERE AnPhamID = @AnPhamID;
+
+	UPDATE AnPham_TacGia
+	SET VaiTroID = @VaiTroID,
+		Is_TacGiaLienHe = ISNULL(@Is_TacGiaLienHe, 0),
+		NhanVienCapNhat = @sys_UserID,
+		ThoiGianCapNhat = GETDATE()
+	WHERE AnPhamID = @AnPhamID AND MaNhanVien = @sys_UserID AND Is_Xoa = 0;
+
+	-- 4. Lưu bản sao vào bảng tblHDKH_LLKH_AnPham_ChiTiet
 	IF EXISTS (SELECT 1 FROM tblHDKH_LLKH_AnPham_ChiTiet WHERE AnPhamID = @AnPhamID AND MaNhanVien = @sys_UserID)
 	BEGIN
 		UPDATE tblHDKH_LLKH_AnPham_ChiTiet
@@ -42,6 +72,7 @@ BEGIN
 			Is_TacGiaLienHe = @Is_TacGiaLienHe,
 			TheLoaiBienSoanID = @TheLoaiBienSoanID,
 			DoiLink = @DoiLink,
+			TenSachChuaChuong = @TenSachChuaChuong,
 			NgayCapNhat = GETDATE(),
 			NguoiCapNhat = @sys_UserID,
 			IsDeleted = 0
@@ -51,12 +82,12 @@ BEGIN
 	BEGIN
 		INSERT INTO tblHDKH_LLKH_AnPham_ChiTiet (
 			AnPhamID, MaNhanVien, TapSoTrang, ThangDang, VaiTroID,
-			Is_TacGiaLienHe, TheLoaiBienSoanID, DoiLink, NgayCapNhat, NguoiCapNhat, IsDeleted
+			Is_TacGiaLienHe, TheLoaiBienSoanID, DoiLink, TenSachChuaChuong, NgayCapNhat, NguoiCapNhat, IsDeleted
 		) VALUES (
 			@AnPhamID, @sys_UserID, @TapSoTrang, @ThangDang, @VaiTroID,
-			@Is_TacGiaLienHe, @TheLoaiBienSoanID, @DoiLink, GETDATE(), @sys_UserID, 0
+			@Is_TacGiaLienHe, @TheLoaiBienSoanID, @DoiLink, @TenSachChuaChuong, GETDATE(), @sys_UserID, 0
 		);
 	END
 
 	SELECT Message = N'Cập nhật chi tiết ấn phẩm thành công', Status = 1;
-END
+END;

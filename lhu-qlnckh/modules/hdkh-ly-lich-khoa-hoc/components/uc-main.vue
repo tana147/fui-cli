@@ -53,7 +53,7 @@
 								:loading="dangLuuHNC" :disabled="huongNC === d.huongNC" @click="luuHuongNC">Lưu</v-btn>
 						</div>
 					</uc-llkh-muc>
-					<uc-de-tai-da-tham-gia :d="d"></uc-de-tai-da-tham-gia>
+					<uc-de-tai-da-tham-gia :d="d" @reload="tai"></uc-de-tai-da-tham-gia>
 					<uc-shtt :d="d"></uc-shtt>
 					<uc-llkh-muc v-if="d.duLieuCu.length" title="Dữ liệu đã khai ở phiên bản cũ (tham khảo)"
 						note="Thông tin bạn tự nhập trước đây trong module Lý lịch khoa học cũ, dùng để đối chiếu.">
@@ -92,6 +92,19 @@
 								</div>
 							</div>
 							<v-alert v-else type="success" variant="tonal" density="compact">Đã đủ thông tin cần khai cho mẫu này.</v-alert>
+							<div v-if="nhomKhongLuu.length">
+								<div class="text-subtitle-2 font-weight-bold text-medium-emphasis">
+									<v-icon size="small">mdi-database-off-outline</v-icon> Chưa có nơi lưu
+								</div>
+								<div class="text-caption text-medium-emphasis mb-2">Bàn giao phát triển — người dùng chưa thể khai</div>
+								<div v-for="g in nhomKhongLuu" :key="g.he" class="mb-2">
+									<div class="text-caption font-weight-bold">{{ g.ten }}</div>
+									<ul class="text-caption ps-4">
+										<li v-for="t in g.items" :key="t.key">{{ t.label }}<span v-if="t.giaTri !== lyDoMacDinh"
+												class="font-italic"> ({{ t.giaTri }})</span></li>
+									</ul>
+								</div>
+							</div>
 							<v-spacer></v-spacer>
 							<div class="d-flex ga-2">
 								<v-btn color="primary" variant="flat" prepend-icon="mdi-file-download-outline" :disabled="!pdfUrl"
@@ -121,6 +134,7 @@
 				huongNC: "",
 				dangLuuHNC: false,
 				pdfUrl: "",
+				lyDoMacDinh: window.LLKH.LY_DO.noStore,
 				headersCu: [
 					{ title: "Loại", key: "Loai" },
 					{ title: "Nội dung", key: "NoiDung" },
@@ -134,6 +148,12 @@
 			kt: function () {
 				if (!this.d) return { rows: [], thieu: [], chuaNhap: [], khongLuu: [], soDu: 0, tong: 0, mau: {} }
 				return window.LLKH.kiemTra(this.mau, this.d)
+			},
+			nhomKhongLuu: function () {
+				var ds = this.kt.khongLuu
+				return [{ he: "HRM", ten: "Hệ thống Nhân sự (HRM)" }, { he: "NCKH", ten: "Hệ thống NCKH" }]
+					.map(function (g) { return Object.assign({}, g, { items: ds.filter(function (r) { return r.he === g.he }) }) })
+					.filter(function (g) { return g.items.length })
 			},
 			cotThongTin: function () { return this.$vuetify.display.mdAndUp ? "width: 25%" : "" },
 			dsMau: function () {

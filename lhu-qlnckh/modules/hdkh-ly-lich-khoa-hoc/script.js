@@ -6,7 +6,7 @@ vueData.rules = {
 // ===================== LÝ LỊCH KHOA HỌC: dữ liệu, ma trận mẫu, bản in =====================
 window.LLKH = (function () {
     // Hai loại thiếu: người dùng chưa nhập (đã có chỗ lưu) / hệ thống chưa có nơi lưu
-    const CHUA_NHAP = "Chưa nhập";
+    const CHUA_NHAP = ""; // chưa nhập: để trống, không ghi chú
     const KHONG_LUU = "Chưa có nơi lưu";
     const CHUA_CO = CHUA_NHAP;
     const NS = { ns: true };
@@ -14,7 +14,7 @@ window.LLKH = (function () {
         noStore: "Cần bổ sung trường vào cơ sở dữ liệu",
         hrmMigrating: "HRM đang chuyển đổi dữ liệu",
         noData: "Chưa có dữ liệu",
-        khaiAnPham: "Bổ sung tại Cá nhân › Đề nghị khen thưởng ấn phẩm",
+        khaiAnPham: "Bấm icon chỉnh sửa trên bài báo/sách tại mục Công trình khoa học để bổ sung",
         khaiSHTT: "Bổ sung tại Cá nhân › Đề nghị khen thưởng cuộc thi & SHTT"
     };
     const API_HRM = "https://tapi.lhu.edu.vn/hrm/LLKH_HRM_BoSung_Select";
@@ -131,6 +131,13 @@ window.LLKH = (function () {
         baiBaoViTri: { label: "Tác giả thứ nhất / liên hệ / chủ biên", tab: "congtrinh", muc: "I. Bài báo, báo cáo, sách", get: d => d.congTrinh.length && d.congTrinh.every(c => c.VaiTroID || c.Is_TacGiaLienHe !== null && c.Is_TacGiaLienHe !== undefined) ? "ok" : null, why: LY_DO.khaiAnPham },
         sach: { label: "Sách, giáo trình", tab: "congtrinh", muc: "I. Bài báo, báo cáo, sách", get: d => d.congTrinh.filter(c => c.LoaiAnPhamID === 6).concat(d.sachKeKhai) },
         sachTheLoai: { label: "Thể loại sách (chuyên khảo / chương sách / giáo trình)", tab: "congtrinh", muc: "I. Bài báo, báo cáo, sách", get: d => d.congTrinh.filter(c => c.LoaiAnPhamID === 6).every(c => c.TheLoaiBienSoanID) ? "ok" : null, why: LY_DO.khaiAnPham },
+        sachTenChuong: { label: "Tên cuốn sách chứa chương sách (nếu có chương sách)", tab: "congtrinh", muc: "I. Bài báo, báo cáo, sách", get: d => { const cs = d.congTrinh.filter(c => c.LoaiAnPhamID === 6 && c.TheLoaiBienSoanID === 6); return !cs.length || cs.every(c => c.TenSachChuaChuong) ? "ok" : null; }, why: LY_DO.khaiAnPham },
+        // --- Chưa có nơi lưu (bàn giao phát triển) ---
+        congTacNgoai: { label: "Quá trình công tác ngoài LHU", tab: "coban", muc: "III. Công tác", get: () => null, why: LY_DO.noStore },
+        congViec: { label: "Công việc / vị trí đảm nhiệm trong quá trình công tác", tab: "coban", muc: "III. Công tác", get: () => null, why: LY_DO.noStore },
+        noiCapSHTT: { label: "Nơi cấp văn bằng sáng chế / GPHI", tab: "nckh", muc: "III. Sở hữu trí tuệ", get: d => !d.shtt.length || d.shtt.every(s => s.NoiCapVanBang) ? "ok" : null, why: LY_DO.khaiSHTT },
+        maDeTaiSHTT: { label: "Mã số đề tài tạo ra sản phẩm SHTT", tab: "nckh", muc: "III. Sở hữu trí tuệ", get: d => !d.shtt.length || d.shtt.every(s => !s.Is_DauRaDeTaiCoSo || s.MaSoDeTai) ? "ok" : null, why: LY_DO.khaiSHTT },
+        deTaiNgoaiTruong: { label: "Đề tài cấp Bộ / Nhà nước / ngoài trường (cá nhân tự khai)", tab: "nckh", muc: "II. Đề tài", get: d => { const a = d.deTai.filter(t => t.IsTuKhai); return a.length ? a.length + " đề tài" : null; } },
         shtt: { label: "Sáng chế, giải pháp hữu ích", tab: "nckh", muc: "III. Sở hữu trí tuệ", get: d => d.shtt.concat(d.shttKeKhai) },
         cuocThi: { label: "Giải thưởng cuộc thi KH&CN", tab: "coban", muc: "IV. Giải thưởng & khen thưởng", get: d => d.cuocThi }
     };
@@ -138,29 +145,29 @@ window.LLKH = (function () {
     const MAU = [
         { ma: "GV", ten: "LLKH Giảng viên (MAU LLKH GV LHU-001)",
           req: ["hoTen", "gioiTinh", "cccd", "ngaySinh", "noiSinh", "queQuan", "danToc", "hocVi", "namNuocHocVi", "chucVuDonVi", "thuongTru", "dienThoai", "email", "daoTao", "namTotNghiep", "luanVanLuanAn", "ngoaiNgu", "tinHoc", "triet", "ppgd", "congTac"],
-          opt: ["hocHam", "deTai", "baiBao", "sach", "shtt"] },
+          opt: ["hocHam", "deTai", "baiBao", "sach", "shtt", "congTacNgoai", "congViec", "noiCapSHTT", "maDeTaiSHTT", "deTaiNgoaiTruong"] },
         { ma: "SDH", ten: "LLKH GV đào tạo tiến sĩ (Sau đại học)",
           req: ["hoTen", "ngaySinh", "gioiTinh", "quocTich", "cccd", "dienThoai", "email", "hocVi", "namNuocHocVi", "noiBaoVe", "luanAnTS", "namBatDauDay", "huongNC", "baiBao", "baiBaoDOI", "baiBaoTapSoTrang", "baiBaoViTri", "sachTheLoai"],
-          opt: ["hocHam", "sach", "shtt"] },
+          opt: ["hocHam", "sach", "sachTenChuong", "shtt", "noiCapSHTT"] },
         { ma: "SYLL", ten: "Sơ yếu lý lịch (DHLH 2023)",
           req: ["hoTen", "ngaySinh", "gioiTinh", "noiSinh", "quocTich", "tonGiao", "thuongTru", "cccd", "ngayCapCCCD", "noiCapCCCD", "dienThoai", "email", "hocVi", "ngoaiNgu", "tinHoc", "honNhan", "sucKhoe", "nguoiBaoTin", "daoTao", "daoTaoThoiGian", "congTac", "giaDinhChaMe"],
-          opt: [] },
+          opt: ["congTacNgoai", "congViec"] },
         { ma: "LLKH", ten: "Lý lịch khoa học chung (5 năm gần nhất)",
           req: ["hoTen", "ngaySinh", "gioiTinh", "chucVuDonVi", "dienThoai", "email", "daoTao", "congTac", "ngoaiNgu", "tinHoc", "huongNC"],
-          opt: ["hocHam", "dtVP", "deTai", "baiBao", "sach", "shtt", "cuocThi", "khenThuong"] }
+          opt: ["hocHam", "dtVP", "deTai", "baiBao", "sach", "shtt", "cuocThi", "khenThuong", "congTacNgoai", "deTaiNgoaiTruong"] }
     ];
     function kiemTra(ma, d) {
         const m = MAU.find(x => x.ma === ma) || MAU[0];
         const row = (key, batBuoc) => {
             const f = F[key], v = f.get(d), du = !isEmpty(v), ns = !du && (f.why === LY_DO.noStore || f.why === LY_DO.hrmMigrating);
-            return { key, label: f.label, tab: f.tab, muc: f.muc, batBuoc, du, ns,
-                trangThai: du ? "Đủ" : (ns ? KHONG_LUU : CHUA_NHAP),
+            return { key, label: f.label, tab: f.tab, muc: f.muc, batBuoc, du, ns, he: f.tab === "coban" ? "HRM" : "NCKH",
+                trangThai: du ? "Đủ" : (ns ? KHONG_LUU : "Chưa nhập"),
                 giaTri: du ? (Array.isArray(v) ? v.length + " dòng" : (v === "ok" ? "Đủ" : v)) : (f.why || "Người dùng chưa khai") };
         };
         const rows = m.req.map(k => row(k, true)).concat(m.opt.map(k => row(k, false)));
         const req = rows.filter(r => r.batBuoc), thieu = req.filter(r => !r.du);
         return { mau: m, rows, soDu: req.filter(r => r.du).length, tong: req.length, thieu,
-            chuaNhap: thieu.filter(r => !r.ns), khongLuu: thieu.filter(r => r.ns) };
+            chuaNhap: thieu.filter(r => !r.ns), khongLuu: rows.filter(r => r.ns) };
     }
     // =========================== BẢN IN (pdfmake) ===========================
     const S = {
@@ -300,7 +307,7 @@ window.LLKH = (function () {
             { text: "II. Tạp chí/kỷ yếu thuộc danh mục SCOPUS", italics: true }, tongCong(table(H, bb(scopus), W), scopus, 8),
             { text: "2. Chương sách tham khảo do các nhà xuất bản quốc tế uy tín phát hành", style: "h2" },
             table(["TT", "Tên chương sách", "Chủ biên", "TG thứ nhất", "TG liên hệ", "Tên sách", "Nhà xuất bản", "Tháng, năm", "Điểm"],
-                chuongSach.map((c, i) => [i + 1, c.TenAnPham, x(c.VaiTroID === 5), x(c.VaiTroID === 7), x(c.Is_TacGiaLienHe), NS, c.TenTapChi, thangNam(c), c.DiemHoiDong]), W),
+                chuongSach.map((c, i) => [i + 1, c.TenAnPham, x(c.VaiTroID === 5), x(c.VaiTroID === 7), x(c.Is_TacGiaLienHe), c.TenSachChuaChuong || NS, c.TenTapChi, thangNam(c), c.DiemHoiDong]), W),
             { text: "3. Bài báo đăng trên các tạp chí khoa học trong nước là tác giả chính", style: "h2" },
             tongCong(table(H.concat(["Ngành/Lĩnh vực"]), trongNuoc.map((c, i) => bb([c])[0].map((x, j) => j === 0 ? i + 1 : x).concat([nganh])), [16, "*", 30, 30, 30, 70, 36, 34, 26, 44]), trongNuoc, 8),
             { text: "4. Sách chuyên khảo do các nhà xuất bản uy tín trong nước và quốc tế phát hành", style: "h2" },

@@ -58,6 +58,12 @@
 								item-value="ID" label="Thể loại sách" variant="outlined" density="compact" clearable></v-select>
 						</v-col>
 
+						<v-col v-if="form.LoaiAnPhamID === 6 && form.TheLoaiBienSoanID === 6" cols="12">
+							<v-text-field v-model="form.TenSachChuaChuong" label="Tên cuốn sách chứa chương sách"
+								placeholder="Ví dụ: Advances in Intelligent Systems and Computing, Vol. 12"
+								variant="outlined" density="compact" hint="Dùng cho bản in trích dẫn đào tạo tiến sĩ (SĐH)" persistent-hint></v-text-field>
+						</v-col>
+
 						<v-col cols="12">
 							<v-text-field v-model="form.DoiLink" label="Đường link DOI chuẩn"
 								placeholder="https://doi.org/10.xxxx/..." variant="outlined" density="compact"
@@ -98,7 +104,8 @@
 					VaiTroID: null,
 					Is_TacGiaLienHe: false,
 					TheLoaiBienSoanID: null,
-					DoiLink: ""
+					DoiLink: "",
+					TenSachChuaChuong: ""
 				},
 				dsThang: [
 					{ label: "Tháng 1", val: 1 }, { label: "Tháng 2", val: 2 }, { label: "Tháng 3", val: 3 },
@@ -145,7 +152,7 @@
 					{ title: "Phân loại", key: "PhanLoai", value: "PhanLoai" },
 					{ title: "Điểm", key: "Diem", value: "Diem" },
 					{ title: "Vai trò của tôi", key: "VaiTro", value: "VaiTro" },
-					{ title: "Tác giả liên hệ", key: "LienHe", value: "LienHe" },
+					{ title: "Tác giả liên hệ", key: "LienHe", value: "LienHe", align: "center", width: 110 },
 					{ title: "Trạng thái", key: "TrangThai", value: "TrangThai" },
 					{ title: "Chức năng", key: "ctrl-update", value: "ctrl-update", align: "center", width: 80 }
 				],
@@ -199,14 +206,16 @@
 				var groups = {}
 				this.d.congTrinh.forEach(function (c) {
 					var r = Object.assign({}, c, {
-						TacGia: L.show(c.TacGia), TenTapChi: L.show(c.TenTapChi), ISSN: L.show(c.ISSN),
+						TacGia: L.show(c.TacGia),
+						TenTapChi: c.TenSachChuaChuong ? (c.TenSachChuaChuong + (c.TenTapChi ? " (NXB: " + c.TenTapChi + ")" : "")) : L.show(c.TenTapChi),
+						ISSN: L.show(c.ISSN),
 						TapSoTrang: L.show(c.TapSoTrang),
 						ThangNam: c.ThangDang ? (c.ThangDang < 10 ? "0" : "") + c.ThangDang + "/" + c.NamDangBai : c.NamDangBai,
 						DOI: L.isDoi(c.DuongDanBaiBao) ? c.DuongDanBaiBao : L.CHUA_NHAP,
 						PhanLoai: L.show(c.LoaiAnPhamID === 6 ? (c.TheLoaiSach || c.TenLoaiSubAnPham) : (c.TenLoaiSubAnPham || c.TenLoaiDanhMucTapChi)),
 						Diem: L.show(c.DiemHoiDong),
 						VaiTro: c.TenVaiTro || L.CHUA_NHAP,
-						LienHe: c.Is_TacGiaLienHe === true ? "Có" : (c.Is_TacGiaLienHe === false ? "Không đánh dấu" : L.CHUA_NHAP),
+						LienHe: c.Is_TacGiaLienHe === true ? "✅" : "",
 						"ctrl-update": 1
 					})
 					;(groups[c.NhomHienThi] = groups[c.NhomHienThi] || []).push(r)
@@ -239,7 +248,8 @@
 					VaiTroID: raw.VaiTroID || null,
 					Is_TacGiaLienHe: raw.Is_TacGiaLienHe === true,
 					TheLoaiBienSoanID: raw.TheLoaiBienSoanID || null,
-					DoiLink: raw.DuongDanBaiBao && raw.DuongDanBaiBao !== L.CHUA_NHAP ? raw.DuongDanBaiBao : ""
+					DoiLink: raw.DuongDanBaiBao && raw.DuongDanBaiBao !== L.CHUA_NHAP ? raw.DuongDanBaiBao : "",
+					TenSachChuaChuong: raw.TenSachChuaChuong || ""
 				}
 				this.dialogSua = true
 			},
@@ -253,7 +263,8 @@
 					VaiTroID: self.form.VaiTroID || null,
 					Is_TacGiaLienHe: self.form.Is_TacGiaLienHe ? 1 : 0,
 					TheLoaiBienSoanID: self.form.LoaiAnPhamID === 6 ? (self.form.TheLoaiBienSoanID || null) : null,
-					DoiLink: self.form.DoiLink || null
+					DoiLink: self.form.DoiLink || null,
+					TenSachChuaChuong: self.form.LoaiAnPhamID === 6 && self.form.TheLoaiBienSoanID === 6 ? (self.form.TenSachChuaChuong || null) : null
 				}
 				ajaxCALL("/HDKH_LLKH_AnPham_ChiTiet_Save", payload, function (res) {
 					self.dangLuu = false
