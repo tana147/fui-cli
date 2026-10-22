@@ -29,6 +29,12 @@ BEGIN
 		RETURN 0;
 	END;
 
+	IF (@File_Name_DaoVan IS NOT NULL AND LOWER(RIGHT(LTRIM(RTRIM(@File_Name_DaoVan)), 4)) <> '.pdf')
+	BEGIN
+		RAISERROR(N'File kết quả kiểm tra đạo văn bắt buộc phải là định dạng PDF (.pdf)', 16, 1);
+		RETURN 0;
+	END;
+
 	BEGIN TRY
 		BEGIN TRANSACTION;
 

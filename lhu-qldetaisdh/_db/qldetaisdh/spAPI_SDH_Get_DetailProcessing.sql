@@ -27,7 +27,7 @@ BEGIN
 	--, NienKhoa Student_Year, Expire_Date,
 	, Flow_Detail_Status
 	,A.FLOW_ID, A.TASK_ID, e.task_name, A.TASK_DETAIL_ID, C.TASK_DETAIL_SEQ, si.NganhID, C.TASK_DETAIL_DESCRIPTION,C.USER_INPUT, C.FN_Check
-	,C.FieldName, C.Task_Detail_Display ,A.File_ID, A.File_Name, A.File_Type, A.File_URL, A.Text_Content, C.Task_Detail_Type, C.Data_Exp, C.AllowNull
+	,C.FieldName, C.Task_Detail_Display ,A.File_ID, A.File_Name, A.File_Type, A.File_URL, A.Text_Content, C.Task_Detail_Type, C.Data_Exp, C.AllowNull, C.AllowFileType, C.Task_Help
 	FROM FLOW_DETAIL A inner join task_detail c on a.task_id = c.task_id and a.task_detail_id = c.task_detail_id and c.USE_YN = 1
 					   INNER JOIN FLOW B ON A.FLOW_ID = B.FLOW_ID AND A.TASK_ID = B.TASK_ID AND B.Flow_Status <> 'X'
 					   INNER JOIN PROCESS_STUDENT D ON B.PROCESS_ID = D.PROCESS_ID and b.student_id = d.student_id AND D.Process_Student_Status <>'X'

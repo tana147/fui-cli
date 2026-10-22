@@ -115,6 +115,22 @@
 
 				if (!fileid && !url && !filename) return;
 
+				if (this.itemDes?.AllowFileType && filename) {
+					const allowed = String(this.itemDes.AllowFileType)
+						.toLowerCase()
+						.split(/[|,]/)
+						.map((e) => e.trim().replace(/^\./, ''))
+						.filter(Boolean);
+					const ext = filename.split('.').pop().toLowerCase();
+					if (allowed.length > 0 && !allowed.includes(ext)) {
+						const toast = window.Vue?.$toast || (typeof Vue !== 'undefined' ? Vue.$toast : null);
+						if (toast) {
+							toast.error(`Chỉ chấp nhận các định dạng file: ${allowed.join(', ')}`, { position: 'top' });
+						}
+						return;
+					}
+				}
+
 				if (this.itemDes) {
 					this.itemDes.File_ID = fileid;
 					this.itemDes.File_Name = filename;

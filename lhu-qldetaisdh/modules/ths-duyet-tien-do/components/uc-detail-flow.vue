@@ -530,6 +530,14 @@
 						validationPassed = false;
 						break;
 					}
+					if (item.FieldName === 'fileCheckDaoVan' && (item.File_ID || item.FILE_UPLOAD?.File_ID)) {
+						const fName = item.File_Name || item.FILE_UPLOAD?.File_Name || '';
+						if (fName && !fName.toLowerCase().endsWith('.pdf')) {
+							Vue.$toast.error(`File "${item.TASK_DETAIL_DESCRIPTION}" bắt buộc phải là định dạng PDF (.pdf)`, { position: 'top' });
+							validationPassed = false;
+							break;
+						}
+					}
 					if (item.FN_Check === 'fnCheckDeTaiDaDangKy') {
 						if (!this.checkDeTaiFlag) {
 							Vue.$toast.error(`Task "${item.TASK_DETAIL_DESCRIPTION}" chưa kiểm tra khớp đề tài`, { position: 'top' });
@@ -630,6 +638,11 @@
 					Vue.$toast.error('Vui lòng upload file kết quả kiểm tra đạo văn trước khi từ chối hồ sơ', { position: 'top' });
 					return;
 				}
+				const fileNameDaoVan = daoVanItem?.File_Name || daoVanItem?.FILE_UPLOAD?.File_Name || '';
+				if (!fileNameDaoVan.toLowerCase().endsWith('.pdf')) {
+					Vue.$toast.error('File kết quả kiểm tra đạo văn bắt buộc phải là định dạng PDF (.pdf)', { position: 'top' });
+					return;
+				}
 				this.rejectionReason = '';
 				this.rejectDialog = true;
 			},
@@ -641,6 +654,10 @@
 
 				if (!fileIdDaoVan) {
 					Vue.$toast.error('Vui lòng upload file kết quả kiểm tra đạo văn trước khi từ chối hồ sơ', { position: 'top' });
+					return;
+				}
+				if (!fileNameDaoVan.toLowerCase().endsWith('.pdf')) {
+					Vue.$toast.error('File kết quả kiểm tra đạo văn bắt buộc phải là định dạng PDF (.pdf)', { position: 'top' });
 					return;
 				}
 				if (!this.rejectionReason || !this.rejectionReason.trim()) {
@@ -748,6 +765,13 @@
 					if (item.AllowNull === '0' && item.Task_Detail_Type !== 'FILE' && item.Task_Detail_Type !== 'FILEVIEW' && !item.Text_Content && item.Task_Detail_Type !== 'FUN') {
 						Vue.$toast.error(`Task "${item.TASK_DETAIL_DESCRIPTION}" chưa nhập nội dung`, { position: 'top' });
 						return;
+					}
+					if (item.FieldName === 'fileCheckDaoVan' && (item.File_ID || item.FILE_UPLOAD?.File_ID)) {
+						const fName = item.File_Name || item.FILE_UPLOAD?.File_Name || '';
+						if (fName && !fName.toLowerCase().endsWith('.pdf')) {
+							Vue.$toast.error(`File "${item.TASK_DETAIL_DESCRIPTION}" bắt buộc phải là định dạng PDF (.pdf)`, { position: 'top' });
+							return;
+						}
 					}
 					if (item.FN_Check === 'fnCheckDeTaiDaDangKy') {
 						if (!this.checkDeTaiFlag) {
