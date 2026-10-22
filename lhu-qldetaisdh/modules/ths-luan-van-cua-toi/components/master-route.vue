@@ -52,6 +52,18 @@
 				<v-expansion-panel-content class="workflow-panel-content" :step="index + 1"
 					:style="dataDetailFlow && dataDetailFlow.length > 0 ? getStyleStatusLock(item.LOCK_STATUS) : null">
 					<div>
+						<v-alert type="error" dense outlined class="mb-3" v-if="item.Flow_Status === 'R' && isStep5(item)">
+							<div class="d-flex align-center justify-space-between">
+								<div>
+									<b>Hồ sơ chưa đạt yêu cầu kiểm tra đạo văn và bị từ chối.</b>
+									<div class="mt-1" v-if="latestRejectionReason">Lý do: <i>{{ latestRejectionReason }}</i></div>
+								</div>
+								<v-btn small color="error" outlined @click="openHistoryModal(item.Flow_ID)" class="ml-2">
+									<v-icon left small>mdi-history</v-icon>
+									Lịch sử nộp
+								</v-btn>
+							</div>
+						</v-alert>
 						<div v-if="dataDetailFlow.length > 0">
 							<div v-for="(itemDes, indexDes) in dataDetailFlow" :key="indexDes">
 								<div class="d-flex align-center flow-detail-header">
@@ -230,6 +242,51 @@
 				</v-expansion-panel-content>
 			</v-expansion-panel>
 		</v-expansion-panels>
+
+		<!-- Dialog Lịch sử nộp bài dành cho học viên -->
+		<v-dialog v-model="historyModal" max-width="750">
+			<v-card>
+				<v-card-title class="headline primary--text pb-2">
+					<v-icon color="primary" class="mr-2">mdi-history</v-icon>
+					Lịch sử các phiên nộp & kiểm tra đạo văn
+				</v-card-title>
+				<v-card-text class="pt-2">
+					<div v-if="historyLoading" class="text-center py-4">
+						<v-progress-circular indeterminate color="primary" class="mr-2" />
+						<span>Đang tải lịch sử...</span>
+					</div>
+					<div v-else-if="studentHistoryVersions.length === 0" class="text-center py-6 grey--text">
+						Chưa có dữ liệu lịch sử các lần từ chối trước đó.
+					</div>
+					<div v-else>
+						<v-card v-for="(ver, idx) in studentHistoryVersions" :key="idx" outlined class="mb-3 pa-3">
+							<div class="d-flex justify-space-between align-center mb-1">
+								<span class="font-weight-bold red--text">
+									Phiên nộp #{{ studentHistoryVersions.length - idx }}
+								</span>
+								<span class="text-caption grey--text">{{ ver.date }}</span>
+							</div>
+							<div class="mb-2">
+								<b>Lý do từ chối:</b>
+								<span class="error--text ml-1">{{ ver.reason || 'Không có lý do' }}</span>
+							</div>
+							<div class="text-caption grey--text mb-1">Các file trong phiên nộp này:</div>
+							<div v-for="(fItem, fIdx) in ver.items.filter(i => i.File_ID)" :key="fIdx" class="ml-2 mb-1">
+								<v-icon small color="primary" class="mr-1">mdi-file-document-outline</v-icon>
+								<span class="font-weight-medium">{{ fItem.Task_Detail_Description }}:</span>
+								<a :href="vueData.v_Set.urlReadFile + fItem.File_URL" target="_blank" class="ml-1 text-decoration-none blue--text">
+									{{ fItem.File_Name }}
+								</a>
+							</div>
+						</v-card>
+					</div>
+				</v-card-text>
+				<v-card-actions class="pb-3 px-4">
+					<v-spacer />
+					<v-btn color="primary" text @click="historyModal = false">Đóng</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</v-container>
 </template>
 
@@ -248,6 +305,10 @@
 	            DsDiemHocPhan: [],
 	            student_id: null,
 	            checkSDH: null,
+	            latestRejectionReason: '',
+	            historyModal: false,
+	            historyLoading: false,
+	            historyList: [],
 	            checkDeTaiFlag: null,
 	            resultKtraDeTai: null,
 	            bangDiemLabel: 'Danh sách môn học',
@@ -345,6 +406,22 @@
 	        PanelControl: function () {
 	            return vueData.Panel
 	        },
+			studentHistoryVersions() {
+				if (!this.historyList || this.historyList.length === 0) return [];
+				const groups = {};
+				for (const item of this.historyList) {
+					const key = item.NgayTaoLichSu || item.LyDo || 'version';
+					if (!groups[key]) {
+						groups[key] = {
+							date: item.NgayTaoLichSu ? item.NgayTaoLichSu.replace('T', ' ').substring(0, 19) : '',
+							reason: item.LyDo,
+							items: []
+						};
+					}
+					groups[key].items.push(item);
+				}
+				return Object.values(groups);
+			},
 	    },
 	    watch: {
 	        rootflow: function (val) {
@@ -894,6 +971,16 @@
 	                        })
 	                        console.log('xxx', $this.dataDetailFlow)
 	                    })
+
+	                    if (root && root.Flow_Status === 'R') {
+	                        ajaxCALL('/SDH_Get_FlowDetail_His', { Flow_ID: FLOW_ID }, (hisRes) => {
+	                            if (hisRes && hisRes.data && hisRes.data.length > 0) {
+	                                $this.latestRejectionReason = hisRes.data[0].LyDo || ''
+	                            }
+	                        })
+	                    } else {
+	                        $this.latestRejectionReason = ''
+	                    }
 	                },
 	                (error) => {
 	                    Vue.$toast.error(`${error.responseJSON.Message}`, { position: 'top' })
@@ -940,6 +1027,25 @@
 	            })
 	        },
 	
+	        isStep5(item) {
+	            if (!item) return false
+	            const seq = Number(item.Seq || item.SEQ || 0)
+	            const taskId = Number(item.Task_ID || item.Children_Task_ID || 0)
+	            return seq === 30 || [4, 22].includes(taskId) || ['ThS03', 'ThSUD03'].includes(item.Task_Code)
+	        },
+	        async openHistoryModal(flowId) {
+	            this.historyModal = true
+	            this.historyLoading = true
+	            try {
+	                const res = await ajaxCALLPromise('/SDH_Get_FlowDetail_His', { Flow_ID: flowId })
+	                this.historyList = res || []
+	            } catch (e) {
+	                console.log('Error loading history: ', e)
+	                this.historyList = []
+	            } finally {
+	                this.historyLoading = false
+	            }
+	        },
 	        checkDeTaiDaDky(studentID, textContent) {
 	            ajaxCALL(
 	                '/Student_Check_TenDeTaiDaDangKy',
@@ -989,6 +1095,12 @@
 	                        return 'amber'
 	                    case 'P': //P:PROCESSING
 	                        return 'blue darken-2'
+	                    case 'R': //R: REJECTED
+	                        return 'red darken-2'
+	                    case 'C': //C: COMPLETED
+	                        return 'green darken-1'
+	                    default:
+	                        return 'secondary'
 	                }
 	            }
 	        },

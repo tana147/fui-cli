@@ -1,94 +1,101 @@
 # AGENT HANDOFF: lhu-qldetaisdh
 
-- **Generated At:** 2026-10-21T10:58:30+07:00
+- **Generated At:** 2026-10-22T11:12:00+07:00
 - **Workspace Root:** `/home/iot/CODE/fui-cli/lhu-qldetaisdh`
 - **Status:** `done`
-- **Next Session Focus:** Kiểm tra vận hành thực tế giao diện và phân quyền sau khi chuẩn hóa 32 module sang kebab-case tiếng Việt và đồng bộ Menu; rà soát các module/báo cáo nghiệp vụ tiếp theo nếu có yêu cầu.
+- **Next Session Focus:** Kiểm tra vận hành thực tế quy trình kiểm tra đạo văn và duyệt/từ chối Bước 5 trên môi trường live giữa chuyên viên SDH và học viên thực tế; mở rộng hoặc kiểm tra các bước tiếp theo nếu có yêu cầu.
 
 ## 1. NEXT SESSION ACTION PLAN
-1. Kiểm tra đăng nhập với các vai trò người dùng (Học viên ThS, Nghiên cứu sinh TS, Giảng viên, Quản trị) trên web live để kiểm tra router và phân quyền menu mới.
-2. Kiểm tra tính năng in ấn các biểu mẫu (quyết định, danh sách bảo vệ, tem bưu điện) để đảm bảo các URL báo cáo mới hoạt động trơn tru.
-3. Nếu phát sinh nhu cầu, bổ sung phân quyền tĩnh `sys_FunctionRight` cho các ModuleID mới nếu có cấu hình quyền đặc thù trên hệ thống SSO/acc.
+1. Theo dõi chuyên viên SDH thao tác thực tế tại module `ths-duyet-tien-do` ở Bước 5: tải file luận văn (PDF/WORD) về kiểm tra đạo văn, upload file kết quả kiểm tra đạo văn và thực hiện duyệt hoặc từ chối.
+2. Kiểm tra tài khoản học viên thực tế tại `ths-luan-van-cua-toi`: khi bị từ chối nhận thông báo màu đỏ kèm lý do, xem được lịch sử các lần nộp trước, và chỉ cần nộp lại file PDF/WORD mới.
+3. Khi học viên nộp lại, xác nhận phía SDH thấy mục kết quả kiểm tra đạo văn đã tự động reset về trống và sẵn sàng upload file kiểm tra của phiên mới.
 
 ## 2. SUGGESTED SKILLS
-- `code-review-pragmatic`: Khi cần kiểm tra lại logic nghiệp vụ hoặc các component sau refactor.
+- `code-review-pragmatic`: Khi cần kiểm tra lại logic nghiệp vụ hoặc các component sau triển khai.
 - `change-set-review`: Khi cần review git diff trước khi merge hoặc triển khai tiếp.
 
 ## 3. GIT & COMMIT STATE
 - **Branch:** `main`
 - **Relevant Recent Commits:**
-  - `1bd3b37` — refactor(lhu-qlnckh): chuan hoa dat ten module kebab-case va dong bo menu
-  - `53f2d20` — chore(lhu-qldetaisdh): clean up unused modules, stored procedures, snapshot tables and orphan files
+  - `9ae0cec` — feat(lhu-qlnckh): mo rong du lieu nckh va toi uu ly lich khoa hoc
+  - `c28d9f5` — refactor(lhu-qldetaisdh): chuan hoa dat ten module kebab-case va dong bo menu
 - **Working Tree Ownership:**
   - **Current task changes:**
-    - `lhu-qldetaisdh/modules/`: 32 module đã được đổi tên thư mục sang chuẩn `kebab-case` (`ths-*` cho Thạc sĩ, `ts-*` cho Tiến sĩ) và publish lên server.
-    - `lhu-qldetaisdh/modules/_modules.json`: Cập nhật metadata 32 module mới.
-    - `lhu-qldetaisdh/project.json`: Đồng bộ toàn bộ URL và tên menu sang URL mới.
-    - `lhu-qldetaisdh/_projectInfo.json`: Cập nhật router mặc định `ths-tong-quan`.
-    - `lhu-qldetaisdh/.handoff/HANDOFF.md`: Handoff ghi lại toàn bộ ngữ cảnh phiên làm việc.
+    - `lhu-qldetaisdh/_db/qldetaisdh/spAPI_SDH_Reject_Defend_Thesis.sql`: Stored procedure xử lý từ chối Bước 5, snapshot vào `Flow_Detail_His`, reset file 5.6/5.7, validate bắt buộc file check đạo văn.
+    - `lhu-qldetaisdh/_db/qldetaisdh/spAPI_FlowDetail_UpdateMulti.sql`: Tự động reset file kiểm tra đạo văn khi học viên nộp lại luận văn mới; chặn học viên ghi đè trường của SDH.
+    - `lhu-qldetaisdh/_db/qldetaisdh/spAPI_Get_RootFlow.sql`: Bỏ ánh xạ hardcode `GV0000611 -> 924000233`.
+    - `lhu-qldetaisdh/_db/qldetaisdh/spAPI_SDH_Get_FlowDetail_His.sql`: Lấy danh sách lịch sử nộp kèm `LyDo` và `NgayTaoLichSu`.
+    - `lhu-qldetaisdh/modules/ths-duyet-tien-do/components/uc-detail-flow.vue`: Nút Từ chối và Lịch sử nộp chỉ hiện ở Bước 5; dialog từ chối kèm validate bắt buộc upload file đạo văn; dialog lịch sử nộp; chip trạng thái 'R'.
+    - `lhu-qldetaisdh/modules/ths-luan-van-cua-toi/components/master-route.vue`: Cảnh báo từ chối và nút Lịch sử nộp chỉ hiện ở Bước 5; sửa lỗi tàng hình tiêu đề Bước 5 bằng cách gán `case 'R': return 'red darken-2'`.
+    - `lhu-qldetaisdh/modules/ths-luan-van-cua-toi/components/file-comp.vue`: Bảo vệ file đạo văn không cho học viên xóa hoặc upload đè.
+    - `lhu-qldetaisdh/modules/ths-quan-ly-hoc-vien/components/dialog-upd-task.vue`: Bổ sung cảnh báo từ chối, nút Lịch sử nộp và dialog lịch sử cho Admin.
+    - `lhu-qldetaisdh/.handoff/HANDOFF.md`: Tài liệu bàn giao ngữ cảnh.
   - **Pre-existing dirty / unrelated:**
-    - `lhu-qlnckh/`: Thay đổi đang dở dang ở module `hdkh-ly-lich-khoa-hoc` (KHÔNG động vào/revert).
-    - `_history/lhu-qlnckh/`: Metadata lịch sử của `lhu-qlnckh`.
+    - `../lhu-qlnckh/`: Thay đổi đang dở dang ở phân hệ NCKH (DO NOT touch/revert).
+    - `../_logs/tool-errors.jsonl`: Log CLI.
+    - `../_history/`: Backup lịch sử tự động của fui CLI.
 - **Quick Inspect Commands:**
-  - `git status -s lhu-qldetaisdh/`
-  - `fui module list -p lhu-qldetaisdh`
+  - `git diff lhu-qldetaisdh/`
+  - `fui file status -p lhu-qldetaisdh --all`
 
 ## 4. PROBLEM & SYSTEM FLOW
-- **Objective:** Chuẩn hóa toàn bộ ModuleID và ModuleName sang `kebab-case` tiếng Việt theo 2 phân hệ rõ ràng (Tiến sĩ: `ts-`, Thạc sĩ: `ths-`), đồng bộ lại menu hệ thống, cập nhật các URL chuyển hướng/in ấn nội bộ, và publish cấu hình lên máy chủ FUI.
-- **Expected:** Toàn bộ 32 module có ID và tên chuẩn ngữ nghĩa, khắc phục lỗi chính tả cũ, menu điều hướng khớp chính xác với router, không còn link gãy.
-- **Actual:** Đã hoàn thành 100%. 32 module đã được cập nhật trên server (`fui module update`), thư mục mã nguồn được đổi tên, 6 vị trí mã nguồn gọi URL tĩnh đã được sửa và đẩy lên server (`fui file push`), cấu hình `project.json` đã được đẩy lên server (`fui project publish-config`).
+- **Objective:** Bổ sung quy trình kiểm tra đạo văn và phê duyệt/từ chối tại Bước 5 (Đăng ký bảo vệ Luận văn / Đồ án ThS). Khi từ chối, lưu snapshot phiên nộp vào lịch sử, reset 2 file luận văn (PDF/WORD) để học viên nộp lại. Khi học viên nộp lại, tự động reset file kiểm tra đạo văn. Sinh tiêu chí cho toàn bộ 457 học viên chưa hoàn thành bước 5 và tích hợp vào quy trình tạo mới.
+- **Expected:** SDH tải file luận văn về check đạo văn -> upload file kết quả -> duyệt hoặc từ chối. Học viên thấy lý do từ chối và lịch sử nộp -> nộp lại file mới. Khi nộp lại, file đạo văn cũ được reset về trống để SDH kiểm tra phiên mới.
+- **Actual:** Hoàn thành 100%. Đã test đầy đủ các kịch bản (duyệt tất cả, từ chối kèm file đạo văn, chặn từ chối khi thiếu file, reset file khi HV nộp lại, khắc phục lỗi dup lịch sử cũ và lỗi tên đề tài). Đã sinh dữ liệu cho 457 học viên và xóa sạch dữ liệu test.
 - **Flow Analysis:**
-  - **Input:** Yêu cầu người dùng refactor kebab-case tiếng Việt, gom nhóm Thạc sĩ (`ths-`) và Tiến sĩ (`ts-`).
-  - **Process:** Phân tích toàn bộ 32 module -> Thống kê đề xuất -> User xác nhận -> Chạy `fui module update` đổi ID/tên trên server và đổi tên folder local -> Cập nhật URL trong .vue/.js -> `fui file push` -> Cập nhật menu `project.json` -> `fui project publish-config`.
-  - **State:** Server FUI và local workspace đồng bộ 32 module mới.
-  - **Output:** URL chuẩn hóa dạng `qldetaisdh.lhu.edu.vn/ths-...` và `qldetaisdh.lhu.edu.vn/ts-...`.
-  - **Side Effects:** Đã cập nhật tất cả các URL tĩnh nội bộ gọi tới module cũ để tránh lỗi 404 khi người dùng bấm in ấn hoặc chuyển trang.
+  - **Input:** File luận văn của HV (5.6 PDF, 5.7 WORD), file kết quả kiểm tra đạo văn của SDH (`fileCheckDaoVan`), lý do từ chối.
+  - **Process:**
+    - SDH Từ chối: `spAPI_SDH_Reject_Defend_Thesis` -> Validate có file đạo văn -> Snapshot vào `Flow_Detail_His` -> Reset 5.6 & 5.7 -> `Flow_Status = 'R'`.
+    - HV Nộp lại: `onSave` -> `spAPI_FlowDetail_UpdateMulti` -> Nhận file mới -> Reset `fileCheckDaoVan` -> `Flow_Status = 'P'`.
+    - SDH Duyệt tất cả: `onCheckAll` -> `spAPI_FlowDetail_UpdateMulti` với `IsApproveAll = 1` -> Kiểm tra khớp tên đề tài -> Hoàn thành bước 5 (`Flow_Status = 'C'`) -> Auto-next bước 6.
+  - **State:** `Flow_Status` chuyển đổi linh hoạt: `P` (chờ duyệt) <-> `R` (từ chối nộp lại) -> `C` (hoàn thành).
+  - **Output:** Giao diện trực quan màu đỏ (`red darken-2`) khi bị từ chối; xem chi tiết từng phiên nộp qua popup lịch sử.
+  - **Side Effects:** Đã cô lập hoàn toàn: chỉ lưu lịch sử và reset mục 5.6 và 5.7, toàn bộ các tiêu chí khác (Lý lịch khoa học, Đơn đăng ký, Nhận xét GVHD, Học phí, Điểm...) giữ nguyên 100%.
 
 ## 5. RELEVANT CODE & ARTIFACT REFERENCES
-- **Project Config:**
-  - `lhu-qldetaisdh/project.json:7-324` (Cấu trúc menu điều hướng mới)
-  - `lhu-qldetaisdh/_projectInfo.json:9` (`Router: "ths-tong-quan"`)
-- **Key Code Modifications:**
-  - `lhu-qldetaisdh/modules/ths-tong-quan/script.js:33` (Redirect `/ths-luan-van-cua-toi`)
-  - `lhu-qldetaisdh/modules/ths-hoi-dong/script.js:8,704` (In quyết định & danh sách bảo vệ)
-  - `lhu-qldetaisdh/modules/ths-hoi-dong/components/dialog-tem-buu-kien.vue:166` (In tem bưu điện)
-  - `lhu-qldetaisdh/modules/ths-hoi-dong/components/dialog-detai-thanhvien.vue:599` (In tem dán)
-  - `lhu-qldetaisdh/modules/ths-quan-ly-quyet-dinh/components/uc-main-page.vue:187` (In quyết định giao đề tài)
-  - `lhu-qldetaisdh/modules/ths-moi-giang-vien/script.js:3` & `select-student-dialog.vue:120` (In thư mời)
-  - `lhu-qldetaisdh/modules/ths-luan-van-cua-toi/components/student-container.vue:49,60` & `master-route.vue:424` (Redirect `/ts-luan-an-cua-toi`)
-  - `lhu-qldetaisdh/modules/ts-luan-an-cua-toi/components/uc-main-page.vue:203` (Redirect `/ths-luan-van-cua-toi`)
-  - `lhu-qldetaisdh/modules/ths-gia-han-de-tai/components/extend-time-topic.vue:90` (Redirect `/ths-luan-van-cua-toi`)
-  - `lhu-qldetaisdh/modules/ths-doi-de-tai/components/change-topic-container.vue:138` (Redirect `/ths-luan-van-cua-toi`)
+- **Database Procedures:**
+  - `_db/qldetaisdh/spAPI_SDH_Reject_Defend_Thesis.sql` (Thủ tục từ chối Bước 5)
+  - `_db/qldetaisdh/spAPI_FlowDetail_UpdateMulti.sql` (Cập nhật dữ liệu & tự động reset file đạo văn khi HV nộp lại)
+  - `_db/qldetaisdh/spAPI_SDH_Get_FlowDetail_His.sql` (Lấy dữ liệu lịch sử nộp)
+  - `_db/qldetaisdh/spAPI_Get_RootFlow.sql` (Cây quy trình chính)
+- **Frontend Components:**
+  - `modules/ths-duyet-tien-do/components/uc-detail-flow.vue` (Màn hình duyệt của SDH)
+  - `modules/ths-luan-van-cua-toi/components/master-route.vue` (Màn hình tiến trình của Học viên)
+  - `modules/ths-luan-van-cua-toi/components/file-comp.vue` (Component upload file của Học viên)
+  - `modules/ths-quan-ly-hoc-vien/components/dialog-upd-task.vue` (Màn hình cập nhật tiến trình của Admin)
 
 ## 6. SESSION KNOWLEDGE (FACTS vs HYPOTHESES)
 ### Verified Facts
-- [FACT] 32 module đã được cập nhật thành công trên máy chủ FUI (Evidence: `fui module list -p lhu-qldetaisdh` trả về 32 module tiền tố `ths-` và `ts-`).
-- [FACT] Toàn bộ 32 thư mục module cục bộ đã được đổi tên tương ứng (Evidence: `ls -1 modules | grep -E "^(ths|ts)-" | wc -l` = 32).
-- [FACT] Cấu hình menu và router mặc định trong `project.json` đã được publish lên máy chủ (Evidence: `fui project publish-config` exit 0).
-- [FACT] Toàn bộ các component và script sửa đổi đã được publish thành công lên máy chủ (Evidence: `fui file push` exit 0).
+- [FACT] Toàn bộ 457 học viên chưa hoàn thành Bước 5 đã có tiêu chí `fileCheckDaoVan` trong `Flow_Detail` (177 học viên `Flow_Status = 'P'`, 280 học viên `Flow_Status = 'W'`).
+- [FACT] `Task_Detail` đã có sẵn `fileCheckDaoVan` cho `Task_ID = 4` (`Task_Detail_ID = 284`) và `Task_ID = 22` (`Task_Detail_ID = 283`) với `USE_YN = 1`. Mọi học viên mới được tạo qua `spAPI_Process_Student_Ins` sẽ tự động sinh tiêu chí này.
+- [FACT] Dữ liệu test của `GV0000611` đã được xóa sạch hoàn toàn khỏi tất cả các bảng (0 bản ghi).
+- [FACT] Tất cả 4 stored procedures đã deploy thành công qua `fui sp deploy`.
+- [FACT] Tất cả các component .vue sửa đổi đã được push lên server FUI (`fui file status`: 0 unpublished files).
 
 ### Active Hypotheses
 - None.
 
 ### Assumptions & Unknowns
-- [ASSUMPTION] Các tài khoản người dùng cũ truy cập qua menu hoặc router mặc định sẽ không bị ảnh hưởng bởi thay đổi URL vì toàn bộ menu và liên kết nội bộ đã được cập nhật.
+- None.
 
 ## 7. TESTS, LOGS & DIAGNOSTICS
 - **Overall Verification Status:** `PASS`
 - **Test / Benchmark Runs:**
-  - `fui module list -p lhu-qldetaisdh` → **Result:** PASS (32/32 modules updated on server)
-  - `fui project publish-config -p lhu-qldetaisdh` → **Result:** PASS (project.json published)
-  - `fui project sync -p lhu-qldetaisdh` → **Result:** PASS (modules 32, project components 13, project imports 6)
+  - `fui file status -p lhu-qldetaisdh --all` → **Result:** PASS (0 unpublished files)
+  - `fui sp deploy -p lhu-qldetaisdh spAPI_FlowDetail_UpdateMulti` → **Result:** PASS (exit code 0)
+  - `fui sp deploy -p lhu-qldetaisdh spAPI_SDH_Reject_Defend_Thesis` → **Result:** PASS (exit code 0)
+  - `fui sp deploy -p lhu-qldetaisdh spAPI_SDH_Get_FlowDetail_His` → **Result:** PASS (exit code 0)
+  - `fui sp deploy -p lhu-qldetaisdh spAPI_Get_RootFlow` → **Result:** PASS (exit code 0)
 - **Critical Error / Log Snippet:**
 ```text
 None (All CLI operations exited with code 0)
 ```
 
 ## 8. ATTEMPTS & DEAD ENDS (DO NOT REPEAT)
-- **Attempt 1:** Phân loại ban đầu thành 4 nhóm (Thạc sĩ, Tiến sĩ, Báo cáo/In, Dùng chung).
-  - **Result:** Người dùng yêu cầu gom toàn bộ các module ngoài Tiến sĩ về Thạc sĩ (`ths-`).
-  - **Conclusion:** Đã điều chỉnh toàn bộ 25 module còn lại thống nhất dùng tiền tố `ths-`.
+- **Attempt 1:** Ghi snapshot vào bảng `Flow_His` khi từ chối hồ sơ Bước 5.
+  - **Result:** Làm lẫn lộn với tính năng *"Xác nhận Đăng ký mới"* của `spAPI_Reset_Student_Process`, gây ra lỗi duplicate Bước 5 trong popup *"Dữ liệu đăng ký cũ"*.
+  - **Conclusion:** Đã xóa bỏ `INSERT INTO Flow_His` khỏi `spAPI_SDH_Reject_Defend_Thesis`. Lịch sử các phiên nộp/từ chối chỉ lưu vào bảng chuyên trách `Flow_Detail_His`.
 
 ## 9. CONSTRAINTS & RISKS
-- **Contracts to Preserve:** Giữ nguyên các hàm `ajaxCALL`, component props, định dạng payload tAPI/MSSQL trong các module.
-- **Side Effects / Tradeoffs:** Người dùng nếu có bookmark URL cũ (ví dụ `/my-thesis`) trên trình duyệt cá nhân sẽ cần chuyển sang dùng URL mới `/ths-luan-van-cua-toi` hoặc truy cập qua trang chủ `/ths-tong-quan`.
+- **Contracts to Preserve:** Giữ nguyên các tham số của `spAPI_FlowDetail_UpdateMulti` và `spAPI_Get_RootFlow`; giữ nguyên các hàm `ajaxCALLPromise`, props của component.
+- **Side Effects / Tradeoffs:** Không có. File kiểm tra của các phiên nộp cũ luôn được bảo toàn trong `Flow_Detail_His`.

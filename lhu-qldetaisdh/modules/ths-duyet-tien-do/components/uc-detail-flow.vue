@@ -192,6 +192,14 @@
 					</v-btn>
 				</template>
 				<template v-else>
+					<v-btn v-if="isStep5" color="grey" outlined @click="openHistoryDialog(activeRootStep)">
+						<v-icon left>mdi-history</v-icon>
+						Lịch sử nộp
+					</v-btn>
+					<v-btn v-if="isStep5" color="error" dark @click="openRejectDialog(activeRootStep)">
+						<v-icon left>mdi-close-circle</v-icon>
+						Từ chối
+					</v-btn>
 					<v-btn color="success" dark @click="onSave(activeRootStep)">
 						<v-icon left>mdi-content-save</v-icon>
 						Lưu thông tin
@@ -203,6 +211,76 @@
 				</template>
 			</div>
 		</div>
+
+		<!-- Dialog Từ chối hồ sơ -->
+		<v-dialog v-model="rejectDialog" max-width="500" persistent>
+			<v-card>
+				<v-card-title class="headline error--text pb-2">
+					<v-icon color="error" class="mr-2">mdi-alert-circle</v-icon>
+					Từ chối hồ sơ & yêu cầu nộp lại
+				</v-card-title>
+				<v-card-text class="pt-3">
+					<p class="text-caption grey--text mb-2">
+						Khi từ chối, toàn bộ phiên nộp hiện tại (file đồ án, file check đạo văn...) sẽ được snapshot vào lịch sử. Học viên sẽ nhận được lý do và nộp lại bản mới.
+					</p>
+					<v-textarea v-model="rejectionReason" label="Lý do từ chối (*)" outlined rows="3"
+						placeholder="Ví dụ: Tỷ lệ trùng lặp 35%, vượt mức cho phép 20%. Vui lòng chỉnh sửa và nộp lại."
+						color="error" auto-grow hide-details />
+				</v-card-text>
+				<v-card-actions class="pb-3 px-4">
+					<v-spacer />
+					<v-btn text @click="rejectDialog = false" :disabled="isRejecting">Hủy</v-btn>
+					<v-btn color="error" dark @click="confirmReject" :loading="isRejecting">
+						Xác nhận từ chối
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+
+		<!-- Dialog Lịch sử nộp bài & kiểm tra đạo văn -->
+		<v-dialog v-model="historyDialog" max-width="750">
+			<v-card>
+				<v-card-title class="headline primary--text pb-2">
+					<v-icon color="primary" class="mr-2">mdi-history</v-icon>
+					Lịch sử các phiên nộp & kiểm tra đạo văn
+				</v-card-title>
+				<v-card-text class="pt-2">
+					<div v-if="historyLoading" class="text-center py-4">
+						<v-progress-circular indeterminate color="primary" class="mr-2" />
+						<span>Đang tải lịch sử...</span>
+					</div>
+					<div v-else-if="historyVersions.length === 0" class="text-center py-6 grey--text">
+						Chưa có dữ liệu lịch sử các lần từ chối trước đó.
+					</div>
+					<div v-else>
+						<v-card v-for="(ver, idx) in historyVersions" :key="idx" outlined class="mb-3 pa-3">
+							<div class="d-flex justify-space-between align-center mb-1">
+								<span class="font-weight-bold red--text">
+									Phiên nộp #{{ historyVersions.length - idx }}
+								</span>
+								<span class="text-caption grey--text">{{ ver.date }}</span>
+							</div>
+							<div class="mb-2">
+								<b>Lý do từ chối:</b>
+								<span class="error--text ml-1">{{ ver.reason || 'Không có lý do' }}</span>
+							</div>
+							<div class="text-caption grey--text mb-1">Các file trong phiên nộp này:</div>
+							<div v-for="(fItem, fIdx) in ver.items.filter(i => i.File_ID)" :key="fIdx" class="ml-2 mb-1">
+								<v-icon small color="primary" class="mr-1">mdi-file-document-outline</v-icon>
+								<span class="font-weight-medium">{{ fItem.Task_Detail_Description }}:</span>
+								<a :href="urlReadFile + fItem.File_URL" target="_blank" class="ml-1 text-decoration-none blue--text">
+									{{ fItem.File_Name }}
+								</a>
+							</div>
+						</v-card>
+					</div>
+				</v-card-text>
+				<v-card-actions class="pb-3 px-4">
+					<v-spacer />
+					<v-btn color="primary" text @click="historyDialog = false">Đóng</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 
 		<v-card v-else flat class="d-flex align-center justify-center flex-grow-1" style="min-height: 200px;">
 			<div class="text-center grey--text">Đang tải tiến trình...</div>
@@ -237,6 +315,12 @@
 				checkDeTaiFlag: null,
 				resultKtraDeTai: null,
 				textRules: [(v) => !!v || 'Không được để trống'],
+				rejectDialog: false,
+				rejectionReason: '',
+				isRejecting: false,
+				historyDialog: false,
+				historyLoading: false,
+				historyList: [],
 				headers: [
 					{ text: 'Tên đề tài', value: 'ThesisName' },
 					{ text: 'Khoa', value: 'ThesisMajor' },
@@ -263,6 +347,29 @@
 			},
 			isSystemRight1() {
 				return this.systemRight === 1 || (typeof vueData !== 'undefined' && vueData.user && vueData.user.SystemRight === 1);
+			},
+			isStep5() {
+				const step = this.activeRootStep;
+				if (!step) return false;
+				const taskId = Number(step.Children_Task_ID || step.Task_ID || 0);
+				const seq = Number(step.Seq || step.SEQ || 0);
+				return seq === 30 || [4, 22].includes(taskId) || ['ThS03', 'ThSUD03'].includes(step.Task_Code);
+			},
+			historyVersions() {
+				if (!this.historyList || this.historyList.length === 0) return [];
+				const groups = {};
+				for (const item of this.historyList) {
+					const key = item.NgayTaoLichSu || item.LyDo || 'version';
+					if (!groups[key]) {
+						groups[key] = {
+							date: item.NgayTaoLichSu ? item.NgayTaoLichSu.replace('T', ' ').substring(0, 19) : '',
+							reason: item.LyDo,
+							items: []
+						};
+					}
+					groups[key].items.push(item);
+				}
+				return Object.values(groups);
 			},
 		},
 		watch: {
@@ -305,6 +412,7 @@
 					case 'C': return 'green darken-2';
 					case 'W': return 'amber darken-2';
 					case 'P': return 'blue darken-2';
+					case 'R':
 					case 'D': return 'red darken-2';
 					case 'N': return 'grey darken-1';
 					default: return 'primary';
@@ -315,6 +423,7 @@
 					case 'C': return 'Đã duyệt';
 					case 'W': return 'Chờ duyệt';
 					case 'P': return 'Đang duyệt';
+					case 'R':
 					case 'D': return 'Bị từ chối';
 					case 'N': return 'Chưa duyệt';
 					default: return 'Đang duyệt';
@@ -509,6 +618,68 @@
 					this.$emit('on-reload');
 				} catch (err) {
 					Vue.$toast.error(`${err?.responseJSON?.Message || 'Duyệt thất bại'}`, { position: 'top' });
+				}
+			},
+			openRejectDialog(root) {
+				const daoVanItem = (this.detailProcess || []).find((i) => i.FieldName === 'fileCheckDaoVan');
+				const hasDaoVan = daoVanItem && (
+					(daoVanItem.File_ID && String(daoVanItem.File_ID).trim() !== '') ||
+					(daoVanItem.FILE_UPLOAD && daoVanItem.FILE_UPLOAD.File_ID)
+				);
+				if (!hasDaoVan) {
+					Vue.$toast.error('Vui lòng upload file kết quả kiểm tra đạo văn trước khi từ chối hồ sơ', { position: 'top' });
+					return;
+				}
+				this.rejectionReason = '';
+				this.rejectDialog = true;
+			},
+			async confirmReject() {
+				const daoVanItem = (this.detailProcess || []).find((i) => i.FieldName === 'fileCheckDaoVan');
+				const fileIdDaoVan = daoVanItem?.File_ID || daoVanItem?.FILE_UPLOAD?.File_ID || '';
+				const fileNameDaoVan = daoVanItem?.File_Name || daoVanItem?.FILE_UPLOAD?.File_Name || '';
+				const fileUrlDaoVan = daoVanItem?.File_URL || daoVanItem?.FILE_UPLOAD?.File_URL || '';
+
+				if (!fileIdDaoVan) {
+					Vue.$toast.error('Vui lòng upload file kết quả kiểm tra đạo văn trước khi từ chối hồ sơ', { position: 'top' });
+					return;
+				}
+				if (!this.rejectionReason || !this.rejectionReason.trim()) {
+					Vue.$toast.error('Vui lòng nhập lý do từ chối', { position: 'top' });
+					return;
+				}
+				this.isRejecting = true;
+				try {
+					await ajaxCALLPromise('/SDH_Reject_Defend_Thesis', {
+						Student_ID: this.studentDisplayId,
+						Flow_ID: this.activeRootStep?.Flow_ID,
+						Task_ID: this.activeRootStep?.Children_Task_ID || this.detailProcess[0]?.TASK_ID,
+						LyDo: this.rejectionReason.trim(),
+						File_ID_DaoVan: fileIdDaoVan,
+						File_Name_DaoVan: fileNameDaoVan,
+						File_URL_DaoVan: fileUrlDaoVan,
+						sys_UserID: window.vueData?.user?.UserID || ''
+					});
+					Vue.$toast.success('Đã từ chối và lưu lịch sử phiên nộp thành công', { position: 'top' });
+					this.rejectDialog = false;
+					this.$emit('on-reload');
+				} catch (error) {
+					Vue.$toast.error(`Lỗi từ chối: ${error?.responseJSON?.Message || error?.message || ''}`, { position: 'top' });
+				} finally {
+					this.isRejecting = false;
+				}
+			},
+			async openHistoryDialog(root) {
+				this.historyDialog = true;
+				this.historyLoading = true;
+				try {
+					const flowId = root?.Flow_ID;
+					const res = await ajaxCALLPromise('/SDH_Get_FlowDetail_His', { Flow_ID: flowId });
+					this.historyList = res || [];
+				} catch (e) {
+					console.log('Error loading history: ', e);
+					this.historyList = [];
+				} finally {
+					this.historyLoading = false;
 				}
 			},
 			async onCheckButNotSave(detail, root) {

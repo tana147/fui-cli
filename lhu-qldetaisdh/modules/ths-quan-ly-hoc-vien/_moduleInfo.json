@@ -7,11 +7,9 @@
   "ModuleName": "Quản lý học viên (Thạc sĩ)",
   "UpdateTime": "2026-10-21 10:51:15",
   "UpdateUser": "DEV000068",
-  "LastLoad": "2026-10-20",
-  "LoadCount": 8889,
+  "LastLoad": "2026-10-21",
+  "LoadCount": 8899,
   "HTMLOnly": false,
   "Framework": "V2",
-  "mTitle": "",
-  "UpdateInfo": "DEV000068 - 2026-10-21 10:51:15",
-  "LoadInfo": "2026-10-20 [8889]"
+  "mTitle": ""
 }

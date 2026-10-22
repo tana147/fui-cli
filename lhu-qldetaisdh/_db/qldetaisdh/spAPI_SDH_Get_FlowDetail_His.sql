@@ -44,9 +44,12 @@ BEGIN
 		, B.AllowFileType
 		, B.Task_Help
 		, B.SubGroup
+		, A.LyDo
+		, A.Created_At AS NgayTaoLichSu
+		, A.Flow_Detail_His_ID
 	FROM Flow_Detail_His A 
 		INNER JOIN TASK_DETAIL B ON A.TASK_DETAIL_ID = B.TASK_DETAIL_ID
 	WHERE A.FLOW_ID = @Flow_ID 
 		AND A.USE_YN = 1 AND B.USE_YN = 1
-	ORDER BY B.TASK_DETAIL_SEQ
+	ORDER BY A.Flow_Detail_His_ID DESC, B.TASK_DETAIL_SEQ
 END

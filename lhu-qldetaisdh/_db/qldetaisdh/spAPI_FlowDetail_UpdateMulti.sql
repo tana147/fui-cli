@@ -132,7 +132,9 @@ BEGIN
 				fd.Updated_At = GETDATE()
 			FROM FLOW_DETAIL fd
 			INNER JOIN @DetailsTable dt ON fd.TASK_DETAIL_ID = dt.Task_Detail_ID
-			WHERE fd.FLOW_ID = @Flow_ID AND fd.TASK_ID = @Task_ID;
+			INNER JOIN TASK_DETAIL td ON fd.TASK_DETAIL_ID = td.TASK_DETAIL_ID
+			WHERE fd.FLOW_ID = @Flow_ID AND fd.TASK_ID = @Task_ID
+			  AND (@IsApproveAll = 1 OR @sys_SystemRight IN (1, 2, 3, 9) OR td.USER_INPUT <> 'SDH');
 		END
 		ELSE IF (@IsApproveAll = 1)
 		BEGIN
@@ -145,7 +147,24 @@ BEGIN
 			WHERE FLOW_ID = @Flow_ID AND TASK_ID = @Task_ID;
 		END
 
-		/* 2. DỌN CACHE P CỦA SDH */
+		/* 2. KHI HỌC VIÊN NỘP LẠI LUẬN VĂN, TỰ ĐỘNG RESET FILE CHECK ĐẠO VĂN CỦA SDH */
+		IF (@IsApproveAll = 0 AND (@sys_SystemRight NOT IN (1, 2, 3, 9) OR @sys_UserID = @Student_ID))
+		BEGIN
+			UPDATE fd
+			SET fd.File_ID = NULL,
+				fd.File_Name = NULL,
+				fd.File_URL = NULL,
+				fd.File_Type = NULL,
+				fd.Flow_Detail_Status = 'W',
+				fd.Updated_By = @sys_UserID,
+				fd.Updated_At = GETDATE()
+			FROM FLOW_DETAIL fd
+			INNER JOIN TASK_DETAIL td ON fd.TASK_DETAIL_ID = td.TASK_DETAIL_ID
+			WHERE fd.FLOW_ID = @Flow_ID 
+			  AND td.FieldName = 'fileCheckDaoVan';
+		END;
+
+		/* 3. DỌN CACHE P CỦA SDH */
 		UPDATE fd
 		SET
 			fd.FLOW_DETAIL_STATUS = 'W',

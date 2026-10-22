@@ -7,11 +7,9 @@
   "ModuleName": "Quản lý nghiên cứu sinh (Tiến sĩ)",
   "UpdateTime": "2026-10-21 10:51:10",
   "UpdateUser": "DEV000068",
-  "LastLoad": "2026-10-19",
-  "LoadCount": 347,
+  "LastLoad": "2026-10-21",
+  "LoadCount": 348,
   "HTMLOnly": false,
   "Framework": "V2",
-  "mTitle": "",
-  "UpdateInfo": "DEV000068 - 2026-10-21 10:51:10",
-  "LoadInfo": "2026-10-19 [347]"
+  "mTitle": ""
 }

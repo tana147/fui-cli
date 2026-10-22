@@ -7,7 +7,6 @@ AS
 BEGIN
 	DECLARE @Process_ID INT;
 	DECLARE @TASK_BEGIN INT;
-	IF @StudentID = 'GV0000611' SET @StudentID = '924000233'
 
 	IF (@Process_Student_ID IS NOT NULL AND @Process_Student_ID > 0)
 	BEGIN

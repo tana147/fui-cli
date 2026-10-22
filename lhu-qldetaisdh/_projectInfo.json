@@ -6,10 +6,10 @@
   "GroupName": "LHU",
   "Framework": "V2",
   "ProjectText": "Quản lý đề tài sau đại học @ lhu-qldetaisdh qldetaisdh.lhu.edu.vn",
-  "Router": "dashboard",
+  "Router": "ths-tong-quan",
   "url": "/fp/module?pid=lhu-qldetaisdh",
   "UserRight": 5,
   "UpdateUser": "DEV000068",
-  "UpdateTime": "2026-10-21T10:54:47.287",
-  "fetchedAt": "2026-10-21T03:55:14.987Z"
+  "UpdateTime": "2026-10-21T10:56:42.043",
+  "fetchedAt": "2026-10-22T02:21:49.497Z"
 }

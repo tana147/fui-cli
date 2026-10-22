@@ -2,12 +2,12 @@
 	<div>
 		<div class="file-upload-row pt-2 pb-2">
 			<div class="file-upload-action"
-				v-if="lock !== 0 && item.Flow_Status !== 'C' && (item.Flow_Status === 'W' || item.Flow_Status === 'P') && ItemDes.Task_Detail_Type !== 'FILEVIEW'">
+				v-if="lock !== 0 && item.Flow_Status !== 'C' && (item.Flow_Status === 'W' || item.Flow_Status === 'P' || item.Flow_Status === 'R') && ItemDes.Task_Detail_Type !== 'FILEVIEW' && ItemDes.User_Input !== 'SDH'">
 				<f-file-upload label="" v-model="ItemDes.FILE_UPLOAD" :url="vueData.v_Set.apiFile"
 					:filters="uploadFilters" color="v-btn--outlined v-size--default info--text" />
 			</div>
 			<div class="file-upload-status">
-				<div v-if="ItemDes.Task_Detail_Type === 'FILE' && ItemDes.Flow_Detail_Status !== 'C'">
+				<div v-if="ItemDes.Task_Detail_Type === 'FILE' && ItemDes.Flow_Detail_Status !== 'C' && ItemDes.User_Input !== 'SDH'">
 					<v-chip label outlined close v-if="ItemDes.File_ID" class="mb-3 p-2" color="deep-purple accent-4"
 						@click:close="deleteFile">
 						<v-icon left>mdi-file-check-outline</v-icon>
@@ -15,7 +15,7 @@
 							style="color: deep-purple accent-4">{{ ItemDes.File_Name }}</a>
 					</v-chip>
 				</div>
-				<div v-if="ItemDes.Task_Detail_Type !== 'FILE' || ItemDes.Flow_Detail_Status === 'C'">
+				<div v-if="ItemDes.Task_Detail_Type !== 'FILE' || ItemDes.Flow_Detail_Status === 'C' || ItemDes.User_Input === 'SDH'">
 					<v-chip label outlined v-if="ItemDes.File_ID" class="mb-3" color="deep-purple accent-4">
 						<v-icon left>mdi-file-check-outline</v-icon>
 						<a class="file-chip-link" :href="vueData.v_Set.urlReadFile + ItemDes.File_URL" target="_blank"
