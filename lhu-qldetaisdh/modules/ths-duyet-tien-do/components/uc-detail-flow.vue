@@ -389,6 +389,7 @@
 			async selectedRootIndex(val) {
 				this.checkDeTaiFlag = null;
 				this.resultKtraDeTai = null;
+				await this.cleanupUnsavedFiles();
 				if (val !== undefined && val !== null && this.activeDsRootProcess && this.activeDsRootProcess[val]) {
 					await this.onLoadDetail(this.activeDsRootProcess[val].Flow_ID);
 				}
@@ -396,6 +397,7 @@
 			studentId: {
 				async handler(newVal) {
 					if (newVal) {
+						await this.cleanupUnsavedFiles();
 						await this.onLoadStudentProcess(newVal);
 					}
 				},
@@ -405,8 +407,24 @@
 		mounted() {
 			this.DsNNDauRa = ChungChiNgoaiNgu_NameList();
 			this.DsTenNgoaiNgu = NgoaiNgu_NameList();
+			window.addEventListener('beforeunload', this.cleanupUnsavedFiles);
+		},
+		beforeDestroy() {
+			window.removeEventListener('beforeunload', this.cleanupUnsavedFiles);
+			this.cleanupUnsavedFiles();
 		},
 		methods: {
+			async cleanupUnsavedFiles() {
+				if (window.unsavedUploadedFiles && window.unsavedUploadedFiles.length > 0) {
+					const fileids = window.unsavedUploadedFiles.join(",");
+					try {
+						await ajaxCALLPromise("/FILE_FileDeleteMulti", { FileIDs: fileids });
+					} catch (e) {
+						console.error("Lỗi xóa file rác (ThS Duyet Tien Do):", e);
+					}
+					window.unsavedUploadedFiles = [];
+				}
+			},
 			getChipColor(status) {
 				switch (status) {
 					case 'C': return 'green darken-2';
@@ -572,6 +590,7 @@
 						JsonDetails: JSON.stringify(payloadDetails),
 						IsApproveAll: 0,
 					});
+					window.unsavedUploadedFiles = [];
 					Vue.$toast.success(`Cập nhật ${root.Task_Name} thành công`, { position: 'top' });
 				} catch (error) {
 					Vue.$toast.error(`${error?.responseJSON?.Message || 'Lỗi cập nhật'}`, { position: 'top' });
@@ -676,6 +695,7 @@
 						File_URL_DaoVan: fileUrlDaoVan,
 						sys_UserID: window.vueData?.user?.UserID || ''
 					});
+					window.unsavedUploadedFiles = [];
 					Vue.$toast.success('Đã từ chối và lưu lịch sử phiên nộp thành công', { position: 'top' });
 					this.rejectDialog = false;
 					this.$emit('on-reload');
@@ -743,6 +763,7 @@
 						IsApproveAll: 1,
 					});
 
+					window.unsavedUploadedFiles = [];
 					Vue.$toast.success(`Duyệt thành công`, { position: 'top' });
 					const lastIndex = detail.length - 1 >= 0 ? detail.length - 1 : 0;
 					if (detail.length > 0 && detail[lastIndex]?.FN_Check === 'fnLastProcess') {

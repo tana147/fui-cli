@@ -223,6 +223,9 @@
 				return base + cleanUrl;
 			},
 			removeFile() {
+				if (this.dsHocVien.DecisionFile_ID && this.dsHocVien.DecisionFile_ID !== this.cloneData?.DecisionFile_ID) {
+					this.deleteFile(this.dsHocVien.DecisionFile_ID);
+				}
 				this.dsHocVien.DecisionFile_ID = null;
 				this.dsHocVien.DecisionFile_Url = null;
 				this.dsHocVien.DecisionFile_Name = null;
@@ -236,6 +239,11 @@
 				const fileName = file.FILE_NAME ?? file.File_Name ?? file.name;
 				const fileUrl = file.FILE_URL ?? file.File_URL ?? (fileId ? "/FileData/" + fileId : null);
 
+				// Nếu đã upload file tạm trước đó trong phiên này thì xóa file tạm đó đi
+				if (this.dsHocVien.DecisionFile_ID && this.dsHocVien.DecisionFile_ID !== this.cloneData?.DecisionFile_ID && this.dsHocVien.DecisionFile_ID !== fileId) {
+					this.deleteFile(this.dsHocVien.DecisionFile_ID);
+				}
+
 				this.dsHocVien.DecisionFile_ID = fileId;
 				this.dsHocVien.DecisionFile_Url = fileUrl;
 				this.dsHocVien.DecisionFile_Name = fileName;
@@ -245,7 +253,7 @@
 				if (!fileID) return;
 				return new Promise((resolve) => {
 					ajaxCALL(
-						"/FileData_Delete",
+						"/FILE_FileDelete",
 						{ FileID: fileID },
 						() => resolve("success"),
 						() => resolve("error")
@@ -293,7 +301,11 @@
 					this.saving = false;
 				}
 			},
-			onClose() {
+			async onClose() {
+				// Xóa file rác nếu đã upload nhưng đóng không lưu
+				if (this.dsHocVien.DecisionFile_ID && this.dsHocVien.DecisionFile_ID !== this.cloneData?.DecisionFile_ID) {
+					await this.deleteFile(this.dsHocVien.DecisionFile_ID);
+				}
 				this.isOpen = false;
 			}
 		}

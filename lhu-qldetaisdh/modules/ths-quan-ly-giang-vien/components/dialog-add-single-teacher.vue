@@ -208,6 +208,8 @@
             const handleSuccess = () => {
                 Vue.$toast.success(`Thêm giảng viên thành công`, { position: 'top' })
                 CALL('getDsGiangVien')
+                this.FileVanBangID = null
+                this.FileLyLichID = null
                 this.closeDialog()
             }
 
@@ -242,19 +244,39 @@
         },
 
         closeDialog() {
+            if (this.FileVanBangID) {
+                ajaxCALL('/FILE_FileDelete', { FileID: this.FileVanBangID }, () => {}, () => {})
+            }
+            if (this.FileLyLichID) {
+                ajaxCALL('/FILE_FileDelete', { FileID: this.FileLyLichID }, () => {}, () => {})
+            }
             vueData.isAddTeacherDialog = false
             this.HocViHocHam = ''
             this.HoTen = ''
             this.CoQuan = ''
             this.NganhSelect = null
+            this.FileVanBangID = null
+            this.FileVanBangName = null
+            this.FileVanBangUrl = null
+            this.FileLyLichID = null
+            this.FileLyLichName = null
+            this.FileLyLichUrl = null
+            this.VanBang_Upload = null
+            this.LyLich_Upload = null
         },
         deleteVanBangFile() {
+            if (this.FileVanBangID) {
+                ajaxCALL('/FILE_FileDelete', { FileID: this.FileVanBangID }, () => {}, () => {})
+            }
             this.VanBang_Upload = null
             this.FileVanBangID = null
             this.FileVanBangName = null
             this.FileVanBangUrl = null
         },
         deleteLyLichFile() {
+            if (this.FileLyLichID) {
+                ajaxCALL('/FILE_FileDelete', { FileID: this.FileLyLichID }, () => {}, () => {})
+            }
             this.LyLich_Upload = null
             this.FileLyLichID = null
             this.FileLyLichName = null

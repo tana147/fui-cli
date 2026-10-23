@@ -16,7 +16,7 @@ BEGIN
 			, CASE WHEN LEN(D.[Decision_SoQD]) > 20 OR ISNULL(D.[Decision_SoQD],'') = '' THEN N'...../QĐ-ĐHLH' ELSE  D.[Decision_SoQD] END  AS Decision_SoQD
 			, CASE WHEN ISNULL(D.[Decision_NgayQD],'') = '' THEN ' .../' ELSE D.[Decision_NgayQD]  + '/' END  
 			+ CASE WHEN ISNULL(D.[Decision_ThangQD],'')= '' THEN ' .../' ELSE D.[Decision_ThangQD] + '/' END 
-			+ CASE WHEN ISNULL(D.[Decision_NamQD],'')= '' THEN ' 20... ' ELSE D.[Decision_ThangQD] END AS Decision_NgayQD
+			+ CASE WHEN ISNULL(D.[Decision_NamQD],'')= '' THEN ' 20... ' ELSE D.[Decision_NamQD] END AS Decision_NgayQD
 			, D.[Decision_TieuDe]
 			, D.[Decision_Nganh]
 			, D.[Decision_NganhID]

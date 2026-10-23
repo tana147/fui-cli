@@ -169,7 +169,7 @@
         FILE_UPLOAD: null,
       };
     },
-    async cleanupTempFiles() {
+    async deleteTempFiles() {
       if (this.tempUploadedFileIds.length > 0) {
         const fileIds = [...this.tempUploadedFileIds];
         this.tempUploadedFileIds = [];
@@ -182,6 +182,9 @@
           window.unsavedUploadedFiles = window.unsavedUploadedFiles.filter((id) => !fileIds.includes(id));
         }
       }
+    },
+    async cleanupTempFiles() {
+      await this.deleteTempFiles();
       this.resetDecisionFile();
       if (this.localDecision) {
         this.localDecision.DecisionFile_ID = this.detailDecision?.DecisionFile_ID || null;
@@ -223,7 +226,7 @@
       this.localDecision.DecisionFile_Name = fileDes?.File_Name || null;
       this.fileName = fileDes?.File_Name || "";
     },
-    handleSave() {
+    async handleSave() {
       if (!this.localDecision.Decision_SoQD) {
         Vue.$toast.error("Không được bỏ trống SQĐ", { position: "top" });
         return;
@@ -246,7 +249,16 @@
         }
       }
 
-      this.cleanupTempFiles();
+      // Xóa các file tạm thừa (nếu có) nhưng bảo lưu localDecision
+      await this.deleteTempFiles();
+
+      // Cập nhật detailDecision để khi dialog đóng (watch value: false), cleanupTempFiles không ghi đè mất file vừa lưu
+      if (this.detailDecision) {
+        this.detailDecision.DecisionFile_ID = this.localDecision.DecisionFile_ID;
+        this.detailDecision.DecisionFile_Url = this.localDecision.DecisionFile_Url;
+        this.detailDecision.DecisionFile_Name = this.localDecision.DecisionFile_Name;
+      }
+
       this.$emit("on-save", this.localDecision);
     },
   },

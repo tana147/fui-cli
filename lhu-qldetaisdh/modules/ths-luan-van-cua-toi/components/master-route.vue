@@ -397,10 +397,15 @@
 	            ],
 	        }
 	    },
-	    mounted() {
-	        this.DsNNDauRa = ChungChiNgoaiNgu_NameList()
-	        this.DsTenNgoaiNgu = NgoaiNgu_NameList()
-	    },
+		mounted() {
+			this.DsNNDauRa = ChungChiNgoaiNgu_NameList()
+			this.DsTenNgoaiNgu = NgoaiNgu_NameList()
+			window.addEventListener('beforeunload', this.cleanupUnsavedFiles)
+		},
+		beforeDestroy() {
+			window.removeEventListener('beforeunload', this.cleanupUnsavedFiles)
+			this.cleanupUnsavedFiles()
+		},
 	    created() { },
 	    computed: {
 	        PanelControl: function () {
@@ -476,6 +481,17 @@
 	        },
 	    },
 	    methods: {
+	        async cleanupUnsavedFiles() {
+	            if (window.unsavedUploadedFiles && window.unsavedUploadedFiles.length > 0) {
+	                const fileids = window.unsavedUploadedFiles.join(',')
+	                try {
+	                    await ajaxCALLPromise('/FILE_FileDeleteMulti', { FileIDs: fileids })
+	                } catch (e) {
+	                    console.error('Lỗi xóa file rác (HV):', e)
+	                }
+	                window.unsavedUploadedFiles = []
+	            }
+	        },
 	        preventNegative(e) {
 	            // Chặn các ký tự '-', 'e', '+' và số âm
 	            if (e.key === '-' || e.key === 'e' || e.key === '+') {
@@ -897,6 +913,7 @@
 	                    JsonDetails: JSON.stringify(payloadDetails),
 	                    IsApproveAll: 0
 	                })
+	                window.unsavedUploadedFiles = []
 	                Vue.$toast.success(`Cập nhật ${root.TASK_NAME} thành công`, { position: 'top' })
 	                // CALL('getStudentRootFlow')
 	            } catch (err) {

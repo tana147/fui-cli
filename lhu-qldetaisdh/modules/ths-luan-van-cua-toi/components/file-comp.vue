@@ -103,6 +103,11 @@
 						File_URL: url,
 						File_Size: size,
 					}
+
+					window.unsavedUploadedFiles = window.unsavedUploadedFiles || []
+					if (fileid && !window.unsavedUploadedFiles.includes(fileid)) {
+						window.unsavedUploadedFiles.push(fileid)
+					}
 				}
 			},
 		},
@@ -140,6 +145,10 @@
 			},
 			deleteFile() {
 				if (!this.ItemDes) return
+				if (this.ItemDes.File_ID && window.unsavedUploadedFiles && window.unsavedUploadedFiles.includes(this.ItemDes.File_ID)) {
+					ajaxCALL('/FILE_FileDelete', { FileID: this.ItemDes.File_ID }, () => {}, () => {})
+					window.unsavedUploadedFiles = window.unsavedUploadedFiles.filter((id) => id !== this.ItemDes.File_ID)
+				}
 				this.ItemDes.File_ID = null
 				this.ItemDes.File_URL = null
 				this.ItemDes.File_Name = null

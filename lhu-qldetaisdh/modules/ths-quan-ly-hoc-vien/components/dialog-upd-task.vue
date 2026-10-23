@@ -1336,6 +1336,7 @@
 	                    }
 	                }
 
+	                window.unsavedUploadedFiles = []
 	                Vue.$toast.success(`Cập nhật ${root.TASK_NAME || root.Task_Name || ''} thành công`, { position: 'top' })
 
 	                const flowId = root.Flow_ID || root.FLOW_ID || FLOW_ID
@@ -1508,6 +1509,7 @@
 	                })
 
 	                if (res !== null) {
+	                    window.unsavedUploadedFiles = []
 	                    Vue.$toast.success('Duyệt thành công', { position: 'top' })
 
 	                    const itemDeTai = (detail || $this.dataDetailFlow || []).find((d) => d.Task_Detail_ID === 46)
@@ -1587,6 +1589,7 @@
 	                })
 
 	                if (res !== null) {
+	                    window.unsavedUploadedFiles = []
 	                    Vue.$toast.success('Duyệt thành công', { position: 'top' })
 
 	                    // Liên kết tên đề tài bảo vệ nếu có Task_Detail_ID === 46

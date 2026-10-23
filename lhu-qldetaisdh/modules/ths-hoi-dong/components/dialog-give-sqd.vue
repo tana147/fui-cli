@@ -166,6 +166,9 @@
 		},
 		methods: {
 			removeFile() {
+				if (this.dsHocVien.DecisionFile_ID && this.dsHocVien.DecisionFile_ID !== this.cloneData?.DecisionFile_ID) {
+					this.deleteFile(this.dsHocVien.DecisionFile_ID)
+				}
 				this.dsHocVien.DecisionFile_ID = null
 				this.dsHocVien.DecisionFile_Url = null
 				this.dsHocVien.DecisionFile_Name = null
@@ -173,19 +176,27 @@
 			},
 	
 			uploadFile(value) {
-				// console.log("Upload file api", value)
 				let file = value.Files[0]
-				this.dsHocVien.DecisionFile_ID = file.FILE_ID
-				this.dsHocVien.DecisionFile_Url = file.FILE_URL
-				this.dsHocVien.DecisionFile_Name = file.FILE_NAME
-				this.fileName = file.FILE_NAME
+				const fileId = file.FILE_ID ?? file.File_ID ?? file.id
+				const fileUrl = file.FILE_URL ?? file.File_URL ?? (fileId ? '/FileData/' + fileId : null)
+				const fileName = file.FILE_NAME ?? file.File_Name ?? file.name
+
+				// Nếu trước đó đã upload file mới khác trong phiên này thì xóa file tạm đó đi
+				if (this.dsHocVien.DecisionFile_ID && this.dsHocVien.DecisionFile_ID !== this.cloneData?.DecisionFile_ID && this.dsHocVien.DecisionFile_ID !== fileId) {
+					this.deleteFile(this.dsHocVien.DecisionFile_ID)
+				}
+
+				this.dsHocVien.DecisionFile_ID = fileId
+				this.dsHocVien.DecisionFile_Url = fileUrl
+				this.dsHocVien.DecisionFile_Name = fileName
+				this.fileName = fileName
 			},
 	
 			deleteFile(fileID) {
-				const $this = this
-				return new Promise((resolve, reject) => {
+				if (!fileID) return Promise.resolve('skip')
+				return new Promise((resolve) => {
 					ajaxCALL(
-						'/FileData_Delete',
+						'/FILE_FileDelete',
 						{
 							FileID: fileID,
 						},
@@ -193,9 +204,8 @@
 							resolve('success')
 						},
 						(error) => {
-							Vue.$toast.error(`${error.responseJSON.Message}`, { position: 'top' })
-							console.log('fali to delete file', error.responseJSON.Message)
-							reject('error')
+							console.log('fail to delete file', error?.responseJSON?.Message)
+							resolve('error')
 						},
 					)
 				})
@@ -203,9 +213,9 @@
 	
 			async onSaveSQD() {
 				const $this = this
-				console.log('$this.dsHocVien', $this.dsHocVien)
 				if ($this.dsHocVien.Decision_SoQD !== '') {
-					if($this.cloneData.DecisionFile_ID){
+					// Chỉ xóa file cũ trong DB nếu người dùng đã thay thế bằng file mới
+					if ($this.cloneData?.DecisionFile_ID && $this.cloneData.DecisionFile_ID !== $this.dsHocVien.DecisionFile_ID) {
 						await $this.deleteFile($this.cloneData.DecisionFile_ID)
 					}
 
@@ -225,20 +235,22 @@
 						},
 						(res) => {
 							Vue.$toast.success(`Cập nhật thành công`, { position: 'top' })
-							// console.log("Update SQD complete", vueData.dsGetHoiDong)
 							CALL('getHoiDongDeTai')
 						},
 						(error) => {
-							Vue.$toast.error(`${error.responseJSON.Message}`, { position: 'top' })
-							// console.log("Error to update SQD", error)
+							Vue.$toast.error(`${error.responseJSON?.Message || 'Lỗi cập nhật'}`, { position: 'top' })
 						},
 					)
 					vueData.isSQDDialog = false
 				} else {
-					Vue.$toast.error(`Chưa nhập Số quyết dịnh`, { position: 'top' })
+					Vue.$toast.error(`Chưa nhập Số quyết định`, { position: 'top' })
 				}
 			},
-			onClose() {
+			async onClose() {
+				// Nếu upload file mới mà không lưu thì xóa file rác
+				if (this.dsHocVien.DecisionFile_ID && this.dsHocVien.DecisionFile_ID !== this.cloneData?.DecisionFile_ID) {
+					await this.deleteFile(this.dsHocVien.DecisionFile_ID)
+				}
 				vueData.isSQDDialog = false
 			},
 		},

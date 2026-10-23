@@ -251,6 +251,14 @@
 				}
 	
 				const handleSuccess = () => {
+					// Xóa file cũ đã bị thay thế trên máy chủ
+					if (this.cloneTeacherEdit?.FileVanBang_ID && this.cloneTeacherEdit.FileVanBang_ID !== this.TeacherObj.FileVanBang_ID) {
+						ajaxCALL('/FILE_FileDelete', { FileID: this.cloneTeacherEdit.FileVanBang_ID }, () => {}, () => {})
+					}
+					if (this.cloneTeacherEdit?.FileLyLichKH_ID && this.cloneTeacherEdit.FileLyLichKH_ID !== this.TeacherObj.FileLyLichKH_ID) {
+						ajaxCALL('/FILE_FileDelete', { FileID: this.cloneTeacherEdit.FileLyLichKH_ID }, () => {}, () => {})
+					}
+					this.cloneTeacherEdit = JSON.parse(JSON.stringify(this.TeacherObj))
 					Vue.$toast.success(`Cập nhật thành công`, { position: 'top' })
 					CALL('getDsGiangVien')
 					this.closeDialog()
@@ -265,16 +273,29 @@
 				ajaxCALL('/giangvien_upd', updatedTeacherData, handleSuccess, handleError)
 			},
 			closeDialog() {
+				// Xóa file upload mới nếu hủy không lưu
+				if (this.TeacherObj.FileVanBang_ID && this.TeacherObj.FileVanBang_ID !== this.cloneTeacherEdit?.FileVanBang_ID) {
+					ajaxCALL('/FILE_FileDelete', { FileID: this.TeacherObj.FileVanBang_ID }, () => {}, () => {})
+				}
+				if (this.TeacherObj.FileLyLichKH_ID && this.TeacherObj.FileLyLichKH_ID !== this.cloneTeacherEdit?.FileLyLichKH_ID) {
+					ajaxCALL('/FILE_FileDelete', { FileID: this.TeacherObj.FileLyLichKH_ID }, () => {}, () => {})
+				}
 				vueData.isUpdDialog = false
 				this.TeacherObj = {}
 			},
 			deleteVanBangFile() {
+				if (this.TeacherObj.FileVanBang_ID && this.TeacherObj.FileVanBang_ID !== this.cloneTeacherEdit?.FileVanBang_ID) {
+					ajaxCALL('/FILE_FileDelete', { FileID: this.TeacherObj.FileVanBang_ID }, () => {}, () => {})
+				}
 				this.VanBang_Upload = null
 				this.TeacherObj.FileVanBang_ID = null
 				this.TeacherObj.FileVanBang_Name = null
 				this.TeacherObj.FileVanBang_Url = null
 			},
 			deleteLyLichFile() {
+				if (this.TeacherObj.FileLyLichKH_ID && this.TeacherObj.FileLyLichKH_ID !== this.cloneTeacherEdit?.FileLyLichKH_ID) {
+					ajaxCALL('/FILE_FileDelete', { FileID: this.TeacherObj.FileLyLichKH_ID }, () => {}, () => {})
+				}
 				this.LyLich_Upload = null
 				this.TeacherObj.FileLyLichKH_ID = null
 				this.TeacherObj.FileLyLichKH_Name = null
