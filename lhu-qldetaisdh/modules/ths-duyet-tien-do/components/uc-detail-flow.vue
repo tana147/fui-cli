@@ -223,6 +223,18 @@
 					<p class="text-caption grey--text mb-2">
 						Khi từ chối, toàn bộ phiên nộp hiện tại (file đồ án, file check đạo văn...) sẽ được snapshot vào lịch sử. Học viên sẽ nhận được lý do và nộp lại bản mới.
 					</p>
+					<v-text-field
+						v-model="similarityRate"
+						label="Tỷ lệ trùng lặp"
+						type="number"
+						suffix="%"
+						outlined
+						dense
+						placeholder="Nhập số % (ví dụ: 25)"
+						class="mb-3"
+						@input="onSimilarityRateChange"
+						@update:model-value="onSimilarityRateChange"
+					/>
 					<v-textarea v-model="rejectionReason" label="Lý do từ chối (*)" outlined rows="3"
 						placeholder="Ví dụ: Tỷ lệ trùng lặp 35%, vượt mức cho phép 20%. Vui lòng chỉnh sửa và nộp lại."
 						color="error" auto-grow hide-details />
@@ -316,6 +328,7 @@
 				resultKtraDeTai: null,
 				textRules: [(v) => !!v || 'Không được để trống'],
 				rejectDialog: false,
+				similarityRate: '',
 				rejectionReason: '',
 				isRejecting: false,
 				historyDialog: false,
@@ -402,6 +415,9 @@
 					}
 				},
 				immediate: true
+			},
+			similarityRate(val) {
+				this.onSimilarityRateChange(val);
 			}
 		},
 		mounted() {
@@ -662,8 +678,17 @@
 					Vue.$toast.error('File kết quả kiểm tra đạo văn bắt buộc phải là định dạng PDF (.pdf)', { position: 'top' });
 					return;
 				}
+				this.similarityRate = '';
 				this.rejectionReason = '';
 				this.rejectDialog = true;
+			},
+			onSimilarityRateChange(val) {
+				const rate = (val !== undefined && typeof val !== 'object') ? val : this.similarityRate;
+				if (rate !== '' && rate !== null && rate !== undefined) {
+					this.rejectionReason = `Tỷ lệ trùng lặp ${rate}%, vượt mức cho phép 20%, vui lòng chỉnh sửa và nộp lại.`;
+				} else {
+					this.rejectionReason = '';
+				}
 			},
 			async confirmReject() {
 				const daoVanItem = (this.detailProcess || []).find((i) => i.FieldName === 'fileCheckDaoVan');
