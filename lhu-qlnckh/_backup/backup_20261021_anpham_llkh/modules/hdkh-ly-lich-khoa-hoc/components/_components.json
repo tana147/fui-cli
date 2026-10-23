@@ -1,0 +1,46 @@
+[
+  {
+    "comID": 4418,
+    "comName": "uc-cong-trinh-khoa-hoc"
+  },
+  {
+    "comID": 4416,
+    "comName": "uc-de-tai-da-tham-gia"
+  },
+  {
+    "comID": 12593,
+    "comName": "uc-gia-dinh"
+  },
+  {
+    "comID": 12594,
+    "comName": "uc-khen-thuong"
+  },
+  {
+    "comID": 12595,
+    "comName": "uc-llkh-info"
+  },
+  {
+    "comID": 12596,
+    "comName": "uc-llkh-muc"
+  },
+  {
+    "comID": 4406,
+    "comName": "uc-main"
+  },
+  {
+    "comID": 4415,
+    "comName": "uc-qua-trinh-cong-tac"
+  },
+  {
+    "comID": 4412,
+    "comName": "uc-qua-trinh-dao-tao"
+  },
+  {
+    "comID": 12597,
+    "comName": "uc-shtt"
+  },
+  {
+    "comID": 4408,
+    "comName": "uc-so-yeu-ly-lich"
+  }
+]

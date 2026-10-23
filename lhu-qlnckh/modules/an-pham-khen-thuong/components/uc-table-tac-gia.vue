@@ -18,7 +18,7 @@
 				<span class="font-weight-medium text-h7">Tổng số tác giả LHU: {{ tongTacGiaLhuValue }}</span>
 			</div>
 			<v-spacer></v-spacer>
-			<div class="me-5 ms-5" style="width:400px">
+			<div class="me-5 ms-5" style="width:400px" v-if="isDeNghiXetThuong">
 				<v-row>
 					<v-col cols="9" class="d-flex flex-column ">
 						<b class="primary--text text-right">Phí hỗ trợ đăng bài (HTĐB):</b>
@@ -41,7 +41,7 @@
 		</div>
 
 		<v-card-text>
-			<v-dialog v-model="isAuthorModalOpen" max-width="1024px">
+			<v-dialog v-model="isAuthorModalOpen" max-width="1250px">
 				<v-card>
 					<v-card-title>
 						<span class="text-h5 primary--text me-5">{{ formTitle }}
@@ -58,22 +58,28 @@
 					<v-card-text>
 						<v-form>
 							<v-row dense>
-								<v-col cols="12" sm="12" md="3" style="display:flex; align-items: center;">
-									<v-select v-model="editedItem.TacGiaGroupID" hide-details dense outlined
-										:items="vaiTroArr" item-text="ten" item-value="id" label="Vai trò"></v-select>
-								</v-col>
-								<v-col cols="12" sm="12" md="3" style="display:flex; align-items: center;">
-									<v-checkbox class="mt-5 ms-5" v-model="editedItem.Is_TacGiaChinh"
-										label="Tác giả chính">
-									</v-checkbox>
-								</v-col>
-								<v-col cols="12" sm="12" md="3" style="display:flex; align-items: center;">
-									<v-checkbox class="mt-5 ms-5" v-model="editedItem.Is_TacGiaPhu" label="Tác giả phụ">
-									</v-checkbox>
-								</v-col>
 								<v-col cols="12" sm="12" md="3">
+									<v-select v-model="editedItem.TacGiaGroupID" hide-details dense outlined
+										:items="vaiTroArr" item-text="ten" item-value="id" label="Đối tượng tác giả"></v-select>
+								</v-col>
+								<v-col cols="12" sm="12" md="5" v-if="isDeNghiXetThuong">
+									<v-select v-model="roleSelection" hide-details dense outlined
+										:items="rewardRoles" item-text="text" item-value="value" label="Vai trò tác giả *"
+										@change="onRoleChange"></v-select>
+								</v-col>
+								<template v-else>
+									<v-col cols="12" sm="8" md="4">
+										<v-select v-model="roleSelection" hide-details dense outlined
+											:items="filteredDmVaiTro" item-text="title" item-value="value" label="Vai trò (LLKH) *"
+											@change="onRoleChange"></v-select>
+									</v-col>
+									<v-col cols="12" sm="4" md="2" class="d-flex align-center">
+										<v-checkbox v-model="editedItem.Is_TacGiaLienHe" label="Tác giả liên hệ" dense hide-details class="mt-0"></v-checkbox>
+									</v-col>
+								</template>
+								<v-col cols="12" sm="12" :md="isDeNghiXetThuong ? 4 : 3">
 									<v-autocomplete v-model="model" :items="items" :item-text="NhanVienSearch"
-										item-value="MaNV" placeholder="Tìm kiếm bằng tên nhân viên" hide-no-data
+										item-value="MaNV" label="Tìm kiếm bằng tên nhân viên" outlined dense hide-details hide-no-data
 										:search-input.sync="keyword" @change="changeNhanVien"
 										@keydown="handleEnterMaNhanVien" :loading="isLoading"
 										prepend-inner-icon="mdi-account-search" return-object></v-autocomplete>
@@ -101,12 +107,12 @@
 									</v-text-field>
 								</v-col>
 								<v-col cols="12" sm="6" md="4"
-									v-if="editedItem.TacGiaGroupID == 1 || editedItem.TacGiaGroupID == 2">
+									v-if="isDeNghiXetThuong && (editedItem.TacGiaGroupID == 1 || editedItem.TacGiaGroupID == 2)">
 									<v-text-field outlined dense v-model="editedItem.SoTaiKhoan" label="Số tài khoản">
 									</v-text-field>
 								</v-col>
 								<v-col cols="12" sm="6" md="4"
-									v-if="editedItem.TacGiaGroupID == 1 || editedItem.TacGiaGroupID == 2">
+									v-if="isDeNghiXetThuong && (editedItem.TacGiaGroupID == 1 || editedItem.TacGiaGroupID == 2)">
 									<v-autocomplete v-model="editedItem.NganHang" label="Ngân hàng" :items="dsNganHang"
 										:filter="customFilterDSNganHang" item-text="name" item-value="name" outlined
 										dense clearable>
@@ -127,7 +133,7 @@
 									</v-autocomplete>
 								</v-col>
 								<v-col cols="12" sm="6" md="4"
-									v-if="editedItem.TacGiaGroupID == 1 || editedItem.TacGiaGroupID == 2">
+									v-if="isDeNghiXetThuong && (editedItem.TacGiaGroupID == 1 || editedItem.TacGiaGroupID == 2)">
 									<v-text-field outlined dense v-model="editedItem.TenChuTaiKhoan"
 										label="Tên chủ tài khoản">
 									</v-text-field>
@@ -135,7 +141,7 @@
 								<v-col cols="12" sm="6" md="4">
 									<v-autocomplete v-model="editedItem.NguonCapKinhPhi" :items="khoaNckh"
 										:item-text="display_DonVi" item-value="DepartmentID" hide-details dense outlined
-										label="Nguồn cấp kinh phí" style="max-width:350px">
+										label="Nguồn cấp kinh phí">
 									</v-autocomplete>
 								</v-col>
 							</v-row>
@@ -177,17 +183,17 @@
 				</template>
 
 				<template v-slot:item.is_nhanvien="{ item }">
-					<v-chip outlined v-if="item.Is_TacGiaChinh" small class="font-weight-bold mb-2" color="warning">Tác
-						giả chính</v-chip>
-					<v-chip outlined v-if="item.Is_TacGiaPhu" small class="font-weight-bold mb-2" color="info">Tác
-						giả phụ</v-chip>
-
-					<v-chip outlined v-if="item.TacGiaGroupID===1" small class="font-weight-bold" color="primary">
-						Giảng viên/Nhân viên LHU</v-chip>
-					<v-chip outlined v-if="item.TacGiaGroupID===2" small class="font-weight-bold" color="primary">
-						Học viên LHU</v-chip>
-					<v-chip outlined v-if="item.TacGiaGroupID===3" small class="font-weight-bold" color="warning">
-						Tác giả bên ngoài LHU</v-chip>
+					<div class="d-flex flex-wrap" style="gap: 4px;">
+						<v-chip outlined v-if="item.Is_TacGiaChinh" small class="font-weight-bold" color="warning">Tác giả chính</v-chip>
+						<v-chip outlined v-if="item.Is_TacGiaPhu" small class="font-weight-bold" color="info">Tác giả phụ</v-chip>
+						<v-chip outlined v-if="item.Is_TacGiaLienHe" small class="font-weight-bold" color="purple">Tác giả liên hệ</v-chip>
+						<v-chip outlined v-if="!isDeNghiXetThuong && getTenVaiTro(item.VaiTroID)" small class="font-weight-bold" color="teal">
+							{{ getTenVaiTro(item.VaiTroID) }}
+						</v-chip>
+						<v-chip outlined v-if="item.TacGiaGroupID===1" small class="font-weight-bold" color="primary">GV/NV LHU</v-chip>
+						<v-chip outlined v-if="item.TacGiaGroupID===2" small class="font-weight-bold" color="primary">Học viên LHU</v-chip>
+						<v-chip outlined v-if="item.TacGiaGroupID===3" small class="font-weight-bold" color="grey darken-1">Ngoài LHU</v-chip>
+					</div>
 				</template>
 				<template v-slot:item.sotienkhenthuong="{ item }">
 					<span>{{ item.SoTienKhenThuong ? formatAsCurrency(item.SoTienKhenThuong) : 0 }}</span>
@@ -260,6 +266,15 @@
 			khoaNckh: [],
 			heSoAp: [1, 0.9, 0.7, 0.5, 0.3, 0],
 			dataSearch: [],
+			roleSelection: null,
+			dmVaiTroArr: [],
+			dmVaiTroAll: [],
+			rewardRoles: [
+				{ value: 'CHINH', text: 'Tác giả chính' },
+				{ value: 'CHINH_LIENHE', text: 'Tác giả chính & liên hệ' },
+				{ value: 'PHU', text: 'Tác giả phụ' },
+				{ value: 'PHU_LIENHE', text: 'Tác giả phụ & liên hệ' }
+			],
 			maNhanVienRules: [
 				input => (input !== "") || "Vui lòng nhập mã nhân viên",
 				input => /^(nv|NV)\d{7}$/.test(input) || "Mã nhân viên không hợp lệ"
@@ -275,6 +290,8 @@
 				Is_NhanVien: true,
 				Is_TacGiaChinh: false,
 				Is_TacGiaPhu: false,
+				Is_TacGiaLienHe: false,
+				VaiTroID: null,
 				Is_Xoa: false,
 				MaNhanVien: "",
 				NganHang: "",
@@ -303,6 +320,8 @@
 				Is_NhanVien: true,
 				Is_TacGiaChinh: false,
 				Is_TacGiaPhu: false,
+				Is_TacGiaLienHe: false,
+				VaiTroID: null,
 				Is_Xoa: false,
 				MaNhanVien: "",
 				NganHang: "",
@@ -322,10 +341,18 @@
 		}
 	},
 	computed: {
+		isDeNghiXetThuong() {
+			return this.anPhamObj?.Is_DeNghiXetThuong !== false
+		},
 		computedHeaders() {
-			return this.anPhamObj.HinhThucThanhToan === 1 
-				? [{ text: 'Đại diện nhận tiền', value: 'checkbox', sortable: false, align: 'center' }, ...this.headersAuthorsObj] 
-				: this.headersAuthorsObj
+			let headers = [...this.headersAuthorsObj]
+			if (!this.isDeNghiXetThuong) {
+				headers = headers.filter(h => h.value !== 'thongtinnganhang' && h.value !== 'sotienkhenthuong' && h.value !== 'sotienhoanphidangbai')
+			}
+			if (this.isDeNghiXetThuong && this.anPhamObj.HinhThucThanhToan === 1) {
+				headers = [{ text: 'Đại diện nhận tiền', value: 'checkbox', sortable: false, align: 'center' }, ...headers]
+			}
+			return headers
 		},
 		formTitle() {
 			return this.editedIndex === -1 ? 'Thêm mới tác giả' : `Cập nhật thông tin tác giả`
@@ -357,6 +384,29 @@
 				sum += item.SoTienHoanPhiDangBai || 0
 			})
 			return sum
+		},
+		filteredDmVaiTro() {
+			const isSach = this.anPhamObj?.NhomAnPham === 2 || this.anPhamObj?.LoaiAnPhamID === 6 || this.loaiAnPhamId === 6
+			const allowedIDs = isSach ? [5, 6] : [7, 8, 9, 10, 11, 12]
+			let list = (this.dmVaiTroAll || []).filter(x => allowedIDs.includes(Number(x.value)))
+			if (!list || list.length === 0) {
+				if (isSach) {
+					list = [
+						{ value: 5, title: "Chủ biên sách/giáo trình" },
+						{ value: 6, title: "Tác giả (sách/giáo trình)" }
+					]
+				} else {
+					list = [
+						{ value: 7, title: "Tác giả chính (First author)" },
+						{ value: 8, title: "Tác giả liên hệ (Corresponding author)" },
+						{ value: 9, title: "Tác giả thứ 2" },
+						{ value: 10, title: "Tác giả thứ 3" },
+						{ value: 11, title: "Tác giả thứ 4" },
+						{ value: 12, title: "Tác giả từ vị trí thứ 5" }
+					]
+				}
+			}
+			return list
 		}
 	},
 	watch: {
@@ -391,6 +441,7 @@
 	},
 	created() {
 		this.getKhoaNCKH()
+		this.getDM_VaiTro()
 	},
 	methods: {
 		getDefaultItem() {
@@ -426,6 +477,7 @@
 			return item.DepartmentID + " - " + item.DepartmentName
 		},
 		openDialog() {
+			this.roleSelection = null
 			this.isAuthorModalOpen = true
 		},
 		handleEnterMaNhanVien(e) {
@@ -503,6 +555,7 @@
 		editItem(item) {
 			this.editedIndex = this.authorsObjArr.indexOf(item)
 			this.editedItem = Object.assign({}, item)
+			this.initRoleSelection()
 			this.isAuthorModalOpen = true
 		},
 		deleteItem(item) {
@@ -524,6 +577,7 @@
 			this.$nextTick(() => {
 				this.editedItem = this.getDefaultItem()
 				this.editedIndex = -1
+				this.roleSelection = null
 			})
 			this.model = null
 		},
@@ -532,12 +586,19 @@
 			this.$nextTick(() => {
 				this.editedItem = this.getDefaultItem()
 				this.editedIndex = -1
+				this.roleSelection = null
 			})
 		},
 		save() {
-			if (this.editedItem.TacGiaGroupID == 1 || this.editedItem.TacGiaGroupID == 2) {
-				if (!this.editedItem.Is_TacGiaChinh && !this.editedItem.Is_TacGiaPhu) {
-					return Vue.$toast.warning("Vui lòng chọn vai trò Tác giả chính hoặc Tác giả phụ", { position: "top" })
+			if (this.isDeNghiXetThuong) {
+				if (this.editedItem.TacGiaGroupID == 1 || this.editedItem.TacGiaGroupID == 2) {
+					if (!this.editedItem.Is_TacGiaChinh && !this.editedItem.Is_TacGiaPhu) {
+						return Vue.$toast.warning("Vui lòng chọn vai trò Tác giả chính hoặc Tác giả phụ", { position: "top" })
+					}
+				}
+			} else {
+				if (!this.editedItem.VaiTroID && !this.editedItem.Is_TacGiaChinh && !this.editedItem.Is_TacGiaPhu) {
+					return Vue.$toast.warning("Vui lòng chọn vai trò tác giả", { position: "top" })
 				}
 			}
 			if (this.editedItem.TacGiaGroupID === 3 ) {this.editedItem.Is_NhanVien = false }
@@ -637,6 +698,87 @@
 			this.value.forEach(obj => {
 				obj.NguoiDaiDienQuyetToan = false
 			})
+		},
+		async getDM_VaiTro() {
+			try {
+				const res = await ajaxCALLPromise('/HDKH_DM_GetAll', null)
+				if (Array.isArray(res)) {
+					const vt = res.find(set => Array.isArray(set) && set[0]?.DanhMucCode === 'VaiTro')
+					if (vt) {
+						this.dmVaiTroAll = vt
+						this.dmVaiTroArr = vt
+					}
+				}
+			} catch (e) {
+				console.error("Lỗi lấy danh mục vai trò:", e)
+			}
+		},
+		getTenVaiTro(id) {
+			if (!id) return ''
+			const numId = Number(id)
+			const vt = (this.dmVaiTroAll || []).find(x => Number(x.value) === numId)
+			if (vt) return vt.title
+			const fallback = [
+				{ value: 5, title: "Chủ biên sách/giáo trình" },
+				{ value: 6, title: "Tác giả (sách/giáo trình)" },
+				{ value: 7, title: "Tác giả chính (First author)" },
+				{ value: 8, title: "Tác giả liên hệ (Corresponding author)" },
+				{ value: 9, title: "Tác giả thứ 2" },
+				{ value: 10, title: "Tác giả thứ 3" },
+				{ value: 11, title: "Tác giả thứ 4" },
+				{ value: 12, title: "Tác giả từ vị trí thứ 5" }
+			]
+			const fb = fallback.find(x => x.value === numId)
+			return fb ? fb.title : ''
+		},
+		onRoleChange(val) {
+			if (this.isDeNghiXetThuong) {
+				if (val === 'CHINH') {
+					this.editedItem.Is_TacGiaChinh = true
+					this.editedItem.Is_TacGiaPhu = false
+					this.editedItem.Is_TacGiaLienHe = false
+					this.editedItem.VaiTroID = 7
+				} else if (val === 'CHINH_LIENHE') {
+					this.editedItem.Is_TacGiaChinh = true
+					this.editedItem.Is_TacGiaPhu = false
+					this.editedItem.Is_TacGiaLienHe = true
+					this.editedItem.VaiTroID = 7
+				} else if (val === 'PHU') {
+					this.editedItem.Is_TacGiaChinh = false
+					this.editedItem.Is_TacGiaPhu = true
+					this.editedItem.Is_TacGiaLienHe = false
+					this.editedItem.VaiTroID = 9
+				} else if (val === 'PHU_LIENHE') {
+					this.editedItem.Is_TacGiaChinh = false
+					this.editedItem.Is_TacGiaPhu = true
+					this.editedItem.Is_TacGiaLienHe = true
+					this.editedItem.VaiTroID = 8
+				}
+			} else {
+				this.editedItem.VaiTroID = val
+				this.editedItem.Is_TacGiaChinh = (val === 7)
+				this.editedItem.Is_TacGiaPhu = (val !== 7)
+				if (val === 8) {
+					this.editedItem.Is_TacGiaLienHe = true
+				}
+			}
+		},
+		initRoleSelection() {
+			if (this.isDeNghiXetThuong) {
+				if (this.editedItem.Is_TacGiaChinh && this.editedItem.Is_TacGiaLienHe) {
+					this.roleSelection = 'CHINH_LIENHE'
+				} else if (this.editedItem.Is_TacGiaChinh) {
+					this.roleSelection = 'CHINH'
+				} else if (this.editedItem.Is_TacGiaLienHe) {
+					this.roleSelection = 'PHU_LIENHE'
+				} else if (this.editedItem.Is_TacGiaPhu) {
+					this.roleSelection = 'PHU'
+				} else {
+					this.roleSelection = null
+				}
+			} else {
+				this.roleSelection = this.editedItem.VaiTroID || (this.editedItem.Is_TacGiaChinh ? 7 : (this.editedItem.Is_TacGiaPhu ? 9 : null))
+			}
 		}
 	}
 	}

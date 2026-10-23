@@ -1,0 +1,212 @@
+.v-text-field.v-text-field--enclosed .v-text-field__details {
+    margin-bottom: 0px;
+}
+
+.v-input--selection-controls {
+    margin-top: 0px;
+    padding-top: 0px;
+}
+
+.text-input-right input {
+    text-align: right;
+}
+
+.div-window {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.papers-reward-page {
+    min-height: calc(100vh - 72px);
+    display: flex;
+    flex-direction: column;
+    padding: 8px 16px 24px;
+    box-sizing: border-box;
+}
+
+.article-table-section {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.article-table-card {
+    width: 100%;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px !important;
+}
+
+.article-table-content {
+    padding: 0 16px 16px !important;
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.article-table.v-data-table {
+    width: 100%;
+}
+
+.article-table .v-data-table__wrapper {
+    overflow-x: auto !important;
+    min-height: 180px;
+}
+
+.article-table th {
+    white-space: nowrap !important;
+    font-weight: 600 !important;
+}
+
+.article-table td {
+    font-size: 13.5px !important;
+}
+
+.article-table table {
+    min-width: 1250px;
+}
+
+@media only screen and (max-width: 600px) {
+    .div-mobile {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start;
+    }
+
+    .margin-mobile {
+        margin-top: 14px;
+    }
+
+    .text-mobile {
+        font-size: 12px;
+    }
+
+    .v-data-table .v-data-table__mobile-row {
+        min-height: 48px !important;
+        height: fit-content !important;
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+    }
+
+    .v-data-table .v-data-table__mobile-row .v-data-table__mobile-row__header {
+        width: 80%;
+    }
+
+    .mobile-dialog-title {
+        position: relative;
+    }
+
+    .mobile-dialog-button-close {
+        position: absolute;
+        top: 10px;
+        right: 10px
+    }
+
+    .mobile-dialog-select {
+        max-width: 100% !important;
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .mobile-f-file-upload {
+        margin-bottom: 10px;
+    }
+
+    .papers-reward-page {
+        padding: 6px 8px 16px;
+        min-height: 100vh;
+        height: auto;
+    }
+
+    .article-table .v-data-table__wrapper {
+        max-height: none;
+    }
+}
+
+.publication-type-menu {
+    min-width: 1060px;
+}
+
+.publication-type-item-active {
+    background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.publication-type-item-active:before {
+    opacity: 0.08 !important;
+}
+
+/* Period Banner & Timeline Styles */
+.period-banner-card {
+    background: #ffffff;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+.period-timeline-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 6px 0 10px;
+}
+
+.period-timeline {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 380px;
+    padding: 0 8px;
+    box-sizing: border-box;
+}
+
+.timeline-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 105px;
+    text-align: center;
+    z-index: 2;
+}
+
+.timeline-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    color: #616161;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.timeline-badge--active {
+    background-color: #1976d2;
+    color: #ffffff;
+}
+
+.timeline-divider {
+    flex: 1;
+    height: 2px;
+    background-color: #bdbdbd;
+    margin-top: 13px;
+    margin-left: -12px;
+    margin-right: -12px;
+    z-index: 1;
+}
+
+.timeline-date {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #212121;
+    white-space: nowrap;
+    line-height: 1.4;
+}

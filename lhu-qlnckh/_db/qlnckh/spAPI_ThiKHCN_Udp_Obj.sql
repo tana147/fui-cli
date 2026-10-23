@@ -24,7 +24,9 @@ BEGIN
         @HinhThucThanhToan TINYINT,
         @CongThucID INT,
         @TongTienThuong NUMERIC(18,2),
-        @GhiChu NVARCHAR(500);
+        @GhiChu NVARCHAR(500),
+        @NoiCapVanBang NVARCHAR(250),
+        @MaSoDeTai VARCHAR(50);
 
     SELECT 
         @KhenThuongID = json.KhenThuongID,
@@ -42,7 +44,9 @@ BEGIN
         @HinhThucThanhToan = ISNULL(json.HinhThucThanhToan, 1),
         @CongThucID = json.CongThucID,
         @TongTienThuong = json.TongTienThuong,
-        @GhiChu = json.GhiChu
+        @GhiChu = json.GhiChu,
+        @NoiCapVanBang = json.NoiCapVanBang,
+        @MaSoDeTai = json.MaSoDeTai
     FROM OPENJSON(@KhenThuongObj)
     WITH (
         KhenThuongID INT,
@@ -60,7 +64,9 @@ BEGIN
         HinhThucThanhToan TINYINT,
         CongThucID INT,
         TongTienThuong NUMERIC(18,2),
-        GhiChu NVARCHAR(500)
+        GhiChu NVARCHAR(500),
+        NoiCapVanBang NVARCHAR(250),
+        MaSoDeTai VARCHAR(50)
     ) AS json;
 
     -- 1. Update bảng chính
@@ -77,6 +83,8 @@ BEGIN
         Is_DauRaDeTaiCoSo = @Is_DauRaDeTaiCoSo,
         SoQuyetDinh_VanBang = @SoQuyetDinh_VanBang,
         NgayBanHanh = @NgayBanHanh,
+        NoiCapVanBang = @NoiCapVanBang,
+        MaSoDeTai = @MaSoDeTai,
         HinhThucThanhToan = @HinhThucThanhToan,
         CongThucID = ISNULL(@CongThucID, CongThucID),
         TongTienThuong = ISNULL(@TongTienThuong, TongTienThuong),

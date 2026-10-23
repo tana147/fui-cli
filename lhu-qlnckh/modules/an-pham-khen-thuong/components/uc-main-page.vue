@@ -80,6 +80,11 @@
 					FileIDMinhChungKhac: null,
 					FileNameMinhChungKhac: null,
 					FileUrlMinhChungKhac: null,
+					Is_DeNghiXetThuong: true,
+					TapSoTrang: '',
+					ThangDang: null,
+					TheLoaiBienSoanID: null,
+					DoiLink: '',
 				},
 				AuthorsObjArr: [],
 				ProofsObjArr: [
@@ -138,6 +143,11 @@
 					FileIDMinhChungKhac: null,
 					FileNameMinhChungKhac: null,
 					FileUrlMinhChungKhac: null,
+					Is_DeNghiXetThuong: true,
+					TapSoTrang: '',
+					ThangDang: null,
+					TheLoaiBienSoanID: null,
+					DoiLink: '',
 				},
 				AuthorsObjArr: [],
 				ProofsObjArr: [
@@ -360,7 +370,7 @@
 					break
 				}
 			}
-			if (flag === false && this.editedItem.AnPhamObj.HinhThucThanhToan === 1) {
+			if (flag === false && this.editedItem.AnPhamObj.HinhThucThanhToan === 1 && this.editedItem.AnPhamObj.Is_DeNghiXetThuong !== false) {
 				return Vue.$toast.warning("Chưa chọn người đại diện", { position: "top" })
 			}
 			if (this.editedItem.AnPhamObj.LoaiAnPhamID === null || this.editedItem.AnPhamObj.LoaiAnPhamID === "") {
@@ -427,7 +437,7 @@
 					break
 				}
 			}
-			if (flag === false && this.editedItem.AnPhamObj.HinhThucThanhToan === 1) {
+			if (flag === false && this.editedItem.AnPhamObj.HinhThucThanhToan === 1 && this.editedItem.AnPhamObj.Is_DeNghiXetThuong !== false) {
 				return Vue.$toast.warning("Chưa chọn người đại diện", { position: "top" })
 			}
 			if (this.editedItem.AnPhamObj.LoaiAnPhamID === null || this.editedItem.AnPhamObj.LoaiAnPhamID === "") {

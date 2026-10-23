@@ -60,14 +60,14 @@
 					<p class="mb-0"><span class="gray--text">{{item.TenChuTaiKhoan}}</span></p>
 				</template>
 				<template v-slot:item.is_nhanvien="{ item }">
-					<v-chip outlined="" v-if="item.Is_TacGiaChinh" small="" class="font-weight-bold mb-2" color="warning">
-						Tác giả liên hệ</v-chip>
-					<v-chip outlined="" v-if="item.TacGiaGroupID===1" small="" class="font-weight-bold" color="primary">
-						Giảng viên/Nhân viên LHU</v-chip>
-					<v-chip outlined="" v-if="item.TacGiaGroupID===2" small="" class="font-weight-bold" color="primary">
-						Học viên LHU</v-chip>
-					<v-chip outlined="" v-if="item.TacGiaGroupID===3" small="" class="font-weight-bold" color="warning">
-						Tác giả bên ngoài LHU</v-chip>
+					<div class="d-flex flex-wrap" style="gap: 4px;">
+						<v-chip outlined v-if="item.Is_TacGiaChinh" small class="font-weight-bold" color="warning">Tác giả chính</v-chip>
+						<v-chip outlined v-if="item.Is_TacGiaPhu" small class="font-weight-bold" color="info">Tác giả phụ</v-chip>
+						<v-chip outlined v-if="item.Is_TacGiaLienHe" small class="font-weight-bold" color="purple">Tác giả liên hệ</v-chip>
+						<v-chip outlined v-if="item.TacGiaGroupID===1" small class="font-weight-bold" color="primary">GV/NV LHU</v-chip>
+						<v-chip outlined v-if="item.TacGiaGroupID===2" small class="font-weight-bold" color="primary">Học viên LHU</v-chip>
+						<v-chip outlined v-if="item.TacGiaGroupID===3" small class="font-weight-bold" color="grey darken-1">Ngoài LHU</v-chip>
+					</div>
 				</template>
 				<template v-slot:item.is_tacgiachinh="{ item }">
 					<v-icon v-if="item.Is_TacGiaChinh " color="success">mdi-check</v-icon>

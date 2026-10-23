@@ -1,7 +1,22 @@
 <template>
 	<v-form ref="ValidForm" v-model="valid" lazy-validation>
 		<v-row>
-			<v-col cols="12" class="pb-0">
+			<v-col cols="12" class="pb-1 pt-0">
+				<div class="d-flex align-center justify-space-between flex-wrap pa-2 rounded grey lighten-4 mb-2">
+					<v-switch v-model="isDeNghiXetThuongProxy" color="primary" inset dense hide-details class="mt-0 pt-0">
+						<template v-slot:label>
+							<span class="font-weight-medium">
+								{{ AnPhamObj.Is_DeNghiXetThuong !== false ? 'Đề nghị xét khen thưởng theo quy chế' : 'Chỉ kê khai (dùng cho LLKH & Hồ sơ cá nhân, không xét thưởng)' }}
+							</span>
+						</template>
+					</v-switch>
+					<v-chip small :color="AnPhamObj.Is_DeNghiXetThuong !== false ? 'primary' : 'grey darken-1'" outlined class="font-weight-bold">
+						{{ AnPhamObj.Is_DeNghiXetThuong !== false ? 'Khen thưởng & LLKH' : 'Chỉ lưu LLKH' }}
+					</v-chip>
+				</div>
+			</v-col>
+
+			<v-col cols="12" class="pb-0 pt-0">
 				<v-text-field v-model="AnPhamObj.TenAnPham" label="Tên bài báo/Ấn phẩm"
 					:rules="[v => !!v || 'Trường này bắt buộc nhập']" outlined dense />
 			</v-col>
@@ -55,21 +70,38 @@
 				</v-menu>
 			</v-col>
 
-			<v-col cols="12" md="6" class="pb-0 pt-0">
-				<v-text-field v-model="AnPhamObj.TenTapChi" ref="text" label="Tên Hội thảo/Tạp chí/Sách"
+			<v-col cols="12" :md="AnPhamObj.LoaiAnPhamID === 6 ? 6 : 12" class="pb-0 pt-0">
+				<v-text-field v-model="AnPhamObj.TenTapChi" ref="text" label="Tên Hội thảo/Tạp chí/Nhà xuất bản"
 					:rules="[v => !!v || 'Trường này bắt buộc nhập']" outlined dense>
 				</v-text-field>
 			</v-col>
 
+			<v-col cols="12" md="6" class="pb-0 pt-0" v-if="AnPhamObj.LoaiAnPhamID === 6">
+				<v-select v-model="AnPhamObj.TheLoaiBienSoanID" :items="theLoaiBienSoanArr" item-text="title" item-value="value"
+					label="Thể loại biên soạn (Giáo trình, Sách chuyên khảo...)" outlined dense clearable>
+				</v-select>
+			</v-col>
+
 			<v-col cols="12" sm="6" md="6" class="pb-0 pt-0">
-				<v-text-field v-model="AnPhamObj.DuongDanBaiBao" label="Link DOI/Link bài báo/minh chứng bài báo"
+				<v-text-field v-model="AnPhamObj.DuongDanBaiBao" label="Link bài báo / Minh chứng online"
 					outlined dense>
 				</v-text-field>
 			</v-col>
 
-			<v-col cols="6" sm="3" md="4" class="pb-0 pt-0">
+			<v-col cols="12" sm="6" md="6" class="pb-0 pt-0">
+				<v-text-field v-model="AnPhamObj.DoiLink" label="Mã DOI / Link DOI"
+					placeholder="VD: 10.1016/j.xxx hoặc https://doi.org/..." outlined dense>
+				</v-text-field>
+			</v-col>
+
+			<v-col cols="6" sm="3" md="3" class="pb-0 pt-0">
 				<v-select v-model="AnPhamObj.NoiDangBai" :items="noiDangBaiArr" label="Nơi đăng (Trong nước/ Quốc tế)"
 					outlined dense></v-select>
+			</v-col>
+
+			<v-col cols="6" sm="3" md="2" class="pb-0 pt-0">
+				<v-select v-model="AnPhamObj.ThangDang" :items="thangArr" label="Tháng đăng"
+					outlined dense clearable></v-select>
 			</v-col>
 
 			<v-col cols="6" sm="3" md="2" class="pb-0 pt-0">
@@ -78,19 +110,24 @@
 				</v-autocomplete>
 			</v-col>
 
-			<v-col cols="12" sm="3" md="2" class="pb-0 pt-0 margin-mobile">
+			<v-col cols="6" sm="3" md="2" class="pb-0 pt-0">
 				<v-text-field v-model="AnPhamObj.ISSN" label="ISSN/ISBN" outlined dense></v-text-field>
 			</v-col>
 
-			<v-col cols="6" sm="6" md="2" class="pb-0 pt-0 ">
+			<v-col cols="12" sm="6" md="3" class="pb-0 pt-0">
+				<v-text-field v-model="AnPhamObj.TapSoTrang" label="Tập / Số / Trang"
+					placeholder="VD: Tập 12, Số 3, tr. 45-52" outlined dense></v-text-field>
+			</v-col>
+
+			<v-col cols="6" sm="6" :md="isAnPhamTrongNuoc ? 6 : 3" class="pb-0 pt-0">
 				<v-text-field v-model="AnPhamObj.DiemHoiDong" hint="Ví dụ: 9.0" label="Điểm HĐCDGSNN"
 					@click="clearDiemHoiDong" :rules="diemRules" outlined dense @blur="setNullToZero()">
 				</v-text-field>
 			</v-col>
 
-			<v-col cols="6" sm="3" md="2" class="pb-0 pt-0 ">
+			<v-col cols="6" sm="6" md="3" class="pb-0 pt-0" v-if="!isAnPhamTrongNuoc">
 				<v-text-field outlined dense v-model="AnPhamObj.HeSo_IF" hint="Ví dụ: 9.0" @click="clearIF"
-					v-if="!isAnPhamTrongNuoc" :rules="diemRules" label="Hệ số IF" @blur="setNullToZero()">
+					:rules="diemRules" label="Hệ số IF" @blur="setNullToZero()">
 				</v-text-field>
 			</v-col>
 
@@ -257,19 +294,19 @@
 				</v-chip>
 			</v-col>
 
-			<v-col cols="12" class="margin-top-mobile">
+			<v-col cols="12" class="margin-top-mobile" v-if="AnPhamObj.Is_DeNghiXetThuong !== false">
 				<v-toolbar-title class="primary--text">
 					Phí đăng bài của BTC/ Ban biên tập
 				</v-toolbar-title>
 			</v-col>
 
-			<v-col cols="12" sm="6" md="3" class="pb-0 pt-0">
+			<v-col cols="12" sm="6" md="3" class="pb-0 pt-0" v-if="AnPhamObj.Is_DeNghiXetThuong !== false">
 				<v-text-field class="text-input-right" v-model="phiThongBaoFormat"
 					label="Phí đăng bài của BTC/ Ban biên tập" prefix="VNĐ" reverse outlined dense>
 				</v-text-field>
 			</v-col>
 
-			<v-col cols="12" sm="6" md="9" class="pb-0 pt-0 d-flex" style=" gap:10px;">
+			<v-col cols="12" sm="6" md="9" class="pb-0 pt-0 d-flex" style=" gap:10px;" v-if="AnPhamObj.Is_DeNghiXetThuong !== false">
 				<f-file-upload v-model="ProofsObjArr" label="Upload" :filters="fileEx" :url="vueData.v_Set.apiFile"
 					color="white" @input="uploadFileMinhChung"></f-file-upload>
 				<span v-if="ProofsObjArr[0].FileList.length > 0" class="d-flex mt-1 " style="flex-wrap:wrap ;gap:10px">
@@ -309,6 +346,8 @@
 			// 2. API / Static arrays
 			danhMucSubAnPhamArr: [],
 			noiDangBaiArr: ["Trong nước", "Quốc tế"],
+			theLoaiBienSoanArr: [],
+			thangArr: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
 			headersFile: [
 				{ text: 'File minh chứng bài báo', sortable: false, value: "minhchungbaibao", align: "center" },
 				{ text: 'File minh chứng wos(IF, Q)', sortable: false, value: "wos", align: "center" },
@@ -350,6 +389,14 @@
 		}
 	},
 	computed: {
+		isDeNghiXetThuongProxy: {
+			get() {
+				return this.AnPhamObj.Is_DeNghiXetThuong !== false
+			},
+			set(val) {
+				this.$set(this.AnPhamObj, 'Is_DeNghiXetThuong', val)
+			}
+		},
 		phiThongBaoFormat: {
 			get() {
 				return formatAsCurrency(this.AnPhamObj.PhiThongBao, 0)
@@ -432,7 +479,23 @@
 			}
 		}
 	},
+	mounted() {
+		this.loadTheLoaiBienSoan()
+	},
 	methods: {
+		async loadTheLoaiBienSoan() {
+			try {
+				const res = await ajaxCALLPromise('/HDKH_DM_GetAll', null)
+				if (Array.isArray(res)) {
+					const tl = res.find(set => Array.isArray(set) && set[0]?.DanhMucCode === 'TheLoaiBienSoan')
+					if (tl) {
+						this.theLoaiBienSoanArr = tl
+					}
+				}
+			} catch (e) {
+				console.error("Lỗi tải danh mục Thể loại biên soạn:", e)
+			}
+		},
 		getSubAnPhamArr(item) {
 			if (!item) {
 				return []

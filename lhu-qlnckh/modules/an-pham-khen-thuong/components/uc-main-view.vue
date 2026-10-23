@@ -30,7 +30,13 @@
 						<v-chip v-if="item.NhomAnPham === 3" outlined color="orange">Có hướng dẫn Cao học</v-chip>
 					</template>
 					<template v-slot:item.TenAnPham="{ item }">
-						<p class="font-weight-medium mb-0">{{ item.TenAnPham }}</p>
+						<p class="font-weight-medium mb-1">{{ item.TenAnPham }}</p>
+						<v-chip v-if="item.Is_DeNghiXetThuong === false" x-small color="grey darken-1" dark label class="font-weight-medium">
+							Chỉ kê khai LLKH
+						</v-chip>
+						<v-chip v-else x-small color="primary" outlined label class="font-weight-medium">
+							Xét khen thưởng
+						</v-chip>
 					</template>
 					<template v-slot:item.actions="{ item }">
 						<div class="d-flex flex-row align-center justify-center">

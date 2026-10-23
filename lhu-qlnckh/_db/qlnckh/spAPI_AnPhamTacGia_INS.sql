@@ -27,7 +27,9 @@ BEGIN
             [Is_TacGiaPhu],
 			[NguoiDaiDienQuyetToan],
 			[NguonCapKinhPhi],
-			[HeSoHoTroCaoHoc]
+			[HeSoHoTroCaoHoc],
+			[Is_TacGiaLienHe],
+			[VaiTroID]
         )
         SELECT
 			 json.AnPhamID,
@@ -50,7 +52,9 @@ BEGIN
              json.Is_TacGiaPhu,
 			 json.NguoiDaiDienQuyetToan,
 			 json.NguonCapKinhPhi,
-			 json.HeSoHoTroCaoHoc
+			 json.HeSoHoTroCaoHoc,
+			 ISNULL(json.Is_TacGiaLienHe, 0),
+			 json.VaiTroID
         FROM OPENJSON(@AuthorsObjArr)
         WITH (
             AnPhamID INT,
@@ -69,7 +73,9 @@ BEGIN
             Is_TacGiaPhu BIT,
 			NguoiDaiDienQuyetToan VARCHAR(9),
 			NguonCapKinhPhi VARCHAR(9),
-			HeSoHoTroCaoHoc FLOAT
+			HeSoHoTroCaoHoc FLOAT,
+			Is_TacGiaLienHe BIT,
+			VaiTroID INT
         ) AS json;
 
 	DECLARE @TongSoTacGia INT , @SoTacGia_LHU INT

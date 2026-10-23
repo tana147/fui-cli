@@ -27,7 +27,9 @@ AS
             [Is_TacGiaPhu] = json.Is_TacGiaPhu,
             [NguoiDaiDienQuyetToan] = json.NguoiDaiDienQuyetToan,
             [NguonCapKinhPhi] = json.NguonCapKinhPhi,
-            [HeSoHoTroCaoHoc] = json.HeSoHoTroCaoHoc
+            [HeSoHoTroCaoHoc] = json.HeSoHoTroCaoHoc,
+            [Is_TacGiaLienHe] = ISNULL(json.Is_TacGiaLienHe, 0),
+            [VaiTroID] = json.VaiTroID
         FROM
             OPENJSON(@AuthorsObjArr)
             WITH(
@@ -47,7 +49,9 @@ AS
                 Is_TacGiaPhu BIT,
                 NguoiDaiDienQuyetToan VARCHAR(9),
                 NguonCapKinhPhi VARCHAR(9),
-                HeSoHoTroCaoHoc FLOAT
+                HeSoHoTroCaoHoc FLOAT,
+                Is_TacGiaLienHe BIT,
+                VaiTroID INT
                 ) AS json
         WHERE [dbo].[AnPham_TacGia].AnPhamTacGiaID = json.AnPhamTacGiaID;
         DECLARE

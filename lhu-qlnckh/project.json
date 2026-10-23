@@ -6,18 +6,8 @@
     "login": "https://app.lhu.edu.vn",
     "menu": [
       {
-        "icon": "mdi-transfer",
-        "name": "Dashboard",
-        "right": {
-          "GroupID": [
-            1
-          ]
-        },
-        "url": "/dashboard"
-      },
-      {
-        "icon": "mdi-post",
-        "name": "Ấn phẩm của tôi",
+        "icon": "mdi-account-circle-outline",
+        "name": "Cá nhân",
         "right": {
           "GroupID": [
             1,
@@ -26,113 +16,100 @@
         },
         "submenu": [
           {
-            "icon": "mdi-pencil-box-outline",
-            "name": "Gửi đề xuất Khen thưởng",
+            "icon": "mdi-card-account-details-outline",
+            "name": "Lý lịch khoa học",
+            "url": "/hdkh-ly-lich-khoa-hoc",
+            "right": {
+              "GroupID": [
+                1
+              ]
+            }
+          },
+          {
+            "icon": "mdi-file-document-multiple-outline",
+            "name": "Ấn phẩm của tôi",
+            "url": "/an-pham-cua-toi"
+          },
+          {
+            "icon": "mdi-send-check-outline",
+            "name": "Đề nghị khen thưởng ấn phẩm",
             "url": "/an-pham-khen-thuong"
           },
           {
-            "icon": "mdi-post",
-            "name": "Ấn phẩm KH của tôi",
-            "url": "/an-pham-cua-toi"
+            "icon": "mdi-trophy-outline",
+            "name": "Đề nghị khen thưởng cuộc thi & SHTT",
+            "url": "/khen-thuong-de-xuat",
+            "right": {
+              "GroupID": [
+                1
+              ]
+            }
+          },
+          {
+            "icon": "mdi-swap-horizontal",
+            "name": "Kê khai chuyển giao công nghệ",
+            "url": "/cgcn-ke-khai",
+            "right": {
+              "GroupID": [
+                1
+              ]
+            }
+          },
+          {
+            "icon": "mdi-clipboard-text-clock-outline",
+            "name": "Kê khai giờ NCKH",
+            "url": "/hdkh-giang-vien",
+            "right": {
+              "GroupID": [
+                1
+              ]
+            }
           }
         ]
       },
       {
-        "icon": "mdi-post",
-        "name": "Hoạt động NCKH",
+        "icon": "mdi-domain",
+        "name": "Cấp Khoa",
         "right": {
           "GroupID": [
             1
+          ],
+          "SystemRight": [
+            9,
+            1,
+            2
           ]
         },
         "submenu": [
           {
-            "icon": "mdi-pencil-box-outline",
-            "name": "Hoạt động NCKH",
-            "url": "/hdkh-giang-vien"
-          },
-          {
-            "icon": "mdi-pencil-box-outline",
-            "name": "Lí lịch Khoa học",
-            "url": "/hdkh-ly-lich-khoa-hoc"
-          },
-          {
-            "icon": "mdi-pencil-box-outline",
-            "name": "Quản lí miễn giảm",
-            "right": {
-              "GroupID": [
-                1
-              ],
-              "SystemRight": [
-                9,
-                1,
-                2
-              ]
-            },
-            "url": "/hdkh-quan-ly-mien-giam"
-          },
-          {
-            "icon": "mdi-pencil-box-outline",
-            "name": "Hoạt động cấp Khoa",
-            "right": {
-              "GroupID": [
-                1
-              ],
-              "SystemRight": [
-                9,
-                1,
-                2
-              ]
-            },
+            "icon": "mdi-check-decagram-outline",
+            "name": "Duyệt giờ NCKH cấp Khoa",
             "url": "/hdkh-duyet-cap-khoa"
           },
           {
-            "icon": "mdi-certificate",
-            "name": "Hoạt động cấp Trường",
-            "right": {
-              "GroupID": [
-                1
-              ],
-              "SystemRight": [
-                9,
-                2
-              ]
-            },
-            "url": "/hdkh-duyet-cap-truong"
-          },
-          {
-            "icon": "mdi-certificate",
-            "name": "Quản lí Nhiệm vụ khoa học",
-            "right": {
-              "GroupID": [
-                1
-              ],
-              "SystemRight": [
-                9,
-                2
-              ]
-            },
-            "url": "/hdkh-bieu-mau-nhiem-vu"
-          },
-          {
-            "icon": "mdi-certificate",
-            "name": "Tổng kết năm học",
-            "right": {
-              "GroupID": [
-                1
-              ],
-              "SystemRight": [
-                9,
-                2
-              ]
-            },
-            "url": "/hdkh-tong-ket-nam-hoc"
+            "icon": "mdi-timer-minus-outline",
+            "name": "Miễn giảm định mức NCKH",
+            "url": "/hdkh-quan-ly-mien-giam"
           }
         ]
       },
       {
-        "icon": "mdi-post",
-        "name": "Quản lý Ấn Phẩm",
+        "icon": "mdi-view-dashboard-outline",
+        "name": "Tổng quan",
+        "right": {
+          "GroupID": [
+            1
+          ],
+          "SystemRight": [
+            9,
+            2
+          ]
+        },
+        "url": "/dashboard"
+      },
+      {
+        "icon": "mdi-book-check-outline",
+        "name": "Ấn phẩm & Thưởng",
         "right": {
           "GroupID": [
             1
@@ -145,29 +122,29 @@
         "submenu": [
           {
             "icon": "mdi-check-decagram-outline",
-            "name": "Ấn phẩm chờ duyệt",
+            "name": "Duyệt ấn phẩm",
             "url": "/an-pham-cho-duyet"
           },
           {
-            "icon": "mdi-certificate-outline",
-            "name": "Khen thưởng",
-            "url": "/an-pham-to-trinh"
-          },
-          {
-            "icon": "mdi-certificate-outline",
-            "name": "Bài báo Khoa học",
+            "icon": "mdi-bookshelf",
+            "name": "Kho bài báo khoa học",
             "url": "/an-pham-bai-bao"
           },
           {
-            "icon": "mdi-certificate-outline",
-            "name": "Khôi phục dữ liệu",
-            "url": "/an-pham-khoi-phuc"
+            "icon": "mdi-file-sign",
+            "name": "Tờ trình khen thưởng",
+            "url": "/an-pham-to-trinh"
+          },
+          {
+            "icon": "mdi-trophy-award",
+            "name": "Duyệt khen thưởng cuộc thi & SHTT",
+            "url": "/khen-thuong-duyet"
           }
         ]
       },
       {
-        "icon": "mdi-trophy",
-        "name": "Giải thưởng",
+        "icon": "mdi-clock-check-outline",
+        "name": "Giờ NCKH",
         "right": {
           "GroupID": [
             1
@@ -179,34 +156,20 @@
         },
         "submenu": [
           {
-            "icon": "mdi-pencil-box-outline",
-            "name": "Quản lý Giải thưởng",
-            "url": "/giai-thuong-quan-ly"
+            "icon": "mdi-check-all",
+            "name": "Duyệt giờ NCKH cấp Trường",
+            "url": "/hdkh-duyet-cap-truong"
           },
           {
-            "icon": "mdi-certificate",
-            "name": "Quản lý Quyết định",
-            "url": "/giai-thuong-quyet-dinh"
+            "icon": "mdi-calendar-check-outline",
+            "name": "Tổng kết năm học",
+            "url": "/hdkh-tong-ket-nam-hoc"
           }
         ]
       },
       {
-        "icon": "mdi-transfer",
-        "name": "Quản lý CGCN",
-        "right": {
-          "GroupID": [
-            1
-          ],
-          "SystemRight": [
-            9,
-            2
-          ]
-        },
-        "url": "/cgcn-quan-ly"
-      },
-      {
-        "icon": "mdi-trophy",
-        "name": "NCKH",
+        "icon": "mdi-flask-outline",
+        "name": "Đề tài & CGCN",
         "right": {
           "GroupID": [
             1
@@ -218,19 +181,89 @@
         },
         "submenu": [
           {
-            "icon": "mdi-pencil-box-outline",
-            "name": "NCKH Sinh viên",
-            "url": "/de-tai-sinh-vien"
-          },
-          {
-            "icon": "mdi-certificate",
-            "name": "Đề tài cơ sở",
+            "icon": "mdi-flask-outline",
+            "name": "Đề tài cấp cơ sở",
             "url": "/de-tai-co-so"
           },
           {
-            "icon": "mdi-certificate",
-            "name": "Quyết định cấp kinh phí",
+            "icon": "mdi-cash-check",
+            "name": "Quyết định cấp kinh phí đề tài",
             "url": "/de-tai-kinh-phi"
+          },
+          {
+            "icon": "mdi-school-outline",
+            "name": "NCKH sinh viên",
+            "url": "/de-tai-sinh-vien"
+          },
+          {
+            "icon": "mdi-trophy",
+            "name": "Giải thưởng",
+            "url": "/giai-thuong-quan-ly"
+          },
+          {
+            "icon": "mdi-certificate-outline",
+            "name": "Quyết định giải thưởng",
+            "url": "/giai-thuong-quyet-dinh"
+          },
+          {
+            "icon": "mdi-swap-horizontal",
+            "name": "Chuyển giao công nghệ",
+            "url": "/cgcn-quan-tri"
+          }
+        ]
+      },
+      {
+        "icon": "mdi-cog-outline",
+        "name": "Cấu hình",
+        "right": {
+          "GroupID": [
+            1
+          ],
+          "SystemRight": [
+            9,
+            2
+          ]
+        },
+        "submenu": [
+          {
+            "icon": "mdi-form-select",
+            "name": "Nhiệm vụ khoa học (biểu mẫu kê khai)",
+            "url": "/hdkh-bieu-mau-nhiem-vu"
+          },
+          {
+            "icon": "mdi-scale-balance",
+            "name": "Định mức giờ chuẩn",
+            "url": "/hdkh-dinh-muc-gio-chuan"
+          },
+          {
+            "icon": "mdi-format-list-bulleted",
+            "name": "Danh mục tạp chí",
+            "url": "/hdkh-danh-muc-tap-chi"
+          },
+          {
+            "icon": "mdi-format-list-bulleted",
+            "name": "Danh mục thể loại sách",
+            "url": "/hdkh-danh-muc-the-loai-sach"
+          },
+          {
+            "icon": "mdi-format-list-bulleted",
+            "name": "Danh mục ngôn ngữ",
+            "url": "/hdkh-danh-muc-ngon-ngu"
+          },
+          {
+            "icon": "mdi-format-list-bulleted",
+            "name": "Danh mục loại hình phản biện",
+            "url": "/hdkh-danh-muc-loai-hinh-phan-bien"
+          },
+          {
+            "icon": "mdi-backup-restore",
+            "name": "Khôi phục dữ liệu ấn phẩm",
+            "url": "/an-pham-khoi-phuc",
+            "right": {
+              "SystemRight": [
+                9
+              ]
+            }
           }
         ]
       }

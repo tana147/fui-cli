@@ -59,6 +59,7 @@ BEGIN
             OR @TrangThai = '0'
         )
         AND B.Is_LocalStore = 0
+        AND (B.Is_DeNghiXetThuong = 1 OR B.Is_DeNghiXetThuong IS NULL)
     GROUP BY
         A.AnPhamID;
 
@@ -286,6 +287,7 @@ BEGIN
             OR @TrangThai = '0'
         )
         AND A.Is_LocalStore = 0
+        AND (A.Is_DeNghiXetThuong = 1 OR A.Is_DeNghiXetThuong IS NULL)
 
 
     GROUP BY

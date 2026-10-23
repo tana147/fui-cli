@@ -74,6 +74,11 @@ BEGIN
 			, A.DotDuyet
 			, A.ThoiGianDuyet
 			, CASE WHEN F.AnPhamID IS NULL THEN 0 ELSE 1 END DaGuiDashboard
+			, A.Is_DeNghiXetThuong
+			, A.TapSoTrang
+			, A.ThangDang
+			, A.TheLoaiBienSoanID
+			, A.DoiLink
 		FROM AnPham A 
 			INNER JOIN [dbo].[AnPham_Loai] C ON C.LoaiAnPhamID = A.LoaiAnPhamID
 			LEFT JOIN FileData B ON A.FileIDKhenThuong = B.FileID
@@ -116,6 +121,8 @@ BEGIN
 		, B.NguoiDaiDienQuyetToan
 		, B.NguonCapKinhPhi
 		, B.HeSoHoTroCaoHoc
+		, B.Is_TacGiaLienHe
+		, B.VaiTroID
 	FROM AnPham_TacGia B WHERE B.AnPhamID = @AnPhamID and b.Is_Xoa =0
 		
 

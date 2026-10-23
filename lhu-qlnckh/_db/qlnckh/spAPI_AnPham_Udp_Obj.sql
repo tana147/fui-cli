@@ -65,7 +65,12 @@ AS
             @FileIDMinhChungScopus      CHAR(32),
             @FileIDMinhChungHDCDGSNN    CHAR(32),
             @FileIDMinhChungLacHong     CHAR(32),
-            @FileIDMinhChungKhac     CHAR(32)
+            @FileIDMinhChungKhac     CHAR(32),
+            @Is_DeNghiXetThuong         BIT,
+            @TapSoTrang                 NVARCHAR(100),
+            @ThangDang                  TINYINT,
+            @TheLoaiBienSoanID          INT,
+            @DoiLink                    NVARCHAR(500)
         -- Parse JSON input
         SELECT
             @AnPhamID = json.AnPhamID,
@@ -109,7 +114,12 @@ AS
             @FileIDMinhChungScopus = json.FileIDMinhChungScopus,
             @FileIDMinhChungHDCDGSNN = json.FileIDMinhChungHDCDGSNN,
             @FileIDMinhChungLacHong = json.FileIDMinhChungLacHong,
-            @FileIDMinhChungKhac = json.FileIDMinhChungKhac
+            @FileIDMinhChungKhac = json.FileIDMinhChungKhac,
+            @Is_DeNghiXetThuong = json.Is_DeNghiXetThuong,
+            @TapSoTrang = json.TapSoTrang,
+            @ThangDang = json.ThangDang,
+            @TheLoaiBienSoanID = json.TheLoaiBienSoanID,
+            @DoiLink = json.DoiLink
         FROM
             OPENJSON(@AnPhamObj)
             WITH(
@@ -154,7 +164,12 @@ AS
                 FileIDMinhChungScopus CHAR(32),
                 FileIDMinhChungHDCDGSNN CHAR(32),
                 FileIDMinhChungLacHong CHAR(32),
-                FileIDMinhChungKhac CHAR(32)
+                FileIDMinhChungKhac CHAR(32),
+                Is_DeNghiXetThuong BIT,
+                TapSoTrang NVARCHAR(100),
+                ThangDang TINYINT,
+                TheLoaiBienSoanID INT,
+                DoiLink NVARCHAR(500)
                 ) AS json;
         --DECLARE @DiemHeSoChatLuong NUMERIC(18, 2);
         --SET @DiemHeSoChatLuong = (
@@ -213,6 +228,11 @@ AS
             FileIDMinhChungHDCDGSNN = @FileIDMinhChungHDCDGSNN,
             FileIDMinhChungLacHong = @FileIDMinhChungLacHong,
             FileIDMinhChungKhac = @FileIDMinhChungKhac,
+            Is_DeNghiXetThuong = ISNULL(@Is_DeNghiXetThuong, [Is_DeNghiXetThuong]),
+            TapSoTrang = @TapSoTrang,
+            ThangDang = @ThangDang,
+            TheLoaiBienSoanID = @TheLoaiBienSoanID,
+            DoiLink = @DoiLink,
             GroupAnPham_Edit = CASE WHEN LoaiAnPhamID IN (1, 2) THEN 3 --Hội thảo
                                     WHEN LoaiAnPhamID IN (4, 5, 13, 15, 16) THEN 1 -- Quốc tế
                                     WHEN (LoaiAnPhamID = 3 AND (LoaiSubAnPhamID IN (8, 23) OR LoaiSubAnPhamID IS NULL))
@@ -256,7 +276,9 @@ AS
             [Is_TacGiaPhu] = json.Is_TacGiaPhu,
             [NguoiDaiDienQuyetToan] = json.NguoiDaiDienQuyetToan,
             [NguonCapKinhPhi] = json.NguonCapKinhPhi,
-            [HeSoHoTroCaoHoc] = json.HeSoHoTroCaoHoc
+            [HeSoHoTroCaoHoc] = json.HeSoHoTroCaoHoc,
+            [Is_TacGiaLienHe] = ISNULL(json.Is_TacGiaLienHe, 0),
+            [VaiTroID] = json.VaiTroID
         FROM
             OPENJSON(@AuthorsObjArr)
             WITH(
@@ -279,7 +301,9 @@ AS
                 Is_TacGiaPhu BIT,
                 NguoiDaiDienQuyetToan BIT,
                 NguonCapKinhPhi VARCHAR(9),
-                HeSoHoTroCaoHoc FLOAT
+                HeSoHoTroCaoHoc FLOAT,
+                Is_TacGiaLienHe BIT,
+                VaiTroID INT
                 ) AS json
         WHERE [dbo].[AnPham_TacGia].[AnPhamTacGiaID] = json.AnPhamTacGiaID;
         DECLARE @TongSoTacGia INT;

@@ -21,7 +21,9 @@ BEGIN
         @SoQuyetDinh_VanBang VARCHAR(100),
         @NgayBanHanh DATE,
         @HinhThucThanhToan TINYINT,
-        @GhiChu NVARCHAR(500);
+        @GhiChu NVARCHAR(500),
+        @NoiCapVanBang NVARCHAR(250),
+        @MaSoDeTai VARCHAR(50);
 
     SELECT 
         @DotID = json.DotID,
@@ -36,7 +38,9 @@ BEGIN
         @SoQuyetDinh_VanBang = json.SoQuyetDinh_VanBang,
         @NgayBanHanh = json.NgayBanHanh,
         @HinhThucThanhToan = ISNULL(json.HinhThucThanhToan, 1),
-        @GhiChu = json.GhiChu
+        @GhiChu = json.GhiChu,
+        @NoiCapVanBang = json.NoiCapVanBang,
+        @MaSoDeTai = json.MaSoDeTai
     FROM OPENJSON(@KhenThuongObj)
     WITH (
         DotID INT,
@@ -51,7 +55,9 @@ BEGIN
         SoQuyetDinh_VanBang VARCHAR(100),
         NgayBanHanh DATE,
         HinhThucThanhToan TINYINT,
-        GhiChu NVARCHAR(500)
+        GhiChu NVARCHAR(500),
+        NoiCapVanBang NVARCHAR(250),
+        MaSoDeTai VARCHAR(50)
     ) AS json;
 
     -- 1. Insert bảng chính
@@ -67,6 +73,8 @@ BEGIN
         Is_DauRaDeTaiCoSo,
         SoQuyetDinh_VanBang,
         NgayBanHanh,
+        NoiCapVanBang,
+        MaSoDeTai,
         TongTienThuong,
         HinhThucThanhToan,
         TrangThai,
@@ -88,6 +96,8 @@ BEGIN
         @Is_DauRaDeTaiCoSo,
         @SoQuyetDinh_VanBang,
         @NgayBanHanh,
+        @NoiCapVanBang,
+        @MaSoDeTai,
         0,
         @HinhThucThanhToan,
         @TrangThai,

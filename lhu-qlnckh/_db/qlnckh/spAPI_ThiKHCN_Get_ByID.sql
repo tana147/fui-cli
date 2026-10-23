@@ -25,6 +25,8 @@ BEGIN
         K.PhamViSHTT,
         K.Is_DauRaDeTaiCoSo,
         K.SoQuyetDinh_VanBang,
+        K.NoiCapVanBang,
+        K.MaSoDeTai,
         CONVERT(VARCHAR(10), K.NgayBanHanh, 23) AS NgayBanHanh,
         CONVERT(VARCHAR(10), K.NgayBanHanh, 103) AS NgayBanHanhFormatted,
         K.TongTienThuong,

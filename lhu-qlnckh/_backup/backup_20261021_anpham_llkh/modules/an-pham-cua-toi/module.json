@@ -1,0 +1,57 @@
+{
+  "data": [
+    {
+      "loadAnPhamByMaNV": {
+        "API": "/AnPham_Get_ByMaNV",
+        "OUT": "DSBaiBao"
+      }
+    },
+    {
+      "CALL": "loadAnPhamByMaNV"
+    },
+    {
+      "API": "/LoaiDMTapChi_Get_All",
+      "OUT": "DSLoaiTapChi"
+    },
+    {
+      "API": "/AnPham_LoaiAnPham_Get",
+      "OUT": "DSLoaiAnPham"
+    },
+    {
+      "API": "/System_Get_Nam",
+      "OUT": "DSNam"
+    },
+    {
+      "API": "/HSCL_Get",
+      "OUT": "DSHeSoChatLuong"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "grid-list-md fluid",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-my-papers",
+              "col": {},
+              "attr": {
+                ":dsbaibao": "vueData.DSBaiBao",
+                ":dsdanhmuctapchi": "vueData.DSLoaiTapChi",
+                ":dsdanhmucloaianpham": "vueData.DSLoaiAnPham",
+                ":dsnam": "vueData.DSNam",
+                ":dsnganhang": "vueData.DSNganHang",
+                ":dshesochatluong": "vueData.DSHeSoChatLuong"
+              },
+              "w": 12
+            }
+          ],
+          "w": 12
+        }
+      ]
+    }
+  ],
+  "set": {}
+}

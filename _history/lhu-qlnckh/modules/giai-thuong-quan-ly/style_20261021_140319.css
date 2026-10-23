@@ -1,0 +1,12 @@
+.gtql-card {
+  border-color: #e0e0e0;
+}
+.gtql-type-select {
+  max-width: 280px;
+}
+.gtql-search-input {
+  max-width: 220px;
+}
+.gtql-table table tbody tr:hover {
+  background-color: #f5f9ff !important;
+}
