@@ -5,13 +5,11 @@
   "ProjectID": "lhu-qlnckh",
   "ModuleID": "khen-thuong-duyet",
   "ModuleName": "Duyệt khen thưởng KHCN",
-  "UpdateTime": "2026-10-21 10:39:55",
+  "UpdateTime": "2026-10-21 15:29:07",
   "UpdateUser": "DEV000068",
-  "LastLoad": "2026-10-14",
-  "LoadCount": 61,
+  "LastLoad": "2026-10-21",
+  "LoadCount": 63,
   "HTMLOnly": false,
   "Framework": "V2",
-  "mTitle": "",
-  "UpdateInfo": "DEV000068 - 2026-10-21 15:29:07",
-  "LoadInfo": "2026-10-14 [61]"
+  "mTitle": ""
 }

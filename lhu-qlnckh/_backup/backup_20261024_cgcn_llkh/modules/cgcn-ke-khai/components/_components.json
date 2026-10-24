@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 12032,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 12031,
+    "comName": "uc-main-view"
+  },
+  {
+    "comID": 12030,
+    "comName": "uc-modal-contract"
+  },
+  {
+    "comID": 12029,
+    "comName": "uc-modal-files"
+  },
+  {
+    "comID": 12028,
+    "comName": "uc-stats"
+  }
+]

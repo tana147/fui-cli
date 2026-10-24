@@ -72,6 +72,13 @@ window.LLKH = (function () {
             congTac: h[3] || [],
             giaDinh: h[4] || [],
             huongNC: ((n[0] || [])[0] || {}).HuongNghienCuuChinh || "",
+            stm: {
+                tomTatKinhNghiem: ((n[0] || [])[0] || {}).TomTatKinhNghiem || "",
+                orcid: ((n[0] || [])[0] || {}).ORCID || "",
+                googleScholar: ((n[0] || [])[0] || {}).GoogleScholar || "",
+                researchGate: ((n[0] || [])[0] || {}).ResearchGate || "",
+                maSTI: ((n[0] || [])[0] || {}).MaSTI || ""
+            },
             deTai: (n[1] || []).concat(keKhai.filter(k => k.Loai === "DE_TAI").map(k => ({
                 Nguon: "Kê khai giờ NCKH (" + k.TrangThaiDuyet + ")", TenDeTai: k.Ten, Cap: k.CapDeTai,
                 Nam: k.NamHoc, VaiTro: k.VaiTro
@@ -227,6 +234,8 @@ window.LLKH = (function () {
         const nt = d.nt, by = b => d.daoTao.filter(r => r.Bac === b);
         const dh = by("DH"), ths = by("ThS")[0] || {}, ts = by("TS")[0] || {};
         const hh = d.hocHam[0];
+        const allSHTT_GV = d.shtt.map(s => [s.TenCuocThi_CongTrinh, s.SoQuyetDinh_VanBang, year(s.NgayBanHanh), s.NoiCapVanBang, s.VaiTro, s.Is_DauRaDeTaiCoSo ? "Đầu ra đề tài cấp cơ sở" : ""])
+            .concat(d.shttKeKhai.map(k => [k.Ten, k.SoVanBang, k.NamCap, k.NoiCapVanBang, k.VaiTro, ""]));
         return [
             headerBoGD(),
             { text: "LÝ LỊCH KHOA HỌC", style: "title" }, { text: "(Dùng cho giảng viên)", style: "sub", margin: [0, 0, 0, 10] },
@@ -266,7 +275,7 @@ window.LLKH = (function () {
             { text: "3. Các sách chuyên khảo, giáo trình đã công bố", style: "h2" },
             table(["STT", "Tên công trình", "Năm xuất bản", "Tên nhà xuất bản", "Điểm HĐGS", "Ghi chú"], F.sach.get(d).map((c, i) => [i + 1, c.TenAnPham || c.Ten, c.NamDangBai || c.ThoiGianPhatHanh, c.TenTapChi || c.NoiPhatHanh, c.DiemHoiDong, c.VaiTro || tg(c)]), [22, "*", 45, 110, 40, 60]),
             { text: "4. Bằng phát minh, sáng chế, giải pháp hữu ích", style: "h2" },
-            table(["TT", "Tên bằng", "Số hiệu", "Năm cấp", "Nơi cấp", "Tác giả/ đồng tác giả", "Sản phẩm đề tài"], d.shtt.map((s, i) => [i + 1, s.TenCuocThi_CongTrinh, s.SoQuyetDinh_VanBang, year(s.NgayBanHanh), s.NoiCapVanBang, s.VaiTro, s.Is_DauRaDeTaiCoSo ? "Đầu ra đề tài cấp cơ sở" : ""]), [20, "*", 50, 35, 55, 60, 50]),
+            table(["TT", "Tên bằng", "Số hiệu", "Năm cấp", "Nơi cấp", "Tác giả/ đồng tác giả", "Sản phẩm đề tài"], allSHTT_GV.map((s, i) => [i + 1].concat(s)), [20, "*", 50, 35, 55, 60, 50]),
             camDoan(CAM_DOAN_LLKH),
             kyTen([{ text: "Xác nhận của Trường đại học", bold: true }, { text: "HIỆU TRƯỞNG", bold: true }],
                 [{ text: NGAY_KY, italics: true }, { text: "Người khai ký tên", bold: true }, { text: "(Ghi rõ chức danh, học vị)", italics: true }, { text: "\n\n\n" + (nt.HoTen || ""), bold: true }])
@@ -285,6 +294,8 @@ window.LLKH = (function () {
         const sachAll = d.congTrinh.filter(c => c.LoaiAnPhamID === 6);
         const chuongSach = sachAll.filter(c => c.TheLoaiBienSoanID === 6);
         const sach = sachAll.filter(c => c.TheLoaiBienSoanID !== 6);
+        const allSHTT_SDH = d.shtt.map(s => ({ ten: s.TenCuocThi_CongTrinh, so: s.SoQuyetDinh_VanBang, nam: year(s.NgayBanHanh) }))
+            .concat(d.shttKeKhai.map(k => ({ ten: k.Ten, so: k.SoVanBang, nam: k.NamCap })));
         return [
             headerBoGD(),
             { text: "LÝ LỊCH KHOA HỌC", style: "title" }, { text: "(Dành cho giảng viên tham gia đào tạo chương trình tiến sĩ)", style: "sub", margin: [0, 0, 0, 10] },
@@ -314,7 +325,7 @@ window.LLKH = (function () {
             table(["TT", "Tên sách chuyên khảo", "Chủ biên", "TG thứ nhất", "TG liên hệ", "Nhà xuất bản", "Chỉ số ISBN", "Tháng, năm", "Điểm"],
                 sach.map((c, i) => [i + 1, c.TenAnPham, x(c.VaiTroID === 5), x(c.VaiTroID === 7 || c.VaiTroID === 6), x(c.Is_TacGiaLienHe), c.TenTapChi, c.ISSN, thangNam(c), c.DiemHoiDong]), W),
             { text: "5. Sáng chế", style: "h2" },
-            ...(d.shtt.length ? d.shtt.map(s => ({ text: "- " + s.TenCuocThi_CongTrinh + "; " + (s.SoQuyetDinh_VanBang || "") + "; " + year(s.NgayBanHanh), margin: [0, 2, 0, 2] })) : [v(null)]),
+            ...(allSHTT_SDH.length ? allSHTT_SDH.map(s => ({ text: "- " + s.ten + "; " + (s.so || "") + "; " + (s.nam || ""), margin: [0, 2, 0, 2] })) : [v(null)]),
             camDoan(CAM_DOAN_LLKH),
             kyTen([], [{ text: NGAY_KY, italics: true }, { text: "Người khai ký tên", bold: true }, { text: "(Ghi rõ chức danh, học vị)", italics: true }, { text: "\n\n\n" + (nt.HoTen || ""), bold: true }])
         ];
@@ -368,6 +379,8 @@ window.LLKH = (function () {
         const bbRows = arr => arr.map((c, i) => [i + 1, c.TenAnPham, c.TenTapChi, c.NamDangBai, link(c)]);
         const hh = d.hocHam[0];
         const info = (a, b) => [{ text: a, style: "td" }, Object.assign(v(b), { style: "td" })];
+        const allSHTT_LLKH = d.shtt.map(s => [s.TenCuocThi_CongTrinh, s.SoQuyetDinh_VanBang, year(s.NgayBanHanh), s.SoMinhChung ? s.SoMinhChung + " tệp (hệ thống NCKH)" : null])
+            .concat(d.shttKeKhai.map(k => [k.Ten, k.SoVanBang, k.NamCap, null]));
         return [
             headerBoGD(),
             { text: "LÝ LỊCH KHOA HỌC", style: "title", margin: [0, 0, 0, 10] },
@@ -400,7 +413,7 @@ window.LLKH = (function () {
             { text: "5.3. Sách chuyên khảo/chương sách/sách hoặc giáo trình", style: "h2" },
             table(["Stt", "Tên sách", "Nhà xuất bản/đơn vị xuất bản", "Năm xuất bản", "Link Google Scholar/Link DOI"], gan(F.sach.get(d)).map((c, i) => [i + 1, c.TenAnPham || c.Ten, c.TenTapChi || c.NoiPhatHanh, c.NamDangBai || c.ThoiGianPhatHanh, c.DuongDanBaiBao]), [22, "*", 110, 45, 110]),
             { text: "5.4. Phát minh, sáng chế", style: "h2" },
-            table(["Stt", "Tên phát minh, sáng chế", "Số văn bằng", "Năm công bố", "Link minh chứng"], d.shtt.map((s, i) => [i + 1, s.TenCuocThi_CongTrinh, s.SoQuyetDinh_VanBang, year(s.NgayBanHanh), s.SoMinhChung ? s.SoMinhChung + " tệp (hệ thống NCKH)" : null]), [22, "*", 80, 55, 90]),
+            table(["Stt", "Tên phát minh, sáng chế", "Số văn bằng", "Năm công bố", "Link minh chứng"], allSHTT_LLKH.map((s, i) => [i + 1].concat(s)), [22, "*", 80, 55, 90]),
             { text: "5.5. Tham gia các cuộc thi khoa học và công nghệ", style: "h2" },
             table(["Stt", "Tên tác giả/nhóm tác giả", "Tên đề tài/giải pháp", "Đạt giải", "Tên cuộc thi/giải thưởng", "Số QĐ khen thưởng"], d.cuocThi.map((c, i) => [i + 1, c.NhomTacGia, c.TenCuocThi_CongTrinh, c.Giai, c.CapDo, c.SoQuyetDinh_VanBang]), [22, 90, "*", 50, 90, 60]),
             { text: "5.6. Các hình thức khen thưởng khác", style: "h2" },

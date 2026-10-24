@@ -379,19 +379,20 @@
 			if (this.editedItem.AuthorsObjArr.length === 0) {
 				return Vue.$toast.warning("Vui lòng thêm ít nhất 1 tác giả", { position: "top" })
 			}
+			const isKhongXetThuong = this.editedItem.AnPhamObj.Is_DeNghiXetThuong === false || this.editedItem.AnPhamObj.Is_DeNghiXetThuong === 0
 			if (this.editedIndex > -1) {
 				confirm({
-					title: "Cập nhật bài báo",
-					content: "Bạn có muốn cập nhật bài báo không?",
+					title: isKhongXetThuong ? "Cập nhật bài báo vào LLKH" : "Cập nhật bài báo",
+					content: isKhongXetThuong ? "Bạn có muốn cập nhật thông tin bài báo vào LLKH không?" : "Bạn có muốn cập nhật bài báo không?",
 					action: () => {
 						this.update_baiBao()
 					}
 				})
 			} else {
-				this.trangThai = 2
+				this.trangThai = isKhongXetThuong ? 3 : 2
 				confirm({
-					title: "Lưu và gửi đề xuất",
-					content: "Bạn có muốn Lưu và gửi đề xuất bài báo không?",
+					title: isKhongXetThuong ? "Lưu vào LLKH" : "Lưu và gửi đề xuất",
+					content: isKhongXetThuong ? "Bạn có muốn lưu bài báo vào LLKH không?" : "Bạn có muốn Lưu và gửi đề xuất bài báo không?",
 					action: () => {
 						this.insert_baiBao()
 					}
@@ -446,11 +447,12 @@
 			if (this.editedItem.AuthorsObjArr.length === 0) {
 				return Vue.$toast.warning("Vui lòng thêm ít nhất 1 tác giả", { position: "top" })
 			}
+			const isKhongXetThuong = this.editedItem.AnPhamObj.Is_DeNghiXetThuong === false || this.editedItem.AnPhamObj.Is_DeNghiXetThuong === 0
 			const params = {
 				AnPhamObj: this.editedItem.AnPhamObj,
 				AuthorsObjArr: this.editedItem.AuthorsObjArr,
 				ProofSObjArr: this.buildProofsObjArrAPI(),
-				TrangThai: 2
+				TrangThai: isKhongXetThuong ? 3 : 2
 			}
 			await this.updateArticleStatus(params)
 			const formAnPham = this.$refs.ArticleModal?.$refs.FormAnPham
@@ -462,17 +464,23 @@
 				formAnPham.uploadedFileIDs = []
 				formAnPham.resetFileStates()
 			}
-			Vue.$toast.success("Cập nhật và gửi đề xuất thành công", { position: "top" })
+			Vue.$toast.success(isKhongXetThuong ? "Lưu vào LLKH thành công" : "Cập nhật và gửi đề xuất thành công", { position: "top" })
 			this.close()
 		},
 		async update_baiBao() {
 			this.isLoadingSave = true
-			console.log('3. Payload gửi lên API AnPham_Udp_Obj:', JSON.stringify(this.editedItem.AnPhamObj))
+			const isKhongXetThuong = this.editedItem.AnPhamObj.Is_DeNghiXetThuong === false || this.editedItem.AnPhamObj.Is_DeNghiXetThuong === 0
+			let targetTrangThai = 1
+			if (isKhongXetThuong) {
+				targetTrangThai = 3
+			} else {
+				targetTrangThai = this.editedItem.AnPhamObj.TrangThaiID === 3 ? 2 : (this.editedItem.AnPhamObj.TrangThaiID || 1)
+			}
 			const params = {
 				AnPhamObj: this.editedItem.AnPhamObj,
 				AuthorsObjArr: this.editedItem.AuthorsObjArr,
 				ProofSObjArr: this.buildProofsObjArrAPI(),
-				TrangThai: 1
+				TrangThai: targetTrangThai
 			}
 			try {
 				await this.saveArticle({ AnPhamID: this.editedItem.AnPhamObj.AnPhamID, params })
@@ -485,7 +493,7 @@
 					formAnPham.uploadedFileIDs = []
 					formAnPham.resetFileStates()
 				}
-				Vue.$toast.success("Chỉnh sửa thành công", { position: "top" })
+				Vue.$toast.success(isKhongXetThuong ? "Lưu vào LLKH thành công" : "Chỉnh sửa thành công", { position: "top" })
 				this.close()
 			} finally {
 				this.isLoadingSave = false
@@ -493,11 +501,12 @@
 		},
 		async insert_baiBao() {
 			this.isLoadingSave = true
+			const isKhongXetThuong = this.editedItem.AnPhamObj.Is_DeNghiXetThuong === false || this.editedItem.AnPhamObj.Is_DeNghiXetThuong === 0
 			const params = {
 				AnPhamObj: this.editedItem.AnPhamObj,
 				AuthorsObjArr: this.editedItem.AuthorsObjArr,
 				ProofSObjArr: this.buildProofsObjArrAPI(),
-				TrangThai: this.trangThai
+				TrangThai: isKhongXetThuong ? 3 : this.trangThai
 			}
 			try {
 				const res = await this.saveArticle({ params })
@@ -510,7 +519,7 @@
 					formAnPham.uploadedFileIDs = []
 					formAnPham.resetFileStates()
 				}
-				Vue.$toast.success("Thêm mới bài báo thành công", { position: "top" })
+				Vue.$toast.success(isKhongXetThuong ? "Lưu vào LLKH thành công" : "Thêm mới bài báo thành công", { position: "top" })
 				this.close()
 				return res
 			} finally {

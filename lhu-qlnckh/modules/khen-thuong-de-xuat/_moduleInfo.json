@@ -5,13 +5,11 @@
   "ProjectID": "lhu-qlnckh",
   "ModuleID": "khen-thuong-de-xuat",
   "ModuleName": "Đề nghị khen thưởng KHCN",
-  "UpdateTime": "2026-10-21 10:39:55",
+  "UpdateTime": "2026-10-21 15:29:07",
   "UpdateUser": "DEV000068",
-  "LastLoad": "2026-10-14",
-  "LoadCount": 60,
+  "LastLoad": "2026-10-23",
+  "LoadCount": 71,
   "HTMLOnly": false,
   "Framework": "V2",
-  "mTitle": "",
-  "UpdateInfo": "DEV000068 - 2026-10-21 15:29:07",
-  "LoadInfo": "2026-10-14 [60]"
+  "mTitle": ""
 }

@@ -8,7 +8,7 @@ CREATE PROCEDURE [dbo].[spAPI_AnPham_Udp_Obj]
 AS
     BEGIN;
 
-        IF @TrangThai = 3
+        IF @TrangThai = 3 AND (ISNULL(JSON_VALUE(@AnPhamObj, '$.Is_DeNghiXetThuong'), '1') NOT IN ('0', 'false'))
         BEGIN
             IF @DotDuyetID IS NULL OR @DotDuyetID <= 0
             BEGIN

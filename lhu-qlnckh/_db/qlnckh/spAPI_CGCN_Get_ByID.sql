@@ -25,6 +25,24 @@ BEGIN
             WHERE fd.FileID IN (SELECT Data FROM [dbo].[FN_STRING_SPLIT](cn.[FileID_List], ','))
             FOR JSON PATH
         ) AS [FileData],
+        (
+            SELECT 
+                tv.CGCN_ThanhVienID,
+                tv.CGCNID,
+                tv.VaiTro,
+                tv.TenVaiTro,
+                tv.Is_NhanVien,
+                tv.Is_SinhVien,
+                tv.MaDinhDanh,
+                tv.HoTen,
+                tv.Email,
+                tv.TenPhongBan,
+                tv.TyLeDongGop
+            FROM dbo.ChuyenGiaoCongNghe_ThanhVien tv
+            WHERE tv.CGCNID = cn.CGCNID AND tv.Is_Xoa = 0
+            ORDER BY tv.VaiTro ASC, tv.CGCN_ThanhVienID ASC
+            FOR JSON PATH
+        ) AS [ThanhVienList],
         cn.NamHoc,
         cn.NhanVienSubmit,
         COALESCE(nv.HoTen, LTRIM(RTRIM(CONCAT(tk.HoNV, ' ', tk.TenNV))), cn.NhanVienSubmit) AS TenNhanVienSubmit,

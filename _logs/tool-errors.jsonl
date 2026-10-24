@@ -269,3 +269,6 @@
 {"ts":"2026-10-23T02:18:16.230Z","pid":13389,"tool":"fui query","message":"❌ tAPI HTTP 400: Invalid object name 'Task'."}
 {"ts":"2026-10-23T02:18:31.559Z","pid":13558,"tool":"fui query","message":"❌ tAPI HTTP 400: Invalid column name 'SoQD'."}
 {"ts":"2026-10-23T02:28:06.359Z","pid":19637,"tool":"fui sp deploy","message":"❌ invalid object name \"_db/qldetaisdh/spAPI_Decision_Get_ByStatus.sql\": letters, digits and \"_\" only (it becomes _db/<alias>/<name>.sql)"}
+{"ts":"2026-10-24T15:30:32.628Z","pid":5084,"tool":"fui sp list","message":"❌ project \"lhu-qlnckh\" has no DB connections; run: fui db add <apiName> -p lhu-qlnckh"}
+{"ts":"2026-10-24T15:33:09.770Z","pid":6400,"tool":"fui file status","message":"❌ module commands need both -p <project> and -m <module>"}
+{"ts":"2026-10-24T15:56:16.427Z","pid":9180,"tool":"fui sp deploy","message":"❌ tAPI does not support parameter default values; remove \"= ...\" and save before deploying:\n  - @TomTatKinhNghiem nvarchar(1000) = NULL\n  - @ORCID varchar(100) = NULL\n  - @GoogleScholar nvarchar(500) = NULL\n  - @ResearchGate nvarchar(500) = NULL\n  - @MaSTI varchar(100) = NULL"}

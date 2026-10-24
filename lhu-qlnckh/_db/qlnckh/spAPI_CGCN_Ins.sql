@@ -63,5 +63,38 @@ BEGIN
         CASE WHEN @Status = 2 THEN GETDATE() ELSE NULL END
     );
 
-    SELECT SCOPE_IDENTITY() AS NewCGCNID;
+    DECLARE @NewID INT = SCOPE_IDENTITY();
+
+    -- Tự động thêm người nộp đơn làm thành viên / chủ nhiệm đầu tiên trong bảng riêng ChuyenGiaoCongNghe_ThanhVien
+    IF @UserAction IS NOT NULL AND @NewID IS NOT NULL
+    BEGIN
+        INSERT INTO dbo.ChuyenGiaoCongNghe_ThanhVien
+        (
+            CGCNID,
+            VaiTro,
+            TenVaiTro,
+            Is_NhanVien,
+            Is_SinhVien,
+            MaDinhDanh,
+            HoTen,
+            TenPhongBan,
+            Is_Xoa,
+            CreateTime,
+            CreateUser
+        )
+        SELECT 
+            @NewID,
+            1,
+            N'Chủ nhiệm',
+            1,
+            0,
+            @UserAction,
+            ISNULL((SELECT TOP 1 HoTen FROM dbo.NhanVien WHERE MaNV = @UserAction), ISNULL(@ChuNhiemDeTai, @UserAction)),
+            @DonViChuNhiem,
+            0,
+            GETDATE(),
+            @sys_UserID;
+    END
+
+    SELECT @NewID AS NewCGCNID;
 END;

@@ -152,7 +152,7 @@
 						<v-btn @click="close">
 							Đóng
 						</v-btn>
-						<v-btn color="primary" @click="save" v-if="anPhamObj.TrangThaiID !== 3">
+						<v-btn color="primary" @click="save" v-if="anPhamObj.TrangThaiID !== 3 || anPhamObj.Is_DeNghiXetThuong === false || anPhamObj.Is_DeNghiXetThuong === 0">
 							{{ editedIndex === -1 ? "Thêm" : "Cập nhật" }}
 						</v-btn>
 					</v-card-actions>
@@ -209,7 +209,7 @@
 				</template>
 				<template v-slot:item.actions="{ item }">
 					<div style="display:flex; justify-content:center">
-						<v-icon style="font-size:18px" color="red darken-3" v-if="anPhamObj.TrangThaiID !== 3" small
+						<v-icon style="font-size:18px" color="red darken-3" v-if="anPhamObj.TrangThaiID !== 3 || anPhamObj.Is_DeNghiXetThuong === false || anPhamObj.Is_DeNghiXetThuong === 0" small
 							class="mr-2" @click="deleteItem(item)">
 							mdi-trash-can-outline
 						</v-icon>

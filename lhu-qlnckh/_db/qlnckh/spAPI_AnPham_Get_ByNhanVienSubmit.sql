@@ -62,7 +62,8 @@ BEGIN
            END TrangThai,
            A.TrangThai AS TrangThaiID,
            A.LyDoReject,
-           A.NhomAnPham
+           A.NhomAnPham,
+           A.Is_DeNghiXetThuong
     FROM AnPham A
         INNER JOIN [dbo].[AnPham_TacGia] B
             ON B.AnPhamID = A.AnPhamID
@@ -104,7 +105,8 @@ BEGIN
              A.[GhiChu],
              A.[TrangThai],
              A.LyDoReject,
-             A.NhomAnPham
+             A.NhomAnPham,
+             A.Is_DeNghiXetThuong
     ORDER BY A.TrangThai ASC,
              A.AnPhamID DESC;
 END;

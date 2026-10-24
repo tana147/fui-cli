@@ -47,28 +47,129 @@
 						/>
 					</v-col>
 
-					<v-col cols="12" md="6">
-						<v-textarea
-							v-model="form.ChuNhiemDeTai"
-							label="Chủ nhiệm"
-							rows="2"
-							outlined
-							dense
-							hide-details="auto"
-							class="mb-2"
-						/>
-					</v-col>
+					<!-- Khối Danh sách thành viên thực hiện hợp đồng CGCN -->
+					<v-col cols="12">
+						<div class="d-flex align-center justify-space-between mb-1">
+							<span class="font-weight-bold text-subtitle-2 primary--text">
+								Thành viên thực hiện hợp đồng chuyển giao công nghệ *
+							</span>
+							<v-chip v-if="membersList.length" x-small color="primary" outlined>
+								{{ membersList.length }} thành viên
+							</v-chip>
+						</div>
 
-					<v-col cols="12" md="6">
-						<v-textarea
-							v-model="form.ThanhVienDeTai"
-							label="Thành viên thực hiện"
-							rows="2"
-							outlined
+						<!-- Thanh tìm kiếm và thêm thành viên -->
+						<v-card outlined class="pa-2 mb-2 bg-light rounded-xs">
+							<v-row dense align="center">
+								<v-col cols="12" sm="4">
+									<v-autocomplete
+										v-model="selectedMemberSearch"
+										:items="searchMemberResults"
+										:loading="isSearchingMember"
+										:search-input.sync="searchMemberKeyword"
+										item-text="HoTen"
+										item-value="MaNV"
+										return-object
+										label="Tìm nhân sự LHU (tên hoặc Mã NV)"
+										placeholder="Gõ từ 2 ký tự..."
+										outlined
+										dense
+										hide-details
+										clearable
+										no-data-text="Không tìm thấy nhân sự"
+										@change="onSelectSearchedMember"
+									>
+										<template v-slot:item="{ item }">
+											<v-list-item-content>
+												<v-list-item-title class="font-weight-medium">
+													{{ item.HoTen }}
+													<span class="primary--text text-caption ml-1">({{ item.MaNV }})</span>
+												</v-list-item-title>
+												<v-list-item-subtitle class="text-caption text--secondary">
+													{{ item.TenPhongBan || 'Chưa rõ đơn vị' }}
+												</v-list-item-subtitle>
+											</v-list-item-content>
+										</template>
+									</v-autocomplete>
+								</v-col>
+								<v-col cols="12" sm="4">
+									<v-text-field
+										v-model="newMemberNameInput"
+										label="Họ tên thành viên *"
+										placeholder="Nhập họ tên nếu ngoài LHU"
+										outlined
+										dense
+										hide-details
+										@keyup.enter="addMemberToList"
+									/>
+								</v-col>
+								<v-col cols="7" sm="2">
+									<v-select
+										v-model="newMemberRole"
+										:items="memberRoleOptions"
+										item-text="text"
+										item-value="val"
+										label="Vai trò"
+										outlined
+										dense
+										hide-details
+									/>
+								</v-col>
+								<v-col cols="5" sm="2" class="d-flex align-center pl-3">
+									<v-btn
+										color="primary"
+										small
+										depressed
+										class="text-none px-3"
+										:disabled="!canAddMember"
+										@click="addMemberToList"
+										title="Thêm thành viên"
+									>
+										<v-icon small left>mdi-plus</v-icon> Thêm
+									</v-btn>
+								</v-col>
+							</v-row>
+						</v-card>
+
+						<!-- Bảng danh sách thành viên -->
+						<v-data-table
 							dense
-							hide-details="auto"
-							class="mb-2"
-						/>
+							:headers="memberHeaders"
+							:items="membersList"
+							hide-default-footer
+							:items-per-page="-1"
+							no-data-text="Chưa có thành viên nào trong hợp đồng"
+							class="elevation-1 mb-3"
+						>
+							<template v-slot:item.stt="{ index }">
+								{{ index + 1 }}
+							</template>
+							<template v-slot:item.HoTen="{ item }">
+								<span class="font-weight-medium">{{ item.HoTen }}</span>
+								<span v-if="item.MaDinhDanh" class="primary--text caption ml-1 font-italic">
+									({{ item.MaDinhDanh }})
+								</span>
+							</template>
+							<template v-slot:item.TenPhongBan="{ item }">
+								<span class="text-caption">{{ item.TenPhongBan || '—' }}</span>
+							</template>
+							<template v-slot:item.VaiTro="{ item }">
+								<v-chip x-small :color="item.VaiTro === 1 ? 'primary' : 'grey darken-1'" outlined>
+									{{ item.TenVaiTro || (item.VaiTro === 1 ? 'Chủ nhiệm' : 'Thành viên') }}
+								</v-chip>
+							</template>
+							<template v-slot:item.actions="{ index }">
+								<v-btn
+									icon
+									x-small
+									color="red"
+									title="Xóa thành viên"
+									@click="removeMember(index)"
+								>
+									<v-icon x-small>mdi-delete</v-icon>
+								</v-btn>
+							</template>
+						</v-data-table>
 					</v-col>
 
 					<v-col cols="12" md="6">
@@ -326,6 +427,27 @@
 				],
 				saving: false,
 				uploadResult: null,
+				// Thành viên CGCN
+				membersList: [],
+				memberHeaders: [
+					{ text: "STT", value: "stt", width: 50, sortable: false },
+					{ text: "Họ và tên", value: "HoTen", sortable: false },
+					{ text: "Đơn vị / Phòng ban", value: "TenPhongBan", sortable: false },
+					{ text: "Vai trò", value: "VaiTro", width: 120, align: "center", sortable: false },
+					{ text: "Thao tác", value: "actions", width: 60, align: "center", sortable: false }
+				],
+				selectedMemberSearch: null,
+				searchMemberKeyword: "",
+				searchMemberResults: [],
+				isSearchingMember: false,
+				searchTimer: null,
+				newMemberNameInput: "",
+				newMemberRole: 2,
+				memberRoleOptions: [
+					{ text: "Chủ nhiệm", val: 1 },
+					{ text: "Thành viên", val: 2 },
+					{ text: "Thư ký", val: 3 }
+				],
 				form: {
 					CGCNID: null,
 					SoThuTu: 0,
@@ -354,6 +476,9 @@
 					this.$emit("input", val)
 				}
 			},
+			canAddMember() {
+				return !!(this.newMemberNameInput && String(this.newMemberNameInput).trim())
+			},
 			namHocOptions() {
 				const currentYear = new Date().getFullYear()
 				const list = []
@@ -378,6 +503,16 @@
 					this.pendingDeleteFileIDs = []
 				}
 			},
+			searchMemberKeyword(val) {
+				if (!val || val.trim().length < 2) {
+					this.searchMemberResults = []
+					return
+				}
+				clearTimeout(this.searchTimer)
+				this.searchTimer = setTimeout(() => {
+					this.searchMembers(val.trim())
+				}, 300)
+			},
 			editItem: {
 				handler(newItem) {
 					if (this.value && newItem) {
@@ -388,6 +523,95 @@
 			}
 		},
 		methods: {
+			async searchMembers(keyword) {
+				this.isSearchingMember = true
+				try {
+					let res = await ajaxCALLPromise("/TaiKhoan_Search", { Keyword: keyword })
+					if (!res || !res.length) {
+						res = await ajaxCALLPromise("/TaiKhoan_Seach", { Keyword: keyword })
+					}
+					this.searchMemberResults = res || []
+				} catch (e) {
+					this.searchMemberResults = []
+				} finally {
+					this.isSearchingMember = false
+				}
+			},
+			onSelectSearchedMember(item) {
+				if (!item) return
+				this.newMemberNameInput = item.HoTen || `${item.HoNV || ""} ${item.TenNV || ""}`.trim()
+			},
+			addMemberToList() {
+				const name = (this.newMemberNameInput || "").trim()
+				if (!name) return
+
+				const selected = this.selectedMemberSearch
+				const isLHU = selected && selected.HoTen && selected.HoTen.trim() === name
+				const maNV = isLHU ? selected.MaNV : ""
+				const donVi = isLHU ? (selected.TenPhongBan || "") : ""
+				const email = isLHU ? (selected.Email || "") : ""
+
+				const isDup = this.membersList.some(m => (maNV && m.MaDinhDanh === maNV) || (!maNV && m.HoTen.toLowerCase() === name.toLowerCase()))
+				if (isDup) {
+					Vue.$toast.warning("Thành viên này đã có trong danh sách", { position: "top" })
+					return
+				}
+
+				this.membersList.push({
+					VaiTro: this.newMemberRole,
+					TenVaiTro: this.newMemberRole === 1 ? "Chủ nhiệm" : (this.newMemberRole === 3 ? "Thư ký" : "Thành viên"),
+					HoTen: name,
+					MaDinhDanh: maNV,
+					Email: email,
+					TenPhongBan: donVi,
+					Is_NhanVien: !!maNV,
+					Is_SinhVien: false
+				})
+
+				this.syncTextFromMembers()
+				this.selectedMemberSearch = null
+				this.newMemberNameInput = ""
+				this.newMemberRole = 2
+			},
+			removeMember(index) {
+				this.membersList.splice(index, 1)
+				this.syncTextFromMembers()
+			},
+			syncTextFromMembers() {
+				const leaders = this.membersList.filter(m => m.VaiTro === 1).map(m => m.HoTen)
+				const members = this.membersList.filter(m => m.VaiTro !== 1).map(m => m.HoTen)
+				this.form.ChuNhiemDeTai = leaders.join(", ")
+				this.form.ThanhVienDeTai = members.join(", ")
+			},
+			fallbackMembersFromText(chuNhiem, thanhVien, donVi) {
+				const list = []
+				if (chuNhiem && String(chuNhiem).trim()) {
+					list.push({
+						VaiTro: 1,
+						TenVaiTro: "Chủ nhiệm",
+						HoTen: String(chuNhiem).trim(),
+						MaDinhDanh: "",
+						TenPhongBan: donVi || "",
+						Is_NhanVien: true
+					})
+				}
+				if (thanhVien && String(thanhVien).trim()) {
+					String(thanhVien).split(",").forEach(name => {
+						const trimmed = name.trim()
+						if (trimmed) {
+							list.push({
+								VaiTro: 2,
+								TenVaiTro: "Thành viên",
+								HoTen: trimmed,
+								MaDinhDanh: "",
+								TenPhongBan: "",
+								Is_NhanVien: true
+							})
+						}
+					})
+				}
+				this.membersList = list
+			},
 			getStatusText(status) {
 				switch (Number(status)) {
 					case 1: return "Dự thảo"
@@ -428,7 +652,7 @@
 				}
 				return []
 			},
-			syncFormFromItem(item) {
+			async syncFormFromItem(item) {
 				this.form = {
 					CGCNID: item.CGCNID || null,
 					SoThuTu: item.SoThuTu || 0,
@@ -450,6 +674,31 @@
 				this.uploadedFileIDs = []
 				this.pendingDeleteFileIDs = []
 				this.uploadResult = null
+				this.selectedMemberSearch = null
+				this.newMemberNameInput = ""
+
+				// Load thành viên từ ThanhVienList (JSON) hoặc gọi SP
+				if (item.ThanhVienList) {
+					try {
+						this.membersList = typeof item.ThanhVienList === "string" ? JSON.parse(item.ThanhVienList) : item.ThanhVienList
+					} catch (e) {
+						this.membersList = []
+					}
+				} else if (item.CGCNID) {
+					try {
+						const tvRes = await ajaxCALLPromise("/CGCN_ThanhVien_Get", { CGCNID: item.CGCNID })
+						this.membersList = tvRes && Array.isArray(tvRes) ? tvRes : (tvRes && tvRes.data ? tvRes.data : [])
+					} catch (err) {
+						this.membersList = []
+					}
+				} else {
+					this.membersList = []
+				}
+
+				// Fallback nếu hồ sơ cũ chưa có thành viên
+				if (!this.membersList || this.membersList.length === 0) {
+					this.fallbackMembersFromText(item.ChuNhiemDeTai, item.ThanhVienDeTai, item.DonViChuNhiem)
+				}
 			},
 			formatMoney(val) {
 				if (val === null || val === undefined || val === "") return "0"
@@ -467,9 +716,19 @@
 					Vue.$toast.warning("Vui lòng nhập Tên dự án / Hợp đồng", { position: "top" })
 					return
 				}
+				if (!this.membersList || this.membersList.length === 0) {
+					Vue.$toast.warning("Vui lòng thêm ít nhất 1 thành viên vào hợp đồng", { position: "top" })
+					return
+				}
+				const hasLeader = this.membersList.some(m => m.VaiTro === 1)
+				if (!hasLeader) {
+					Vue.$toast.warning("Hợp đồng cần có ít nhất 1 thành viên là Chủ nhiệm", { position: "top" })
+					return
+				}
 
 				this.saving = true
 				try {
+					this.syncTextFromMembers()
 					const params = {
 						CGCNID: this.form.CGCNID,
 						TenDuAn: this.form.TenDuAn,
@@ -486,6 +745,15 @@
 						LyDoReject: this.form.LyDoReject || ""
 					}
 					await ajaxCALLPromise("/CGCN_Upd", params)
+
+					// Đồng bộ danh sách thành viên vào bảng riêng
+					if (this.form.CGCNID && this.membersList && this.membersList.length > 0) {
+						await ajaxCALLPromise("/CGCN_ThanhVien_Save", {
+							CGCNID: this.form.CGCNID,
+							MembersJSON: JSON.stringify(this.membersList)
+						})
+					}
+
 					if (this.pendingDeleteFileIDs && this.pendingDeleteFileIDs.length > 0) {
 						ajaxCALL('/FILE_FileDeleteMulti', { FileIDs: this.pendingDeleteFileIDs.join(',') }, () => {})
 					}

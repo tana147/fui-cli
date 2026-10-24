@@ -1,0 +1,47 @@
+.cgcn-page {
+    height: calc(100vh - 64px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.cgcn-card,
+.cgcn-card-body {
+    overflow: hidden;
+}
+.cgcn-toolbar-actions {
+    gap: 8px;
+}
+.cgcn-year-select {
+    max-width: 170px;
+}
+.cgcn-search-input {
+    max-width: 240px;
+}
+.cgcn-table .v-data-table__wrapper {
+    overflow-y: auto !important;
+    max-height: calc(100vh - 295px) !important;
+    scrollbar-width: thin;
+}
+.cgcn-table th {
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+}
+.cgcn-file-table .v-data-table__wrapper {
+    overflow-y: auto;
+    max-height: 220px;
+    scrollbar-width: thin;
+}
+/* Bo góc đồng bộ nút bấm 2px */
+.v-btn {
+    border-radius: 2px !important;
+}
+/* Nút tải file upload nhỏ gọn đồng bộ */
+.compact-upload-wrapper .v-btn {
+    height: 32px !important;
+    font-size: 13px !important;
+    padding: 0 14px !important;
+    text-transform: none !important;
+    font-weight: 500 !important;
+    border-radius: 2px !important;
+    box-shadow: none !important;
+}

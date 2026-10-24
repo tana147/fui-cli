@@ -37,7 +37,7 @@
 
 			<v-window v-model="tab">
 				<v-window-item value="coban">
-					<uc-so-yeu-ly-lich :d="d"></uc-so-yeu-ly-lich>
+					<uc-so-yeu-ly-lich :d="d" @reload="tai"></uc-so-yeu-ly-lich>
 					<uc-qua-trinh-dao-tao :d="d"></uc-qua-trinh-dao-tao>
 					<uc-qua-trinh-cong-tac :d="d"></uc-qua-trinh-cong-tac>
 					<uc-khen-thuong :d="d"></uc-khen-thuong>
@@ -54,7 +54,7 @@
 						</div>
 					</uc-llkh-muc>
 					<uc-de-tai-da-tham-gia :d="d" @reload="tai"></uc-de-tai-da-tham-gia>
-					<uc-shtt :d="d"></uc-shtt>
+					<uc-shtt :d="d" @reload="tai"></uc-shtt>
 					<uc-llkh-muc v-if="d.duLieuCu.length" title="Dữ liệu đã khai ở phiên bản cũ (tham khảo)"
 						note="Thông tin bạn tự nhập trước đây trong module Lý lịch khoa học cũ, dùng để đối chiếu.">
 						<f-table :items="d.duLieuCu" :headers="headersCu" :excel="false"></f-table>

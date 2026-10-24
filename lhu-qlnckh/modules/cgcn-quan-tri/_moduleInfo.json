@@ -5,13 +5,11 @@
   "ProjectID": "lhu-qlnckh",
   "ModuleID": "cgcn-quan-tri",
   "ModuleName": "Quản trị & Duyệt chuyển giao công nghệ",
-  "UpdateTime": "2026-10-21 10:39:55",
+  "UpdateTime": "2026-10-21 15:29:06",
   "UpdateUser": "DEV000068",
-  "LastLoad": "2026-10-14",
-  "LoadCount": 15,
+  "LastLoad": "2026-10-21",
+  "LoadCount": 18,
   "HTMLOnly": false,
   "Framework": "V2",
-  "mTitle": "",
-  "UpdateInfo": "DEV000068 - 2026-10-21 15:29:06",
-  "LoadInfo": "2026-10-14 [15]"
+  "mTitle": ""
 }

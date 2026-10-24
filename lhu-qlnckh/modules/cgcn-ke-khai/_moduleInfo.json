@@ -5,13 +5,11 @@
   "ProjectID": "lhu-qlnckh",
   "ModuleID": "cgcn-ke-khai",
   "ModuleName": "Kê khai chuyển giao công nghệ",
-  "UpdateTime": "2026-10-21 10:39:55",
+  "UpdateTime": "2026-10-21 15:29:00",
   "UpdateUser": "DEV000068",
-  "LastLoad": "2026-10-14",
-  "LoadCount": 23,
+  "LastLoad": "2026-10-23",
+  "LoadCount": 36,
   "HTMLOnly": false,
   "Framework": "V2",
-  "mTitle": "",
-  "UpdateInfo": "DEV000068 - 2026-10-21 15:29:00",
-  "LoadInfo": "2026-10-14 [23]"
+  "mTitle": ""
 }

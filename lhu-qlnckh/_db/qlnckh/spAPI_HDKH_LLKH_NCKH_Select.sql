@@ -5,9 +5,16 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	-- [0] Hướng nghiên cứu chính
-	SELECT HuongNghienCuuChinh = (SELECT TOP 1 HuongNghienCuuChinh FROM tblHDKH_Profile_CaNhan
-		WHERE NhanVienID = @sys_UserID AND IsDeleted = 0)
+	-- [0] Thông tin khoa học cá nhân (hướng nghiên cứu, STM)
+	SELECT
+		HuongNghienCuuChinh = P.HuongNghienCuuChinh,
+		TomTatKinhNghiem = P.TomTatKinhNghiem,
+		ORCID = P.ORCID,
+		GoogleScholar = P.GoogleScholar,
+		ResearchGate = P.ResearchGate,
+		MaSTI = P.MaSTI
+	FROM (SELECT 1 AS dummy) D
+		LEFT JOIN tblHDKH_Profile_CaNhan P ON P.NhanVienID = @sys_UserID AND P.IsDeleted = 0
 
 	-- [1] Đề tài, dự án: KHCN cấp cơ sở, hội đồng NCKH giảng viên và đề tài ngoài trường tự khai
 	SELECT Nguon = N'Đề tài KHCN cấp cơ sở', D.MaSoDeTai, TenDeTai = D.TenDeTaiKHCN_Vi,
@@ -96,12 +103,16 @@ BEGIN
 			TheLoaiBienSoan = MAX(CASE WHEN FieldName = 'the_loai_bien_soan' THEN FieldValue END),
 			LoaiSHTT = MAX(CASE WHEN FieldName = 'loai_hinh_shtt' THEN FieldValue END),
 			NoiPhatHanh = MAX(CASE WHEN FieldName = 'noi_phat_hanh' THEN FieldValue END),
-			ThoiGianPhatHanh = MAX(CASE WHEN FieldName = 'thoi_gian_phat_hanh' THEN FieldValue END)
+			ThoiGianPhatHanh = MAX(CASE WHEN FieldName = 'thoi_gian_phat_hanh' THEN FieldValue END),
+			SoVanBang = MAX(CASE WHEN FieldName = 'so_van_bang' THEN FieldValue END),
+			NamCap = MAX(CASE WHEN FieldName = 'nam_cap' THEN FieldValue END),
+			NoiCapVanBang = MAX(CASE WHEN FieldName = 'noi_cap_van_bang' THEN FieldValue END)
 		FROM V GROUP BY SubmissionID, FormID, NamHoc, TrangThaiDuyet
 	)
 	SELECT P.SubmissionID,
 		Loai = CASE P.FormID WHEN 1 THEN 'DE_TAI' WHEN 2 THEN 'SACH' ELSE 'SHTT' END,
 		P.Ten, P.NamHoc, P.TrangThaiDuyet, P.NoiPhatHanh, P.ThoiGianPhatHanh,
+		P.SoVanBang, P.NamCap, P.NoiCapVanBang,
 		CapDeTai = CD.TenCapDeTai, VaiTro = VT.TenVaiTro, TheLoaiBienSoan = BS.TenTheLoai, LoaiSHTT = SH.TenLoaiHinh
 	FROM P
 		LEFT JOIN tblHDKH_DM_CapDeTai CD ON CAST(CD.ID AS varchar(10)) = P.CapDeTai

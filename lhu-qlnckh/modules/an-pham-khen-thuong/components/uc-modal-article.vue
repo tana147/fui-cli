@@ -27,14 +27,24 @@
 			<v-card-actions class="d-flex flex-wrap pa-3 pa-sm-4" style="gap: 8px;">
 				<v-spacer class="d-none d-sm-block"></v-spacer>
 				<v-btn @click="close">Đóng</v-btn>
-				<v-btn @click="saveTemp" color="primary" v-if="editedIndex === -1" outlined>
-					Lưu tạm</v-btn>
-				<v-btn @click="save" color="primary" :loading="isLoadingSave"
-					v-if="editedItem.AnPhamObj.TrangThaiID !== 3">
-					{{ editedIndex === -1 ? "Lưu và gửi đề xuất" : "Cập nhật và lưu tạm" }}</v-btn>
-				<v-btn @click="submitProposal" color="success"
-					v-if="editedIndex !== -1 && editedItem.AnPhamObj.TrangThaiID !== 3">
-					Cập nhật và gửi đề xuất</v-btn>
+				<template v-if="isDeNghiXetThuong">
+					<v-btn @click="saveTemp" color="primary" v-if="editedIndex === -1" outlined>
+						Lưu tạm</v-btn>
+					<v-btn @click="save" color="primary" :loading="isLoadingSave"
+						v-if="editedItem.AnPhamObj.TrangThaiID !== 3">
+						{{ editedIndex === -1 ? "Lưu và gửi đề xuất" : "Cập nhật và lưu tạm" }}</v-btn>
+					<v-btn @click="submitProposal" color="success"
+						v-if="editedIndex !== -1 && editedItem.AnPhamObj.TrangThaiID !== 3">
+						Cập nhật và gửi đề xuất</v-btn>
+					<v-btn @click="submitProposal" color="success"
+						v-if="editedIndex !== -1 && editedItem.AnPhamObj.TrangThaiID === 3">
+						Gửi đề xuất khen thưởng</v-btn>
+				</template>
+				<template v-else>
+					<v-btn @click="save" color="primary" :loading="isLoadingSave">
+						{{ editedIndex === -1 ? "Lưu vào LLKH" : "Cập nhật vào LLKH" }}
+					</v-btn>
+				</template>
 			</v-card-actions>
 		</v-card>
 	</v-dialog>
@@ -70,6 +80,9 @@
 		},
 		formTitle() {
 			return this.editedIndex === -1 ? 'Thêm mới bài báo' : 'Chi tiết bài báo'
+		},
+		isDeNghiXetThuong() {
+			return this.editedItem.AnPhamObj && this.editedItem.AnPhamObj.Is_DeNghiXetThuong !== false && this.editedItem.AnPhamObj.Is_DeNghiXetThuong !== 0
 		}
 	},
 	methods: {

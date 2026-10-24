@@ -31,7 +31,7 @@
 					</template>
 					<template v-slot:item.TenAnPham="{ item }">
 						<p class="font-weight-medium mb-1">{{ item.TenAnPham }}</p>
-						<v-chip v-if="item.Is_DeNghiXetThuong === false" x-small color="grey darken-1" dark label class="font-weight-medium">
+						<v-chip v-if="item.Is_DeNghiXetThuong === false || item.Is_DeNghiXetThuong === 0" x-small color="grey darken-1" dark label class="font-weight-medium">
 							Chỉ kê khai LLKH
 						</v-chip>
 						<v-chip v-else x-small color="primary" outlined label class="font-weight-medium">
@@ -41,7 +41,7 @@
 					<template v-slot:item.actions="{ item }">
 						<div class="d-flex flex-row align-center justify-center">
 							<v-icon style="font-size:18px"
-								v-if="item.TrangThaiID === 1 || item.TrangThaiID === 2 || item.TrangThaiID === 5"
+								v-if="item.TrangThaiID === 1 || item.TrangThaiID === 2 || item.TrangThaiID === 5 || (item.TrangThaiID === 3 && (item.Is_DeNghiXetThuong === false || item.Is_DeNghiXetThuong === 0))"
 								color="red darken-3" small class="mr-2" @click="deleteItem(item)">
 								mdi-trash-can-outline
 							</v-icon>
