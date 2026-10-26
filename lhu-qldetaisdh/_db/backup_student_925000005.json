@@ -1,0 +1,82 @@
+{
+  "student": {
+    "StudentID": "925000005",
+    "HoSV": "Nguyễn Hữu",
+    "TenSV": "Thịnh",
+    "LopID": "25CE911",
+    "NganhID": "102",
+    "TenNganh": "Ngôn ngữ Anh",
+    "HeDaoTao": "Master",
+    "NienKhoa": "2025-01"
+  },
+  "hoiDong": {
+    "HoiDongID": 2712,
+    "StudentID": "925000005",
+    "DeTai": "Studying the usage of English pharmaceutical terminology at LHU department of pharmacy",
+    "Decision_ID": 4392,
+    "Decision_SoQD": "2036/QĐ-ĐHLH",
+    "Decision_NgayQD": "15",
+    "Decision_ThangQD": "10",
+    "Decision_NamQD": "2026",
+    "LoaiHoiDong": 1,
+    "DiemHoiDong": null,
+    "KetQuaHoiDong": 0,
+    "ThoiGianBaoVe": "2026-10-30",
+    "HoiDong_Status": 1,
+    "Is_PublishDiem": 0,
+    "Is_Xoa": false,
+    "Created_By": "NV0001176",
+    "Created_At": "2026-10-19T16:14:24.920"
+  },
+  "thanhVien": [
+    {
+      "TVHDID": 6800,
+      "HoiDongID": 2712,
+      "GiangVienID": 114,
+      "HoTenGiangVien": "Nguyễn Thị Châu Anh",
+      "ChucTrach": "Chủ tịch"
+    },
+    {
+      "TVHDID": 6801,
+      "HoiDongID": 2712,
+      "GiangVienID": 110,
+      "HoTenGiangVien": "Huỳnh Ái",
+      "ChucTrach": "Phản biện 1"
+    },
+    {
+      "TVHDID": 6802,
+      "HoiDongID": 2712,
+      "GiangVienID": 162,
+      "HoTenGiangVien": "Nguyễn Thanh Dương",
+      "ChucTrach": "Phản biện 2"
+    },
+    {
+      "TVHDID": 6803,
+      "HoiDongID": 2712,
+      "GiangVienID": 112,
+      "HoTenGiangVien": "Huỳnh Thị Bích Phượng",
+      "ChucTrach": "Ủy viên"
+    },
+    {
+      "TVHDID": 6804,
+      "HoiDongID": 2712,
+      "GiangVienID": 180,
+      "HoTenGiangVien": "Lê Đức Duy",
+      "ChucTrach": "Thư ký"
+    }
+  ],
+  "flowTasks": {
+    "Task5_DuyetLuanVan": {
+      "Flow_ID": 25594,
+      "Flow_Status": "C",
+      "QDThanhLapHoiDongConfirm": "2036/QĐ-ĐHLH",
+      "QDThanhLapHoiDong_No": "2036/QĐ-ĐHLH",
+      "QDThanhLapHoiDong_ThoiGian": "2026-10-30",
+      "HoiDongID": "2712"
+    },
+    "Task6_BaoVeLuanVan": {
+      "Flow_ID": 25595,
+      "Flow_Status": "P"
+    }
+  }
+}

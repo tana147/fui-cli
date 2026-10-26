@@ -95,6 +95,11 @@ Vue.component('table-council', {
             DsNienKhoa: [],
             HoiDongHVId: '',
             NienKhoaValue: null,
+            isHistoryDialogOpen: false,
+            isLoadingHistory: false,
+            historyList: [],
+            historyMembers: [],
+            selectedHistoryStudent: null,
             hoiDongStateSelect: 1,
             hoiDongStateList: [
                 {
@@ -1290,6 +1295,69 @@ Vue.component('table-council', {
                 cancel: function () { }.bind(this),
             })
         },
+        onViewHistory(item) {
+            this.selectedHistoryStudent = item
+            this.isHistoryDialogOpen = true
+            this.historyList = []
+            this.historyMembers = []
+            this.isLoadingHistory = true
+            ajaxCALL(
+                '/HoiDong_History_Get',
+                {
+                    Student_ID: item.Student_ID.toString(),
+                },
+                (res) => {
+                    this.isLoadingHistory = false
+                    if (res && res.data) {
+                        this.historyList = res.data[0] || []
+                        this.historyMembers = res.data[1] || []
+                    }
+                },
+                (err) => {
+                    this.isLoadingHistory = false
+                    const msg = err && err.responseJSON && err.responseJSON.Message ? err.responseJSON.Message : 'Không thể tải lịch sử hội đồng'
+                    Vue.$toast.error(msg, { position: 'top' })
+                }
+            )
+        },
+        formatDateDisplay(val) {
+            if (!val) return ''
+            const d = new Date(val)
+            if (isNaN(d.getTime())) return val
+            return d.toLocaleDateString('vi-VN')
+        },
+        formatScore(val) {
+            if (val === null || val === undefined || val === '') return ''
+            const num = parseFloat(val)
+            if (isNaN(num)) return val
+            return parseFloat(num.toFixed(2)).toString()
+        },
+        getHoiDongStatus(hd) {
+            if (hd.Is_Xoa) {
+                return { text: 'Đã hủy / Hoãn', color: 'error', cardClass: 'hd-card-deleted', headerBg: 'red lighten-5' }
+            }
+            if (hd.KetQuaHoiDong === 2) {
+                return { text: 'Không đạt (Đã mở lại)', color: 'warning', cardClass: 'hd-card-failed', headerBg: 'orange lighten-5' }
+            }
+            if (hd.DiemHoiDong !== null && hd.DiemHoiDong !== undefined && hd.DiemHoiDong !== '') {
+                return { text: 'Đã có điểm: ' + this.formatScore(hd.DiemHoiDong), color: 'success', cardClass: 'hd-card-active', headerBg: 'green lighten-5' }
+            }
+            if (hd.HoiDong_Status === 0) {
+                return { text: 'Chưa kích hoạt / Bản sao', color: 'grey', cardClass: 'hd-card-inactive', headerBg: 'grey lighten-4' }
+            }
+            return { text: 'Đang hiệu lực', color: 'primary', cardClass: 'hd-card-active', headerBg: 'blue lighten-5' }
+        },
+        getHistoryMembers(hoiDongId) {
+            if (!this.historyMembers || !Array.isArray(this.historyMembers)) return []
+            const members = this.historyMembers.filter((m) => m.HoiDongID === hoiDongId)
+            const activeMembers = members.filter((m) => !m.Is_Xoa && m.HoTenGiangVien)
+            if (activeMembers.length > 0) return activeMembers
+            const latestMap = new Map()
+            members.filter((m) => m.HoTenGiangVien).forEach((m) => {
+                latestMap.set(m.ChucTrach, m)
+            })
+            return Array.from(latestMap.values())
+        },
     },
     template: /*html*/ `
         <div>
@@ -1324,6 +1392,81 @@ Vue.component('table-council', {
             <dialog-input-score :getdiem="getDiem" :editedItem="editedItem"
                 :dshoidongId ="dataUpdateHD.HoiDong"
                 :dshoidonggiangvien="dataUpdateHD.GiangVienSelected" />
+            <!-- Dialog Xem Lịch Sử Hội Đồng -->
+            <v-dialog v-model="isHistoryDialogOpen" max-width="900px" scrollable>
+                <v-card>
+                    <v-card-title class="headline primary--text">
+                        <v-icon left color="primary">mdi-history</v-icon>
+                        Lịch sử hội đồng: [{{ selectedHistoryStudent ? selectedHistoryStudent.Student_ID : '' }}] {{ selectedHistoryStudent ? selectedHistoryStudent.Ho_SV + ' ' + selectedHistoryStudent.Ten_SV : '' }}
+                        <v-spacer></v-spacer>
+                        <v-btn icon @click="isHistoryDialogOpen = false">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </v-card-title>
+                    <v-card-text class="pt-2">
+                        <div v-if="isLoadingHistory" class="text-center py-6">
+                            <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                            <div class="caption mt-2">Đang tải lịch sử...</div>
+                        </div>
+                        <div v-else-if="!historyList || historyList.length === 0" class="text-center py-6 grey--text">
+                            Chưa có dữ liệu lịch sử hội đồng.
+                        </div>
+                        <div v-else>
+                            <v-card v-for="(hd, idx) in historyList" :key="hd.HoiDongID" outlined class="mb-3" :class="getHoiDongStatus(hd).cardClass">
+                                <v-card-title class="subtitle-1 py-2 d-flex justify-space-between align-center" :class="getHoiDongStatus(hd).headerBg">
+                                    <div>
+                                        <b>Lần {{ historyList.length - idx }}: HĐ #{{ hd.HoiDongID }}</b>
+                                        <span class="ml-2 font-weight-regular" v-if="hd.Decision_SoQD">- QĐ: <b>{{ hd.Decision_SoQD }}</b></span>
+                                        <span class="ml-2 font-weight-regular" v-if="hd.ThoiGianBaoVe">- Ngày BV: <b>{{ formatDateDisplay(hd.ThoiGianBaoVe) }}</b></span>
+                                    </div>
+                                    <div>
+                                        <v-chip small :color="getHoiDongStatus(hd).color" dark label>
+                                            {{ getHoiDongStatus(hd).text }}
+                                        </v-chip>
+                                    </div>
+                                </v-card-title>
+                                <v-card-text class="py-2">
+                                    <div v-if="hd.LyDoHuy" class="red--text text--darken-2 mb-2 font-italic">
+                                        <b>Lý do hủy/hoãn:</b> {{ hd.LyDoHuy }}
+                                    </div>
+                                    <div class="caption grey--text mb-2">
+                                        <span>Người tạo: {{ hd.Created_By || 'N/A' }} ({{ formatDateDisplay(hd.Created_At) }})</span>
+                                        <span v-if="hd.Updated_By" class="ml-3">Người cập nhật/hủy: {{ hd.Updated_By }} ({{ formatDateDisplay(hd.Updated_At) }})</span>
+                                    </div>
+                                    <v-simple-table dense>
+                                        <template v-slot:default>
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-left" style="width: 50px;">STT</th>
+                                                    <th class="text-left">Họ tên thành viên</th>
+                                                    <th class="text-left">Chức trách</th>
+                                                    <th class="text-left">Cơ quan công tác</th>
+                                                    <th class="text-center" style="width: 80px;" v-if="hd.DiemHoiDong">Điểm</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(tv, tvIdx) in getHistoryMembers(hd.HoiDongID)" :key="tv.TVHDID">
+                                                    <td>{{ tvIdx + 1 }}</td>
+                                                    <td>{{ tv.HocViHocHam ? tv.HocViHocHam + '. ' : '' }}{{ tv.HoTenGiangVien }}</td>
+                                                    <td><v-chip x-small outlined color="primary">{{ tv.ChucTrach }}</v-chip></td>
+                                                    <td>{{ tv.CoQuanCongTac }}</td>
+                                                    <td class="text-center font-weight-bold" v-if="hd.DiemHoiDong">
+                                                        {{ tv.Diem !== null && tv.Diem !== undefined ? formatScore(tv.Diem) : '-' }}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+                                    </v-simple-table>
+                                </v-card-text>
+                            </v-card>
+                        </div>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn text @click="isHistoryDialogOpen = false">Đóng</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
             <!-- Major filter -->
             <!-- Sửa lỗi responsive: thêm flex-wrap và mb-2 cho các phần tử để tránh bể layer trên macbook -->
             <div class="d-flex align-center mb-3 flex-wrap">
@@ -1379,25 +1522,28 @@ Vue.component('table-council', {
                         <span class='amber--text'> [{{item.Lop_ID}}]</span>
                     </template>
                     <template v-slot:item.ThaoTacHoiDongBTN="{item}">
-                        <div >
+                        <div class="d-flex flex-column align-center py-1">
                         	<v-btn v-if="item.DiemHoiDong" text @click='onViewHoiDong(item)'
-                                class=' theme--light v-size--default success--text'>
+                                class='theme--light v-size--default success--text'>
                                 Xem Hội Đồng
                             </v-btn>
                             <!--v-if="!item.HoiDongID || item.KetQuaHoiDong === 2"-->
                             <v-btn v-if="!item.HoiDongID" text @click='addCouncil(item)'
-                                class=' theme--light v-size--default pink--text'>
+                                class='theme--light v-size--default pink--text'>
                                 Lập Hội Đồng
                             </v-btn>
                             <v-btn v-if="findExistDeTai(item)" text @click='addCouncil(item)'
-                                class=' theme--light v-size--default pink--text'>
+                                class='theme--light v-size--default pink--text'>
                                 Lập Hội Đồng
                             </v-btn>
                             <!--v-if="item.HoiDongID && !item.Decision_SoQD" -->
                             <v-btn v-if="item.HoiDongID && !item.DiemHoiDong"
                                 text @click='onUpdateHoiDong(item)'
-                                class=' justify-center align-center theme--light v-size--default cyan--text'>
+                                class='justify-center align-center theme--light v-size--default cyan--text'>
                                 Xem & Cập nhật
+                            </v-btn>
+                            <v-btn text x-small color="indigo" @click='onViewHistory(item)' class="mt-1">
+                                <v-icon left x-small>mdi-history</v-icon>Lịch sử HĐ
                             </v-btn>
                         </div>
                     </template>

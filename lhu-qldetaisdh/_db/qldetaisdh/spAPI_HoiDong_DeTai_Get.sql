@@ -2,6 +2,7 @@ CREATE PROC [dbo].[spAPI_HoiDong_DeTai_Get] --  0,9
 @NganhID INT,
 @sys_SystemRight INT,
 @BacDaoTao VARCHAR(10)
+WITH RECOMPILE
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -123,7 +124,8 @@ BEGIN
 				AND (d.HeDaoTao IS NULL OR (d.HeDaoTao NOT IN ('Phd') AND d.HeDaoTao NOT LIKE N'%Tiến sĩ%'))
 				AND ((d.NganhID = @NganhID) OR (@NganhID = 0))
 				AND fd.HasLyLich = 1
-				AND fd.ThesisName <> ' ';
+				AND fd.ThesisName <> ' '
+				AND NOT EXISTS (SELECT 1 FROM #TMPSTU t WHERE t.Student_ID = d.StudentID);
 		END
 	END
 
