@@ -1,0 +1,455 @@
+{
+  "data": [
+    {
+      "selectedRunID": 0,
+      "filterPhong": ""
+    },
+    {
+      "fixedThuCols": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "fixedSlots": [
+        {
+          "Buoi": "Sang",
+          "Tiet": 1
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 2
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 3
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 4
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 5
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 1
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 2
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 3
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 4
+        }
+      ]
+    },
+    {
+      "dsRunKhaThi": []
+    },
+    {
+      "dsPhong": []
+    },
+    {
+      "dsLich": [],
+      "dsLichRaw": []
+    },
+    {
+      "dsGVOptions": [],
+      "dsMonOptions": [],
+      "dsPhongOptions": []
+    },
+    {
+      "doiTietID1": null,
+      "doiTietID2": null,
+      "doiTietTrigger": 0
+    },
+    {
+      "dlSua": false
+    },
+    {
+      "formSua": {
+        "ID": null,
+        "MaMon": "",
+        "MaGV": "",
+        "MaPhong": ""
+      }
+    },
+    {
+      "fetchRunKhaThi": {
+        "API": "/TkbKetQuaXepRunListKhaThi",
+        "OUT": "dsRunKhaThi",
+        "CALLBACK": [
+          {
+            "EXE": "tkbAutoSelectRun()"
+          }
+        ]
+      }
+    },
+    {
+      "fetchPhong": {
+        "API": "/TkbKetQuaXepPhongList",
+        "IN": {
+          "RunID": "vueData.selectedRunID"
+        },
+        "OUT": "dsPhong",
+        "CALLBACK": [
+          {
+            "EXE": "tkbAutoSelectPhong()"
+          }
+        ]
+      }
+    },
+    {
+      "fetchLich": {
+        "API": "/TkbKetQuaXepList",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaPhong": "vueData.filterPhong"
+        },
+        "OUT": "dsLichRaw",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsLich = vueData.dsLichRaw.filter(r => r.MaPhong === vueData.filterPhong)"
+          }
+        ]
+      }
+    },
+    {
+      "fetchGVOptions": {
+        "API": "/TkbGiaoVienList",
+        "IN": {
+          "Keyword": "",
+          "ChiThinhGiang": false
+        },
+        "OUT": "dsGVOptions",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsGVOptions = vueData.dsGVOptions.map(g => ({...g, GVDisplay: g.MaGV + ' - ' + g.HoTen}))"
+          }
+        ]
+      }
+    },
+    {
+      "fetchMonOptions": {
+        "API": "/TkbMonHocList",
+        "IN": {
+          "Keyword": ""
+        },
+        "OUT": "dsMonOptions",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsMonOptions = vueData.dsMonOptions.map(m => ({...m, MonDisplay: m.MaMon + ' - ' + m.TenMon}))"
+          }
+        ]
+      }
+    },
+    {
+      "fetchPhongOptions": {
+        "API": "/TkbPhongHocList",
+        "IN": {
+          "Keyword": ""
+        },
+        "OUT": "dsPhongOptions",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsPhongOptions = vueData.dsPhongOptions.map(p => ({...p, PhongDisplay: p.MaPhong + ' - ' + p.TenPhong}))"
+          }
+        ]
+      }
+    },
+    {
+      "suaTiet": {
+        "API": "/TkbKetQuaXepSuaTiet",
+        "IN": {
+          "ID": "vueData.formSua.ID",
+          "MaMon": "vueData.formSua.MaMon",
+          "MaGV": "vueData.formSua.MaGV",
+          "MaPhong": "vueData.formSua.MaPhong"
+        },
+        "OUT": "suaTietResp",
+        "CALLBACK": [
+          {
+            "MESS": "{{vueData.suaTietResp[0].Message}}"
+          },
+          {
+            "EXE": "tkbHandleSuaTietResp(vueData.suaTietResp)"
+          }
+        ]
+      }
+    },
+    {
+      "doiTiet": {
+        "API": "/TkbKetQuaXepDoiTiet",
+        "IN": {
+          "ID1": "vueData.doiTietID1",
+          "ID2": "vueData.doiTietID2"
+        },
+        "OUT": "doiTietResp",
+        "CALLBACK": [
+          {
+            "MESS": "{{vueData.doiTietResp[0].Message}}"
+          },
+          {
+            "EXE": "tkbHandleDoiTietResp(vueData.doiTietResp)"
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "fetchRunKhaThi"
+    },
+    {
+      "CALL": "fetchGVOptions"
+    },
+    {
+      "CALL": "fetchMonOptions"
+    },
+    {
+      "CALL": "fetchPhongOptions"
+    }
+  ],
+  "watch": {
+    "selectedRunID": {
+      "CALL": "fetchPhong"
+    },
+    "filterPhong": {
+      "CALL": "fetchLich"
+    },
+    "doiTietTrigger": {
+      "CALL": "doiTiet"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.selectedRunID",
+                "label": "Lần chạy Auto (khả thi)",
+                ":items": "vueData.dsRunKhaThi",
+                ":item-title": "item => 'RunID ' + item.RunID + ' - Khối ' + (item.Khoi || 'Toàn trường') + ' - ' + item.SoSlotDaXep + ' tiết'",
+                "item-value": "RunID",
+                ":required": false
+              },
+              "w": "340"
+            },
+            {
+              "el": "v-autocomplete",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterPhong",
+                "label": "Phòng",
+                ":items": "vueData.dsPhong",
+                ":item-title": "item => item.MaPhong + (item.TenPhong ? ' - ' + item.TenPhong : '')",
+                "item-value": "MaPhong",
+                ":required": false
+              },
+              "w": "260"
+            },
+            {
+              "el": "v-spacer",
+              "attr": {},
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "uc-tkb-grid",
+              "attr": {
+                ":items": "vueData.dsLich",
+                ":editable": true,
+                ":draggable": true,
+                ":fixed-thu-cols": "vueData.fixedThuCols",
+                ":fixed-slots": "vueData.fixedSlots",
+                "sub-label-field": "MaLop",
+                "v-on:edit-cell": "vueData.formSua = {ID: $event.ID, MaMon: $event.MaMon, MaGV: $event.MaGV, MaPhong: $event.MaPhong}, vueData.dlSua = true",
+                "v-on:swap": "vueData.doiTietID1 = $event.id1, vueData.doiTietID2 = $event.id2, vueData.doiTietTrigger = vueData.doiTietTrigger + 1"
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "hidden-container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlSua",
+                "width": 550
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Sửa tiết học"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlSua = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "grid-list-md px-4"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formSua.MaMon",
+                                    "label": "Môn học",
+                                    ":items": "vueData.dsMonOptions",
+                                    "item-title": "MonDisplay",
+                                    "item-value": "MaMon"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formSua.MaGV",
+                                    "label": "Giáo viên",
+                                    ":items": "vueData.dsGVOptions",
+                                    "item-title": "GVDisplay",
+                                    "item-value": "MaGV"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formSua.MaPhong",
+                                    "label": "Phòng (tuỳ chọn)",
+                                    ":items": "vueData.dsPhongOptions",
+                                    "item-title": "PhongDisplay",
+                                    "item-value": "MaPhong",
+                                    ":clearable": true,
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "label": "Lưu",
+                            "icon-text": "mdi-content-save",
+                            ":checkvalid": true,
+                            "action": {
+                              "CALL": "suaTiet"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

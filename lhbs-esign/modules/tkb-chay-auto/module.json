@@ -1,0 +1,583 @@
+{
+  "data": [
+    {
+      "filterKhoi": "",
+      "filterHocKy": "`HK1",
+      "maxSecs": 60
+    },
+    {
+      "r4BatBuoc": false,
+      "r9BatBuoc": false,
+      "r7BatBuoc": false,
+      "r22BatBuoc": false
+    },
+    {
+      "dangChay": false,
+      "runID": 0
+    },
+    {
+      "ketQua": {
+        "TrangThai": "",
+        "KhaThi": false,
+        "SoNhuCau": null,
+        "SoSlotDaXep": null,
+        "TietTrongLe": null,
+        "SoGvKhongCoBuoiRanh": null,
+        "SoLuotVuotTranTietNgay": null,
+        "SoTietViPhamChaoCo": null,
+        "SoLuotLechTrack": null,
+        "SoTietShKhongKem": null,
+        "SoNhomKhongXepDuoc": null,
+        "ThongBao": null
+      }
+    },
+    {
+      "dsLichSu": []
+    },
+    {
+      "dsKhongXepDuoc": []
+    },
+    {
+      "runIDDangXay": null,
+      "dsPhienDangXay": []
+    },
+    {
+      "tuanHienTai": null,
+      "dsTuan": []
+    },
+    {
+      "fetchPhienDangXay": {
+        "API": "/TkbPhienDangXayList",
+        "OUT": "dsPhienDangXay"
+      }
+    },
+    {
+      "fetchDsTuan": {
+        "API": "/TkbTuanList",
+        "IN": {
+          "NamHoc": "`2026-2027"
+        },
+        "OUT": "dsTuan"
+      }
+    },
+    {
+      "fetchTuanHienTai": {
+        "API": "/TkbTuanHienTaiGet",
+        "OUT": "tuanHienTaiResp",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.tuanHienTai = (vueData.tuanHienTaiResp && vueData.tuanHienTaiResp[0]) ? vueData.tuanHienTaiResp[0].TuanTrongNam : null"
+          }
+        ]
+      }
+    },
+    {
+      "luuTuanHienTai": {
+        "API": "/TkbTuanHienTaiSet",
+        "IN": {
+          "TuanTrongNam": "vueData.tuanHienTai",
+          "NamHoc": "`2026-2027"
+        },
+        "CALLBACK": [
+          {
+            "MESS": "Đã lưu tuần hiện tại cho cả trường"
+          }
+        ]
+      }
+    },
+    {
+      "dsKhoi": [
+        {
+          "value": "",
+          "text": "Toàn trường"
+        },
+        {
+          "value": "01",
+          "text": "Khối 1"
+        },
+        {
+          "value": "02",
+          "text": "Khối 2"
+        },
+        {
+          "value": "03",
+          "text": "Khối 3"
+        },
+        {
+          "value": "04",
+          "text": "Khối 4"
+        },
+        {
+          "value": "05",
+          "text": "Khối 5"
+        },
+        {
+          "value": "06",
+          "text": "Khối 6"
+        },
+        {
+          "value": "07",
+          "text": "Khối 7"
+        },
+        {
+          "value": "08",
+          "text": "Khối 8"
+        },
+        {
+          "value": "09",
+          "text": "Khối 9"
+        },
+        {
+          "value": "10",
+          "text": "Khối 10"
+        },
+        {
+          "value": "11",
+          "text": "Khối 11"
+        },
+        {
+          "value": "12",
+          "text": "Khối 12"
+        }
+      ]
+    },
+    {
+      "chayAuto": {
+        "API": "/TkbChayAuto",
+        "IN": {
+          "Khoi": "vueData.filterKhoi",
+          "HocKy": "vueData.filterHocKy",
+          "MaxSecs": "vueData.maxSecs",
+          "R4BatBuoc": "vueData.r4BatBuoc",
+          "R9BatBuoc": "vueData.r9BatBuoc",
+          "R7BatBuoc": "vueData.r7BatBuoc",
+          "R22BatBuoc": "vueData.r22BatBuoc",
+          "RunIDDangXay": "vueData.runIDDangXay",
+          "TuanHienTai": "vueData.tuanHienTai"
+        },
+        "OUT": "chayAutoResp",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dangChay = true"
+          },
+          {
+            "EXE": "tkbHandleChayAutoResp(vueData.chayAutoResp)"
+          }
+        ]
+      }
+    },
+    {
+      "checkTrangThai": {
+        "API": "/TkbChayAutoTrangThai",
+        "IN": {
+          "RunID": "vueData.runID"
+        },
+        "OUT": "trangThaiResp",
+        "CALLBACK": [
+          {
+            "EXE": "tkbHandleTrangThaiResp(vueData.trangThaiResp)"
+          }
+        ]
+      }
+    },
+    {
+      "fetchLichSu": {
+        "API": "/TkbChayAutoLichSu",
+        "IN": {
+          "Top": 20
+        },
+        "OUT": "dsLichSu"
+      }
+    },
+    {
+      "fetchKhongXepDuoc": {
+        "API": "/TkbChayAutoKhongXepDuocList",
+        "IN": {
+          "RunID": "vueData.runID"
+        },
+        "OUT": "dsKhongXepDuoc"
+      }
+    },
+    {
+      "CALL": "fetchLichSu"
+    },
+    {
+      "CALL": "fetchPhienDangXay"
+    },
+    {
+      "CALL": "fetchDsTuan"
+    },
+    {
+      "CALL": "fetchTuanHienTai"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterKhoi",
+                "label": "Phạm vi",
+                ":items": "vueData.dsKhoi",
+                "item-title": "text",
+                "item-value": "value",
+                ":required": false,
+                ":disabled": "vueData.dangChay"
+              },
+              "w": "180"
+            },
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterHocKy",
+                "label": "Học kỳ",
+                ":items": "[{value:'HK1',title:'Học kỳ 1'},{value:'HK2',title:'Học kỳ 2'}]",
+                "item-title": "title",
+                "item-value": "value",
+                ":required": false,
+                ":disabled": "vueData.dangChay"
+              },
+              "w": "150"
+            },
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.runIDDangXay",
+                "label": "Phiên đang xây (tuỳ chọn, để tiếp tục)",
+                ":items": "vueData.dsPhienDangXay",
+                ":item-title": "item => 'RunID ' + item.RunID + ' - Khối ' + item.Khoi + ' - ' + item.SoDongDaKhoa + ' dòng đã khóa'",
+                "item-value": "RunID",
+                ":clearable": true,
+                ":required": false,
+                ":disabled": "vueData.dangChay"
+              },
+              "w": "320"
+            },
+            {
+              "el": "v-text-field",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model.number": "vueData.maxSecs",
+                "label": "Thời gian chạy tối đa (giây)",
+                "type": "number",
+                ":required": false,
+                ":disabled": "vueData.dangChay"
+              },
+              "w": "220"
+            },
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model.number": "vueData.tuanHienTai",
+                "label": "Tuần hiện tại (cả trường)",
+                ":items": "vueData.dsTuan",
+                "item-title": "TenTuan",
+                "item-value": "TuanTrongNam",
+                ":clearable": true,
+                ":required": false,
+                ":disabled": "vueData.dangChay"
+              },
+              "w": "260"
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "my-2",
+                "variant": "text",
+                "label": "Lưu tuần",
+                "icon-text": "mdi-content-save-outline",
+                ":checkvalid": false,
+                "action": {
+                  "CALL": "luuTuanHienTai"
+                }
+              },
+              "w": ""
+            },
+            {
+              "el": "v-spacer",
+              "attr": {},
+              "w": ""
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "my-2",
+                "label": "Chạy Auto",
+                "icon-text": "mdi-play",
+                ":checkvalid": false,
+                ":loading": "vueData.dangChay",
+                ":disabled": "vueData.dangChay",
+                "action": {
+                  "CALL": "chayAuto"
+                }
+              },
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-checkbox",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "v-model": "vueData.r4BatBuoc",
+                "label": "Bắt buộc đủ buổi rảnh GV (R4)",
+                ":disabled": "vueData.dangChay"
+              },
+              "w": "260"
+            },
+            {
+              "el": "v-checkbox",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "v-model": "vueData.r9BatBuoc",
+                "label": "Bắt buộc không vượt trần tiết/ngày (R9)",
+                ":disabled": "vueData.dangChay"
+              },
+              "w": "300"
+            },
+            {
+              "el": "v-checkbox",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "v-model": "vueData.r7BatBuoc",
+                "label": "Bắt buộc SH chủ nhiệm kèm (R7)",
+                ":disabled": "vueData.dangChay"
+              },
+              "w": "280"
+            },
+            {
+              "el": "v-checkbox",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "v-model": "vueData.r22BatBuoc",
+                "label": "Bắt buộc đúng giờ chào cờ (R22)",
+                ":disabled": "vueData.dangChay"
+              },
+              "w": "280"
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-alert",
+              "attr": {
+                "v-if": "vueData.dangChay",
+                "type": "info",
+                "variant": "tonal",
+                "density": "compact"
+              },
+              "innerHTML": "Đang chạy solver (RunID {{vueData.runID}})... trang sẽ tự cập nhật khi có kết quả.",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-alert",
+              "attr": {
+                "v-if": "!vueData.dangChay && !!vueData.ketQua.TrangThai",
+                ":type": "vueData.ketQua.KhaThi ? 'success' : 'warning'",
+                "variant": "tonal",
+                "density": "compact"
+              },
+              "innerHTML": "RunID {{vueData.ketQua.RunID}} — Trạng thái: <b>{{vueData.ketQua.TrangThai}}</b>{{vueData.ketQua.ThongBao ? ' — ' + vueData.ketQua.ThongBao : ''}}",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "v-if": "!vueData.dangChay && vueData.ketQua.KhaThi",
+                "class": "d-flex flex-wrap"
+              },
+              "w": 12,
+              "innerHTML": "<div class='text-center pa-2' style='min-width:140px'><div class=\"text-caption\">Nhu cầu</div><div class=\"text-h6\">{{vueData.ketQua.SoNhuCau}}</div></div><div class='text-center pa-2' style='min-width:140px'><div class=\"text-caption\">Slot đã xếp</div><div class=\"text-h6\">{{vueData.ketQua.SoSlotDaXep}}</div></div><div class='text-center pa-2' style='min-width:140px'><div class=\"text-caption\">Tiết trùng lẽ</div><div class=\"text-h6\">{{vueData.ketQua.TietTrongLe}}</div></div><div class='text-center pa-2' style='min-width:160px'><div class=\"text-caption\">GV thiếu buổi rảnh</div><div class=\"text-h6\">{{vueData.ketQua.SoGvKhongCoBuoiRanh}}</div></div><div class='text-center pa-2' style='min-width:160px'><div class=\"text-caption\">Vượt trần tiết/ngày</div><div class=\"text-h6\">{{vueData.ketQua.SoLuotVuotTranTietNgay}}</div></div><div class='text-center pa-2' style='min-width:150px'><div class=\"text-caption\">Vi phạm chào cờ</div><div class=\"text-h6\">{{vueData.ketQua.SoTietViPhamChaoCo}}</div></div><div class='text-center pa-2' style='min-width:120px'><div class=\"text-caption\">Lệch track</div><div class=\"text-h6\">{{vueData.ketQua.SoLuotLechTrack}}</div></div><div class='text-center pa-2' style='min-width:140px'><div class=\"text-caption\">SH không kèm</div><div class=\"text-h6\">{{vueData.ketQua.SoTietShKhongKem}}</div></div>"
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-alert",
+              "attr": {
+                "v-if": "!vueData.dangChay && vueData.ketQua.KhaThi && vueData.dsKhongXepDuoc.length > 0",
+                "type": "warning",
+                "variant": "tonal",
+                "density": "compact",
+                "class": "mb-2"
+              },
+              "innerHTML": "{{ vueData.dsKhongXepDuoc.length }} tiết không thể tự động xếp được (đã bỏ qua để tránh treo hệ thống) — cần xếp tay:",
+              "w": 12
+            },
+            {
+              "el": "f-table",
+              "attr": {
+                "v-if": "!vueData.dangChay && vueData.dsKhongXepDuoc.length > 0",
+                "label": "Cần xếp tay",
+                ":items": "vueData.dsKhongXepDuoc",
+                "item-key": "MaGV",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":headers": [
+                  {
+                    "align": "center",
+                    "title": "Lớp",
+                    "value": "MaLop",
+                    "width": "90px"
+                  },
+                  {
+                    "title": "Môn",
+                    "value": "TenMon"
+                  },
+                  {
+                    "title": "Giáo viên",
+                    "value": "TenGV"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Số tiết",
+                    "value": "SoTiet",
+                    "width": "90px"
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "f-button",
+              "attr": {
+                "v-if": "!vueData.dangChay && vueData.ketQua.KhaThi",
+                "class": "my-2",
+                "label": "Xem / sửa thời khoá biểu (trang Sửa tay)",
+                "icon-text": "mdi-table-edit",
+                ":checkvalid": false,
+                "action": {
+                  "FUN": "openWindow",
+                  "IN": {
+                    "url": "'/tkb-sua-tay'"
+                  }
+                }
+              },
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Lịch sử chạy Auto",
+                ":items": "vueData.dsLichSu",
+                "item-key": "RunID",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":height": -16,
+                ":headers": [
+                  {
+                    "align": "center",
+                    "title": "RunID",
+                    "value": "RunID",
+                    "width": "80px"
+                  },
+                  {
+                    "title": "Bắt đầu",
+                    "value": "ThoiGianBatDau",
+                    "width": "160px"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Phạm vi",
+                    "value": "Khoi",
+                    "width": "100px"
+                  },
+                  {
+                    "title": "Trạng thái",
+                    "value": "TrangThai",
+                    "width": "120px"
+                  },
+                  {
+                    "el": "v-icon",
+                    "align": "center",
+                    "title": "Khả thi",
+                    "value": "KhaThi",
+                    "width": "90px"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Slot",
+                    "value": "SoSlotDaXep",
+                    "width": "80px"
+                  },
+                  {
+                    "title": "Người chạy",
+                    "value": "NguoiChay",
+                    "width": "110px"
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

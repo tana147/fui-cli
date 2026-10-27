@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/tkb-danhmuc-giaovien",
+  "url": "//kyso.lhbs.vn/tkb-danhmuc-giaovien",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "tkb-danhmuc-giaovien",
+  "ModuleName": "TKB - Danh mục Giáo viên",
+  "UpdateTime": "2026-09-02 18:09:39",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-10-10",
+  "LoadCount": 11,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

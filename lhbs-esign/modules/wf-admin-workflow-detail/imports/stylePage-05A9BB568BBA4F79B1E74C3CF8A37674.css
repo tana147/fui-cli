@@ -1,0 +1,2401 @@
+/* =====================================================
+DESIGN TOKENS - can chinh voi teacher-dashboard.css
+===================================================== */
+/* font-size scale : 10 / 11 / 12 / 13px              */
+/* padding scale   : 4 / 8 / 10 / 12 / 14px           */
+/* border-radius   : card=10px  widget=8px  chip=6px   */
+/* border-color    : #e5e7eb                           */
+/* bg-header       : #f9fafb                           */
+/* text-primary    : #111827                           */
+/* text-secondary  : #374151                           */
+/* text-muted      : #6b7280                           */
+
+/* =====================================================
+WORKFLOW LIST
+===================================================== */
+.wf-workflow-grid {
+    display: grid;
+    grid-template-columns: 1fr 120px 80px 100px 100px 60px;
+}
+
+
+
+.wf-workflow-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+}
+
+
+
+.wf-workflow-code {
+    font-size: 10px;
+    color: #6b7280;
+}
+
+
+
+.wf-workflow-stepcount {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+
+
+.wf-workflow-instances {
+    font-size: 11px;
+}
+
+
+
+.wf-workflow-instances__label {
+    color: #6b7280;
+}
+
+
+
+/* =====================================================
+WORKFLOW BUILDER
+===================================================== */
+.wf-step-stack {
+    position: relative;
+    width: 100%;
+}
+
+
+
+.wf-builder-connector {
+    width: 2px;
+    height: 16px;
+    background: #e5e7eb;
+    display: block;
+    margin: 0 auto;
+}
+
+
+
+.wf-step-card,
+.wf-step-card--builder {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s, background .15s, opacity .15s;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+
+
+.wf-step-card:hover,
+.wf-step-card--builder:hover {
+    border-color: var(--wf-primary);
+    box-shadow: 0 2px 8px rgba(var(--wf-primary-rgb), .08);
+}
+
+
+
+.wf-step-card.active,
+.wf-step-card--builder.active {
+    border-color: var(--wf-primary);
+    border-width: 2px;
+    background: var(--wf-primary-light);
+}
+
+
+
+.wf-step-card--builder.wf-dragging {
+    opacity: 0.2;
+    border-style: dashed;
+    background: #f9fafb;
+    transform: scale(0.98);
+}
+
+
+
+.wf-list-move {
+    transition: none !important;
+    pointer-events: none;
+}
+
+
+
+/* =====================================================
+   SORTABLEJS STYLES
+   ===================================================== */
+/* Ghost: placeholder left behind at original position */
+.wf-sortable-ghost {
+    opacity: 0.3;
+    background: #e0f2fe !important;
+    border: 2px dashed var(--wf-primary) !important;
+    border-radius: 6px;
+}
+
+
+
+/* Chosen: the item being actively dragged (before clone is created) */
+.wf-sortable-chosen {
+    cursor: grabbing !important;
+}
+
+
+
+/* Fallback: the clone element that follows the cursor */
+.wf-sortable-fallback {
+    opacity: 0.9 !important;
+    background: #fff !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    border: 2px solid var(--wf-primary) !important;
+    border-radius: 6px;
+    transform: scale(1.02);
+    z-index: 9999 !important;
+}
+
+
+
+/* Drag: applied to the element being moved in the DOM */
+.wf-sortable-drag {
+    opacity: 0 !important;
+}
+
+
+
+.wf-drag-over-top {
+    border-top: 2px solid var(--wf-primary) !important;
+}
+
+
+
+.wf-drag-over-bottom {
+    border-bottom: 2px solid var(--wf-primary) !important;
+}
+
+
+
+/* =====================================================
+EDITOR CARD & SECTIONS
+===================================================== */
+.wf-detail-editor-card {
+    padding: 14px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+
+
+.wf-editor-section {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #f3f4f6;
+}
+
+
+
+.wf-detail-editor-card .wf-editor-section:first-child {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+
+
+.wf-editor-section--tabs {
+    margin-top: 12px;
+    padding-top: 10px;
+}
+
+
+
+.wf-editor-section__label {
+    display: flex;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 10px;
+}
+
+
+
+.wf-editor-section__label-row {
+    margin-bottom: 0;
+}
+
+
+
+.wf-editor-section__label-row .wf-editor-section__label {
+    margin-bottom: 0;
+}
+
+
+
+/* =====================================================
+SIGNER CARDS
+===================================================== */
+.wf-signer-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+
+
+.wf-signer-card:last-child {
+    margin-bottom: 0;
+}
+
+
+
+.wf-signer-card:hover {
+    border-color: var(--wf-primary);
+    box-shadow: 0 1px 6px rgba(var(--wf-primary-rgb), .07);
+}
+
+
+
+.wf-signer-card__index {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--wf-primary-light);
+    color: var(--wf-primary);
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+
+
+.wf-signer-card__body {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+
+
+
+.wf-signer-card__field {
+    display: flex;
+    flex-direction: column;
+    padding: 0 10px;
+    min-width: 0;
+}
+
+
+
+.wf-signer-card__field:first-child {
+    padding-left: 4px;
+}
+
+
+
+.wf-signer-card__label {
+    font-size: 9px;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-bottom: 1px;
+    white-space: nowrap;
+}
+
+
+
+.wf-signer-card__divider {
+    height: 30px !important;
+    align-self: center;
+    opacity: 0.4;
+}
+
+
+
+.wf-signer-card--type {
+    width: 120px;
+    flex-shrink: 0;
+}
+
+
+
+.wf-signer-card--person {
+    flex: 1;
+    min-width: 140px;
+}
+
+
+
+.wf-signer-card--method {
+    width: 140px;
+    flex-shrink: 0;
+}
+
+
+
+/* =====================================================
+TEMPLATE PREVIEW
+===================================================== */
+.wf-template-preview {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    padding: 0px;
+}
+
+
+
+.wf-tprev-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    background: var(--wf-primary-light);
+    border-bottom: 1px solid rgba(var(--wf-primary-rgb), .1);
+}
+
+
+
+.wf-tprev-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #fff;
+    border: 1px solid rgba(var(--wf-primary-rgb), .14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+
+
+.wf-tprev-info {
+    flex: 1;
+    min-width: 0;
+}
+
+
+
+.wf-tprev-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+
+.wf-tprev-stats {
+    font-size: 10px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 1px;
+}
+
+
+
+.wf-tprev-dot {
+    color: #d1d5db;
+}
+
+
+
+.wf-tprev-warn {
+    color: #d97706;
+    font-weight: 600;
+}
+
+
+
+.wf-tprev-ok {
+    color: var(--wf-primary);
+    font-weight: 600;
+}
+
+
+
+.wf-tprev-body {
+    padding: 9px 12px;
+}
+
+
+
+.wf-tprev-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+
+
+.wf-tprev-tags {
+    gap: 4px;
+}
+
+
+
+.wf-tprev-footer {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px 8px;
+    font-size: 10px;
+    color: #92400e;
+    background: #fffbf0;
+    border-top: 1px solid #fde68a;
+}
+
+
+
+/* =====================================================
+PLACEHOLDER CHIP
+===================================================== */
+.wf-ph-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 1px 7px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    border: 1px dashed var(--wf-primary);
+    color: var(--wf-primary);
+    background: var(--wf-primary-light);
+}
+
+
+
+.wf-ph-chip--ok {
+    border-style: solid;
+    border-color: var(--wf-primary);
+    color: var(--wf-primary);
+    background: var(--wf-primary-light);
+}
+
+
+
+.wf-ph-chip--warn {
+    border-style: dashed;
+    border-color: #d97706;
+    color: #92400e;
+    background: #fffbf0;
+}
+
+
+
+.wf-ph-chip--dup {
+    border-style: dashed;
+    border-color: #d97706;
+    color: #92400e;
+    background: #fffbf0;
+}
+
+
+
+.wf-ph-chip--more {
+    border-style: dashed;
+    border-color: #9ca3af;
+    color: #6b7280;
+    background: #f9fafb;
+}
+
+
+
+/* SLOT FIELD SUMMARY */
+.wf-slot-summary {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 6px 10px;
+}
+
+
+
+.wf-slot-summary__label {
+    font-size: 10px;
+    color: #6b7280;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-right: 4px;
+    white-space: nowrap;
+}
+
+
+
+/* SLOT FIELD MINI-TABLE */
+.wf-slot-field-table {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 4px;
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+
+
+.wf-slot-field-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    transition: border-color .15s;
+}
+
+
+
+.wf-slot-field-row:hover {
+    border-color: #93c5fd;
+}
+
+
+
+.wf-slot-field-row--dup {
+    border-color: #fcd34d;
+    background: #fffbeb;
+}
+
+
+
+.wf-slot-field-row--dup:hover {
+    border-color: #f59e0b;
+}
+
+
+
+.wf-slot-field-row__name {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #374151;
+    overflow: hidden;
+}
+
+
+
+.wf-slot-field-row__code {
+    font-size: 9px;
+    color: #9ca3af;
+    font-weight: 400;
+    margin-left: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+
+
+.wf-slot-field-row__type {
+    flex-shrink: 0;
+    width: 140px;
+}
+
+
+
+.wf-slot-type-select .v-field {
+    min-height: 26px !important;
+    font-size: 11px !important;
+}
+
+
+
+.wf-slot-type-select .v-field__input {
+    min-height: 26px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 11px !important;
+    line-height: 26px !important;
+}
+
+
+
+.wf-slot-type-select .v-field__prepend-inner {
+    padding-top: 0 !important;
+    align-items: center !important;
+}
+
+
+
+/* DUPLICATE WARNING BANNER */
+.wf-dup-warning {
+    border: 1px solid #fcd34d;
+    border-left: 3px solid #f59e0b;
+    border-radius: 6px;
+    padding: 8px 12px;
+    background: #fffbeb;
+}
+
+
+
+.wf-dup-warning__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #92400e;
+}
+
+
+
+.wf-dup-warning__footer {
+    margin-top: 6px;
+    font-size: 10px;
+    color: #78350f;
+    display: flex;
+    align-items: flex-start;
+    gap: 2px;
+    line-height: 1.5;
+}
+
+
+
+/* =====================================================
+REJECT BOX
+===================================================== */
+.wf-reject-box {
+    background: #fff5f5;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+
+
+.wf-detail-reject-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #dc2626;
+    margin-bottom: 6px;
+}
+
+
+
+.wf-reject-select {
+    max-width: 400px;
+}
+
+
+
+/* =====================================================
+EMPTY BOX
+===================================================== */
+.wf-empty-box {
+    padding: 12px 14px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 12px;
+    border: 1px dashed #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+
+
+/* Row hover highlight */
+.wf-field-row:hover {
+    background-color: #f8fafc !important;
+}
+
+
+
+.wf-field-row--active {
+    background-color: #e8f3ec !important;
+    /* var(--wf-primary-light) */
+}
+
+
+
+/* =====================================================
+WORKFLOW DETAIL PAGE  layout
+===================================================== */
+.wf-detail-header {
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+
+
+.wf-detail-create-card {
+    margin-bottom: 12px;
+}
+
+
+
+.wf-detail-create-body {
+    padding: 12px 14px;
+}
+
+
+
+.wf-detail-divider {
+    height: 16px;
+}
+
+
+
+.wf-detail-title-row {
+    gap: 6px;
+}
+
+
+
+.wf-detail-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+
+
+.wf-detail-sub {
+    font-size: 11px;
+    color: #6b7280;
+    margin: 2px 0 0;
+}
+
+
+
+.wf-detail-steps {
+    gap: 14px;
+    align-items: flex-start;
+}
+
+
+
+.wf-detail-step-list {
+    width: 300px;
+    flex-shrink: 0;
+}
+
+
+
+.wf-detail-step-scroll-container {
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+
+
+.wf-detail-step-header {
+    margin-bottom: 10px;
+}
+
+
+
+.wf-detail-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin: 0;
+}
+
+
+
+.wf-detail-step-row {
+    gap: 8px;
+}
+
+
+
+.wf-detail-step-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+
+.wf-detail-step-meta {
+    gap: 5px;
+    margin-top: 2px;
+}
+
+
+
+.wf-detail-step-signers {
+    font-size: 11px;
+    color: var(--wf-primary);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    margin-top: 1px;
+}
+
+
+
+.wf-detail-editor-header {
+    gap: 8px;
+    margin-bottom: 0;
+}
+
+
+
+.wf-detail-editor-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    flex: 1;
+}
+
+
+
+/* =====================================================
+FIELDS TAB
+===================================================== */
+.wf-detail-fields-card {
+    padding: 14px;
+}
+
+
+
+.wf-detail-fields-header {
+    margin-bottom: 10px;
+}
+
+
+
+.wf-detail-fields-grid {
+    display: grid;
+    grid-template-columns: 155px 185px 100px 135px 155px 70px 90px 36px;
+    gap: 6px;
+    align-items: center;
+}
+
+
+
+.wf-field-row--new {
+    background: #fffbf0 !important;
+    border-left: 3px solid #d97706;
+    padding-left: 5px !important;
+}
+
+
+
+.wf-field-unused-chip {
+    font-size: 9px !important;
+}
+
+
+
+/* =====================================================
+SETTINGS TAB
+===================================================== */
+.wf-detail-settings {
+    gap: 12px;
+}
+
+
+
+.wf-detail-settings-card {
+    padding: 14px;
+    flex: 1;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+
+
+.wf-detail-settings-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 10px;
+}
+
+
+
+.wf-detail-settings-subtitle {
+    font-size: 11px;
+    font-weight: 700;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin: 14px 0 8px;
+}
+
+
+
+/* =====================================================
+STEP BADGES
+===================================================== */
+.wf-step-badge--sign {
+    background: #dcfce7;
+    color: #166534;
+}
+
+
+
+.wf-step-badge--contract {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+
+
+.wf-step-badge--review {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+
+
+.wf-step-badge--input {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+
+
+.wf-step-badge--success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+
+
+.wf-step-badge--failure {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+
+
+/* =====================================================
+TERMINAL STEP CARDS
+===================================================== */
+.wf-step-card--success {
+    background: #f0fdf4;
+}
+
+
+
+.wf-step-card--success:hover {
+    border-color: #16a34a;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, .12);
+}
+
+
+
+.wf-step-card--success.active {
+    border-color: #16a34a !important;
+    background: #dcfce7 !important;
+}
+
+
+
+.wf-step-card--failure {
+    background: #fff5f5;
+}
+
+
+
+.wf-step-card--failure:hover {
+    border-color: #dc2626;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, .12);
+}
+
+
+
+.wf-step-card--failure.active {
+    border-color: #dc2626 !important;
+    background: #fee2e2 !important;
+}
+
+
+
+/* =====================================================*/
+.wf-icon-danger {
+    color: var(--wf-error) !important;
+}
+
+
+
+/* =====================================================
+TASK ROW
+===================================================== */
+.wf-task-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    margin-bottom: 4px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+}
+
+
+
+.wf-task-row:hover {
+    border-color: var(--wf-primary);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    background: #fff;
+}
+
+
+
+.wf-task-row__index {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border-radius: 50%;
+    background: var(--wf-primary);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 8px;
+}
+
+
+
+.wf-task-row__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 2px 0;
+}
+
+
+
+.wf-task-row__name input,
+.wf-task-row__name .v-field__input {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #111827 !important;
+    padding-block: 2px !important;
+    min-height: 26px !important;
+}
+
+
+
+.wf-task-row__desc input,
+.wf-task-row__desc .v-field__input {
+    font-size: 11px !important;
+    color: #6b7280 !important;
+    padding-block: 1px !important;
+    min-height: 20px !important;
+}
+
+
+
+.wf-task-row__remove {
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity .15s;
+    align-self: flex-start;
+    margin-top: 4px;
+}
+
+
+
+.wf-task-row:hover .wf-task-row__remove {
+    opacity: 1;
+}
+
+
+
+
+.wf-task-row__drag-handle {
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 8px;
+    color: #9ca3af;
+    transition: color 0.15s;
+}
+
+
+
+.wf-task-row__drag-handle:hover {
+    color: var(--wf-primary);
+}
+
+
+
+.wf-task-row__drag-handle:active {
+    cursor: grabbing;
+}
+
+
+
+.wf-task-row.wf-dragging {
+    opacity: 0.4;
+    border: 1px dashed var(--wf-primary);
+    background: #f3f4f6;
+}
+
+
+
+
+/* =====================================================
+TABLES - wf-fields-step-table & wf-fields-datatable
+===================================================== */
+.wf-fields-step-table,
+.wf-fields-datatable {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 10px !important;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+
+
+.wf-fields-step-table thead,
+.wf-fields-datatable thead {
+    background-color: #f9fafb !important;
+}
+
+
+
+.wf-fields-step-table thead th,
+.wf-fields-datatable thead th {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: .07em !important;
+    color: #6b7280 !important;
+    white-space: nowrap;
+    padding: 8px 12px !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+
+
+
+.wf-fields-step-table tbody td {
+    padding: 2px 8px !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    vertical-align: middle;
+    font-size: 12px;
+    color: #374151;
+}
+
+
+
+.wf-fields-datatable tbody td {
+    padding: 7px 12px !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    vertical-align: middle;
+    font-size: 12px;
+    color: #374151;
+}
+
+
+
+.wf-fields-step-table tbody tr:last-child td,
+.wf-fields-datatable tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+
+
+.wf-fields-step-table tbody tr:hover td,
+.wf-fields-datatable tbody tr:hover td {
+    background-color: #f9fafb !important;
+}
+
+
+
+.wf-fields-step-table tbody td .v-field__input {
+    min-height: 26px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 12px !important;
+}
+
+
+
+.wf-fields-step-table tbody td .v-input {
+    --v-input-control-height: 26px;
+}
+
+
+
+/* =====================================================
+FIELDS HEADER SECTION
+===================================================== */
+.wf-fields-header-section {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 12px;
+}
+
+
+
+.wf-fields-header-section h3 {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -.02em;
+    color: #111827;
+}
+
+
+
+/* =====================================================
+AUTOMATION TAB
+===================================================== */
+.wf-automation-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+
+.wf-automation-card.v-card--variant-outlined {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 10px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+    overflow: hidden;
+}
+
+
+
+.wf-ac-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 12px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+
+.wf-ac-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #111827;
+}
+
+
+
+.wf-ac-body {
+    padding: 10px 12px;
+    background: #fff;
+}
+
+
+
+.wf-automation-switch-row {
+    display: flex;
+    align-items: center;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 3px 10px;
+}
+
+
+
+/* Rule list item */
+.wf-rule-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+    margin-bottom: 5px;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+
+
+.wf-rule-item:last-child {
+    margin-bottom: 0;
+}
+
+
+
+.wf-rule-item:hover {
+    border-color: var(--wf-primary);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+
+
+.wf-rule-item__icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #dbeafe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+
+
+.wf-rule-item__body {
+    flex: 1;
+    min-width: 0;
+}
+
+
+
+.wf-rule-item__name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+
+.wf-rule-item__meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+    font-size: 11px;
+    color: #6b7280;
+}
+
+
+
+.wf-rule-item__actions {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    flex-shrink: 0;
+}
+
+
+
+/* Condition builder */
+.wf-condition-builder {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+
+
+.wf-condition-builder__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+
+.wf-condition-builder__label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: #6b7280;
+}
+
+
+
+.wf-condition-builder__body {
+    padding: 10px 12px;
+    background: #fff;
+}
+
+
+
+.wf-condition-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 8px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    margin-bottom: 4px;
+}
+
+
+
+.wf-condition-row:last-child {
+    margin-bottom: 0;
+}
+
+
+
+/* Rule editor header */
+.wf-rule-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 12px;
+    background: var(--wf-primary);
+}
+
+
+
+.wf-rule-editor-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+}
+
+
+
+/* Action param boxes */
+.wf-action-param-box {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid;
+    margin-bottom: 10px;
+}
+
+
+
+.wf-action-param-box--blue {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+
+
+.wf-action-param-box--orange {
+    background: #fff7ed;
+    border-color: #fed7aa;
+}
+
+
+
+.wf-action-param-box__label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+
+
+.wf-action-param-box--blue .wf-action-param-box__label {
+    color: #1d4ed8;
+}
+
+
+
+.wf-action-param-box--orange .wf-action-param-box__label {
+    color: #c2410c;
+}
+
+
+
+/* =====================================================
+CONDITION BUILDER
+===================================================== */
+
+
+/* Logic Selector */
+.wf-logic-select-full {
+    max-width: 360px;
+}
+
+
+
+.wf-logic-select-full .v-field {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    border-radius: 6px !important;
+    border: 1px solid #d9d9d9 !important;
+    background-color: #fafafa !important;
+    box-shadow: none !important;
+    min-height: 32px !important;
+}
+
+
+
+.wf-logic-select-full .v-field__outline {
+    display: none !important;
+}
+
+
+
+.wf-condition-group--and>.wf-condition-group__header .wf-logic-select-full .v-field {
+    color: #047857 !important;
+    border-color: #10b981 !important;
+    background-color: #f0fdf4 !important;
+}
+
+
+
+.wf-condition-group--or>.wf-condition-group__header .wf-logic-select-full .v-field {
+    color: #b45309 !important;
+    border-color: #f59e0b !important;
+    background-color: #fffbeb !important;
+}
+
+
+
+/* Close button */
+.wf-ant-close {
+    opacity: 0.4;
+    transition: all 0.3s;
+}
+
+
+
+.wf-ant-close:hover {
+    opacity: 1;
+    color: #ff4d4f !important;
+    background-color: transparent !important;
+}
+
+
+
+/* =====================================================
+TREE LINES (SEGMENT BASED)
+===================================================== */
+.wf-condition-group {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+
+
+.wf-condition-group--root {
+    padding: 8px 0;
+}
+
+
+
+.wf-condition-group--nested {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px dashed #d9d9d9;
+}
+
+
+
+.wf-condition-group--nested:hover {
+    border-color: rgba(var(--v-theme-primary), 0.8);
+}
+
+
+
+.wf-condition-items {
+    position: relative;
+    margin-left: 16px;
+    /* Indent the tree lines from the logic selector */
+    margin-top: 4px;
+}
+
+
+
+.wf-condition-item-row {
+    position: relative;
+    padding-left: 24px;
+    /* Space for the horizontal line */
+}
+
+
+
+/* Vertical line segment for each row */
+.wf-condition-item-row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: -8px;
+    /* Bridge the 8px margin gap caused by child margins */
+    width: 2px;
+    background: #cbd5e1;
+    z-index: 0;
+}
+
+
+
+/* The first row's vertical line extends up to connect to the header */
+.wf-condition-item-row:first-child::before {
+    top: -8px;
+}
+
+
+
+/* The last row's vertical line stops at the horizontal line */
+.wf-condition-item-row:last-child::before {
+    bottom: auto;
+    height: 20px;
+    /* stops at the horizontal line */
+}
+
+
+
+/* If it's both first and last, it needs to extend up and still stop at horizontal */
+.wf-condition-item-row:first-child:last-child::before {
+    top: -8px;
+    height: 28px;
+}
+
+
+
+/* Horizontal line segment */
+.wf-condition-item-row::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 16px;
+    /* Mid-point to connect to the 32px tall input box */
+    width: 24px;
+    height: 2px;
+    background: #cbd5e1;
+    z-index: 0;
+}
+
+
+
+/* Nested Group connection alignment */
+/* When a nested group is in a row, the horizontal line connects to its border */
+/* We don't need extra pseudo-elements on the nested group itself */
+
+/* Compact Buttons */
+.wf-add-btn {
+    letter-spacing: 0.3px;
+    opacity: 0.8;
+}
+
+
+
+.wf-add-btn:hover {
+    opacity: 1;
+}
+
+
+
+.wf-group-remove {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+
+
+.wf-condition-group--nested:hover>.wf-condition-group__header .wf-group-remove {
+    opacity: 1;
+}
+
+
+
+.wf-condition-item-simple {
+    transition: transform 0.2s ease;
+    position: relative;
+    z-index: 1;
+}
+
+
+
+.wf-condition-item-simple:hover {
+    transform: translateX(2px);
+}
+
+
+
+/* =====================================================
+PREMIUM CLIENT-SIDE DOCX PREVIEW VIEW
+===================================================== */
+#wf-docx-preview-container {
+    background-color: #f1f5f9 !important;
+    /* Soft grey background like Microsoft Word / Google Docs */
+    overflow-y: auto !important;
+}
+
+
+
+#wf-docx-preview-container .docx-wrapper {
+    background-color: #f1f5f9 !important;
+    /* Ensure wrapper background matches workspace */
+    padding: 24px 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+
+
+/* Style each sheet of A4 paper */
+#wf-docx-preview-container section.docx,
+#wf-docx-preview-container .docx {
+    background-color: #ffffff !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+    /* Premium drop shadow */
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 4px !important;
+    margin: 0 auto 24px auto !important;
+    /* Spacing between pages */
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+
+
+#wf-docx-preview-container section.docx:hover,
+#wf-docx-preview-container .docx:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.08) !important;
+}
+
+
+
+/* =====================================================
+CUSTOM FIELD DIALOG (Split Panel Layout)
+===================================================== */
+.wf-cfd-card {
+    border-radius: 14px !important;
+    overflow: hidden;
+}
+
+
+
+/* Dialog Header */
+.wf-cfd-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+}
+
+
+
+.wf-cfd-header-cat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+
+
+.wf-cfd-header-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid currentColor;
+    opacity: 0.9;
+}
+
+
+
+.wf-cfd-header-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.2;
+}
+
+
+
+.wf-cfd-header-sub {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+
+
+/* Dialog Body (Two columns) */
+.wf-cfd-body {
+    display: flex;
+    height: 540px;
+    overflow: hidden;
+}
+
+
+
+.wf-cfd-left--no-border {
+    border-right: none !important;
+}
+
+
+
+/* LEFT PANEL */
+.wf-cfd-left {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #e5e7eb;
+    background: #fafbfc;
+    overflow: hidden;
+}
+
+
+
+.wf-cfd-left-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+
+
+/* List */
+.wf-cfd-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+}
+
+
+
+.wf-cfd-list-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+
+
+.wf-cfd-list-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background .1s;
+}
+
+
+
+.wf-cfd-list-row:last-child {
+    border-bottom: none;
+}
+
+
+
+.wf-cfd-list-row:hover {
+    background: rgba(33, 125, 70, .04);
+}
+
+
+
+.wf-cfd-list-row--active {
+    background: rgba(33, 125, 70, .07) !important;
+    border-left: 3px solid #217D46;
+    padding-left: 13px;
+}
+
+
+
+.wf-cfd-list-row--dup {
+    background: #fffbeb !important;
+    border-left: 3px solid #f59e0b;
+    padding-left: 13px;
+}
+
+
+
+.wf-cfd-list-row--dup:hover {
+    background: #fef3c7 !important;
+}
+
+
+
+.wf-cfd-list-row__num {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    width: 18px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+
+
+.wf-cfd-list-row__content {
+    flex: 1;
+    min-width: 0;
+}
+
+
+
+.wf-cfd-list-row__label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+
+.wf-cfd-list-row__meta {
+    font-size: 10px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 1px;
+}
+
+
+
+.wf-cfd-list-row__fname {
+    font-family: monospace;
+    color: #374151;
+}
+
+
+
+.wf-cfd-list-row__dot {
+    color: #d0d5dd;
+}
+
+
+
+.wf-cfd-list-row__del {
+    opacity: 0;
+    flex-shrink: 0;
+    transition: opacity .12s;
+}
+
+
+
+.wf-cfd-list-row:hover .wf-cfd-list-row__del {
+    opacity: 1;
+}
+
+
+
+/* Left panel footer */
+.wf-cfd-left-footer {
+    padding: 10px 16px;
+    border-top: 1px solid #e5e7eb;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+
+
+/* RIGHT PANEL */
+.wf-cfd-right {
+    width: 420px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    overflow: hidden;
+}
+
+
+
+/* MODE BANNER */
+.wf-cfd-mode-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    flex-shrink: 0;
+}
+
+
+
+.wf-cfd-mode-banner--new {
+    background: #217D46;
+}
+
+
+
+.wf-cfd-mode-banner--edit {
+    background: #1565C0;
+}
+
+
+
+.wf-cfd-mode-banner__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+
+
+.wf-cfd-mode-banner__text {
+    flex: 1;
+    min-width: 0;
+}
+
+
+
+.wf-cfd-mode-banner__title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+}
+
+
+
+.wf-cfd-mode-banner__sub {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.75);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+
+/* Footer hint text */
+.wf-cfd-footer-hint {
+    font-size: 11px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+
+
+.wf-cfd-form-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+}
+
+
+
+.wf-cfd-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 20px;
+    border-top: 1px solid #e5e7eb;
+    background: #fafbfc;
+    flex-shrink: 0;
+}
+
+
+
+@media (max-width: 960px) {
+    .wf-cfd-body {
+        flex-direction: column;
+        height: auto;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .wf-cfd-left {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+        max-height: 300px;
+    }
+
+    .wf-cfd-right {
+        width: 100%;
+    }
+}
+
+
+
+/* =====================================================
+MULTI-TEMPLATE SLOT & CARD
+===================================================== */
+.wf-template-card {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+    overflow: hidden;
+    /* clips the diagonal ribbon */
+}
+
+
+
+.wf-template-card:hover {
+    border-color: #217d46;
+    box-shadow: 0 4px 12px rgba(33, 125, 70, 0.08);
+}
+
+
+
+.wf-template-card+.wf-template-card {
+    margin-top: 12px;
+}
+
+
+
+/* Red diagonal corner delete ribbon */
+.wf-card-delete-ribbon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 28px;
+    height: 28px;
+    background: #ef4444;
+    clip-path: polygon(100% 0, 0 0, 100% 100%);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 5;
+}
+
+
+
+.wf-card-delete-ribbon:hover {
+    background: #dc2626;
+}
+
+
+
+.wf-card-delete-ribbon .v-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: #ffffff !important;
+}
+
+
+
+.wf-signer-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+
+
+.wf-signer-row__order {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #e0e7ff;
+    color: #3730a3;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+
+
+/* Custom chips for matching/duplicate placeholders */
+.wf-custom-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.2;
+    transition: all 0.2s;
+}
+
+
+
+.wf-custom-chip--matched {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+}
+
+
+
+.wf-custom-chip--matched .v-icon {
+    color: #10b981 !important;
+}
+
+
+
+.wf-custom-chip--duplicate {
+    background-color: #fffbf0;
+    border: 1px dashed #d97706;
+    color: #92400e;
+}
+
+
+
+.wf-custom-chip--duplicate .v-icon {
+    color: #d97706 !important;
+}
+
+
+
+.wf-custom-chip--more {
+    background-color: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    font-weight: 600;
+}
+
+
+
+.wf-custom-chip--unassigned {
+    background-color: #fffbf0;
+    border: 1px dashed #d97706;
+    color: #92400e;
+}
+
+
+
+.wf-custom-chip--unassigned .v-icon {
+    color: #d97706 !important;
+}
+
+
+
+/* NATIVE LIGHTWEIGHT INPUTS FOR FIELDS LIST PERFORMANCE */
+.wf-native-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 13px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    color: #111827;
+    transition: background-color 0.15s, box-shadow 0.15s;
+}
+
+
+
+.wf-native-input:focus {
+    background-color: #f1f5f9;
+    box-shadow: inset 0 0 0 1px #cbd5e1;
+}
+
+
+
+.wf-native-input:hover:not(:focus) {
+    background-color: #f8fafc;
+}
+
+
+
+.wf-native-select {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 13px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    color: #111827;
+    cursor: pointer;
+    transition: background-color 0.15s, box-shadow 0.15s;
+}
+
+
+
+.wf-native-select:focus {
+    background-color: #f1f5f9;
+    box-shadow: inset 0 0 0 1px #cbd5e1;
+}
+
+
+
+.wf-native-select:hover:not(:focus) {
+    background-color: #f8fafc;
+}
+
+
+
+.wf-native-checkbox {
+    width: 16px;
+    height: 16px;
+    accent-color: #217d46;
+    cursor: pointer;
+}

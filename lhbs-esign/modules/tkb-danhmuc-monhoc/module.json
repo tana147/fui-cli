@@ -1,0 +1,432 @@
+{
+  "data": [
+    {
+      "filterKeyword": ""
+    },
+    {
+      "dsMon": []
+    },
+    {
+      "dlForm": false,
+      "addNew": 1
+    },
+    {
+      "form": {
+        "MaMon": "",
+        "TenMon": "",
+        "HeSo": 1,
+        "BatBuocXepDoi": false,
+        "UuTienXepDoi": false
+      }
+    },
+    {
+      "menuHanhDong": [
+        {
+          "color": "primary",
+          "icon-text": "mdi-pencil",
+          "text": "Sửa",
+          "action": [
+            {
+              "addNew": 0,
+              "form": {
+                "MaMon": "item.MaMon",
+                "TenMon": "item.TenMon",
+                "HeSo": "item.HeSo",
+                "BatBuocXepDoi": "item.BatBuocXepDoi",
+                "UuTienXepDoi": "item.UuTienXepDoi"
+              }
+            },
+            {
+              "dlForm": true
+            }
+          ]
+        },
+        {
+          "color": "warning",
+          "icon-text": "mdi-delete",
+          "text": "Xóa",
+          "action": {
+            "CONFIRM": "Bạn có chắc muốn xoá môn học này?",
+            "API": "/TkbMonHocDelete/`{{item.MaMon}}",
+            "CALLBACK": [
+              {
+                "MESS": "Đã xoá"
+              },
+              {
+                "CALL": "fetchMon"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "fetchMon": {
+        "API": "/TkbMonHocList",
+        "IN": {
+          "Keyword": "vueData.filterKeyword"
+        },
+        "OUT": "dsMon"
+      }
+    },
+    {
+      "insertMon": {
+        "API": "/TkbMonHocInsert",
+        "IN": {
+          "MaMon": "vueData.form.MaMon",
+          "TenMon": "vueData.form.TenMon",
+          "HeSo": "vueData.form.HeSo",
+          "BatBuocXepDoi": "vueData.form.BatBuocXepDoi",
+          "UuTienXepDoi": "vueData.form.UuTienXepDoi"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Thêm thành công"
+          },
+          {
+            "CALL": "fetchMon"
+          }
+        ]
+      }
+    },
+    {
+      "updateMon": {
+        "API": "/TkbMonHocUpdate",
+        "IN": {
+          "MaMon": "vueData.form.MaMon",
+          "TenMon": "vueData.form.TenMon",
+          "HeSo": "vueData.form.HeSo",
+          "BatBuocXepDoi": "vueData.form.BatBuocXepDoi",
+          "UuTienXepDoi": "vueData.form.UuTienXepDoi"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Cập nhật thành công"
+          },
+          {
+            "CALL": "fetchMon"
+          }
+        ]
+      }
+    },
+    {
+      "saveMon": {
+        "IF": "vueData.addNew == 1",
+        "THEN": {
+          "CALL": "insertMon"
+        },
+        "ELSE": {
+          "CALL": "updateMon"
+        }
+      }
+    },
+    {
+      "CALL": "fetchMon"
+    }
+  ],
+  "watch": {
+    "filterKeyword": {
+      "CALL": "fetchMon"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-text-field",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterKeyword",
+                "label": "Tìm mã môn / tên môn",
+                ":required": false
+              },
+              "w": "260"
+            },
+            {
+              "el": "v-spacer",
+              "attr": {},
+              "w": ""
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "my-2",
+                "label": "Thêm môn học",
+                "icon-text": "mdi-plus",
+                ":checkvalid": false,
+                "action": [
+                  {
+                    "addNew": 1,
+                    "form": {
+                      "MaMon": "",
+                      "TenMon": "",
+                      "HeSo": 1,
+                      "BatBuocXepDoi": false,
+                      "UuTienXepDoi": false
+                    }
+                  },
+                  {
+                    "dlForm": true
+                  }
+                ]
+              },
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Danh mục môn học",
+                ":items": "vueData.dsMon",
+                "item-key": "MaMon",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":height": -16,
+                ":headers": [
+                  {
+                    "align": "center",
+                    "title": "Mã môn",
+                    "value": "MaMon",
+                    "width": "110px"
+                  },
+                  {
+                    "title": "Tên môn",
+                    "value": "TenMon"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Hệ số",
+                    "value": "HeSo",
+                    "width": "90px"
+                  },
+                  {
+                    "el": "v-icon",
+                    "align": "center",
+                    "title": "Bắt buộc xếp đôi",
+                    "value": "BatBuocXepDoi",
+                    "width": "140px"
+                  },
+                  {
+                    "el": "v-icon",
+                    "align": "center",
+                    "title": "Ưu tiên xếp đôi",
+                    "value": "UuTienXepDoi",
+                    "width": "130px"
+                  },
+                  {
+                    "el": "t-menu",
+                    "title": "Tác vụ",
+                    "value": "Actions",
+                    "width": "100px",
+                    "align": "center",
+                    "attr": {
+                      ":items": "vueData.menuHanhDong"
+                    }
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "hidden-container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlForm",
+                "width": 550
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Môn học"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlForm = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "grid-list-md px-4"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.MaMon",
+                                    "label": "Mã môn",
+                                    ":disabled": "vueData.addNew==0"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.TenMon",
+                                    "label": "Tên môn"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model.number": "vueData.form.HeSo",
+                                    "label": "Hệ số",
+                                    "type": "number"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-checkbox",
+                                  "attr": {
+                                    "v-model": "vueData.form.BatBuocXepDoi",
+                                    "label": "Bắt buộc xếp đôi tiết (R5 cứng)"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-checkbox",
+                                  "attr": {
+                                    "v-model": "vueData.form.UuTienXepDoi",
+                                    "label": "Ưu tiên xếp đôi tiết (R5 mềm)"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "label": "Lưu",
+                            "icon-text": "mdi-content-save",
+                            ":checkvalid": true,
+                            "action": {
+                              "CALL": "saveMon"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

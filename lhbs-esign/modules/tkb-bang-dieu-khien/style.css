@@ -1,0 +1,13 @@
+.tkb-compact, .tkb-compact .v-field__input, .tkb-compact .v-label, .tkb-compact .v-tab {
+  font-size: 12px !important;
+}
+.tkb-compact .v-field__input {
+  min-height: 34px !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+.tkb-compact .v-tab {
+  min-width: 0;
+  padding: 0 12px;
+  height: 32px;
+}

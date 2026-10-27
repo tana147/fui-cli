@@ -1,0 +1,582 @@
+{
+  "data": [
+    {
+      "dsLich": [],
+      "dsLichGrid": []
+    },
+    {
+      "dlForm": false,
+      "addNew": 1
+    },
+    {
+      "form": {
+        "ID": null,
+        "LoaiNhom": "To",
+        "MaNhom": "",
+        "TenNhom": "",
+        "Thu": 2,
+        "Buoi": "Sang",
+        "TietList": "",
+        "GhiChu": ""
+      }
+    },
+    {
+      "fixedThuCols": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "fixedSlots": [
+        {
+          "Buoi": "Sang",
+          "Tiet": 1
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 2
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 3
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 4
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 5
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 1
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 2
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 3
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 4
+        }
+      ]
+    },
+    {
+      "toOptions": [
+        {
+          "text": "Tổ Tự nhiên",
+          "value": "TUNHIEN"
+        },
+        {
+          "text": "Tổ Ngữ Văn",
+          "value": "NGUVAN"
+        },
+        {
+          "text": "Tổ Xã hội",
+          "value": "XAHOI"
+        },
+        {
+          "text": "Tổ Hoạt động trải nghiệm, hướng nghiệp",
+          "value": "HDTNHN"
+        },
+        {
+          "text": "Tổ Toán",
+          "value": "TOAN"
+        },
+        {
+          "text": "Tổ TD - AN - MT",
+          "value": "TDANMT"
+        }
+      ]
+    },
+    {
+      "khoiTHOptions": [
+        {
+          "text": "Khối 1",
+          "value": "01"
+        },
+        {
+          "text": "Khối 2",
+          "value": "02"
+        },
+        {
+          "text": "Khối 3",
+          "value": "03"
+        },
+        {
+          "text": "Khối 4",
+          "value": "04"
+        },
+        {
+          "text": "Khối 5",
+          "value": "05"
+        }
+      ]
+    },
+    {
+      "khoiTruongOptions": [
+        {
+          "text": "Khối trưởng",
+          "value": "KT"
+        }
+      ]
+    },
+    {
+      "fetchLich": {
+        "API": "/TkbLichHopCoDinhList",
+        "OUT": "dsLich",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsLichGrid = vueData.dsLich.flatMap(function(r){ return r.TietList.split(',').map(function(t){ return Object.assign({}, r, {Tiet: parseInt(t,10), MaMon: r.TenNhom}); }); })"
+          }
+        ]
+      }
+    },
+    {
+      "insertLich": {
+        "API": "/TkbLichHopCoDinhInsert",
+        "IN": {
+          "LoaiNhom": "vueData.form.LoaiNhom",
+          "MaNhom": "vueData.form.MaNhom",
+          "TenNhom": "vueData.form.TenNhom",
+          "Thu": "vueData.form.Thu",
+          "Buoi": "vueData.form.Buoi",
+          "TietList": "vueData.form.TietList",
+          "GhiChu": "vueData.form.GhiChu"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Thêm thành công"
+          },
+          {
+            "CALL": "fetchLich"
+          }
+        ]
+      }
+    },
+    {
+      "updateLich": {
+        "API": "/TkbLichHopCoDinhUpdate",
+        "IN": {
+          "ID": "vueData.form.ID",
+          "LoaiNhom": "vueData.form.LoaiNhom",
+          "MaNhom": "vueData.form.MaNhom",
+          "TenNhom": "vueData.form.TenNhom",
+          "Thu": "vueData.form.Thu",
+          "Buoi": "vueData.form.Buoi",
+          "TietList": "vueData.form.TietList",
+          "GhiChu": "vueData.form.GhiChu"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Cập nhật thành công"
+          },
+          {
+            "CALL": "fetchLich"
+          }
+        ]
+      }
+    },
+    {
+      "saveLich": {
+        "IF": "vueData.addNew == 1",
+        "THEN": {
+          "CALL": "insertLich"
+        },
+        "ELSE": {
+          "CALL": "updateLich"
+        }
+      }
+    },
+    {
+      "moveLich": {
+        "API": "/TkbLichHopCoDinhUpdate",
+        "IN": {
+          "ID": "vueData.moveItem.ID",
+          "LoaiNhom": "vueData.moveItem.LoaiNhom",
+          "MaNhom": "vueData.moveItem.MaNhom",
+          "TenNhom": "vueData.moveItem.TenNhom",
+          "Thu": "vueData.moveItem.Thu",
+          "Buoi": "vueData.moveItem.Buoi",
+          "TietList": "vueData.moveItem.TietList",
+          "GhiChu": "vueData.moveItem.GhiChu"
+        },
+        "CALLBACK": [
+          {
+            "MESS": "Đã dời lịch họp"
+          },
+          {
+            "CALL": "fetchLich"
+          }
+        ]
+      }
+    },
+    {
+      "moveItem": {
+        "ID": null,
+        "LoaiNhom": "To",
+        "MaNhom": "",
+        "TenNhom": "",
+        "Thu": 2,
+        "Buoi": "Sang",
+        "TietList": "",
+        "GhiChu": ""
+      },
+      "moveTrigger": 0
+    },
+    {
+      "CALL": "fetchLich"
+    }
+  ],
+  "watch": {
+    "form.LoaiNhom": {
+      "EXE": "vueData.form.MaNhom = ''"
+    },
+    "moveTrigger": {
+      "CALL": "moveLich"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "text-body-2 grey--text text--darken-1 my-2"
+              },
+              "innerHTML": "Lịch họp tổ chuyên môn / khối cố định hàng tuần — dùng để tự động chèn tiết \"HOP\" vào TKB của các GV liên quan, tránh xếp trùng giờ họp khi Auto chạy. Bấm ô trống để thêm, bấm bút để sửa, hoặc kéo-thả 1 ô đã có sang ô trống để dời giờ (nếu nhóm họp nhiều tiết liên tiếp, cả cụm sẽ dời theo).",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "uc-tkb-grid",
+              "attr": {
+                ":items": "vueData.dsLichGrid",
+                ":editable": true,
+                ":addable": true,
+                ":draggable": true,
+                ":fixed-thu-cols": "vueData.fixedThuCols",
+                ":fixed-slots": "vueData.fixedSlots",
+                "sub-label-field": "LoaiNhom",
+                "v-on:edit-cell": "vueData.addNew = 0, vueData.form = {ID: $event.ID, LoaiNhom: $event.LoaiNhom, MaNhom: $event.MaNhom, TenNhom: $event.TenNhom, Thu: $event.Thu, Buoi: $event.Buoi, TietList: $event.TietList, GhiChu: $event.GhiChu}, vueData.dlForm = true",
+                "v-on:add-cell": "vueData.addNew = 1, vueData.form = {ID: null, LoaiNhom: 'To', MaNhom: '', TenNhom: '', Thu: $event.Thu, Buoi: $event.Buoi, TietList: String($event.Tiet), GhiChu: ''}, vueData.dlForm = true",
+                "v-on:move-cell": "vueData.moveItem = {ID: $event.item.ID, LoaiNhom: $event.item.LoaiNhom, MaNhom: $event.item.MaNhom, TenNhom: $event.item.TenNhom, Thu: $event.Thu, Buoi: $event.Buoi, TietList: $event.item.TietList.split(',').map(function(t){ return parseInt(t,10) + ($event.Tiet - $event.item.Tiet); }).join(','), GhiChu: $event.item.GhiChu}, vueData.moveTrigger = vueData.moveTrigger + 1"
+              },
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-card",
+              "attr": {
+                "v-if": "vueData.dlForm",
+                "class": "pa-0 mt-3",
+                "outlined": ""
+              },
+              "w": 12,
+              "innerHTML": [
+                {
+                  "el": "v-toolbar",
+                  "attr": {
+                    "dense": "",
+                    "flat": ""
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar-title",
+                      "innerHTML": "Lịch họp cố định"
+                    },
+                    {
+                      "el": "v-spacer"
+                    },
+                    {
+                      "el": "v-btn",
+                      "attr": {
+                        "icon": "",
+                        "v-on:click": "vueData.dlForm = false"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-icon",
+                          "innerHTML": "mdi-close"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "el": "v-container",
+                  "attr": {
+                    "class": "px-4"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-row",
+                      "attr": {},
+                      "innerHTML": [
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": "6",
+                            "sm": "3",
+                            "class": "py-1"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-select",
+                              "attr": {
+                                "v-model": "vueData.form.LoaiNhom",
+                                "label": "Loại nhóm họp",
+                                ":items": [
+                                  {
+                                    "text": "Tổ chuyên môn",
+                                    "value": "To"
+                                  },
+                                  {
+                                    "text": "Khối Tiểu học",
+                                    "value": "KhoiTH"
+                                  },
+                                  {
+                                    "text": "Khối trưởng",
+                                    "value": "KhoiTruong"
+                                  }
+                                ],
+                                "item-title": "text",
+                                "item-value": "value"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": "6",
+                            "sm": "3",
+                            "class": "py-1"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-select",
+                              "attr": {
+                                "v-model": "vueData.form.MaNhom",
+                                "label": "Nhóm cụ thể",
+                                ":items": "vueData.form.LoaiNhom === 'To' ? vueData.toOptions : (vueData.form.LoaiNhom === 'KhoiTH' ? vueData.khoiTHOptions : vueData.khoiTruongOptions)",
+                                "item-title": "text",
+                                "item-value": "value"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": "12",
+                            "sm": "6",
+                            "class": "py-1"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-text-field",
+                              "attr": {
+                                "v-model": "vueData.form.TenNhom",
+                                "label": "Tên hiển thị (vd: Tổ Toán, Khối 2)"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": "6",
+                            "sm": "2",
+                            "class": "py-1"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-select",
+                              "attr": {
+                                "v-model": "vueData.form.Thu",
+                                "label": "Thứ",
+                                ":items": [
+                                  {
+                                    "text": "Thứ 2",
+                                    "value": 2
+                                  },
+                                  {
+                                    "text": "Thứ 3",
+                                    "value": 3
+                                  },
+                                  {
+                                    "text": "Thứ 4",
+                                    "value": 4
+                                  },
+                                  {
+                                    "text": "Thứ 5",
+                                    "value": 5
+                                  },
+                                  {
+                                    "text": "Thứ 6",
+                                    "value": 6
+                                  },
+                                  {
+                                    "text": "Thứ 7",
+                                    "value": 7
+                                  }
+                                ],
+                                "item-title": "text",
+                                "item-value": "value"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": "6",
+                            "sm": "2",
+                            "class": "py-1"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-select",
+                              "attr": {
+                                "v-model": "vueData.form.Buoi",
+                                "label": "Buổi",
+                                ":items": [
+                                  {
+                                    "text": "Sáng",
+                                    "value": "Sang"
+                                  },
+                                  {
+                                    "text": "Chiều",
+                                    "value": "Chieu"
+                                  }
+                                ],
+                                "item-title": "text",
+                                "item-value": "value"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": "12",
+                            "sm": "4",
+                            "class": "py-1"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-text-field",
+                              "attr": {
+                                "v-model": "vueData.form.TietList",
+                                "label": "Danh sách tiết (vd: 1,2 hoặc 6,7,8)"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": "12",
+                            "sm": "4",
+                            "class": "py-1"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-text-field",
+                              "attr": {
+                                "v-model": "vueData.form.GhiChu",
+                                "label": "Ghi chú",
+                                ":required": false
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "el": "v-card-actions",
+                  "attr": {
+                    "class": "mr-1 mb-1"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "variant": "text",
+                        "color": "warning",
+                        "label": "Xoá",
+                        "icon-text": "mdi-delete",
+                        "v-if": "vueData.addNew == 0",
+                        ":checkvalid": false,
+                        "action": {
+                          "CONFIRM": "Bạn có chắc muốn xoá lịch họp này?",
+                          "API": "/TkbLichHopCoDinhDelete/`{{vueData.form.ID}}",
+                          "CALLBACK": [
+                            {
+                              "EXE": "vueData.dlForm = false"
+                            },
+                            {
+                              "MESS": "Đã xoá"
+                            },
+                            {
+                              "CALL": "fetchLich"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "el": "v-spacer"
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "variant": "text",
+                        "label": "Lưu",
+                        "icon-text": "mdi-content-save",
+                        ":checkvalid": true,
+                        "action": {
+                          "CALL": "saveLich"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

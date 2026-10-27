@@ -1,0 +1,62 @@
+[
+  {
+    "comID": 9958,
+    "comName": "uc-instance-comments"
+  },
+  {
+    "comID": 9781,
+    "comName": "uc-instance-create-dialog"
+  },
+  {
+    "comID": 9959,
+    "comName": "uc-instance-links"
+  },
+  {
+    "comID": 9960,
+    "comName": "uc-instance-watchers"
+  },
+  {
+    "comID": 9783,
+    "comName": "uc-kanban"
+  },
+  {
+    "comID": 9784,
+    "comName": "uc-kanban-card"
+  },
+  {
+    "comID": 9956,
+    "comName": "uc-kanban-checklist"
+  },
+  {
+    "comID": 9953,
+    "comName": "uc-kanban-flow-detail-view"
+  },
+  {
+    "comID": 9786,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 9955,
+    "comName": "uc-request-detail-view"
+  },
+  {
+    "comID": 9972,
+    "comName": "uc-request-external-tracking"
+  },
+  {
+    "comID": 9961,
+    "comName": "uc-request-signer-config"
+  },
+  {
+    "comID": 9957,
+    "comName": "uc-signer-config-dialog"
+  },
+  {
+    "comID": 9954,
+    "comName": "uc-subtasks"
+  },
+  {
+    "comID": 9782,
+    "comName": "uc-timeline"
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/wf-admin-workflow-detail",
+  "url": "//kyso.lhbs.vn/wf-admin-workflow-detail",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "wf-admin-workflow-detail",
+  "ModuleName": "wf-admin-workflow-detail",
+  "UpdateTime": "2026-06-10 11:16:26",
+  "UpdateUser": "DEV000018",
+  "LastLoad": "2026-07-15",
+  "LoadCount": 642,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

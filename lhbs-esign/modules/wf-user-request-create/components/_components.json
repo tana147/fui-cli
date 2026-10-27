@@ -1,0 +1,46 @@
+[
+  {
+    "comID": 9823,
+    "comName": "uc-free-sign-box-list"
+  },
+  {
+    "comID": 9822,
+    "comName": "uc-free-sign-sidebar"
+  },
+  {
+    "comID": 9831,
+    "comName": "uc-free-sign-stage"
+  },
+  {
+    "comID": 9824,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 9829,
+    "comName": "uc-request-create-mode"
+  },
+  {
+    "comID": 9825,
+    "comName": "uc-request-document-config"
+  },
+  {
+    "comID": 9826,
+    "comName": "uc-request-free-sign-composer"
+  },
+  {
+    "comID": 9828,
+    "comName": "uc-request-select-workflow"
+  },
+  {
+    "comID": 9827,
+    "comName": "uc-request-signer-config"
+  },
+  {
+    "comID": 9830,
+    "comName": "uc-request-stepper"
+  },
+  {
+    "comID": 9832,
+    "comName": "uc-request-summary"
+  }
+]

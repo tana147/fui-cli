@@ -1,0 +1,488 @@
+{
+  "data": [
+    {
+      "filterKhoi": "",
+      "filterKeyword": ""
+    },
+    {
+      "dsDinhMuc": []
+    },
+    {
+      "dsMonOptions": []
+    },
+    {
+      "dlForm": false,
+      "addNew": 1
+    },
+    {
+      "form": {
+        "ID": null,
+        "MaMon": "",
+        "Khoi": "",
+        "SoTietTuan": null
+      }
+    },
+    {
+      "dsKhoi": [
+        {
+          "value": "",
+          "text": "Tất cả khối"
+        },
+        {
+          "value": "01",
+          "text": "Khối 1"
+        },
+        {
+          "value": "02",
+          "text": "Khối 2"
+        },
+        {
+          "value": "03",
+          "text": "Khối 3"
+        },
+        {
+          "value": "04",
+          "text": "Khối 4"
+        },
+        {
+          "value": "05",
+          "text": "Khối 5"
+        },
+        {
+          "value": "06",
+          "text": "Khối 6"
+        },
+        {
+          "value": "07",
+          "text": "Khối 7"
+        },
+        {
+          "value": "08",
+          "text": "Khối 8"
+        },
+        {
+          "value": "09",
+          "text": "Khối 9"
+        },
+        {
+          "value": "10",
+          "text": "Khối 10"
+        },
+        {
+          "value": "11",
+          "text": "Khối 11"
+        },
+        {
+          "value": "12",
+          "text": "Khối 12"
+        }
+      ]
+    },
+    {
+      "menuHanhDong": [
+        {
+          "color": "primary",
+          "icon-text": "mdi-pencil",
+          "text": "Sửa",
+          "action": [
+            {
+              "addNew": 0,
+              "form": {
+                "ID": "item.ID",
+                "MaMon": "item.MaMon",
+                "Khoi": "item.Khoi",
+                "SoTietTuan": "item.SoTietTuan"
+              }
+            },
+            {
+              "dlForm": true
+            }
+          ]
+        },
+        {
+          "color": "warning",
+          "icon-text": "mdi-delete",
+          "text": "Xóa",
+          "action": {
+            "CONFIRM": "Bạn có chắc muốn xoá định mức này?",
+            "API": "/TkbDinhMucTietDelete/`{{item.ID}}",
+            "CALLBACK": [
+              {
+                "MESS": "Đã xoá"
+              },
+              {
+                "CALL": "fetchDinhMuc"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "fetchDinhMuc": {
+        "API": "/TkbDinhMucTietList",
+        "IN": {
+          "Khoi": "vueData.filterKhoi",
+          "Keyword": "vueData.filterKeyword"
+        },
+        "OUT": "dsDinhMuc"
+      }
+    },
+    {
+      "fetchMonOptions": {
+        "API": "/TkbMonHocList",
+        "IN": {
+          "Keyword": ""
+        },
+        "OUT": "dsMonOptions",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsMonOptions = vueData.dsMonOptions.map(m => ({...m, MonDisplay: m.MaMon + ' - ' + m.TenMon}))"
+          }
+        ]
+      }
+    },
+    {
+      "insertDinhMuc": {
+        "API": "/TkbDinhMucTietInsert",
+        "IN": {
+          "MaMon": "vueData.form.MaMon",
+          "Khoi": "vueData.form.Khoi",
+          "SoTietTuan": "vueData.form.SoTietTuan"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Thêm thành công"
+          },
+          {
+            "CALL": "fetchDinhMuc"
+          }
+        ]
+      }
+    },
+    {
+      "updateDinhMuc": {
+        "API": "/TkbDinhMucTietUpdate",
+        "IN": {
+          "ID": "vueData.form.ID",
+          "MaMon": "vueData.form.MaMon",
+          "Khoi": "vueData.form.Khoi",
+          "SoTietTuan": "vueData.form.SoTietTuan"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Cập nhật thành công"
+          },
+          {
+            "CALL": "fetchDinhMuc"
+          }
+        ]
+      }
+    },
+    {
+      "saveDinhMuc": {
+        "IF": "vueData.addNew == 1",
+        "THEN": {
+          "CALL": "insertDinhMuc"
+        },
+        "ELSE": {
+          "CALL": "updateDinhMuc"
+        }
+      }
+    },
+    {
+      "CALL": "fetchDinhMuc"
+    },
+    {
+      "CALL": "fetchMonOptions"
+    }
+  ],
+  "watch": {
+    "filterKhoi": {
+      "CALL": "fetchDinhMuc"
+    },
+    "filterKeyword": {
+      "CALL": "fetchDinhMuc"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterKhoi",
+                "label": "Khối",
+                ":items": "vueData.dsKhoi",
+                "item-title": "text",
+                "item-value": "value",
+                ":required": false
+              },
+              "w": "180"
+            },
+            {
+              "el": "v-text-field",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterKeyword",
+                "label": "Tìm môn học",
+                ":required": false
+              },
+              "w": "220"
+            },
+            {
+              "el": "v-spacer",
+              "attr": {},
+              "w": ""
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "my-2",
+                "label": "Thêm định mức",
+                "icon-text": "mdi-plus",
+                ":checkvalid": false,
+                "action": [
+                  {
+                    "addNew": 1,
+                    "form": {
+                      "ID": null,
+                      "MaMon": "",
+                      "Khoi": "",
+                      "SoTietTuan": null
+                    }
+                  },
+                  {
+                    "dlForm": true
+                  }
+                ]
+              },
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Định mức tiết theo Môn × Khối",
+                ":items": "vueData.dsDinhMuc",
+                "item-key": "ID",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":height": -16,
+                ":headers": [
+                  {
+                    "align": "center",
+                    "title": "Mã môn",
+                    "value": "MaMon",
+                    "width": "100px"
+                  },
+                  {
+                    "title": "Môn học",
+                    "value": "TenMon"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Khối",
+                    "value": "Khoi",
+                    "width": "90px"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Số tiết/tuần",
+                    "value": "SoTietTuan",
+                    "width": "130px"
+                  },
+                  {
+                    "el": "t-menu",
+                    "title": "Tác vụ",
+                    "value": "Actions",
+                    "width": "100px",
+                    "align": "center",
+                    "attr": {
+                      ":items": "vueData.menuHanhDong"
+                    }
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "hidden-container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlForm",
+                "width": 550
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Định mức tiết"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlForm = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "grid-list-md px-4"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.form.MaMon",
+                                    "label": "Môn học",
+                                    ":items": "vueData.dsMonOptions",
+                                    "item-title": "MonDisplay",
+                                    "item-value": "MaMon"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.form.Khoi",
+                                    "label": "Khối",
+                                    ":items": "vueData.dsKhoi.filter(k => k.value !== '')",
+                                    "item-title": "text",
+                                    "item-value": "value"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model.number": "vueData.form.SoTietTuan",
+                                    "label": "Số tiết/tuần",
+                                    "type": "number"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "label": "Lưu",
+                            "icon-text": "mdi-content-save",
+                            ":checkvalid": true,
+                            "action": {
+                              "CALL": "saveDinhMuc"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/wf-admin-category",
+  "url": "//kyso.lhbs.vn/wf-admin-category",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "wf-admin-category",
+  "ModuleName": "wf-admin-category",
+  "UpdateTime": "2026-07-10 14:57:20",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-10-23",
+  "LoadCount": 326,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/wf-user-sign-config",
+  "url": "//kyso.lhbs.vn/wf-user-sign-config",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "wf-user-sign-config",
+  "ModuleName": "wf-user-sign-config",
+  "UpdateTime": "2026-07-10 14:58:30",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-10-23",
+  "LoadCount": 8,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

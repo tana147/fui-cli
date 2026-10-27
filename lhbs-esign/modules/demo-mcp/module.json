@@ -1,0 +1,27 @@
+{
+  "data": [],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid pa-0",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "uc-demo-category",
+              "w": 12,
+              "col": {
+                "class": "pa-0"
+              },
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false
+  }
+}

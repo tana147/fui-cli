@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/wf-user-sign-queue",
+  "url": "//kyso.lhbs.vn/wf-user-sign-queue",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "wf-user-sign-queue",
+  "ModuleName": "wf-user-sign-queue",
+  "UpdateTime": "2026-07-10 15:36:36",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-06-24",
+  "LoadCount": 48,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

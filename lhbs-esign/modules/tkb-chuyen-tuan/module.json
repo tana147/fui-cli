@@ -1,0 +1,333 @@
+{
+  "data": [
+    {
+      "dsRunKhaThi": []
+    },
+    {
+      "selectedRunIDCu": null
+    },
+    {
+      "dsTuan": []
+    },
+    {
+      "selectedTuanMoi": null
+    },
+    {
+      "dsAnhHuong": [],
+      "daXemAnhHuong": false
+    },
+    {
+      "maxSecsChuyenTuan": 60,
+      "runIDMoi": null,
+      "soTietGiuNguyen": null
+    },
+    {
+      "dangChayPhanConLai": false,
+      "ketQuaPhanConLai": {
+        "TrangThai": "",
+        "KhaThi": false,
+        "SoNhomKhongXepDuoc": null
+      }
+    },
+    {
+      "fetchRunKhaThi": {
+        "API": "/TkbKetQuaXepRunListKhaThi",
+        "OUT": "dsRunKhaThi"
+      }
+    },
+    {
+      "fetchDsTuan": {
+        "API": "/TkbTuanList",
+        "IN": {
+          "NamHoc": "`2026-2027"
+        },
+        "OUT": "dsTuan"
+      }
+    },
+    {
+      "fetchAnhHuong": {
+        "API": "/TkbTuanMoi_XacDinhAnhHuong",
+        "IN": {
+          "RunIDCu": "vueData.selectedRunIDCu",
+          "TuanMoi": "vueData.selectedTuanMoi"
+        },
+        "OUT": "dsAnhHuong",
+        "CALLBACK": [
+          {
+            "daXemAnhHuong": true
+          }
+        ]
+      }
+    },
+    {
+      "taoTuanMoi": {
+        "API": "/TkbTuanMoi_TaoRunID",
+        "IN": {
+          "RunIDCu": "vueData.selectedRunIDCu",
+          "TuanMoi": "vueData.selectedTuanMoi",
+          "MaxSecs": "vueData.maxSecsChuyenTuan"
+        },
+        "OUT": "taoTuanMoiResp",
+        "CALLBACK": [
+          {
+            "EXE": "tkbHandleTaoTuanMoiResp(vueData.taoTuanMoiResp)"
+          }
+        ]
+      }
+    },
+    {
+      "phanConLaiChuyenTuan": {
+        "API": "/TkbChayAutoPhanConLai",
+        "IN": {
+          "RunID": "vueData.runIDMoi",
+          "MaxSecs": "vueData.maxSecsChuyenTuan"
+        },
+        "OUT": "chayAutoPhanConLaiResp",
+        "CALLBACK": [
+          {
+            "EXE": "tkbHandleChayAutoPhanConLaiResp(vueData.chayAutoPhanConLaiResp)"
+          }
+        ]
+      }
+    },
+    {
+      "checkTrangThaiPhanConLai": {
+        "API": "/TkbChayAutoTrangThai",
+        "IN": {
+          "RunID": "vueData.runIDMoi"
+        },
+        "OUT": "trangThaiPhanConLaiResp",
+        "CALLBACK": [
+          {
+            "EXE": "tkbHandleTrangThaiPhanConLaiResp(vueData.trangThaiPhanConLaiResp)"
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "fetchRunKhaThi"
+    },
+    {
+      "CALL": "fetchDsTuan"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "text-body-2 grey--text text--darken-1 my-2"
+              },
+              "innerHTML": "Copy nguyên trạng 1 tuần đã xếp làm nền cho tuần mới, tự khóa hết, chỉ xếp lại đúng phần (Lớp, Môn) có phân công thay đổi giữa 2 tuần (đổi GV, đổi số tiết, môn mới/môn nghỉ) — không chạy lại toàn khối.",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.selectedRunIDCu",
+                "v-on:update:model-value": "vueData.daXemAnhHuong = false, vueData.dsAnhHuong = [], vueData.runIDMoi = null",
+                "label": "RunID tuần cũ (làm nền)",
+                ":items": "vueData.dsRunKhaThi",
+                ":item-title": "item => 'RunID ' + item.RunID + ' - Khối ' + item.Khoi + ' - ' + (item.TenTuan || 'Chưa rõ tuần') + ' - ' + item.SoSlotDaXep + ' tiết'",
+                "item-value": "RunID",
+                ":required": true
+              },
+              "w": "420"
+            },
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model.number": "vueData.selectedTuanMoi",
+                "v-on:update:model-value": "vueData.daXemAnhHuong = false, vueData.dsAnhHuong = [], vueData.runIDMoi = null",
+                "label": "Tuần mới",
+                ":items": "vueData.dsTuan",
+                "item-title": "TenTuan",
+                "item-value": "TuanTrongNam",
+                ":required": true
+              },
+              "w": "260"
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink d-flex align-center"
+              },
+              "attr": {
+                "class": "my-2",
+                "label": "Xem ảnh hưởng",
+                "icon-text": "mdi-magnify",
+                ":checkvalid": false,
+                ":disabled": "!vueData.selectedRunIDCu || !vueData.selectedTuanMoi",
+                "action": {
+                  "CALL": "fetchAnhHuong"
+                }
+              },
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "v-if": "vueData.daXemAnhHuong && vueData.dsAnhHuong.length > 0",
+                "class": "text-caption",
+                ":label": "'Sẽ xếp lại (' + vueData.dsAnhHuong.length + ' dòng)'",
+                ":items": "vueData.dsAnhHuong",
+                "item-key": "MaLop",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":height": -16,
+                ":headers": [
+                  {
+                    "title": "Lớp",
+                    "value": "MaLop"
+                  },
+                  {
+                    "title": "Môn",
+                    "value": "MaMon"
+                  },
+                  {
+                    "title": "GV cũ",
+                    "value": "MaGVCu"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Tiết cũ",
+                    "value": "SoTietCu",
+                    "width": "70px"
+                  },
+                  {
+                    "title": "GV mới",
+                    "value": "MaGVMoi"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Tiết mới",
+                    "value": "SoTietMoi",
+                    "width": "70px"
+                  },
+                  {
+                    "title": "Lý do",
+                    "value": "LyDo"
+                  }
+                ]
+              },
+              "w": 12
+            },
+            {
+              "el": "div",
+              "attr": {
+                "v-if": "vueData.daXemAnhHuong && vueData.dsAnhHuong.length === 0",
+                "class": "text-caption text-medium-emphasis"
+              },
+              "innerHTML": "Không có (Lớp, Môn) nào thay đổi giữa 2 tuần — tuần mới sẽ giữ nguyên y hệt tuần cũ.",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-text-field",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "v-if": "vueData.daXemAnhHuong && !vueData.runIDMoi",
+                "class": "flex-md-grow-0 my-2",
+                "v-model.number": "vueData.maxSecsChuyenTuan",
+                "type": "number",
+                "label": "Thời gian tìm kiếm tối đa (giây)",
+                ":required": true
+              },
+              "w": "260"
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink d-flex align-center"
+              },
+              "attr": {
+                "v-if": "vueData.daXemAnhHuong && !vueData.runIDMoi",
+                "class": "my-2",
+                "color": "deep-purple",
+                "label": "Tạo tuần mới & xếp lại",
+                "icon-text": "mdi-calendar-plus",
+                ":checkvalid": false,
+                "action": {
+                  "CONFIRM": "Tạo RunID mới cho tuần này, copy nguyên trạng tuần cũ và chỉ xếp lại phần thay đổi?",
+                  "CALL": "taoTuanMoi"
+                }
+              },
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "v-if": "vueData.runIDMoi",
+                "class": "text-body-2 my-2"
+              },
+              "innerHTML": "Đã tạo RunID {{vueData.runIDMoi}} — giữ nguyên {{vueData.soTietGiuNguyen}} tiết, đang xếp lại phần thay đổi.",
+              "w": 12
+            },
+            {
+              "el": "div",
+              "attr": {
+                "v-if": "vueData.dangChayPhanConLai",
+                "class": "text-center py-4"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-progress-circular",
+                  "attr": {
+                    ":indeterminate": true,
+                    "color": "deep-purple",
+                    "size": 40
+                  }
+                }
+              ],
+              "w": 12
+            },
+            {
+              "el": "div",
+              "attr": {
+                "v-if": "!vueData.dangChayPhanConLai && vueData.ketQuaPhanConLai.TrangThai",
+                "class": "text-body-2"
+              },
+              "innerHTML": "Kết quả: <b>{{vueData.ketQuaPhanConLai.TrangThai}}</b>{{vueData.ketQuaPhanConLai.SoNhomKhongXepDuoc != null ? ' — còn ' + vueData.ketQuaPhanConLai.SoNhomKhongXepDuoc + ' nhóm chưa xếp được' : ''}} — mở trang <a href=\"/tkb-sua-tay\">Sửa tay</a> để xem/chỉnh RunID {{vueData.runIDMoi}}.",
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

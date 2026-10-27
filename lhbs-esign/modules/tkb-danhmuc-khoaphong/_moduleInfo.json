@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/tkb-danhmuc-khoaphong",
+  "url": "//kyso.lhbs.vn/tkb-danhmuc-khoaphong",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "tkb-danhmuc-khoaphong",
+  "ModuleName": "TKB - Danh mục Khóa phòng dùng chung",
+  "UpdateTime": "2026-09-02 18:09:38",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-09-12",
+  "LoadCount": 12,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

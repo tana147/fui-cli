@@ -1,0 +1,440 @@
+{
+  "data": [
+    {
+      "filterKeyword": ""
+    },
+    {
+      "dsCumTach": []
+    },
+    {
+      "dlForm": false,
+      "addNew": 1
+    },
+    {
+      "form": {
+        "ID": null,
+        "MaCumTach": "",
+        "Khoi": "",
+        "TenCum": "",
+        "GhiChu": "",
+        "LopNguon": [],
+        "NhomCon": []
+      }
+    },
+    {
+      "dsKhoiOptions": [
+        {
+          "text": "Khối 10",
+          "value": "10"
+        },
+        {
+          "text": "Khối 11",
+          "value": "11"
+        },
+        {
+          "text": "Khối 12",
+          "value": "12"
+        }
+      ]
+    },
+    {
+      "dsLopOptions": []
+    },
+    {
+      "fetchCumTach": {
+        "API": "/TkbCumTachList",
+        "IN": {
+          "Keyword": "vueData.filterKeyword"
+        },
+        "OUT": "dsCumTach"
+      }
+    },
+    {
+      "fetchLopOptions": {
+        "API": "/TkbLopList",
+        "IN": {
+          "Khoi": "",
+          "Keyword": ""
+        },
+        "OUT": "dsLopOptions"
+      }
+    },
+    {
+      "saveCumTach": {
+        "API": "/TkbCumTachUpsert",
+        "IN": {
+          "ID": "vueData.form.ID",
+          "MaCumTach": "vueData.form.MaCumTach",
+          "Khoi": "vueData.form.Khoi",
+          "TenCum": "vueData.form.TenCum",
+          "GhiChu": "vueData.form.GhiChu",
+          "LopNguonJson": "JSON.stringify(vueData.form.LopNguon)",
+          "NhomConJson": "JSON.stringify(vueData.form.NhomCon)"
+        },
+        "OUT": "saveCumTachResp",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false;"
+          },
+          {
+            "MESS": "{{vueData.saveCumTachResp.mess}}"
+          },
+          {
+            "CALL": "fetchCumTach"
+          }
+        ]
+      }
+    },
+    {
+      "deleteCumTach": {
+        "CONFIRM": "Xoá cụm tách {{vueData.form.MaCumTach}}? Việc xếp lịch cho các nhóm này sẽ không còn ràng buộc đồng bộ nữa.",
+        "API": "/TkbCumTachDelete/`{{vueData.form.ID}}",
+        "OUT": "deleteCumTachResp",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false;"
+          },
+          {
+            "MESS": "{{vueData.deleteCumTachResp.mess}}"
+          },
+          {
+            "CALL": "fetchCumTach"
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "fetchCumTach"
+    },
+    {
+      "CALL": "fetchLopOptions"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "text-body-2 grey--text text--darken-1 my-2"
+              },
+              "innerHTML": "Cấu hình \"cụm tách nhóm học sinh\" cho THPT — mỗi cụm gồm 1+ Lớp nguồn (lớp thật, cấp học sinh) và 2+ Nhóm con (lớp ảo, vd 11AV1-5 hoặc 11B1/11B2). Khi chạy Auto, mọi nhóm con trong 1 cụm bắt buộc trùng đúng slot với nhau, và lớp nguồn bắt buộc trống đúng lúc đó.",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-text-field",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterKeyword",
+                "label": "Tìm mã cụm / tên cụm",
+                ":required": false
+              },
+              "w": "280"
+            },
+            {
+              "el": "v-spacer",
+              "attr": {},
+              "w": ""
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "my-2",
+                "label": "Thêm cụm tách",
+                "icon-text": "mdi-plus",
+                ":checkvalid": false,
+                "action": [
+                  {
+                    "addNew": 1,
+                    "form": {
+                      "ID": null,
+                      "MaCumTach": "",
+                      "Khoi": "",
+                      "TenCum": "",
+                      "GhiChu": "",
+                      "LopNguon": [],
+                      "NhomCon": []
+                    }
+                  },
+                  {
+                    "dlForm": true
+                  }
+                ]
+              },
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-list",
+              "attr": {
+                "class": "flex-grow-1",
+                "density": "compact"
+              },
+              "w": 12,
+              "innerHTML": [
+                {
+                  "el": "v-list-item",
+                  "attr": {
+                    "v-for": "(ctItem, ctIdx) in vueData.dsCumTach",
+                    ":key": "ctIdx",
+                    "class": "border rounded mb-1",
+                    "prepend-icon": "mdi-account-group-outline",
+                    "v-on:click": "vueData.addNew = 0, vueData.form = {ID: ctItem.ID, MaCumTach: ctItem.MaCumTach, Khoi: ctItem.Khoi, TenCum: ctItem.TenCum, GhiChu: ctItem.GhiChu, LopNguon: ctItem.LopNguonCsv ? ctItem.LopNguonCsv.split(',') : [], NhomCon: ctItem.NhomConCsv ? ctItem.NhomConCsv.split(',') : []}, vueData.dlForm = true",
+                    ":title": "ctItem.MaCumTach + ' — ' + (ctItem.TenCum || '') + ' (Khối ' + ctItem.Khoi + ')'",
+                    ":subtitle": "ctItem.SoLopNguon + ' lớp nguồn · ' + ctItem.SoNhomCon + ' nhóm con' + (ctItem.GhiChu ? ' — ' + ctItem.GhiChu : '')"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "hidden-container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlForm",
+                "width": 600
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Cụm tách nhóm học sinh"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlForm = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "px-4"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "7",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.MaCumTach",
+                                    "label": "Mã cụm tách (vd 11-AV, 11B-CD)",
+                                    ":required": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "5",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.form.Khoi",
+                                    "label": "Khối",
+                                    ":items": "vueData.dsKhoiOptions",
+                                    "item-title": "text",
+                                    "item-value": "value",
+                                    ":required": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.TenCum",
+                                    "label": "Tên cụm (hiển thị)",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.form.LopNguon",
+                                    "label": "Lớp nguồn (lớp thật, cấp học sinh)",
+                                    ":items": "vueData.dsLopOptions",
+                                    "item-title": "MaLop",
+                                    "item-value": "MaLop",
+                                    "multiple": "",
+                                    "chips": "",
+                                    ":closable-chips": true,
+                                    ":required": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.form.NhomCon",
+                                    "label": "Nhóm con (lớp ảo, đồng bộ trùng slot)",
+                                    ":items": "vueData.dsLopOptions",
+                                    "item-title": "MaLop",
+                                    "item-value": "MaLop",
+                                    "multiple": "",
+                                    "chips": "",
+                                    ":closable-chips": true,
+                                    ":required": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-textarea",
+                                  "attr": {
+                                    "v-model": "vueData.form.GhiChu",
+                                    "label": "Ghi chú",
+                                    "rows": 2,
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "color": "warning",
+                            "label": "Xoá",
+                            "icon-text": "mdi-delete",
+                            "v-if": "vueData.addNew == 0",
+                            "action": {
+                              "CALL": "deleteCumTach"
+                            }
+                          }
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "label": "Lưu",
+                            "icon-text": "mdi-content-save",
+                            ":checkvalid": true,
+                            "action": {
+                              "CALL": "saveCumTach"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

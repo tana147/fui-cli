@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/tkb-danhmuc-quytac",
+  "url": "//kyso.lhbs.vn/tkb-danhmuc-quytac",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "tkb-danhmuc-quytac",
+  "ModuleName": "TKB - Danh mục quy tắc xếp lịch",
+  "UpdateTime": "2026-09-02 18:07:45",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-09-11",
+  "LoadCount": 13,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

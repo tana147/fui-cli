@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/wf-admin-signer-directory",
+  "url": "//kyso.lhbs.vn/wf-admin-signer-directory",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "wf-admin-signer-directory",
+  "ModuleName": "wf-admin-signer-directory",
+  "UpdateTime": "2026-07-10 14:57:19",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-10-23",
+  "LoadCount": 246,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

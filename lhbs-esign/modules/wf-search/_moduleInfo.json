@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/wf-search",
+  "url": "//kyso.lhbs.vn/wf-search",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "wf-search",
+  "ModuleName": "search",
+  "UpdateTime": "2026-07-10 14:57:35",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-07-11",
+  "LoadCount": 78,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

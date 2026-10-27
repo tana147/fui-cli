@@ -1,0 +1,79 @@
+/* wf-admission widget styles (from iot-dev imports/wf-shared.css) */
+.wf-admission-widget { border: 1px solid #dfe8df; background: linear-gradient(180deg, #fcfffd 0%, #f8fbf8 100%); }
+.wf-admission-widget__head { align-items: flex-start; gap: 12px; }
+.wf-admission-widget__sub { margin: 4px 0 0; font-size: 12px; color: #5f6b7a; max-width: 720px; }
+.wf-admission-widget__source-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.wf-admission-widget__note { margin: 0 16px 14px; padding: 10px 12px; border-radius: 6px; background: #f3f8ff; border: 1px solid #d7e4f7; font-size: 12px; color: #41556b; }
+.wf-admission-widget__grid { display: grid; grid-template-columns: minmax(320px, 1fr) minmax(420px, 1.2fr); gap: 16px; padding: 0 16px 16px; }
+.wf-admission-widget__panel { background: #ffffff; border: 1px solid #e2e8e2; border-radius: 8px; padding: 14px; min-width: 0; }
+.wf-admission-widget__panel-title { font-size: 13px; font-weight: 700; color: #1f2f3d; margin-bottom: 10px; }
+.wf-admission-widget__caption { font-size: 11px; color: #6b7280; margin-bottom: 10px; }
+.wf-admission-widget__note--inline { margin: 14px 0 0; }
+.wf-admission-real-stat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
+.wf-admission-real-stat { border: 1px solid #e7ece7; border-radius: 8px; padding: 12px; background: #fbfdfb; }
+.wf-admission-real-stat__label { font-size: 11px; color: #5f6b7a; }
+.wf-admission-real-stat__value { font-size: 22px; font-weight: 800; color: #1d4f2f; margin-top: 6px; line-height: 1.15; }
+.wf-admission-real-stat__meta { font-size: 11px; color: #7b8794; margin-top: 6px; }
+.wf-admission-level-list,
+.wf-admission-source-list { display: grid; gap: 10px; }
+.wf-admission-level-item,
+.wf-admission-source-item { border: 1px solid #e7ece7; border-radius: 6px; padding: 10px 12px; background: #fbfdfb; }
+.wf-admission-level-item__top,
+.wf-admission-source-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.wf-admission-level-item__title,
+.wf-admission-source-item__title { font-size: 12px; font-weight: 700; color: #22313d; }
+.wf-admission-level-item__meta,
+.wf-admission-source-item__meta { font-size: 11px; color: #718096; margin-top: 3px; }
+.wf-admission-level-item__value { font-size: 16px; font-weight: 700; color: #217D46; white-space: nowrap; }
+.wf-admission-level-item__bar { width: 100%; height: 8px; border-radius: 999px; background: #edf2f5; margin-top: 8px; overflow: hidden; }
+.wf-admission-level-item__bar-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #217D46 0%, #58ad79 100%); }
+.wf-admission-level-item__share { font-size: 11px; color: #5f6b7a; margin-top: 6px; }
+.wf-admission-feasibility-list,
+.wf-admission-trend-list { display: grid; gap: 10px; }
+.wf-admission-feasibility-item { border: 1px solid #e7ece7; border-radius: 6px; padding: 10px 12px; background: #fbfdfb; }
+.wf-admission-feasibility-item__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.wf-admission-feasibility-item__title { font-size: 12px; font-weight: 700; color: #22313d; }
+.wf-admission-feasibility-item__desc { font-size: 11px; color: #5f6b7a; margin-top: 6px; line-height: 1.5; }
+.wf-admission-trend-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 10px; border-radius: 6px; background: #f7faf8; border: 1px solid #e5ece5; }
+.wf-admission-trend-item__title { font-size: 12px; font-weight: 600; color: #22313d; }
+.wf-admission-trend-item__meta { font-size: 11px; color: #718096; margin-top: 2px; }
+.wf-admission-trend-item__score { font-size: 16px; font-weight: 700; color: #217D46; white-space: nowrap; }
+.wf-admission-heatmap { display: grid; gap: 8px; }
+.wf-admission-heatmap__row { display: grid; grid-template-columns: minmax(150px, 1.2fr) repeat(4, minmax(80px, 1fr)); gap: 8px; }
+.wf-admission-heatmap__row--head { margin-bottom: 2px; }
+.wf-admission-heatmap__district { min-width: 0; padding: 10px 12px; border-radius: 6px; background: #f8fafc; border: 1px solid #e6ebf2; }
+.wf-admission-heatmap__district-name { font-size: 12px; font-weight: 700; color: #22313d; }
+.wf-admission-heatmap__district-note { font-size: 10px; color: #7b8794; margin-top: 3px; }
+.wf-admission-heatmap__cell { display: flex; align-items: center; justify-content: center; min-height: 56px; border-radius: 6px; font-size: 11px; font-weight: 700; border: 1px solid transparent; text-align: center; padding: 6px; }
+.wf-admission-heatmap__cell--head { min-height: 40px; background: #f4f7fb; border-color: #dfe7f1; color: #4a5b70; font-weight: 600; }
+.wf-admission-heatmap__cell--lv1 { background: #eef2f7; border-color: #dde5ef; color: #607285; }
+.wf-admission-heatmap__cell--lv2 { background: #fff4d8; border-color: #f4ddb5; color: #a16910; }
+.wf-admission-heatmap__cell--lv3 { background: #ffe9b8; border-color: #efcf88; color: #8f5d07; }
+.wf-admission-heatmap__cell--lv4 { background: #d9f0de; border-color: #a9d8b5; color: #1f6b3c; }
+.wf-admission-heatmap__cell--lv5 { background: #bfe5ca; border-color: #7fca95; color: #14522a; }
+.wf-admission-widget__legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; font-size: 11px; color: #5f6b7a; }
+.wf-admission-widget__legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.wf-admission-widget__legend-swatch { width: 14px; height: 14px; border-radius: 3px; border: 1px solid transparent; display: inline-block; }
+.wf-admission-widget__legend-swatch.wf-admission-heatmap__cell--lv1,
+.wf-admission-widget__legend-swatch.wf-admission-heatmap__cell--lv3,
+.wf-admission-widget__legend-swatch.wf-admission-heatmap__cell--lv5 { color: transparent; }
+@media (max-width: 768px) {
+.wf-admission-widget__grid,
+    .wf-admission-heatmap__row {
+        grid-template-columns: 1fr;
+    }
+.wf-admission-real-stat-grid {
+        grid-template-columns: 1fr;
+    }
+.wf-admission-widget__source-chips {
+        justify-content: flex-start;
+    }
+.wf-admission-heatmap__cell {
+        min-height: 44px;
+    }
+.wf-admission-level-item__top,
+    .wf-admission-source-item {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

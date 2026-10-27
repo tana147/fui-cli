@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/tkb-sap-tkb",
+  "url": "//kyso.lhbs.vn/tkb-sap-tkb",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "tkb-sap-tkb",
+  "ModuleName": "TKB - Sắp thời khóa biểu",
+  "UpdateTime": "2026-09-02 18:09:38",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-09-12",
+  "LoadCount": 22,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

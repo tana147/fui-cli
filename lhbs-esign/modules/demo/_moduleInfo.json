@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/demo",
+  "url": "//kyso.lhbs.vn/demo",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "demo",
+  "ModuleName": "Demo Page",
+  "UpdateTime": "2026-07-10 14:57:18",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-10-21",
+  "LoadCount": 155,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

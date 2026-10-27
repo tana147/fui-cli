@@ -1,0 +1,105 @@
+[
+  {
+    "name": "https://cdn.jsdelivr.net/npm/@mdi/font@7.3.67/css/materialdesignicons.min.css",
+    "type": ".css",
+    "contentType": "link",
+    "fileID": "52BA448968EE405CA26FD8603CA4C49D",
+    "scope": "project",
+    "sort": 1
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/vuetify@3.4.0/dist/vuetify.min.css",
+    "type": ".css",
+    "contentType": "link",
+    "fileID": "4AED05EF46A944C0BAEFCA3EC3E14C9C",
+    "scope": "project",
+    "sort": 2
+  },
+  {
+    "name": "https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap",
+    "type": ".css",
+    "contentType": "link",
+    "fileID": "7EC598DBB3E542A097E6B75737361FB2",
+    "scope": "project",
+    "sort": 3
+  },
+  {
+    "name": "wf-global-style-css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "C26283E9324740F285660674054E3B07",
+    "scope": "project",
+    "sort": 4,
+    "filePath": "imports/wf-global-style-css-C26283E9324740F285660674054E3B07.css"
+  },
+  {
+    "name": "ks-design-system-css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "2A9F650FADB146D9BDF8A79F0BC9899E",
+    "scope": "project",
+    "sort": 10,
+    "filePath": "imports/ks-design-system-css-2A9F650FADB146D9BDF8A79F0BC9899E.css"
+  },
+  {
+    "name": "ks-signing-detail-css",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "682B5C76EC3749D7A486B64257045951",
+    "scope": "project",
+    "sort": 11,
+    "filePath": "imports/ks-signing-detail-css-682B5C76EC3749D7A486B64257045951.css"
+  },
+  {
+    "name": "https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "CF94A2CF2DBE44C79A01296384CE51B2",
+    "scope": "project",
+    "sort": 5
+  },
+  {
+    "name": "wf-pdf-helper-js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "5E2FA7B8795A4C21AE84C26E472A9835",
+    "scope": "project",
+    "sort": 6,
+    "filePath": "imports/wf-pdf-helper-js-5E2FA7B8795A4C21AE84C26E472A9835.js"
+  },
+  {
+    "name": "wf-helpers-js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "68B8D48F056945D58496BE765118DAAB",
+    "scope": "project",
+    "sort": 7,
+    "filePath": "imports/wf-helpers-js-68B8D48F056945D58496BE765118DAAB.js"
+  },
+  {
+    "name": "https://cdn.jsdelivr.net/npm/sortablejs@1.15.7/Sortable.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "473125F5FED449B5BD9B65225B44FC5E",
+    "scope": "project",
+    "sort": 20
+  },
+  {
+    "name": "wf-formula-js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "4208719905AC4082A06F788212189092",
+    "scope": "project",
+    "sort": 20,
+    "filePath": "imports/wf-formula-js-4208719905AC4082A06F788212189092.js"
+  },
+  {
+    "name": "global-util-js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "WF001",
+    "scope": "project",
+    "sort": 8,
+    "filePath": "imports/global-util-js-WF001.js"
+  }
+]

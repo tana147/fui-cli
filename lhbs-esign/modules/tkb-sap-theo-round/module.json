@@ -1,0 +1,4457 @@
+{
+  "data": [
+    {
+      "tuanOptions": [],
+      "khoiOptions": [
+        {
+          "text": "Khối 1",
+          "value": "01"
+        },
+        {
+          "text": "Khối 2",
+          "value": "02"
+        },
+        {
+          "text": "Khối 3",
+          "value": "03"
+        },
+        {
+          "text": "Khối 4",
+          "value": "04"
+        },
+        {
+          "text": "Khối 5",
+          "value": "05"
+        },
+        {
+          "text": "Khối 6",
+          "value": "06"
+        },
+        {
+          "text": "Khối 7",
+          "value": "07"
+        },
+        {
+          "text": "Khối 8",
+          "value": "08"
+        },
+        {
+          "text": "Khối 9",
+          "value": "09"
+        },
+        {
+          "text": "Khối 10",
+          "value": "10"
+        },
+        {
+          "text": "Khối 11",
+          "value": "11"
+        },
+        {
+          "text": "Khối 12",
+          "value": "12"
+        }
+      ]
+    },
+    {
+      "selectedTuan": null,
+      "selectedKhoi": []
+    },
+    {
+      "step": 1,
+      "runID": null
+    },
+    {
+      "runIDNhap": null,
+      "runIDInfo": {}
+    },
+    {
+      "nhanBanResp": {}
+    },
+    {
+      "round1": {},
+      "round7": {},
+      "round8": {},
+      "round8Poll": {},
+      "round8Stage": 0
+    },
+    {
+      "round1_5": {},
+      "round1_5Poll": {},
+      "round1_5Done": false,
+      "round1_5Infeasible": false,
+      "round1_5Loi": ""
+    },
+    {
+      "round1_6": {},
+      "round1_6Poll": {},
+      "round1_6Done": false,
+      "round1_6Infeasible": false,
+      "round1_6Loi": ""
+    },
+    {
+      "dsChiTiet": []
+    },
+    {
+      "pollTick": 0,
+      "dangPoll": ""
+    },
+    {
+      "goThoTopN": 20,
+      "goThoResult": []
+    },
+    {
+      "dsGVRound7": []
+    },
+    {
+      "dsMonOptions": [],
+      "dsGVOptions": [],
+      "dsPhongOptions": []
+    },
+    {
+      "dlThem": false,
+      "formThem": {
+        "ID": null,
+        "MaLop": "",
+        "MaMon": "",
+        "MaGV": "",
+        "MaPhong": "",
+        "Thu": 2,
+        "Buoi": "Sang",
+        "Tiet": 1
+      },
+      "doiTietID1": null,
+      "doiTietID2": null,
+      "doiTietTrigger": 0,
+      "chuyenTietID": null,
+      "chuyenTietThu": null,
+      "chuyenTietBuoi": "",
+      "chuyenTietTiet": null,
+      "chuyenTietTrigger": 0,
+      "toggleKhoaGridTrigger": 0
+    },
+    {
+      "thuOptions": [
+        {
+          "text": "Thứ 2",
+          "value": 2
+        },
+        {
+          "text": "Thứ 3",
+          "value": 3
+        },
+        {
+          "text": "Thứ 4",
+          "value": 4
+        },
+        {
+          "text": "Thứ 5",
+          "value": 5
+        },
+        {
+          "text": "Thứ 6",
+          "value": 6
+        },
+        {
+          "text": "Thứ 7",
+          "value": 7
+        }
+      ]
+    },
+    {
+      "buoiOptionsThem": [
+        {
+          "text": "Sáng",
+          "value": "Sang"
+        },
+        {
+          "text": "Chiều",
+          "value": "Chieu"
+        }
+      ]
+    },
+    {
+      "dsLopOptions": [],
+      "filterLopView": "",
+      "dsLichGrid": [],
+      "toggleKhoaGridID": null
+    },
+    {
+      "dsChanDoan": []
+    },
+    {
+      "fixedThuCols": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "fixedSlots": [
+        {
+          "Buoi": "Sang",
+          "Tiet": 1
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 2
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 3
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 4
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 5
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 1
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 2
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 3
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 4
+        }
+      ]
+    },
+    {
+      "fetchLopOptions": {
+        "API": "/TkbKetQuaXepLopList",
+        "IN": {
+          "RunID": "vueData.runID"
+        },
+        "OUT": "dsLopOptions",
+        "CALLBACK": [
+          {
+            "IF": "!vueData.filterLopView && vueData.dsLopOptions && vueData.dsLopOptions.length > 0",
+            "THEN": [
+              {
+                "EXE": "vueData.filterLopView = vueData.dsLopOptions[0].MaLop;"
+              },
+              {
+                "CALL": "xemLuoiLop"
+              },
+              {
+                "CALL": "fetchDinhMucLop"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "xemLuoiLop": {
+        "EXE": "vueData.dsLichGrid = vueData.dsChiTiet.filter(function(r){ return r.MaLop === vueData.filterLopView; });"
+      }
+    },
+    {
+      "xemChanDoanLop": {
+        "IF": "true",
+        "THEN": [
+          {
+            "EXE": "vueData.filterLopView = vueData.xemChanDoanLopMaLop;"
+          },
+          {
+            "CALL": "xemLuoiLop"
+          },
+          {
+            "CALL": "fetchDinhMucLop"
+          }
+        ]
+      }
+    },
+    {
+      "toggleKhoaAdmin": {
+        "API": "/TkbKetQuaXepToggleKhoa",
+        "IN": {
+          "ID": "vueData.toggleKhoaAdminID"
+        },
+        "CALLBACK": [
+          {
+            "CALL": "fetchChiTiet"
+          }
+        ]
+      }
+    },
+    {
+      "xemDinhMucGV": {
+        "API": "/TkbDinhMucChiTiet",
+        "IN": {
+          "RunID": "vueData.runID",
+          "MaGV": "vueData.xemDinhMucGVMaGV",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": "dsDinhMuc",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dinhMucTieuDe = 'Định mức GV: ' + vueData.xemDinhMucGVTenGV; vueData.dlDinhMuc = true;"
+          }
+        ]
+      }
+    },
+    {
+      "fetchChanDoan": {
+        "API": "/TkbChayAutoKhongXepDuocChiTiet",
+        "IN": {
+          "RunID": "vueData.runID"
+        },
+        "OUT": "dsChanDoan",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsChanDoan = (vueData.dsChanDoan || []).map(function(x){ x.NhanNguyenNhan = x.NguyenNhan === 'TrungLichCoDinh' ? 'Trùng lịch cố định' : (x.NguyenNhan === 'LopHetCho' ? 'Lớp hết chỗ' : (x.NguyenNhan === 'GVHetCho' ? 'GV hết chỗ' : 'Chưa rõ nguyên nhân')); return x; });"
+          }
+        ]
+      }
+    },
+    {
+      "toggleKhoaGrid": {
+        "API": "/TkbKetQuaXepToggleKhoa",
+        "IN": {
+          "ID": "vueData.toggleKhoaGridID"
+        },
+        "CALLBACK": [
+          {
+            "CALL": "fetchChiTiet"
+          }
+        ]
+      }
+    },
+    {
+      "fetchMonOptions": {
+        "API": "/TkbMonHocList",
+        "IN": {
+          "Keyword": ""
+        },
+        "OUT": "dsMonOptions"
+      }
+    },
+    {
+      "fetchGVOptions": {
+        "API": "/TkbGiaoVienList",
+        "IN": {
+          "Keyword": "",
+          "ChiThinhGiang": 0
+        },
+        "OUT": "dsGVOptions"
+      }
+    },
+    {
+      "fetchPhongOptions": {
+        "API": "/TkbPhongHocList",
+        "IN": {
+          "Keyword": ""
+        },
+        "OUT": "dsPhongOptions"
+      }
+    },
+    {
+      "themTietTuDo": {
+        "API": "/TkbKetQuaXepThemTuDo",
+        "IN": {
+          "RunID": "vueData.runID",
+          "MaLop": "vueData.formThem.MaLop",
+          "MaMon": "vueData.formThem.MaMon",
+          "MaGV": "vueData.formThem.MaGV",
+          "MaPhong": "vueData.formThem.MaPhong",
+          "Thu": "vueData.formThem.Thu",
+          "Buoi": "vueData.formThem.Buoi",
+          "Tiet": "vueData.formThem.Tiet"
+        },
+        "OUT": {
+          "themTietResp": "data[0]"
+        },
+        "CALLBACK": [
+          {
+            "MESS": "{{themTietResp.Message}}"
+          },
+          {
+            "IF": "themTietResp.Success",
+            "THEN": [
+              {
+                "dlThem": false
+              },
+              {
+                "CALL": "fetchChiTiet"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "suaTietTuGrid": {
+        "API": "/TkbKetQuaXepSuaTiet",
+        "IN": {
+          "ID": "vueData.formThem.ID",
+          "MaMon": "vueData.formThem.MaMon",
+          "MaGV": "vueData.formThem.MaGV",
+          "MaPhong": "vueData.formThem.MaPhong"
+        },
+        "OUT": {
+          "suaTietResp": "data[0]"
+        },
+        "CALLBACK": [
+          {
+            "MESS": "{{suaTietResp.Message}}"
+          },
+          {
+            "IF": "suaTietResp.Success",
+            "THEN": [
+              {
+                "dlThem": false
+              },
+              {
+                "CALL": "fetchChiTiet"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "xoaTietTuGrid": {
+        "CONFIRM": "Gỡ tiết này ra khỏi lịch?",
+        "API": "/TkbKetQuaXepGoTiet",
+        "IN": {
+          "ID": "vueData.formThem.ID"
+        },
+        "OUT": {
+          "xoaTietResp": "data[0]"
+        },
+        "CALLBACK": [
+          {
+            "MESS": "{{xoaTietResp.Message}}"
+          },
+          {
+            "IF": "xoaTietResp.Success",
+            "THEN": [
+              {
+                "dlThem": false
+              },
+              {
+                "CALL": "fetchChiTiet"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "doiTiet": {
+        "API": "/TkbKetQuaXepDoiTiet",
+        "IN": {
+          "ID1": "vueData.doiTietID1",
+          "ID2": "vueData.doiTietID2",
+          "ChoPhepKhacLop": 1
+        },
+        "OUT": {
+          "doiTietResp": "data[0]"
+        },
+        "CALLBACK": [
+          {
+            "MESS": "{{doiTietResp.Message}}"
+          },
+          {
+            "IF": "doiTietResp.Success",
+            "THEN": {
+              "CALL": "fetchChiTiet"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "chuyenTiet": {
+        "API": "/TkbKetQuaXepChuyenTiet",
+        "IN": {
+          "ID": "vueData.chuyenTietID",
+          "Thu": "vueData.chuyenTietThu",
+          "Buoi": "vueData.chuyenTietBuoi",
+          "Tiet": "vueData.chuyenTietTiet"
+        },
+        "OUT": {
+          "chuyenTietResp": "data[0]"
+        },
+        "CALLBACK": [
+          {
+            "MESS": "{{chuyenTietResp.Message}}"
+          },
+          {
+            "IF": "chuyenTietResp.Success",
+            "THEN": {
+              "CALL": "fetchChiTiet"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fetchTuan": {
+        "API": "/TkbTuanList",
+        "IN": {
+          "NamHoc": ""
+        },
+        "OUT": "tuanOptions"
+      }
+    },
+    {
+      "fetchChiTiet": {
+        "API": "/TkbKetQuaXepList",
+        "IN": {
+          "RunID": "vueData.runID"
+        },
+        "OUT": "dsChiTiet",
+        "CALLBACK": [
+          {
+            "CALL": "fetchLopOptions"
+          },
+          {
+            "IF": "vueData.filterLopView",
+            "THEN": [
+              {
+                "CALL": "xemLuoiLop"
+              },
+              {
+                "CALL": "fetchDinhMucLop"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "napLaiRunID": {
+        "API": "/TkbRunIDThongTin",
+        "IN": {
+          "RunID": "vueData.runIDNhap"
+        },
+        "OUT": {
+          "runIDInfo": "data[0]"
+        },
+        "CALLBACK": [
+          {
+            "IF": "!vueData.runIDInfo || !vueData.runIDInfo.TonTai",
+            "THEN": {
+              "MESS": "Không tìm thấy RunID này."
+            },
+            "ELSE": [
+              {
+                "EXE": "vueData.runID = vueData.runIDInfo.RunID; vueData.selectedKhoi = (vueData.runIDInfo.Khoi || '').split(',').filter(function(x){return x;}); vueData.selectedTuan = vueData.runIDInfo.TuanHienTai; vueData.step = 2; vueData.round2Done = false; vueData.round2Loi = ''; vueData.round2Infeasible = false; vueData.dangCascadeReload = true; vueData._cascadeStepStart = Date.now(); vueData.autoChay = true;"
+              },
+              {
+                "CALL": "kiemTraRound1Stats"
+              },
+              {
+                "CALL": "fetchChiTiet"
+              },
+              {
+                "CALL": "batDauRound2"
+              },
+              {
+                "MESS": "Đã nạp lại RunID {{vueData.runID}} — tự động chạy tiếp từ chỗ dở dang cho đến hết Round 9 (Round nào đã xong trước đó sẽ báo Hoàn tất ngay, không giải lại). Tắt công tắc 'Tự động chạy' nếu muốn tự bấm tay từng Round."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "nhanBanRunID": {
+        "CONFIRM": "Tạo 1 RunID mới sao chép toàn bộ tiến trình hiện tại của RunID {{vueData.runID}} để thử nghiệm (Round 9/10, đổi tham số...) mà không đụng đến bản gốc. Tiếp tục?",
+        "API": "/TkbNhanBanRunID",
+        "IN": {
+          "RunID": "vueData.runID"
+        },
+        "OUT": {
+          "nhanBanResp": "data[0]"
+        },
+        "CALLBACK": [
+          {
+            "IF": "vueData.nhanBanResp && vueData.nhanBanResp.TrangThai === 'HoanTat'",
+            "THEN": [
+              {
+                "MESS": "Đã nhân bản RunID {{vueData.runID}} → RunID mới {{vueData.nhanBanResp.RunIDMoi}} ({{vueData.nhanBanResp.SoTiet}} tiết). Bản gốc không đổi — đang chuyển sang làm việc trên bản mới để thử nghiệm."
+              },
+              {
+                "EXE": "vueData.runIDNhap = vueData.nhanBanResp.RunIDMoi;"
+              },
+              {
+                "CALL": "napLaiRunID"
+              }
+            ],
+            "ELSE": {
+              "MESS": "Không nhân bản được — RunID {{vueData.runID}} không tồn tại."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "batDauRound1": {
+        "API": "/TkbRound1_KhoaCung",
+        "IN": {
+          "Khoi": "vueData.selectedKhoi.join(',')",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": {
+          "round1": "data[0]"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.runID = vueData.round1.RunID;"
+          },
+          {
+            "step": 2
+          },
+          {
+            "CALL": "fetchChiTiet"
+          }
+        ]
+      },
+      "kiemTraRound1Stats": {
+        "API": "/TkbRound1_KhoaCung",
+        "IN": {
+          "Khoi": "vueData.selectedKhoi.join(',')",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan",
+          "RunID": "vueData.runID"
+        },
+        "OUT": {
+          "round1": "data[0]"
+        }
+      }
+    },
+    {
+      "batDauRound1_5": {
+        "API": "/TkbRound1_5_GiaiCumTach",
+        "IN": {
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan",
+          "MaxSecs": 1200,
+          "RunID": "vueData.runID"
+        },
+        "OUT": {
+          "batDauRound1_5Resp": "data[0]"
+        },
+        "ERROROUT": {},
+        "ERRORCALLBACK": {
+          "EXE": "vueData.round1_5Loi = 'LoiKetNoi';"
+        },
+        "CALLBACK": [
+          {
+            "IF": "batDauRound1_5Resp && batDauRound1_5Resp.TrangThai && batDauRound1_5Resp.TrangThai !== 'DangChay'",
+            "THEN": {
+              "EXE": "vueData.round1_5Loi = batDauRound1_5Resp.TrangThai; vueData.round1_5Infeasible = (batDauRound1_5Resp.TrangThai === 'Infeasible');"
+            },
+            "ELSE": {
+              "EXE": "vueData.round1_5Loi = ''; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round1_5'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kiemTraRound1_5": {
+        "API": "/TkbChayAutoTrangThai",
+        "IN": {
+          "RunID": "vueData.runID",
+          "XoayTroMacDinh": 0
+        },
+        "OUT": {
+          "round1_5Poll": "data[0]"
+        },
+        "CALLBACK": [
+          {
+            "CALL": "kiemTraRound1_5Stats"
+          },
+          {
+            "IF": "vueData.round1_5Poll && vueData.round1_5Poll.TrangThai && vueData.round1_5Poll.TrangThai !== 'DangChay'",
+            "THEN": [
+              {
+                "EXE": "vueData.round1_5Infeasible = (vueData.round1_5Poll.KhaThi === false); window.clearInterval(vueData._pollTimer); vueData.dangPoll = '';"
+              },
+              {
+                "IF": "vueData.round1_5Poll.KhaThi !== false",
+                "THEN": [
+                  {
+                    "API": "/TkbKhoaKetQuaKhoi1012",
+                    "IN": {
+                      "RunID": "vueData.runID"
+                    }
+                  },
+                  {
+                    "EXE": "vueData.round1_5Done = true;"
+                  },
+                  {
+                    "CALL": "fetchChiTiet"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "kiemTraRound1_5Stats": {
+        "API": "/TkbRoundThongKe",
+        "IN": {
+          "RunID": "vueData.runID",
+          "Khoi": "vueData.selectedKhoi.join(',')",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": {
+          "round1_5": "data[0]"
+        }
+      }
+    },
+    {
+      "batDauRound1_6": {
+        "API": "/TkbRound1_6_TietDoi",
+        "IN": {
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan",
+          "MaxSecs": 600,
+          "RunID": "vueData.runID"
+        },
+        "OUT": {
+          "batDauRound1_6Resp": "data[0]"
+        },
+        "ERROROUT": {},
+        "ERRORCALLBACK": {
+          "EXE": "vueData.round1_6Loi = 'LoiKetNoi';"
+        },
+        "CALLBACK": [
+          {
+            "IF": "batDauRound1_6Resp && batDauRound1_6Resp.TrangThai && batDauRound1_6Resp.TrangThai !== 'DangChay'",
+            "THEN": {
+              "EXE": "vueData.round1_6Loi = batDauRound1_6Resp.TrangThai; vueData.round1_6Infeasible = (batDauRound1_6Resp.TrangThai === 'Infeasible');"
+            },
+            "ELSE": {
+              "EXE": "vueData.round1_6Loi = ''; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round1_6'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kiemTraRound1_6": {
+        "API": "/TkbChayAutoTrangThai",
+        "IN": {
+          "RunID": "vueData.runID",
+          "XoayTroMacDinh": 0
+        },
+        "OUT": {
+          "round1_6Poll": "data[0]"
+        },
+        "CALLBACK": [
+          {
+            "CALL": "kiemTraRound1_6Stats"
+          },
+          {
+            "IF": "vueData.round1_6Poll && vueData.round1_6Poll.TrangThai && vueData.round1_6Poll.TrangThai !== 'DangChay'",
+            "THEN": [
+              {
+                "EXE": "vueData.round1_6Infeasible = (vueData.round1_6Poll.KhaThi === false); window.clearInterval(vueData._pollTimer); vueData.dangPoll = '';"
+              },
+              {
+                "IF": "vueData.round1_6Poll.KhaThi !== false",
+                "THEN": [
+                  {
+                    "API": "/TkbKhoaKetQuaTietDoiCap12",
+                    "IN": {
+                      "RunID": "vueData.runID"
+                    }
+                  },
+                  {
+                    "EXE": "vueData.round1_6Done = true;"
+                  },
+                  {
+                    "CALL": "fetchChiTiet"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "kiemTraRound1_6Stats": {
+        "API": "/TkbRoundThongKe",
+        "IN": {
+          "RunID": "vueData.runID",
+          "Khoi": "'01,02,03,04,05,06,07,08,09'",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": {
+          "round1_6": "data[0]"
+        }
+      }
+    },
+    {
+      "batDauRound7": {
+        "API": "/TkbRound7_DoKhanHiem",
+        "IN": {
+          "Khoi": "vueData.selectedKhoi.join(',')",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan",
+          "RunID": "vueData.runID",
+          "ChayRound4": 0,
+          "MaxSecsPerGV": 10,
+          "MaxSecsPerGVToiDa": 40,
+          "SoGVMoiLan": 1
+        },
+        "ERROROUT": {},
+        "ERRORCALLBACK": {},
+        "CALLBACK": [
+          {
+            "CALL": "fetchDanhSachGV"
+          },
+          {
+            "CALL": "kiemTraTiepTucRound7"
+          }
+        ]
+      }
+    },
+    {
+      "kiemTraTiepTucRound7": {
+        "API": "/TkbRoundThongKe",
+        "IN": {
+          "RunID": "vueData.runID",
+          "Khoi": "vueData.selectedKhoi.join(',')",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": {
+          "round7": "data[0]"
+        },
+        "CALLBACK": [
+          {
+            "IF": "vueData.round7.TrangThaiRunID === 'DungSauRound2'",
+            "THEN": [
+              {
+                "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = '';"
+              },
+              {
+                "step": 3
+              },
+              {
+                "CALL": "fetchChiTiet"
+              }
+            ],
+            "ELSE": {
+              "CALL": "batDauRound7"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fetchDanhSachGV": {
+        "API": "/TkbXepDoKhanHiemDanhSach",
+        "IN": {
+          "RunID": "vueData.runID",
+          "Khoi": "vueData.selectedKhoi.join(',')",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": "dsGVRound7",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsGVRound7 = (vueData.dsGVRound7 || []).map(function(x){ x.RowClass = x.TrangThai === 'DangXuLy' ? 'bg-green-lighten-3 font-weight-bold' : (x.TrangThai === 'DaXong' ? 'text-grey' : (x.TrangThai === 'ChoRound4' ? 'text-grey-lighten-1' : '')); return x; });"
+          }
+        ]
+      }
+    },
+    {
+      "traoCoRound7": {
+        "EXE": "window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round7'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+      }
+    },
+    {
+      "kiemTraRound7": {
+        "API": "/TkbRoundThongKe",
+        "IN": {
+          "RunID": "vueData.runID",
+          "Khoi": "vueData.selectedKhoi.join(',')",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": {
+          "round7": "data[0]"
+        },
+        "CALLBACK": [
+          {
+            "IF": "vueData.round7.TrangThaiRunID === 'DungSauRound2'",
+            "THEN": [
+              {
+                "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = '';"
+              },
+              {
+                "step": 3
+              },
+              {
+                "CALL": "fetchChiTiet"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "kiemTraRound8Stats": {
+        "API": "/TkbRoundThongKe",
+        "IN": {
+          "RunID": "vueData.runID",
+          "Khoi": "vueData.selectedKhoi.join(',')",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": {
+          "round8": "data[0]"
+        },
+        "CALLBACK": []
+      }
+    },
+    {
+      "goThoTheoXoayTro": {
+        "CONFIRM": "Sẽ gỡ tối đa {{goThoTopN}} tiết có XoayTrở cao nhất (đã xác minh còn chỗ trống thật) để xếp lại. Tiếp tục?",
+        "API": "/TkbGoThoTheoXoayTro",
+        "IN": {
+          "RunID": "vueData.runID",
+          "TopN": "vueData.goThoTopN"
+        },
+        "OUT": "goThoResult",
+        "CALLBACK": [
+          {
+            "MESS": "Đã xử lý — xem bảng kết quả bên dưới"
+          },
+          {
+            "CALL": "fetchChiTiet"
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "fetchTuan"
+    },
+    {
+      "CALL": "fetchMonOptions"
+    },
+    {
+      "CALL": "fetchGVOptions"
+    },
+    {
+      "CALL": "fetchPhongOptions"
+    },
+    {
+      "initVisibilityRecheck": {
+        "EXE": "tkbSetupVisibilityRecheck()"
+      }
+    },
+    {
+      "CALL": "initVisibilityRecheck"
+    },
+    {
+      "dlDinhMuc": false,
+      "dsDinhMuc": [],
+      "dinhMucTieuDe": "",
+      "xemDinhMucGVMaGV": null,
+      "xemDinhMucGVTenGV": "",
+      "xemDinhMucGVTrigger": 0,
+      "xemChanDoanLopMaLop": "",
+      "xemChanDoanLopTrigger": 0,
+      "toggleKhoaAdminID": null,
+      "toggleKhoaAdminTrigger": 0,
+      "dsDinhMucLop": [],
+      "filterKhoiXemLop": ""
+    },
+    {
+      "fetchDinhMucLop": {
+        "API": "/TkbDinhMucChiTiet",
+        "IN": {
+          "RunID": "vueData.runID",
+          "MaLop": "vueData.filterLopView",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": "dsDinhMucLop"
+      }
+    },
+    {
+      "fetchDinhMucKhoi": {
+        "API": "/TkbDinhMucChiTiet",
+        "IN": {
+          "RunID": "vueData.runID",
+          "Khoi": "vueData.filterKhoiXemLop",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": "dsDinhMucLop"
+      }
+    },
+    {
+      "round2": {},
+      "round2Poll": {},
+      "round2Done": false,
+      "round2Infeasible": false,
+      "round2Loi": "",
+      "round4": {},
+      "round4Poll": {},
+      "round4Done": false,
+      "round4Infeasible": false,
+      "round4Loi": "",
+      "round3": {},
+      "round3Poll": {},
+      "round3Done": false,
+      "round3Infeasible": false,
+      "round3Loi": ""
+    },
+    {
+      "batDauRound2": {
+        "API": "/TkbRound2_CumTach",
+        "IN": {
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan",
+          "MaxSecs": 600,
+          "RunID": "vueData.runID"
+        },
+        "OUT": {
+          "batDauRound2Resp": "data[0]"
+        },
+        "ERROROUT": {},
+        "ERRORCALLBACK": {
+          "EXE": "vueData.round2Loi = 'LoiKetNoi';"
+        },
+        "CALLBACK": [
+          {
+            "IF": "batDauRound2Resp && batDauRound2Resp.TrangThai === 'KhongCoNhuCau'",
+            "THEN": [
+              {
+                "EXE": "vueData.round2Loi = ''; vueData.round2Infeasible = false; vueData.round2Done = true; window.clearInterval(vueData._pollTimer); vueData.dangPoll = '';"
+              },
+              {
+                "CALL": "kiemTraRound2Stats"
+              }
+            ],
+            "ELSE": {
+              "IF": "batDauRound2Resp && batDauRound2Resp.TrangThai && batDauRound2Resp.TrangThai !== 'DangChay'",
+              "THEN": {
+                "EXE": "vueData.round2Loi = batDauRound2Resp.TrangThai; vueData.round2Infeasible = (batDauRound2Resp.TrangThai === 'Infeasible');"
+              },
+              "ELSE": {
+                "EXE": "vueData.round2Loi = ''; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round2'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "batDauRound3": {
+        "API": "/TkbRound3_TietDoiCap3",
+        "IN": {
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan",
+          "RunID": "vueData.runID",
+          "MaxSecsPerGV": 15,
+          "SoGVMoiLan": 1
+        },
+        "OUT": {
+          "round3Chunk": "data[0]"
+        },
+        "ERROROUT": {},
+        "ERRORCALLBACK": {
+          "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round3Loi = 'LoiKetNoi';"
+        },
+        "CALLBACK": [
+          {
+            "IF": "vueData.round3Chunk && vueData.round3Chunk.TrangThaiCuoiCung === 'HoanTat'",
+            "THEN": [
+              {
+                "EXE": "vueData.round3LoiCount = 0;"
+              },
+              {
+                "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round3Done = true; vueData.round3Loi = ''; vueData.round3SoKhongDuCho = (vueData.round3Chunk && vueData.round3Chunk.SoGVKhongDuCho) || 0;"
+              },
+              {
+                "CALL": "kiemTraRound3Stats"
+              },
+              {
+                "CALL": "fetchChiTiet"
+              }
+            ],
+            "ELSE": {
+              "IF": "vueData.round3Chunk && vueData.round3Chunk.TrangThaiCuoiCung === 'ConTiepTuc'",
+              "THEN": [
+                {
+                  "EXE": "vueData.round3LoiCount = 0;"
+                },
+                {
+                  "EXE": "vueData.round3SoKhongDuCho = (vueData.round3Chunk && vueData.round3Chunk.SoGVKhongDuCho) || 0;"
+                },
+                {
+                  "CALL": "kiemTraRound3Stats"
+                },
+                {
+                  "CALL": "batDauRound3"
+                }
+              ],
+              "ELSE": {
+                "IF": "(vueData.round3LoiCount || 0) < 20",
+                "THEN": [
+                  {
+                    "EXE": "vueData.round3LoiCount = (vueData.round3LoiCount || 0) + 1; window.setTimeout(function(){ vueData.round3RetryTrigger = (vueData.round3RetryTrigger || 0) + 1; }, 1200);"
+                  }
+                ],
+                "ELSE": {
+                  "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round3Loi = (vueData.round3Chunk && vueData.round3Chunk.ThongBao) || 'Không xác định được trạng thái trả về';"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kiemTraRound2": {
+        "API": "/TkbChayAutoTrangThai",
+        "IN": {
+          "RunID": "vueData.runID",
+          "XoayTroMacDinh": 0
+        },
+        "OUT": {
+          "round2Poll": "data[0]"
+        },
+        "CALLBACK": [
+          {
+            "CALL": "kiemTraRound2Stats"
+          },
+          {
+            "IF": "vueData.round2Poll && vueData.round2Poll.TrangThai && vueData.round2Poll.TrangThai !== 'DangChay'",
+            "THEN": [
+              {
+                "EXE": "vueData.round2Infeasible = (vueData.round2Poll.KhaThi === false); window.clearInterval(vueData._pollTimer); vueData.dangPoll = '';"
+              },
+              {
+                "IF": "vueData.round2Poll.KhaThi !== false",
+                "THEN": [
+                  {
+                    "API": "/TkbKhoaKetQuaKhoi1012",
+                    "IN": {
+                      "RunID": "vueData.runID"
+                    }
+                  },
+                  {
+                    "EXE": "vueData.round2Done = true;"
+                  },
+                  {
+                    "CALL": "fetchChiTiet"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "kiemTraRound2Stats": {
+        "API": "/TkbRoundThongKe",
+        "IN": {
+          "RunID": "vueData.runID",
+          "Khoi": "vueData.selectedKhoi.join(',')",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": {
+          "round2": "data[0]"
+        }
+      }
+    },
+    {
+      "kiemTraRound3Stats": {
+        "API": "/TkbRoundThongKe",
+        "IN": {
+          "RunID": "vueData.runID",
+          "Khoi": "vueData.selectedKhoi.join(',')",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": {
+          "round3": "data[0]"
+        }
+      }
+    },
+    {
+      "batDauRound4": {
+        "API": "/TkbRound4_LopThuongCap3",
+        "IN": {
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan",
+          "RunID": "vueData.runID",
+          "MaxSecsPerLop": 20,
+          "SoLopMoiLan": 1
+        },
+        "OUT": {
+          "round4Chunk": "data[0]"
+        },
+        "ERROROUT": {},
+        "ERRORCALLBACK": {
+          "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round4Loi = 'LoiKetNoi';"
+        },
+        "CALLBACK": [
+          {
+            "IF": "vueData.round4Chunk && vueData.round4Chunk.TrangThaiCuoiCung === 'HoanTat'",
+            "THEN": [
+              {
+                "EXE": "vueData.round4LoiCount = 0;"
+              },
+              {
+                "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round4Done = true; vueData.round4Loi = ''; vueData.round4SoKhongDuCho = (vueData.round4Chunk && vueData.round4Chunk.SoGVKhongDuCho) || 0;"
+              },
+              {
+                "CALL": "kiemTraRound4Stats"
+              },
+              {
+                "CALL": "fetchChiTiet"
+              }
+            ],
+            "ELSE": {
+              "IF": "vueData.round4Chunk && vueData.round4Chunk.TrangThaiCuoiCung === 'ConTiepTuc'",
+              "THEN": [
+                {
+                  "EXE": "vueData.round4LoiCount = 0;"
+                },
+                {
+                  "EXE": "vueData.round4SoKhongDuCho = (vueData.round4Chunk && vueData.round4Chunk.SoGVKhongDuCho) || 0;"
+                },
+                {
+                  "CALL": "kiemTraRound4Stats"
+                },
+                {
+                  "CALL": "batDauRound4"
+                }
+              ],
+              "ELSE": {
+                "IF": "(vueData.round4LoiCount || 0) < 20",
+                "THEN": [
+                  {
+                    "EXE": "vueData.round4LoiCount = (vueData.round4LoiCount || 0) + 1; window.setTimeout(function(){ vueData.round4RetryTrigger = (vueData.round4RetryTrigger || 0) + 1; }, 1200);"
+                  }
+                ],
+                "ELSE": {
+                  "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round4Loi = (vueData.round4Chunk && vueData.round4Chunk.ThongBao) || 'Không xác định được trạng thái trả về';"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kiemTraRound4Stats": {
+        "API": "/TkbRoundThongKe",
+        "IN": {
+          "RunID": "vueData.runID",
+          "Khoi": "vueData.selectedKhoi.join(',')",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": {
+          "round4": "data[0]"
+        }
+      }
+    },
+    {
+      "round5": {},
+      "round5Poll": {},
+      "round5Done": false,
+      "round5Infeasible": false,
+      "round5Loi": "",
+      "round6": {},
+      "round6Poll": {},
+      "round6Done": false,
+      "round6Infeasible": false,
+      "round6Loi": ""
+    },
+    {
+      "batDauRound5": {
+        "API": "/TkbRound5_TietDoiCap2",
+        "IN": {
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan",
+          "RunID": "vueData.runID",
+          "MaxSecsPerGV": 15,
+          "SoGVMoiLan": 1
+        },
+        "OUT": {
+          "round5Chunk": "data[0]"
+        },
+        "ERROROUT": {},
+        "ERRORCALLBACK": {
+          "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round5Loi = 'LoiKetNoi';"
+        },
+        "CALLBACK": [
+          {
+            "IF": "vueData.round5Chunk && vueData.round5Chunk.TrangThaiCuoiCung === 'HoanTat'",
+            "THEN": [
+              {
+                "EXE": "vueData.round5LoiCount = 0;"
+              },
+              {
+                "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round5Done = true; vueData.round5Loi = ''; vueData.round5SoKhongDuCho = (vueData.round5Chunk && vueData.round5Chunk.SoGVKhongDuCho) || 0;"
+              },
+              {
+                "CALL": "kiemTraRound5Stats"
+              },
+              {
+                "CALL": "fetchChiTiet"
+              }
+            ],
+            "ELSE": {
+              "IF": "vueData.round5Chunk && vueData.round5Chunk.TrangThaiCuoiCung === 'ConTiepTuc'",
+              "THEN": [
+                {
+                  "EXE": "vueData.round5LoiCount = 0;"
+                },
+                {
+                  "EXE": "vueData.round5SoKhongDuCho = (vueData.round5Chunk && vueData.round5Chunk.SoGVKhongDuCho) || 0;"
+                },
+                {
+                  "CALL": "kiemTraRound5Stats"
+                },
+                {
+                  "CALL": "batDauRound5"
+                }
+              ],
+              "ELSE": {
+                "IF": "(vueData.round5LoiCount || 0) < 20",
+                "THEN": [
+                  {
+                    "EXE": "vueData.round5LoiCount = (vueData.round5LoiCount || 0) + 1; window.setTimeout(function(){ vueData.round5RetryTrigger = (vueData.round5RetryTrigger || 0) + 1; }, 1200);"
+                  }
+                ],
+                "ELSE": {
+                  "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round5Loi = (vueData.round5Chunk && vueData.round5Chunk.ThongBao) || 'Không xác định được trạng thái trả về';"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kiemTraRound5Stats": {
+        "API": "/TkbRoundThongKe",
+        "IN": {
+          "RunID": "vueData.runID",
+          "Khoi": "`06,07,08,09",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": {
+          "round5": "data[0]"
+        }
+      }
+    },
+    {
+      "batDauRound6": {
+        "API": "/TkbRound6_TieuHocChung",
+        "IN": {
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan",
+          "MaxSecs": 420,
+          "RunID": "vueData.runID"
+        },
+        "OUT": {
+          "batDauRound6Resp": "data[0]"
+        },
+        "ERROROUT": {},
+        "ERRORCALLBACK": {
+          "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round6Loi = 'LoiKetNoi';"
+        },
+        "CALLBACK": [
+          {
+            "IF": "batDauRound6Resp && batDauRound6Resp.TrangThai === 'KhongCoNhuCau'",
+            "THEN": [
+              {
+                "EXE": "vueData.round6Loi = ''; vueData.round6Infeasible = false; vueData.round6Done = true; window.clearInterval(vueData._pollTimer); vueData.dangPoll = '';"
+              },
+              {
+                "CALL": "kiemTraRound6Stats"
+              },
+              {
+                "CALL": "fetchChiTiet"
+              }
+            ],
+            "ELSE": {
+              "IF": "batDauRound6Resp && batDauRound6Resp.TrangThai && batDauRound6Resp.TrangThai !== 'DangChay'",
+              "THEN": {
+                "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round6Loi = batDauRound6Resp.TrangThai; vueData.round6Infeasible = (batDauRound6Resp.TrangThai === 'Infeasible');"
+              },
+              "ELSE": {
+                "EXE": "vueData.round6Loi = ''; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round6'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kiemTraRound6": {
+        "API": "/TkbChayAutoTrangThai",
+        "IN": {
+          "RunID": "vueData.runID",
+          "XoayTroMacDinh": 0
+        },
+        "OUT": {
+          "round6Poll": "data[0]"
+        },
+        "CALLBACK": [
+          {
+            "CALL": "kiemTraRound6Stats"
+          },
+          {
+            "IF": "vueData.round6Poll && vueData.round6Poll.TrangThai && vueData.round6Poll.TrangThai !== 'DangChay'",
+            "THEN": [
+              {
+                "EXE": "vueData.round6Infeasible = (vueData.round6Poll.KhaThi === false); window.clearInterval(vueData._pollTimer); vueData.dangPoll = '';"
+              },
+              {
+                "IF": "vueData.round6Poll.KhaThi !== false",
+                "THEN": [
+                  {
+                    "EXE": "vueData.round6Done = true;"
+                  },
+                  {
+                    "CALL": "fetchChiTiet"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "kiemTraRound6Stats": {
+        "API": "/TkbRoundThongKe",
+        "IN": {
+          "RunID": "vueData.runID",
+          "Khoi": "`01,02,03,04,05",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": {
+          "round6": "data[0]"
+        }
+      }
+    },
+    {
+      "batDauRound8": {
+        "API": "/TkbRound8_PhanConLai",
+        "IN": {
+          "RunID": "vueData.runID",
+          "HocKy": "`HK1",
+          "KhoiLoc": "`06,07,08,09",
+          "MaxSecsPerLop": 20,
+          "SoLopMoiLan": 1
+        },
+        "OUT": {
+          "round8Chunk": "data[0]"
+        },
+        "ERROROUT": {},
+        "ERRORCALLBACK": {
+          "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round8Loi = 'LoiKetNoi';"
+        },
+        "CALLBACK": [
+          {
+            "IF": "vueData.round8Chunk && vueData.round8Chunk.TrangThaiCuoiCung === 'HoanTat'",
+            "THEN": [
+              {
+                "EXE": "vueData.round8LoiCount = 0;"
+              },
+              {
+                "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round8Done = true; vueData.round8Loi = ''; vueData.step = 4;"
+              },
+              {
+                "CALL": "kiemTraRound8Stats"
+              },
+              {
+                "CALL": "fetchChiTiet"
+              }
+            ],
+            "ELSE": {
+              "IF": "vueData.round8Chunk && vueData.round8Chunk.TrangThaiCuoiCung === 'ConTiepTuc'",
+              "THEN": [
+                {
+                  "EXE": "vueData.round8LoiCount = 0;"
+                },
+                {
+                  "CALL": "kiemTraRound8Stats"
+                },
+                {
+                  "CALL": "batDauRound8"
+                }
+              ],
+              "ELSE": {
+                "IF": "(vueData.round8LoiCount || 0) < 20",
+                "THEN": [
+                  {
+                    "EXE": "vueData.round8LoiCount = (vueData.round8LoiCount || 0) + 1; window.setTimeout(function(){ vueData.round8RetryTrigger = (vueData.round8RetryTrigger || 0) + 1; }, 1200);"
+                  }
+                ],
+                "ELSE": {
+                  "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round8Loi = (vueData.round8Chunk && vueData.round8Chunk.ThongBao) || 'Không xác định được trạng thái trả về';"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "batDauRound9": {
+        "API": "/TkbRound9_SuaOCuoi",
+        "IN": {
+          "RunID": "vueData.runID",
+          "HocKy": "`HK1",
+          "MaxSecsPerNhom": 45,
+          "SoNhomMoiLan": 1,
+          "SoLopXungDot": "vueData.round9SoLopXungDot || 4",
+          "KhoiLoc": "01,02,03,04,05,06,07,08,09,10,11,12"
+        },
+        "OUT": {
+          "round9Chunk": "data[0]"
+        },
+        "ERROROUT": {},
+        "ERRORCALLBACK": {
+          "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round9Loi = 'LoiKetNoi';"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.round9TongCaiThien = (vueData.round9TongCaiThien || 0) + ((vueData.round9Chunk && vueData.round9Chunk.SoNhomCaiThien) || 0); vueData.round9TongTietThem = (vueData.round9TongTietThem || 0) + ((vueData.round9Chunk && vueData.round9Chunk.SoTietThem) || 0); vueData.round9SoNhomDaXu = (vueData.round9SoNhomDaXu || 0) + 1;"
+          },
+          {
+            "IF": "vueData.round9Chunk && vueData.round9Chunk.TrangThaiCuoiCung === 'HoanTat'",
+            "THEN": [
+              {
+                "EXE": "window.clearInterval(vueData._pollTimer); vueData.dangPoll = ''; vueData.round9Done = true; vueData.round9Loi = ''; vueData.step = 5;"
+              },
+              {
+                "CALL": "fetchChiTiet"
+              }
+            ],
+            "ELSE": {
+              "CALL": "batDauRound9"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "round3Chunk": {},
+      "round3SoKhongDuCho": 0,
+      "round4Chunk": {},
+      "round4SoKhongDuCho": 0,
+      "round5Chunk": {},
+      "round5SoKhongDuCho": 0,
+      "round6Chunk": {},
+      "round6SoKhongDuCho": 0,
+      "round8Chunk": {},
+      "round8Done": false,
+      "round8Loi": "",
+      "round9": {},
+      "round9Chunk": {},
+      "round9Loi": "",
+      "round9Done": false,
+      "round9TongCaiThien": 0,
+      "round9TongTietThem": 0,
+      "round9SoNhomDaXu": 0
+    },
+    {
+      "round9SoLopXungDot": 4
+    },
+    {
+      "round3LoiCount": 0
+    },
+    {
+      "round4LoiCount": 0
+    },
+    {
+      "round5LoiCount": 0
+    },
+    {
+      "round6LoiCount": 0
+    },
+    {
+      "round8LoiCount": 0
+    },
+    {
+      "round3RetryTrigger": 0
+    },
+    {
+      "round4RetryTrigger": 0
+    },
+    {
+      "round5RetryTrigger": 0
+    },
+    {
+      "round6RetryTrigger": 0
+    },
+    {
+      "round8RetryTrigger": 0
+    },
+    {
+      "dangCascadeReload": false,
+      "_cascadeStepStart": 0
+    },
+    {
+      "autoChay": false
+    },
+    {
+      "danhGiaKhoi": []
+    },
+    {
+      "danhGiaThieu": []
+    },
+    {
+      "danhGiaLichSu": []
+    },
+    {
+      "danhGiaMoc": ""
+    },
+    {
+      "danhGiaRun": {
+        "API": "/TkbDanhGiaRun",
+        "IN": {
+          "RunID": "vueData.runID",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan",
+          "Moc": "vueData.danhGiaMoc"
+        },
+        "OUT": "danhGiaKhoi",
+        "CALLBACK": [
+          {
+            "CALL": "goiDanhGiaThieu"
+          },
+          {
+            "CALL": "goiDanhGiaLichSu"
+          }
+        ]
+      }
+    },
+    {
+      "goiDanhGiaThieu": {
+        "API": "/TkbDanhGiaThieu",
+        "IN": {
+          "RunID": "vueData.runID",
+          "HocKy": "`HK1",
+          "TuanHienTai": "vueData.selectedTuan"
+        },
+        "OUT": "danhGiaThieu"
+      }
+    },
+    {
+      "goiDanhGiaLichSu": {
+        "API": "/TkbDanhGiaLichSu",
+        "IN": {
+          "RunID": "vueData.runID"
+        },
+        "OUT": "danhGiaLichSu"
+      }
+    },
+    {
+      "danhGiaTuDong": {
+        "EXE": "vueData.danhGiaMoc = vueData.round9Done ? 'R9' : (vueData.round8Done ? 'R8' : (vueData.step >= 3 ? 'R7' : (vueData.round6Done ? 'R6' : (vueData.round5Done ? 'R5' : (vueData.round4Done ? 'R4' : (vueData.round3Done ? 'R3' : (vueData.round2Done ? 'R2' : 'R1')))))));"
+      }
+    }
+  ],
+  "watch": {
+    "doiTietTrigger": {
+      "CALL": "doiTiet"
+    },
+    "chuyenTietTrigger": {
+      "CALL": "chuyenTiet"
+    },
+    "toggleKhoaGridTrigger": {
+      "CALL": "toggleKhoaGrid"
+    },
+    "xemDinhMucGVTrigger": {
+      "CALL": "xemDinhMucGV"
+    },
+    "xemChanDoanLopTrigger": {
+      "CALL": "xemChanDoanLop"
+    },
+    "pollTick": {
+      "IF": "dangPoll === 'round7'",
+      "THEN": {
+        "CALL": "kiemTraRound7"
+      },
+      "ELSE": {
+        "IF": "dangPoll === 'round1_5'",
+        "THEN": {
+          "CALL": "kiemTraRound1_5"
+        },
+        "ELSE": {
+          "IF": "dangPoll === 'round1_6'",
+          "THEN": {
+            "CALL": "kiemTraRound1_6"
+          },
+          "ELSE": {
+            "IF": "dangPoll === 'round2'",
+            "THEN": {
+              "CALL": "kiemTraRound2"
+            },
+            "ELSE": {
+              "IF": "dangPoll === 'round6'",
+              "THEN": {
+                "CALL": "kiemTraRound6"
+              }
+            }
+          }
+        }
+      }
+    },
+    "round3RetryTrigger": {
+      "CALL": "batDauRound3"
+    },
+    "round4RetryTrigger": {
+      "CALL": "batDauRound4"
+    },
+    "round5RetryTrigger": {
+      "CALL": "batDauRound5"
+    },
+    "round6RetryTrigger": {
+      "CALL": "batDauRound6"
+    },
+    "round8RetryTrigger": {
+      "CALL": "batDauRound8"
+    },
+    "round2Done": {
+      "IF": "vueData.dangCascadeReload && vueData.round2Done && (Date.now() - (vueData._cascadeStepStart || 0)) < 4500",
+      "THEN": [
+        {
+          "EXE": "vueData._cascadeStepStart = Date.now();"
+        },
+        {
+          "EXE": "vueData.round3Loi = ''; vueData.round3Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round3'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+        },
+        {
+          "CALL": "batDauRound3"
+        }
+      ],
+      "ELSE": {
+        "IF": "vueData.dangCascadeReload",
+        "THEN": [
+          {
+            "EXE": "vueData.dangCascadeReload = false;"
+          },
+          {
+            "IF": "vueData.autoChay && vueData.round2Done && vueData.dangPoll !== 'round3'",
+            "THEN": [
+              {
+                "CALL": "danhGiaTuDong"
+              },
+              {
+                "CALL": "danhGiaRun"
+              },
+              {
+                "EXE": "vueData.round3Loi = ''; vueData.round3Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round3'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+              },
+              {
+                "CALL": "batDauRound3"
+              }
+            ]
+          }
+        ],
+        "ELSE": {
+          "IF": "vueData.autoChay && vueData.round2Done && vueData.dangPoll !== 'round3'",
+          "THEN": [
+            {
+              "CALL": "danhGiaTuDong"
+            },
+            {
+              "CALL": "danhGiaRun"
+            },
+            {
+              "EXE": "vueData.round3Loi = ''; vueData.round3Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round3'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+            },
+            {
+              "CALL": "batDauRound3"
+            }
+          ]
+        }
+      }
+    },
+    "round3Done": {
+      "IF": "vueData.dangCascadeReload && vueData.round3Done && (Date.now() - (vueData._cascadeStepStart || 0)) < 4500",
+      "THEN": [
+        {
+          "EXE": "vueData._cascadeStepStart = Date.now();"
+        },
+        {
+          "EXE": "vueData.round4Loi = ''; vueData.round4Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round4'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+        },
+        {
+          "CALL": "batDauRound4"
+        }
+      ],
+      "ELSE": {
+        "IF": "vueData.dangCascadeReload",
+        "THEN": [
+          {
+            "EXE": "vueData.dangCascadeReload = false;"
+          },
+          {
+            "IF": "vueData.autoChay && vueData.round3Done && vueData.dangPoll !== 'round4'",
+            "THEN": [
+              {
+                "CALL": "danhGiaTuDong"
+              },
+              {
+                "CALL": "danhGiaRun"
+              },
+              {
+                "EXE": "vueData.round4Loi = ''; vueData.round4Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round4'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+              },
+              {
+                "CALL": "batDauRound4"
+              }
+            ]
+          }
+        ],
+        "ELSE": {
+          "IF": "vueData.autoChay && vueData.round3Done && vueData.dangPoll !== 'round4'",
+          "THEN": [
+            {
+              "CALL": "danhGiaTuDong"
+            },
+            {
+              "CALL": "danhGiaRun"
+            },
+            {
+              "EXE": "vueData.round4Loi = ''; vueData.round4Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round4'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+            },
+            {
+              "CALL": "batDauRound4"
+            }
+          ]
+        }
+      }
+    },
+    "round4Done": {
+      "IF": "vueData.dangCascadeReload && vueData.round4Done && (Date.now() - (vueData._cascadeStepStart || 0)) < 4500",
+      "THEN": [
+        {
+          "EXE": "vueData._cascadeStepStart = Date.now();"
+        },
+        {
+          "EXE": "vueData.round5Loi = ''; vueData.round5Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round5'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+        },
+        {
+          "CALL": "batDauRound5"
+        }
+      ],
+      "ELSE": {
+        "IF": "vueData.dangCascadeReload",
+        "THEN": [
+          {
+            "EXE": "vueData.dangCascadeReload = false;"
+          },
+          {
+            "IF": "vueData.autoChay && vueData.round4Done && vueData.dangPoll !== 'round5'",
+            "THEN": [
+              {
+                "CALL": "danhGiaTuDong"
+              },
+              {
+                "CALL": "danhGiaRun"
+              },
+              {
+                "EXE": "vueData.round5Loi = ''; vueData.round5Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round5'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+              },
+              {
+                "CALL": "batDauRound5"
+              }
+            ]
+          }
+        ],
+        "ELSE": {
+          "IF": "vueData.autoChay && vueData.round4Done && vueData.dangPoll !== 'round5'",
+          "THEN": [
+            {
+              "CALL": "danhGiaTuDong"
+            },
+            {
+              "CALL": "danhGiaRun"
+            },
+            {
+              "EXE": "vueData.round5Loi = ''; vueData.round5Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round5'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+            },
+            {
+              "CALL": "batDauRound5"
+            }
+          ]
+        }
+      }
+    },
+    "round5Done": {
+      "IF": "vueData.dangCascadeReload && vueData.round5Done",
+      "THEN": [
+        {
+          "EXE": "vueData.dangCascadeReload = false;"
+        },
+        {
+          "IF": "vueData.autoChay && vueData.round5Done && vueData.dangPoll !== 'round6'",
+          "THEN": [
+            {
+              "CALL": "danhGiaTuDong"
+            },
+            {
+              "CALL": "danhGiaRun"
+            },
+            {
+              "EXE": "vueData.round6Loi = ''; vueData.round6Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round6'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+            },
+            {
+              "CALL": "batDauRound6"
+            }
+          ]
+        }
+      ],
+      "ELSE": {
+        "IF": "vueData.autoChay && vueData.round5Done && vueData.dangPoll !== 'round6'",
+        "THEN": [
+          {
+            "CALL": "danhGiaTuDong"
+          },
+          {
+            "CALL": "danhGiaRun"
+          },
+          {
+            "EXE": "vueData.round6Loi = ''; vueData.round6Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round6'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+          },
+          {
+            "CALL": "batDauRound6"
+          }
+        ]
+      }
+    },
+    "round6Done": {
+      "IF": "vueData.dangCascadeReload && vueData.round6Done",
+      "THEN": [
+        {
+          "EXE": "vueData.dangCascadeReload = false;"
+        },
+        {
+          "IF": "vueData.autoChay && vueData.round6Done && vueData.dangPoll !== 'round7'",
+          "THEN": [
+            {
+              "CALL": "danhGiaTuDong"
+            },
+            {
+              "CALL": "danhGiaRun"
+            },
+            {
+              "CALL": "batDauRound7"
+            },
+            {
+              "CALL": "traoCoRound7"
+            }
+          ]
+        }
+      ],
+      "ELSE": {
+        "IF": "vueData.autoChay && vueData.round6Done && vueData.dangPoll !== 'round7'",
+        "THEN": [
+          {
+            "CALL": "danhGiaTuDong"
+          },
+          {
+            "CALL": "danhGiaRun"
+          },
+          {
+            "CALL": "batDauRound7"
+          },
+          {
+            "CALL": "traoCoRound7"
+          }
+        ]
+      }
+    },
+    "step": {
+      "IF": "vueData.autoChay && vueData.step === 2 && !vueData.round2Done && vueData.dangPoll !== 'round2'",
+      "THEN": [
+        {
+          "CALL": "danhGiaTuDong"
+        },
+        {
+          "CALL": "danhGiaRun"
+        },
+        {
+          "CALL": "batDauRound2"
+        }
+      ],
+      "ELSE": {
+        "IF": "vueData.autoChay && vueData.step === 3 && !vueData.round8Done && vueData.dangPoll !== 'round8'",
+        "THEN": [
+          {
+            "CALL": "danhGiaTuDong"
+          },
+          {
+            "CALL": "danhGiaRun"
+          },
+          {
+            "EXE": "vueData.round8Loi = ''; vueData.round8Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round8'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+          },
+          {
+            "CALL": "batDauRound8"
+          }
+        ],
+        "ELSE": {
+          "IF": "vueData.autoChay && vueData.step === 4 && !vueData.round9Done && vueData.dangPoll !== 'round9'",
+          "THEN": [
+            {
+              "CALL": "danhGiaTuDong"
+            },
+            {
+              "CALL": "danhGiaRun"
+            },
+            {
+              "EXE": "vueData.round9Loi = ''; vueData.round9Done = false; vueData.round9TongCaiThien = 0; vueData.round9TongTietThem = 0; vueData.round9SoNhomDaXu = 0; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round9'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+            },
+            {
+              "CALL": "batDauRound9"
+            }
+          ],
+          "ELSE": {
+            "IF": "vueData.autoChay && vueData.step === 5",
+            "THEN": [
+              {
+                "CALL": "danhGiaTuDong"
+              },
+              {
+                "CALL": "danhGiaRun"
+              },
+              {
+                "EXE": "vueData.autoChay = false;"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "text-body-2 grey--text text--darken-1 my-2"
+              },
+              "innerHTML": "Xếp thời khóa biểu theo từng Round, có thể dừng lại kiểm tra: R1 khóa cứng SH/HĐTN1/chào cờ → R2 cụm tách khối 10–12 → R3 tiết đôi khối 10–12 → R4 lớp thường khối 10–12 → R5 tiết đôi khối 6–9 → R6 giải chung toàn bộ tiểu học → R7 xếp theo độ khan hiếm GV → R8 phần còn lại khối 6–9 → R9 sửa ô cuối toàn trường. Xem % tiết đã xếp và bảng chi tiết ở mỗi bước.",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "text-caption"
+              },
+              "innerHTML": [
+                {
+                  "el": "v-row",
+                  "attr": {
+                    "no-gutters": "",
+                    "dense": "",
+                    "class": "mb-1",
+                    "align": "center"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-col",
+                      "attr": {
+                        "cols": 5
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-text-field",
+                          "attr": {
+                            "v-model.number": "vueData.runIDNhap",
+                            "label": "Nạp lại RunID đã chạy trước đó (vd sau khi refresh trang mất state)",
+                            "type": "number",
+                            ":clearable": true,
+                            "density": "compact",
+                            "hide-details": "auto"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-col",
+                      "attr": {
+                        "cols": 2
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "label": "Nạp",
+                            "icon-text": "mdi-reload",
+                            ":checkvalid": false,
+                            ":disabled": "!vueData.runIDNhap",
+                            "action": {
+                              "CALL": "napLaiRunID"
+                            },
+                            "size": "small"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "el": "v-row",
+                  "attr": {
+                    "no-gutters": "",
+                    "dense": "",
+                    "class": "mb-2"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-col",
+                      "attr": {
+                        "cols": 12
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "label": "Nhân bản RunID (thử nghiệm)",
+                            "icon-text": "mdi-content-copy",
+                            ":checkvalid": false,
+                            ":disabled": "!vueData.runID",
+                            ":block": "true",
+                            "action": {
+                              "CALL": "nhanBanRunID"
+                            },
+                            "size": "small"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "mb-1"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-select",
+                      "attr": {
+                        "v-model": "vueData.selectedTuan",
+                        "label": "Tuần",
+                        ":items": "vueData.tuanOptions",
+                        "item-title": "TenTuan",
+                        "item-value": "TuanTrongNam",
+                        ":disabled": "vueData.step > 1",
+                        "density": "compact",
+                        "hide-details": "auto"
+                      }
+                    },
+                    {
+                      "el": "v-select",
+                      "attr": {
+                        "v-model": "vueData.selectedKhoi",
+                        "label": "Khối (bỏ trống = toàn trường)",
+                        ":items": "vueData.khoiOptions",
+                        "item-title": "text",
+                        "item-value": "value",
+                        ":multiple": true,
+                        ":chips": true,
+                        ":disabled": "vueData.step > 1",
+                        "density": "compact",
+                        "hide-details": "auto"
+                      }
+                    },
+                    {
+                      "el": "v-switch",
+                      "attr": {
+                        "v-model": "vueData.autoChay",
+                        "label": "Tự động chạy liên tục Round 1 → 9 (dừng khi có lỗi)",
+                        "color": "primary",
+                        "density": "compact",
+                        "hide-details": "auto",
+                        ":disabled": "vueData.step >= 5"
+                      }
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-caption text-medium-emphasis mb-1"
+                      },
+                      "innerHTML": "Bật công tắc rồi bấm \"Bắt đầu Round 1\": hệ thống tự chạy tiếp các Round kế tiếp, dừng lại khi có Round lỗi hoặc không giải được (có nút Thử lại). Tắt công tắc bất cứ lúc nào để chuyển sang bấm tay từng Round."
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Bắt đầu Round 1",
+                        "icon-text": "mdi-play",
+                        "v-if": "vueData.step === 1",
+                        ":checkvalid": false,
+                        "action": {
+                          "CALL": "batDauRound1"
+                        },
+                        "size": "small"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "v-if": "vueData.runID",
+                    "outlined": "",
+                    "class": "pa-2 mb-1"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-caption font-weight-medium mb-1"
+                      },
+                      "innerHTML": "RunID {{runID}} — tiến trình"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "d-flex"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-chip",
+                          "attr": {
+                            "size": "small",
+                            ":color": "vueData.step >= 2 ? 'success' : 'grey'",
+                            "variant": "flat",
+                            "class": "mr-1"
+                          },
+                          "innerHTML": "1"
+                        },
+                        {
+                          "el": "v-chip",
+                          "attr": {
+                            "size": "small",
+                            ":color": "vueData.dangPoll === 'round2' ? 'primary' : (vueData.round2Loi ? 'error' : (vueData.round2Done ? 'success' : 'grey'))",
+                            "variant": "flat",
+                            "class": "mr-1"
+                          },
+                          "innerHTML": "2"
+                        },
+                        {
+                          "el": "v-chip",
+                          "attr": {
+                            "size": "small",
+                            ":color": "vueData.dangPoll === 'round3' ? 'primary' : (vueData.round3Loi ? 'error' : (vueData.round3Done ? 'success' : 'grey'))",
+                            "variant": "flat",
+                            "class": "mr-1"
+                          },
+                          "innerHTML": "3"
+                        },
+                        {
+                          "el": "v-chip",
+                          "attr": {
+                            "size": "small",
+                            ":color": "vueData.dangPoll === 'round4' ? 'primary' : (vueData.round4Loi ? 'error' : (vueData.round4Done ? 'success' : 'grey'))",
+                            "variant": "flat",
+                            "class": "mr-1"
+                          },
+                          "innerHTML": "4"
+                        },
+                        {
+                          "el": "v-chip",
+                          "attr": {
+                            "size": "small",
+                            ":color": "vueData.dangPoll === 'round5' ? 'primary' : (vueData.round5Loi ? 'error' : (vueData.round5Done ? 'success' : 'grey'))",
+                            "variant": "flat",
+                            "class": "mr-1"
+                          },
+                          "innerHTML": "5"
+                        },
+                        {
+                          "el": "v-chip",
+                          "attr": {
+                            "size": "small",
+                            ":color": "vueData.dangPoll === 'round6' ? 'primary' : (vueData.round6Loi ? 'error' : (vueData.round6Done ? 'success' : 'grey'))",
+                            "variant": "flat",
+                            "class": "mr-1"
+                          },
+                          "innerHTML": "6"
+                        },
+                        {
+                          "el": "v-chip",
+                          "attr": {
+                            "size": "small",
+                            ":color": "vueData.dangPoll === 'round7' ? 'primary' : (vueData.step >= 3 ? 'success' : 'grey')",
+                            "variant": "flat",
+                            "class": "mr-1"
+                          },
+                          "innerHTML": "7"
+                        },
+                        {
+                          "el": "v-chip",
+                          "attr": {
+                            "size": "small",
+                            ":color": "vueData.dangPoll === 'round8' ? 'primary' : (vueData.round8Loi ? 'error' : (vueData.step >= 4 ? 'success' : 'grey'))",
+                            "variant": "flat",
+                            "class": "mr-1"
+                          },
+                          "innerHTML": "8"
+                        },
+                        {
+                          "el": "v-chip",
+                          "attr": {
+                            "size": "small",
+                            ":color": "vueData.dangPoll === 'round9' ? 'primary' : (vueData.round9Loi ? 'error' : (vueData.round9Done ? 'success' : 'grey'))",
+                            "variant": "flat"
+                          },
+                          "innerHTML": "9"
+                        }
+                      ]
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-caption mt-1"
+                      },
+                      "innerHTML": "{{ vueData.dangPoll ? '⟳ Round ' + vueData.dangPoll.replace('round','') + ' đang chạy...' : (vueData.round9Loi ? '⚠ Round 9 lỗi: ' + vueData.round9Loi : (vueData.round8Loi ? '⚠ Round 8 lỗi: ' + vueData.round8Loi : (vueData.round6Loi ? '⚠ Round 6 lỗi: ' + vueData.round6Loi : (vueData.round5Loi ? '⚠ Round 5 lỗi: ' + vueData.round5Loi : (vueData.round4Loi ? '⚠ Round 4 lỗi: ' + vueData.round4Loi : (vueData.round3Loi ? '⚠ Round 3 lỗi: ' + vueData.round3Loi : (vueData.round2Loi ? '⚠ Round 2 lỗi: ' + vueData.round2Loi : (vueData.round9Done ? '✓ Hoàn tất pipeline' : (vueData.step >= 4 ? 'Sẵn sàng Round 9' : (vueData.round6Done ? 'Sẵn sàng Round 7' : (vueData.round5Done ? 'Sẵn sàng Round 6' : (vueData.round4Done ? 'Sẵn sàng Round 5' : (vueData.round3Done ? 'Sẵn sàng Round 4' : (vueData.round2Done ? 'Sẵn sàng Round 3' : 'Sẵn sàng Round 2')))))))))))))) }}"
+                    }
+                  ]
+                },
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "v-if": "vueData.step >= 2",
+                    "outlined": "",
+                    "class": "pa-2"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-subtitle-1 font-weight-medium"
+                      },
+                      "innerHTML": "Round 1 — Khóa cứng (SH, HĐTN1/chào cờ)"
+                    },
+                    {
+                      "el": "div",
+                      "innerHTML": "Đã khóa {{round1.SoTietDaKhoa}} / {{round1.TongSoTiet}} tiết ({{round1.PhanTramDaKhoa}}%)",
+                      "attr": {}
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Bắt đầu Round 2",
+                        "icon-text": "mdi-arrow-right",
+                        "class": "mt-2",
+                        "v-if": "vueData.step === 2 && !vueData.round2Done && !vueData.round2Infeasible && vueData.dangPoll !== 'round2'",
+                        ":checkvalid": false,
+                        "action": {
+                          "CALL": "batDauRound2"
+                        },
+                        "size": "small"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "v-if": "vueData.step >= 2 && (vueData.dangPoll === 'round2' || vueData.round2Done || vueData.round2Infeasible || vueData.round2Loi)",
+                    "outlined": "",
+                    "class": "pa-2"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-subtitle-1 font-weight-medium"
+                      },
+                      "innerHTML": "Round 2 — Giải cụm tách AV/chuyên đề + R23/R24 (khối 10-12)"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round2Loi",
+                        "class": "text-error font-weight-medium"
+                      },
+                      "innerHTML": "⚠️ LỖI GỌI SOLVER ({{vueData.round2Loi}}) — server có thể đang bận/tạm ngưng. Không có tiết nào được khóa ở bước này. Bấm \"Thử lại 1.5a\" sau khi kiểm tra server đã sẵn sàng."
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.dangPoll === 'round2'",
+                        "class": "text-caption"
+                      },
+                      "innerHTML": "Đang chạy... {{Math.floor(vueData.pollTick * 6 / 60)}} phút {{(vueData.pollTick * 6) % 60}} giây (chỉ giải phần cụm tách, thường nhanh hơn Round 1.5 gộp cũ)"
+                    },
+                    {
+                      "el": "v-progress-linear",
+                      "attr": {
+                        "v-if": "vueData.dangPoll === 'round2'",
+                        ":indeterminate": "true",
+                        "height": "18",
+                        "color": "primary",
+                        "class": "my-1"
+                      }
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round2Done"
+                      },
+                      "innerHTML": "Đã giải xong và khóa cứng cụm tách: {{round2.SoTietDaXep}} / {{round2.TongSoTiet}} tiết ({{round2.PhanTramDaXep}}%) — {{round2.SoNhomKhongXepDuoc}} nhóm chưa xếp được"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round2Infeasible",
+                        "class": "text-error font-weight-medium"
+                      },
+                      "innerHTML": "❌ KHÔNG TÌM ĐƯỢC lời giải xếp đủ 100% cụm tách (Infeasible). Không có tiết nào được khóa. Có thể thử lại với thời gian dài hơn."
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        ":label": "'Vá lại phần dư (' + (round2.SoNhomKhongXepDuoc || 0) + ' nhóm)'",
+                        "icon-text": "mdi-puzzle-edit-outline",
+                        "class": "mt-2 mr-2",
+                        "color": "warning",
+                        "v-if": "vueData.round2Done && vueData.round2.SoNhomKhongXepDuoc > 0",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round2Done = false; vueData.round2Infeasible = false;"
+                          },
+                          {
+                            "CALL": "batDauRound2"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Thử lại 1.5a",
+                        "icon-text": "mdi-reload",
+                        "class": "mt-2",
+                        "color": "error",
+                        "v-if": "vueData.round2Infeasible || vueData.round2Loi",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round2Infeasible = false; vueData.round2Loi = '';"
+                          },
+                          {
+                            "CALL": "batDauRound2"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Bắt đầu Round 3",
+                        "icon-text": "mdi-arrow-right",
+                        "class": "mt-2",
+                        "color": "primary",
+                        "v-if": "vueData.round2Done && !vueData.round3Done && !vueData.round3Infeasible && vueData.dangPoll !== 'round3'",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round3Loi = ''; vueData.round3Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round3'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound3"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "v-if": "vueData.step >= 2 && (vueData.dangPoll === 'round3' || vueData.round3Done || vueData.round3Infeasible || vueData.round3Loi)",
+                    "outlined": "",
+                    "class": "pa-2"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-subtitle-1 font-weight-medium"
+                      },
+                      "innerHTML": "Round 3 — Tiết đôi khối 10-12 (khóa từng GV, GV khó xếp nhất trước)"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round3Loi",
+                        "class": "text-error font-weight-medium"
+                      },
+                      "innerHTML": "⚠️ LỖI GỌI SOLVER ({{vueData.round3Loi}}) — server có thể đang bận/tạm ngưng. Việc đã xử lý trước đó vẫn được giữ (đã khóa cứng từng GV). Bấm \"Thử lại Round 3\" để tiếp tục."
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.dangPoll === 'round3'",
+                        "class": "text-caption"
+                      },
+                      "innerHTML": "Đang chạy... {{Math.floor(vueData.pollTick * 6 / 60)}} phút {{(vueData.pollTick * 6) % 60}} giây — còn {{vueData.round3Chunk && vueData.round3Chunk.SoGVConLai}} GV, xử lý từng GV một nên có thể chậm nhưng an toàn khi mất kết nối (bấm Thử lại sẽ tiếp tục đúng chỗ dừng)"
+                    },
+                    {
+                      "el": "v-progress-linear",
+                      "attr": {
+                        "v-if": "vueData.dangPoll === 'round3'",
+                        ":indeterminate": "true",
+                        "height": "18",
+                        "color": "primary",
+                        "class": "my-1"
+                      }
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round3Done"
+                      },
+                      "innerHTML": "Đã giải xong và khóa cứng tiết đôi: {{round3.SoTietDaXep}} / {{round3.TongSoTiet}} tiết ({{round3.PhanTramDaXep}}%) — {{round3.SoNhomKhongXepDuoc}} nhóm chưa xếp được"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round3Infeasible",
+                        "class": "text-error font-weight-medium"
+                      },
+                      "innerHTML": "❌ KHÔNG TÌM ĐƯỢC lời giải xếp đủ 100% tiết đôi (Infeasible). Không có tiết nào được khóa. Có thể thử lại với thời gian dài hơn."
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        ":label": "'Vá lại phần dư (' + (round3.SoNhomKhongXepDuoc || 0) + ' nhóm)'",
+                        "icon-text": "mdi-puzzle-edit-outline",
+                        "class": "mt-2 mr-2",
+                        "color": "warning",
+                        "v-if": "vueData.round3Done && vueData.round3.SoNhomKhongXepDuoc > 0",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round3Done = false;"
+                          },
+                          {
+                            "EXE": "vueData.round3Loi = ''; vueData.round3Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round3'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound3"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Thử lại Round 3",
+                        "icon-text": "mdi-reload",
+                        "class": "mt-2",
+                        "color": "error",
+                        "v-if": "vueData.round3Infeasible || vueData.round3Loi",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round3Loi = ''; vueData.round3Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round3'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound3"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Bắt đầu Round 4",
+                        "icon-text": "mdi-arrow-right",
+                        "class": "mt-2",
+                        "color": "primary",
+                        "v-if": "vueData.round3Done && !vueData.round4Done && !vueData.round4Infeasible && vueData.dangPoll !== 'round4'",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round4Loi = ''; vueData.round4Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round4'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound4"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "v-if": "vueData.round3Done && (vueData.dangPoll === 'round4' || vueData.round4Done || vueData.round4Infeasible || vueData.round4Loi)",
+                    "outlined": "",
+                    "class": "pa-2"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-subtitle-1 font-weight-medium"
+                      },
+                      "innerHTML": "Round 4 — Giải lớp thường còn lại khối 10-12"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round4Loi",
+                        "class": "text-error font-weight-medium"
+                      },
+                      "innerHTML": "⚠️ LỖI GỌI SOLVER ({{vueData.round4Loi}}) — server có thể đang bận/tạm ngưng. Việc đã xử lý trước đó vẫn được giữ. Bấm \"Thử lại Round 4\" để tiếp tục."
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.dangPoll === 'round4'",
+                        "class": "text-caption"
+                      },
+                      "innerHTML": "Đang chạy... {{Math.floor(vueData.pollTick * 6 / 60)}} phút {{(vueData.pollTick * 6) % 60}} giây — còn {{vueData.round4Chunk && vueData.round4Chunk.SoLopConLai}} lớp"
+                    },
+                    {
+                      "el": "v-progress-linear",
+                      "attr": {
+                        "v-if": "vueData.dangPoll === 'round4'",
+                        ":indeterminate": "true",
+                        "height": "18",
+                        "color": "primary",
+                        "class": "my-1"
+                      }
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round4Done"
+                      },
+                      "innerHTML": "Đã giải xong và khóa cứng toàn bộ khối 10-12: {{round4.SoTietDaXep}} / {{round4.TongSoTiet}} tiết ({{round4.PhanTramDaXep}}%) — {{round4.SoNhomKhongXepDuoc}} nhóm chưa xếp được"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round4Infeasible",
+                        "class": "text-error font-weight-medium"
+                      },
+                      "innerHTML": "❌ KHÔNG TÌM ĐƯỢC lời giải xếp đủ 100% lớp thường (Infeasible). Có thể thử lại với thời gian dài hơn."
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        ":label": "'Vá lại phần dư (' + (round4.SoNhomKhongXepDuoc || 0) + ' nhóm)'",
+                        "icon-text": "mdi-puzzle-edit-outline",
+                        "class": "mt-2 mr-2",
+                        "color": "warning",
+                        "v-if": "vueData.round4Done && vueData.round4.SoNhomKhongXepDuoc > 0",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round4Done = false;"
+                          },
+                          {
+                            "EXE": "vueData.round4Loi = ''; vueData.round4Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round4'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound4"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Thử lại Round 4",
+                        "icon-text": "mdi-reload",
+                        "class": "mt-2",
+                        "color": "error",
+                        "v-if": "vueData.round4Infeasible || vueData.round4Loi",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round4Loi = ''; vueData.round4Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round4'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound4"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "v-if": "vueData.round4Done",
+                    "outlined": "",
+                    "class": "pa-2"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-subtitle-1 font-weight-medium"
+                      },
+                      "innerHTML": "Round 5 — Tiết đôi cấp 2 (khối 6-9: ENG2/STEM/GDQP/AI...)"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.dangPoll === 'round5'",
+                        "class": "text-caption"
+                      },
+                      "innerHTML": "Đang chạy... {{Math.floor(vueData.pollTick * 6 / 60)}} phút {{(vueData.pollTick * 6) % 60}} giây — còn {{vueData.round5Chunk && vueData.round5Chunk.SoGVConLai}} GV"
+                    },
+                    {
+                      "el": "v-progress-linear",
+                      "attr": {
+                        "v-if": "vueData.dangPoll === 'round5'",
+                        ":indeterminate": "true",
+                        "height": "18",
+                        "color": "primary",
+                        "class": "my-1"
+                      }
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round5Done"
+                      },
+                      "innerHTML": "Đã giải xong và khóa cứng tiết đôi cấp 2: {{round5.SoTietDaXep}} / {{round5.TongSoTiet}} tiết ({{round5.PhanTramDaXep}}%) — {{round5.SoNhomKhongXepDuoc}} nhóm chưa xếp được"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round5Infeasible",
+                        "class": "text-error font-weight-medium"
+                      },
+                      "innerHTML": "❌ KHÔNG TÌM ĐƯỢC lời giải đủ 100% tiết đôi cấp 2 (Infeasible). Không có tiết nào được khóa."
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round5Loi",
+                        "class": "text-error font-weight-medium"
+                      },
+                      "innerHTML": "⚠️ LỖI GỌI SOLVER ({{vueData.round5Loi}}). Bấm \"Thử lại Round 5\" sau khi kiểm tra server."
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Bắt đầu Round 5",
+                        "icon-text": "mdi-arrow-right",
+                        "class": "mt-2",
+                        "v-if": "!vueData.round5Done && !vueData.round5Loi && vueData.dangPoll !== 'round5'",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round5Loi = ''; vueData.round5Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round5'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound5"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Thử lại Round 5",
+                        "icon-text": "mdi-reload",
+                        "class": "mt-2",
+                        "color": "error",
+                        "v-if": "vueData.round5Loi",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round5Loi = ''; vueData.round5Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round5'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound5"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Bỏ qua → Round 6",
+                        "icon-text": "mdi-skip-next",
+                        "class": "mt-2 ml-2",
+                        "color": "grey",
+                        "variant": "text",
+                        "v-if": "vueData.round5Loi",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round5Done = true;"
+                          },
+                          {
+                            "EXE": "vueData.round6Loi = ''; vueData.round6Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round6'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound6"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Bắt đầu Round 6",
+                        "icon-text": "mdi-arrow-right",
+                        "class": "mt-2",
+                        "color": "primary",
+                        "v-if": "vueData.round5Done && !vueData.round6Done && vueData.dangPoll !== 'round6'",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round6Loi = ''; vueData.round6Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round6'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound6"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "v-if": "vueData.round5Done",
+                    "outlined": "",
+                    "class": "pa-2"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-subtitle-1 font-weight-medium"
+                      },
+                      "innerHTML": "Round 6 — Giải chung toàn bộ tiểu học (khối 1–5): ma trận GV chuyên + GVCN cùng lúc, họp khối cứng, họp tổ mềm"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.dangPoll === 'round6'",
+                        "class": "text-caption"
+                      },
+                      "innerHTML": "Đang giải chung 35 lớp tiểu học... {{Math.floor(vueData.pollTick * 6 / 60)}} phút {{(vueData.pollTick * 6) % 60}} giây (tối đa khoảng 7 phút)"
+                    },
+                    {
+                      "el": "v-progress-linear",
+                      "attr": {
+                        "v-if": "vueData.dangPoll === 'round6'",
+                        ":indeterminate": "true",
+                        "height": "18",
+                        "color": "primary",
+                        "class": "my-1"
+                      }
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round6Done"
+                      },
+                      "innerHTML": "Đã giải xong tiểu học (khối 1–5): {{round6.SoTietDaXep}} / {{round6.TongSoTiet}} tiết ({{round6.PhanTramDaXep}}%) — {{round6.SoNhomKhongXepDuoc}} nhóm chưa xếp được (Round 7 và 9 sẽ xử lý tiếp phần còn thiếu)"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round6Infeasible",
+                        "class": "text-error font-weight-medium"
+                      },
+                      "innerHTML": "❌ KHÔNG TÌM ĐƯỢC lời giải khả thi cho tiểu học (Infeasible). Chưa có tiết nào được giữ — có thể thử lại hoặc bỏ qua và tiếp tục Round 7."
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round6Loi",
+                        "class": "text-error font-weight-medium"
+                      },
+                      "innerHTML": "⚠️ LỖI GỌI SOLVER ({{vueData.round6Loi}}). Bấm \"Thử lại Round 6\" sau khi kiểm tra server."
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Thử lại Round 6",
+                        "icon-text": "mdi-reload",
+                        "class": "mt-2",
+                        "color": "error",
+                        "v-if": "vueData.round6Infeasible || vueData.round6Loi",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round6Loi = ''; vueData.round6Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round6'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound6"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Bỏ qua → Round 7",
+                        "icon-text": "mdi-skip-next",
+                        "class": "mt-2 ml-2",
+                        "color": "grey",
+                        "variant": "text",
+                        "v-if": "vueData.round6Infeasible || vueData.round6Loi",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round6Done = true;"
+                          },
+                          {
+                            "CALL": "batDauRound7"
+                          },
+                          {
+                            "CALL": "traoCoRound7"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Tiếp tục Round 7",
+                        "icon-text": "mdi-arrow-right",
+                        "class": "mt-2",
+                        "color": "primary",
+                        "v-if": "vueData.round6Done",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "CALL": "batDauRound7"
+                          },
+                          {
+                            "CALL": "traoCoRound7"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "v-if": "vueData.step >= 3 || vueData.dangPoll === 'round7'",
+                    "outlined": "",
+                    "class": "pa-2"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-subtitle-1 font-weight-medium"
+                      },
+                      "innerHTML": "Round 7 — Xếp theo độ khan hiếm GV"
+                    },
+                    {
+                      "el": "v-row",
+                      "innerHTML": [
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": 12
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "div",
+                              "attr": {
+                                "v-if": "vueData.dangPoll === 'round7'",
+                                "class": "text-caption"
+                              },
+                              "innerHTML": "Đang chạy... {{Math.floor(vueData.pollTick * 6 / 60)}} phút {{(vueData.pollTick * 6) % 60}} giây (xử lý từng GV, có thể mất 15-30 phút tùy số GV còn lại — hệ thống tự phát hiện khi xong, không cần bấm gì; % dưới đây có thể đứng yên vài chục giây giữa các lượt cập nhật, đó là bình thường)"
+                            },
+                            {
+                              "el": "div",
+                              "attr": {
+                                "v-if": "vueData.dangPoll === 'round7' && round7.TenGVDangXuLy",
+                                "class": "text-body-2 font-weight-medium mt-1"
+                              },
+                              "innerHTML": "Đang xử lý: {{round7.TenGVDangXuLy}} (GV thứ {{round7.ViTriGV}}/{{round7.TongSoGV}})"
+                            },
+                            {
+                              "el": "v-progress-linear",
+                              "attr": {
+                                "v-if": "vueData.dangPoll === 'round7'",
+                                ":model-value": "round7.PhanTramDaXep || 0",
+                                "height": "18",
+                                "color": "primary",
+                                "class": "my-1"
+                              },
+                              "innerHTML": "{{round7.PhanTramDaXep || 0}}%"
+                            },
+                            {
+                              "el": "div",
+                              "innerHTML": "Đã xếp {{round7.SoTietDaXep}} / {{round7.TongSoTiet}} tiết ({{round7.PhanTramDaXep}}%) — {{round7.SoNhomKhongXepDuoc}} nhóm chưa xếp được",
+                              "attr": {}
+                            },
+                            {
+                              "el": "f-button",
+                              "attr": {
+                                "label": "Tiếp tục Round 7",
+                                "icon-text": "mdi-play",
+                                "class": "mt-2",
+                                "block": true,
+                                "color": "primary",
+                                "v-if": "vueData.step >= 3 && vueData.dangPoll !== 'round7' && vueData.dangPoll !== 'round8' && (vueData.dsGVRound7 || []).some(function(g){ return g.TrangThai === 'ChuaXu' || g.TrangThai === 'DangXuLy'; })",
+                                ":checkvalid": false,
+                                "action": [
+                                  {
+                                    "CALL": "batDauRound7"
+                                  },
+                                  {
+                                    "CALL": "traoCoRound7"
+                                  }
+                                ],
+                                "size": "small"
+                              }
+                            },
+                            {
+                              "el": "f-button",
+                              "attr": {
+                                "label": "Tiếp tục Round 8",
+                                "icon-text": "mdi-arrow-right",
+                                "class": "mt-2",
+                                "block": true,
+                                "v-if": "vueData.step >= 3 && vueData.dangPoll !== 'round7' && vueData.dangPoll !== 'round8' && !(vueData.dsGVRound7 || []).some(function(g){ return g.TrangThai === 'ChuaXu' || g.TrangThai === 'DangXuLy'; })",
+                                ":checkvalid": false,
+                                "action": [
+                                  {
+                                    "EXE": "vueData.round8Loi = ''; vueData.round8Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round8'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                                  },
+                                  {
+                                    "CALL": "batDauRound8"
+                                  }
+                                ],
+                                "size": "small"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": 12
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "div",
+                              "attr": {
+                                "v-if": "vueData.dsGVRound7.length > 0",
+                                "class": "text-caption mb-1"
+                              },
+                              "innerHTML": "Danh sách GV theo thứ tự xử lý (điểm khan hiếm càng thấp càng xử lý trước)"
+                            },
+                            {
+                              "el": "v-list",
+                              "attr": {
+                                "v-if": "vueData.dsGVRound7.length > 0",
+                                "density": "compact",
+                                "class": "border rounded tkb-scroll-list"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-list-item",
+                                  "attr": {
+                                    "v-for": "gv in vueData.dsGVRound7",
+                                    ":key": "gv.MaGV",
+                                    ":class": "gv.RowClass",
+                                    ":title": "gv.TenGV",
+                                    ":subtitle": "'Cần ' + gv.TongCan + ' · Đã xếp ' + gv.SoTietDaXep + ' · Còn ' + gv.ConLai + ' · Điểm khan hiếm ' + gv.DiemKhanHiem + ' · ' + gv.TrangThai",
+                                    "v-on:click": "vueData.xemDinhMucGVMaGV = gv.MaGV, vueData.xemDinhMucGVTenGV = gv.TenGV, vueData.xemDinhMucGVTrigger = vueData.xemDinhMucGVTrigger + 1",
+                                    "link": true
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ],
+                      "attr": {}
+                    }
+                  ]
+                },
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "v-if": "vueData.step >= 4 || vueData.dangPoll === 'round8'",
+                    "outlined": "",
+                    "class": "pa-2"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-subtitle-1 font-weight-medium"
+                      },
+                      "innerHTML": "Round 8 — Giải phần còn lại khối 6–9 (xóa ô chưa khóa rồi xếp lại từng lớp; tiểu học đã giải chung ở Round 6)"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round8Loi",
+                        "class": "text-error font-weight-medium"
+                      },
+                      "innerHTML": "⚠️ LỖI GỌI SOLVER ({{vueData.round8Loi}}). Bấm \"Thử lại Round 8\" sau khi kiểm tra server."
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.dangPoll === 'round8'",
+                        "class": "text-caption"
+                      },
+                      "innerHTML": "Đang chạy... {{Math.floor(vueData.pollTick * 6 / 60)}} phút {{(vueData.pollTick * 6) % 60}} giây — còn {{vueData.round8Chunk && vueData.round8Chunk.SoLopConLai}} lớp"
+                    },
+                    {
+                      "el": "v-progress-linear",
+                      "attr": {
+                        "v-if": "vueData.dangPoll === 'round8'",
+                        ":indeterminate": "true",
+                        "height": "18",
+                        "color": "primary",
+                        "class": "my-1"
+                      }
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.step >= 4"
+                      },
+                      "innerHTML": "Kết quả cuối: {{round8.SoTietDaXep}} / {{round8.TongSoTiet}} tiết ({{round8.PhanTramDaXep}}%) — {{round8.SoNhomKhongXepDuoc}} nhóm chưa xếp được"
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Thử lại Round 8",
+                        "icon-text": "mdi-reload",
+                        "class": "mt-2",
+                        "color": "error",
+                        "v-if": "vueData.round8Loi",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round8Loi = ''; vueData.round8Done = false; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round8'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound8"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Bắt đầu Round 9 — sửa ô cuối",
+                        "icon-text": "mdi-arrow-right",
+                        "class": "mt-2",
+                        "color": "primary",
+                        "v-if": "vueData.step >= 4 && !vueData.round9Done && vueData.dangPoll !== 'round9'",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round9Loi = ''; vueData.round9Done = false; vueData.round9TongCaiThien = 0; vueData.round9TongTietThem = 0; vueData.round9SoNhomDaXu = 0; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round9'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound9"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "v-if": "vueData.step >= 5 || vueData.dangPoll === 'round9'",
+                    "outlined": "",
+                    "class": "pa-2"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-subtitle-1 font-weight-medium"
+                      },
+                      "innerHTML": "Round 9 — Sửa ô cuối (gỡ lớp còn thiếu bằng cách mở khóa nhóm lớp xung đột rồi giải lại)"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round9Loi",
+                        "class": "text-error font-weight-medium"
+                      },
+                      "innerHTML": "⚠️ LỖI GỌI SOLVER ({{vueData.round9Loi}}). Bấm \"Thử lại Round 9\" sau khi kiểm tra server."
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.dangPoll === 'round9'",
+                        "class": "text-caption"
+                      },
+                      "innerHTML": "Đang chạy... {{Math.floor(vueData.pollTick * 6 / 60)}} phút {{(vueData.pollTick * 6) % 60}} giây — đã thử {{vueData.round9SoNhomDaXu}} nhóm, cải thiện {{vueData.round9TongCaiThien}} nhóm (+{{vueData.round9TongTietThem}} tiết)"
+                    },
+                    {
+                      "el": "v-progress-linear",
+                      "attr": {
+                        "v-if": "vueData.dangPoll === 'round9'",
+                        ":indeterminate": "true",
+                        "height": "18",
+                        "color": "primary",
+                        "class": "my-1"
+                      },
+                      "innerHTML": "Đang chạy... {{Math.floor(vueData.pollTick * 6 / 60)}} phút {{(vueData.pollTick * 6) % 60}} giây — nhóm tối đa {{vueData.round9SoLopXungDot || 4}} lớp, đã thử {{vueData.round9SoNhomDaXu}} nhóm, cải thiện {{vueData.round9TongCaiThien}} nhóm (+{{vueData.round9TongTietThem}} tiết)"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.round9Done"
+                      },
+                      "innerHTML": "Hoàn tất: đã thử {{vueData.round9SoNhomDaXu}} nhóm — cải thiện {{vueData.round9TongCaiThien}} nhóm, thêm được {{vueData.round9TongTietThem}} tiết. Có thể bấm lại để thử một lượt nữa với nhóm lớn hơn."
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Thử lại Round 9",
+                        "icon-text": "mdi-reload",
+                        "class": "mt-2",
+                        "color": "error",
+                        "v-if": "vueData.round9Loi",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round9Loi = ''; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round9'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound9"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Chạy thêm một lượt (nhóm rộng hơn)",
+                        "icon-text": "mdi-refresh",
+                        "class": "mt-2",
+                        "color": "primary",
+                        "v-if": "vueData.round9Done",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.round9SoLopXungDot = (vueData.round9SoLopXungDot || 4) + 4; vueData.round9Done = false; vueData.round9TongCaiThien = 0; vueData.round9TongTietThem = 0; vueData.round9SoNhomDaXu = 0; window.clearInterval(vueData._pollTimer); vueData.pollTick = 0; vueData.dangPoll = 'round9'; vueData._pollTimer = window.setInterval(function(){ vueData.pollTick++; }, 6000);"
+                          },
+                          {
+                            "CALL": "batDauRound9"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "v-if": "vueData.runID",
+                    "outlined": "",
+                    "class": "pa-2"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-subtitle-1 font-weight-medium"
+                      },
+                      "innerHTML": "Đánh giá kết quả RunID {{vueData.runID}} (bấm bất kỳ lúc nào, tự động lưu mốc theo Round đang xong)"
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Đánh giá lại",
+                        "icon-text": "mdi-chart-box-outline",
+                        "class": "mt-1",
+                        "color": "primary",
+                        ":checkvalid": false,
+                        "action": [
+                          {
+                            "EXE": "vueData.danhGiaMoc = vueData.round9Done ? 'R9' : (vueData.round8Done ? 'R8' : (vueData.step >= 3 ? 'R7' : (vueData.round6Done ? 'R6' : (vueData.round5Done ? 'R5' : (vueData.round4Done ? 'R4' : (vueData.round3Done ? 'R3' : (vueData.round2Done ? 'R2' : 'R1')))))));"
+                          },
+                          {
+                            "CALL": "danhGiaRun"
+                          }
+                        ],
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.danhGiaMoc",
+                        "class": "text-caption mt-1"
+                      },
+                      "innerHTML": "Mốc vừa lưu: sau {{vueData.danhGiaMoc}}"
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.danhGiaKhoi.length > 0",
+                        "class": "text-caption mt-2"
+                      },
+                      "innerHTML": "Theo khối (nhu cầu của tuần đang chọn so với số tiết đã xếp, tiết dư không được tính)"
+                    },
+                    {
+                      "el": "v-list",
+                      "attr": {
+                        "v-if": "vueData.danhGiaKhoi.length > 0",
+                        "density": "compact",
+                        "class": "border rounded tkb-scroll-list"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-list-item",
+                          "attr": {
+                            "v-for": "k in vueData.danhGiaKhoi",
+                            ":key": "k.Khoi",
+                            ":title": "(k.Thu === 1 ? '' : 'Khối ') + k.Khoi",
+                            ":subtitle": "'Cần ' + k.TongCan + ' · Đã xếp ' + k.DaXep + ' · Thiếu ' + k.Thieu + ' · ' + k.PhanTram + '%'"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.danhGiaLichSu.length > 0",
+                        "class": "text-caption mt-2"
+                      },
+                      "innerHTML": "Tiến trình theo Round (mỗi mốc là lần đánh giá đã lưu)"
+                    },
+                    {
+                      "el": "v-list",
+                      "attr": {
+                        "v-if": "vueData.danhGiaLichSu.length > 0",
+                        "density": "compact",
+                        "class": "border rounded tkb-scroll-list"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-list-item",
+                          "attr": {
+                            "v-for": "m in vueData.danhGiaLichSu",
+                            ":key": "m.Moc",
+                            ":title": "'Sau ' + m.Moc + ' — ' + m.PhanTram + '%'",
+                            ":subtitle": "'Đã xếp ' + m.DaXep + ' / ' + m.TongCan + ' tiết · Thiếu ' + m.Thieu"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "el": "div",
+                      "attr": {
+                        "v-if": "vueData.danhGiaThieu.length > 0",
+                        "class": "text-caption mt-2"
+                      },
+                      "innerHTML": "Các tiết còn thiếu ({{vueData.danhGiaThieu.length}} dòng) và lý do ước lượng"
+                    },
+                    {
+                      "el": "v-list",
+                      "attr": {
+                        "v-if": "vueData.danhGiaThieu.length > 0",
+                        "density": "compact",
+                        "class": "border rounded tkb-scroll-list"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-list-item",
+                          "attr": {
+                            "v-for": "t in vueData.danhGiaThieu",
+                            ":key": "t.MaLop + t.MaMon",
+                            ":title": "t.MaLop + ' — ' + t.TenMon + ' (thiếu ' + t.Thieu + ')'",
+                            ":subtitle": "t.HoTen + (t.ThinhGiang ? ' (thỉnh giảng)' : '') + ' · ô trống lớp ' + t.LopTrong + ' · ô rảnh GV ' + t.GVRanh + ' · ' + t.LyDo"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "w": 3
+            },
+            {
+              "el": "div",
+              "attr": {},
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "v-if": "vueData.runID",
+                    "outlined": "",
+                    "class": "pa-1 mb-1"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-caption font-weight-medium"
+                      },
+                      "innerHTML": "Chẩn đoán chưa xếp được — vì sao kẹt, bấm Xem để nhảy thẳng xuống lưới sửa tay"
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "label": "Phân tích chưa xếp được",
+                        "icon-text": "mdi-magnify-scan",
+                        "class": "mt-1 mb-1",
+                        ":checkvalid": false,
+                        "action": {
+                          "CALL": "fetchChanDoan"
+                        },
+                        "size": "small"
+                      }
+                    },
+                    {
+                      "el": "v-list",
+                      "attr": {
+                        "v-if": "dsChanDoan.length > 0",
+                        "density": "compact",
+                        "class": "border rounded tkb-scroll-list"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-list-item",
+                          "attr": {
+                            "v-for": "cd in vueData.dsChanDoan",
+                            ":key": "cd.MaLop + cd.MaMon",
+                            ":title": "cd.MaLop + ' — ' + cd.MaMon + ' — ' + cd.HoTen + ' (' + cd.SoTiet + ' tiết)'",
+                            ":subtitle": "cd.NhanNguyenNhan + ': ' + cd.ChiTietTrungLich",
+                            "v-on:click": "vueData.xemChanDoanLopMaLop = cd.MaLop, vueData.xemChanDoanLopTrigger = vueData.xemChanDoanLopTrigger + 1",
+                            "link": true
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "template",
+                              "attr": {
+                                "v-slot:append": ""
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-icon",
+                                  "attr": {
+                                    "color": "primary"
+                                  },
+                                  "innerHTML": "mdi-eye-outline"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "v-if": "vueData.step >= 3",
+                    "outlined": "",
+                    "class": "pa-1 mb-1"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "div",
+                      "attr": {
+                        "class": "text-caption font-weight-medium"
+                      },
+                      "innerHTML": "Gỡ thử theo Xoay trở (khi cần sửa/tối ưu lại)"
+                    },
+                    {
+                      "el": "v-row",
+                      "innerHTML": [
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": "3"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-text-field",
+                              "attr": {
+                                "v-model.number": "vueData.goThoTopN",
+                                "label": "Số tiết muốn gỡ (Top N)",
+                                "type": "number"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": "3",
+                            "class": "d-flex align-center"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "f-button",
+                              "attr": {
+                                "label": "Gỡ và xem kết quả",
+                                "icon-text": "mdi-lock-open-variant",
+                                ":checkvalid": false,
+                                "action": {
+                                  "CALL": "goThoTheoXoayTro"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "f-table",
+                      "attr": {
+                        "v-if": "goThoResult.length > 0",
+                        ":items": "vueData.goThoResult",
+                        "item-key": "ID",
+                        ":height": 300,
+                        ":headers": [
+                          {
+                            "title": "Lớp",
+                            "value": "MaLop"
+                          },
+                          {
+                            "title": "Môn",
+                            "value": "MaMon"
+                          },
+                          {
+                            "title": "GV",
+                            "value": "MaGV"
+                          },
+                          {
+                            "title": "Thứ",
+                            "value": "Thu"
+                          },
+                          {
+                            "title": "Buổi",
+                            "value": "Buoi"
+                          },
+                          {
+                            "title": "Tiết",
+                            "value": "Tiet"
+                          },
+                          {
+                            "title": "XoayTrở cũ",
+                            "value": "XoayTroCu"
+                          },
+                          {
+                            "title": "Chỗ trống thật",
+                            "value": "SoSlotTrongThat"
+                          },
+                          {
+                            "title": "Đã gỡ",
+                            "value": "DaGo",
+                            "el": "t-boolean"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "el": "v-row",
+                  "attr": {
+                    "no-gutters": "",
+                    "class": "mb-1"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-col",
+                      "attr": {
+                        ":cols": "vueData.filterLopView ? 9 : 12"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "div",
+                          "attr": {
+                            "v-if": "vueData.runID",
+                            "class": "text-subtitle-1 font-weight-medium mt-2"
+                          },
+                          "innerHTML": "Chi tiết TKB (RunID {{runID}}) — sửa Môn/GV/Phòng trực tiếp trong bảng, bấm ổ khóa để khóa/mở khóa, bấm + để thêm tiết mới"
+                        },
+                        {
+                          "el": "v-row",
+                          "attr": {
+                            "no-gutters": "",
+                            "class": "mb-1"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": 2
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "f-button",
+                                  "attr": {
+                                    "v-if": "vueData.runID",
+                                    "label": "Thêm tiết",
+                                    "icon-text": "mdi-plus",
+                                    "size": "small",
+                                    ":checkvalid": false,
+                                    "v-on:click": "vueData.formThem = {MaLop: '', MaMon: '', MaGV: '', MaPhong: '', Thu: 2, Buoi: 'Sang', Tiet: 1}, vueData.dlThem = true"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": 2
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-if": "vueData.runID",
+                                    "v-model": "vueData.filterKhoiXemLop",
+                                    "label": "Khối",
+                                    ":items": "vueData.khoiOptions",
+                                    "item-title": "text",
+                                    "item-value": "value",
+                                    ":clearable": true,
+                                    "density": "compact",
+                                    "hide-details": "auto",
+                                    "v-on:update:model-value": "vueData.filterLopView = ''; vueData.dsDinhMucLop = [];"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": 3
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-if": "vueData.runID",
+                                    "v-model": "vueData.filterLopView",
+                                    "label": "Xem dạng lưới — chọn lớp",
+                                    ":items": "vueData.filterKhoiXemLop ? vueData.dsLopOptions.filter(x => x.MaLop.slice(0,2) === vueData.filterKhoiXemLop) : vueData.dsLopOptions",
+                                    "item-title": "MaLop",
+                                    "item-value": "MaLop",
+                                    ":clearable": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": 1
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "f-button",
+                                  "attr": {
+                                    "v-if": "vueData.runID",
+                                    "label": "Xem",
+                                    "icon-text": "mdi-table",
+                                    "size": "small",
+                                    ":checkvalid": false,
+                                    ":disabled": "!vueData.filterLopView && !vueData.filterKhoiXemLop",
+                                    "action": [
+                                      {
+                                        "IF": "vueData.filterLopView",
+                                        "THEN": [
+                                          {
+                                            "CALL": "xemLuoiLop"
+                                          },
+                                          {
+                                            "CALL": "fetchDinhMucLop"
+                                          }
+                                        ],
+                                        "ELSE": [
+                                          {
+                                            "CALL": "fetchDinhMucKhoi"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "el": "uc-tkb-grid",
+                          "attr": {
+                            "v-if": "vueData.filterLopView",
+                            ":items": "vueData.dsChiTiet.filter(r => r.MaLop === vueData.filterLopView)",
+                            ":editable": true,
+                            ":draggable": true,
+                            ":addable": true,
+                            ":show-khoa": true,
+                            ":fixed-thu-cols": "vueData.fixedThuCols",
+                            ":fixed-slots": "vueData.fixedSlots",
+                            "sub-label-field": "TenGV",
+                            "v-on:add-cell": "vueData.formThem = {ID: null, MaLop: vueData.filterLopView, MaMon: '', MaGV: '', MaPhong: '', Thu: $event.Thu, Buoi: $event.Buoi, Tiet: $event.Tiet}, vueData.dlThem = true",
+                            "v-on:edit-cell": "vueData.formThem = {ID: $event.ID, MaLop: $event.MaLop, MaMon: $event.MaMon, MaGV: $event.MaGV, MaPhong: $event.MaPhong, Thu: $event.Thu, Buoi: $event.Buoi, Tiet: $event.Tiet}, vueData.dlThem = true",
+                            "v-on:swap": "vueData.doiTietID1 = $event.id1, vueData.doiTietID2 = $event.id2, vueData.doiTietTrigger = vueData.doiTietTrigger + 1",
+                            "v-on:move-cell": "vueData.chuyenTietID = $event.item.ID, vueData.chuyenTietThu = $event.Thu, vueData.chuyenTietBuoi = $event.Buoi, vueData.chuyenTietTiet = $event.Tiet, vueData.chuyenTietTrigger = vueData.chuyenTietTrigger + 1",
+                            "v-on:toggle-khoa": "vueData.toggleKhoaGridID = $event.ID, vueData.toggleKhoaGridTrigger = vueData.toggleKhoaGridTrigger + 1"
+                          }
+                        },
+                        {
+                          "el": "div",
+                          "attr": {
+                            "v-if": "vueData.filterKhoiXemLop && !vueData.filterLopView"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "div",
+                              "attr": {
+                                "v-for": "lop in vueData.dsLopOptions.filter(x => x.MaLop.slice(0,2) === vueData.filterKhoiXemLop)",
+                                "key": "lop.MaLop",
+                                "class": "mb-3"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-row",
+                                  "attr": {
+                                    "no-gutters": "",
+                                    "class": "mb-1"
+                                  },
+                                  "innerHTML": [
+                                    {
+                                      "el": "v-col",
+                                      "attr": {
+                                        "cols": 9
+                                      },
+                                      "innerHTML": [
+                                        {
+                                          "el": "div",
+                                          "attr": {
+                                            "class": "d-flex align-center flex-wrap ga-1 mb-1"
+                                          },
+                                          "innerHTML": [
+                                            {
+                                              "el": "span",
+                                              "attr": {
+                                                "class": "text-caption font-weight-bold"
+                                              },
+                                              "innerHTML": "Lớp {{lop.MaLop}} — Đã xếp {{vueData.dsDinhMucLop.filter(x => x.MaLop === lop.MaLop).reduce((s,x) => s + x.SoTietDaXep, 0)}}/{{vueData.dsDinhMucLop.filter(x => x.MaLop === lop.MaLop).reduce((s,x) => s + x.SoTietChuanTuan, 0)}} tiết"
+                                            },
+                                            {
+                                              "el": "v-chip",
+                                              "attr": {
+                                                "v-for": "m in vueData.dsDinhMucLop.filter(x => x.MaLop === lop.MaLop && x.SoTietDaXep < x.SoTietChuanTuan)",
+                                                "key": "m.MaMon",
+                                                "size": "x-small",
+                                                "color": "warning",
+                                                "variant": "tonal"
+                                              },
+                                              "innerHTML": "{{m.TenMon || m.MaMon}} {{m.SoTietDaXep}}/{{m.SoTietChuanTuan}}"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "el": "uc-tkb-grid",
+                                          "attr": {
+                                            ":items": "vueData.dsChiTiet.filter(r => r.MaLop === lop.MaLop)",
+                                            ":editable": true,
+                                            ":draggable": true,
+                                            ":addable": true,
+                                            ":show-khoa": true,
+                                            ":fixed-thu-cols": "vueData.fixedThuCols",
+                                            ":fixed-slots": "vueData.fixedSlots",
+                                            "sub-label-field": "TenGV",
+                                            "v-on:add-cell": "vueData.formThem = {ID: null, MaLop: lop.MaLop, MaMon: '', MaGV: '', MaPhong: '', Thu: $event.Thu, Buoi: $event.Buoi, Tiet: $event.Tiet}, vueData.dlThem = true",
+                                            "v-on:edit-cell": "vueData.formThem = {ID: $event.ID, MaLop: $event.MaLop, MaMon: $event.MaMon, MaGV: $event.MaGV, MaPhong: $event.MaPhong, Thu: $event.Thu, Buoi: $event.Buoi, Tiet: $event.Tiet}, vueData.dlThem = true",
+                                            "v-on:swap": "vueData.doiTietID1 = $event.id1, vueData.doiTietID2 = $event.id2, vueData.doiTietTrigger = vueData.doiTietTrigger + 1",
+                                            "v-on:move-cell": "vueData.chuyenTietID = $event.item.ID, vueData.chuyenTietThu = $event.Thu, vueData.chuyenTietBuoi = $event.Buoi, vueData.chuyenTietTiet = $event.Tiet, vueData.chuyenTietTrigger = vueData.chuyenTietTrigger + 1",
+                                            "v-on:toggle-khoa": "vueData.toggleKhoaGridID = $event.ID, vueData.toggleKhoaGridTrigger = vueData.toggleKhoaGridTrigger + 1"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "el": "v-col",
+                                      "attr": {
+                                        "cols": 3,
+                                        "class": "pl-1"
+                                      },
+                                      "innerHTML": [
+                                        {
+                                          "el": "v-card",
+                                          "attr": {
+                                            "outlined": "",
+                                            "class": "pa-1"
+                                          },
+                                          "innerHTML": [
+                                            {
+                                              "el": "div",
+                                              "attr": {
+                                                "class": "text-caption font-weight-bold mb-1"
+                                              },
+                                              "innerHTML": "Định mức {{lop.MaLop}}"
+                                            },
+                                            {
+                                              "el": "f-table",
+                                              "attr": {
+                                                "v-if": "vueData.dsDinhMucLop.filter(x => x.MaLop === lop.MaLop).length > 0",
+                                                ":items": "vueData.dsDinhMucLop.filter(x => x.MaLop === lop.MaLop)",
+                                                "item-key": "MaMon",
+                                                "density": "compact",
+                                                ":height": 260,
+                                                ":headers": [
+                                                  {
+                                                    "title": "Môn",
+                                                    "value": "TenMon"
+                                                  },
+                                                  {
+                                                    "title": "ĐM",
+                                                    "value": "SoTietChuanTuan",
+                                                    "align": "center",
+                                                    "width": "32px"
+                                                  },
+                                                  {
+                                                    "title": "Xếp",
+                                                    "value": "SoTietDaXep",
+                                                    "align": "center",
+                                                    "width": "32px"
+                                                  }
+                                                ],
+                                                ":item-class": "item => item.SoTietDaXep >= item.SoTietChuanTuan ? 'text-success font-weight-bold' : 'text-warning font-weight-bold'"
+                                              }
+                                            },
+                                            {
+                                              "el": "div",
+                                              "attr": {
+                                                "v-if": "vueData.dsDinhMucLop.filter(x => x.MaLop === lop.MaLop).length === 0",
+                                                "class": "text-caption text-grey"
+                                              },
+                                              "innerHTML": "Bấm \"Xem\" để tải định mức."
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-col",
+                      "attr": {
+                        "cols": 3,
+                        "class": "pl-1",
+                        "v-if": "vueData.filterLopView"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-card",
+                          "attr": {
+                            "outlined": "",
+                            "class": "pa-1"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "div",
+                              "attr": {
+                                "class": "text-subtitle-2 font-weight-medium mb-1"
+                              },
+                              "innerHTML": "Định mức tiết — {{vueData.filterLopView ? 'lớp ' + vueData.filterLopView : (vueData.filterKhoiXemLop ? 'khối ' + vueData.filterKhoiXemLop : '(chưa chọn)')}}"
+                            },
+                            {
+                              "el": "div",
+                              "attr": {
+                                "v-if": "(vueData.filterLopView || vueData.filterKhoiXemLop) && vueData.dsDinhMucLop.length > 0",
+                                "class": "text-body-2 font-weight-bold mb-1"
+                              },
+                              "innerHTML": "Đã xếp {{vueData.dsDinhMucLop.filter(function(x){return !vueData.filterLopView || x.MaLop === vueData.filterLopView;}).reduce(function(s,x){return s+x.SoTietDaXep;},0)}} / {{vueData.dsDinhMucLop.filter(function(x){return !vueData.filterLopView || x.MaLop === vueData.filterLopView;}).reduce(function(s,x){return s+x.SoTietChuanTuan;},0)}} tiết"
+                            },
+                            {
+                              "el": "div",
+                              "attr": {
+                                "v-if": "!vueData.filterLopView && !vueData.filterKhoiXemLop",
+                                "class": "text-caption text-grey"
+                              },
+                              "innerHTML": "Chọn 1 lớp hoặc 1 khối ở khung giữa để xem định mức từng môn."
+                            },
+                            {
+                              "el": "f-table",
+                              "attr": {
+                                "v-if": "(vueData.filterLopView ? vueData.dsDinhMucLop.filter(x => x.MaLop === vueData.filterLopView).length > 0 : (vueData.filterKhoiXemLop && vueData.dsDinhMucLop.length > 0))",
+                                ":items": "vueData.filterLopView ? vueData.dsDinhMucLop.filter(x => x.MaLop === vueData.filterLopView) : vueData.dsDinhMucLop",
+                                "item-key": "MaMon",
+                                "density": "compact",
+                                ":height": 260,
+                                ":headers": "!vueData.filterLopView && vueData.filterKhoiXemLop ? [{title:'Lớp',value:'MaLop',width:'40px'},{title:'Môn',value:'TenMon'},{title:'ĐM',value:'SoTietChuanTuan',align:'center',width:'32px'},{title:'Xếp',value:'SoTietDaXep',align:'center',width:'32px'}] : [{title:'Môn',value:'TenMon'},{title:'ĐM',value:'SoTietChuanTuan',align:'center',width:'40px'},{title:'Xếp',value:'SoTietDaXep',align:'center',width:'40px'}]",
+                                ":item-class": "item => item.SoTietDaXep >= item.SoTietChuanTuan ? 'text-success font-weight-bold' : 'text-warning font-weight-bold'"
+                              }
+                            },
+                            {
+                              "el": "div",
+                              "attr": {
+                                "v-if": "vueData.filterLopView && vueData.dsDinhMucLop.filter(x => x.MaLop === vueData.filterLopView).length === 0",
+                                "class": "text-caption text-grey"
+                              },
+                              "innerHTML": "Không có dữ liệu định mức cho lớp này."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "el": "f-table",
+                  "attr": {
+                    "v-if": "vueData.runID",
+                    ":items": "vueData.dsChiTiet",
+                    "item-key": "ID",
+                    ":height": -16,
+                    ":headers": [
+                      {
+                        "title": "Lớp",
+                        "value": "MaLop",
+                        "width": "80px"
+                      },
+                      {
+                        "title": "Môn",
+                        "value": "TenMon",
+                        "width": "110px"
+                      },
+                      {
+                        "title": "GV",
+                        "value": "TenGV",
+                        "width": "130px"
+                      },
+                      {
+                        "title": "Phòng",
+                        "value": "MaPhong",
+                        "width": "100px"
+                      },
+                      {
+                        "title": "Thứ",
+                        "value": "Thu",
+                        "align": "center",
+                        "width": "60px"
+                      },
+                      {
+                        "title": "Buổi",
+                        "value": "Buoi",
+                        "align": "center",
+                        "width": "80px"
+                      },
+                      {
+                        "title": "Tiết",
+                        "value": "Tiet",
+                        "align": "center",
+                        "width": "60px"
+                      },
+                      {
+                        "title": "Sửa/Xoá",
+                        "value": "ctrl-update",
+                        "align": "center",
+                        "width": "90px"
+                      },
+                      {
+                        "title": "XoayTrở",
+                        "value": "XoayTro",
+                        "align": "center",
+                        "width": "80px"
+                      }
+                    ],
+                    ":update-form": [
+                      {
+                        "el": "v-autocomplete",
+                        "w": 12,
+                        "attr": {
+                          "v-model": "MaMon",
+                          "label": "Môn",
+                          ":items": "vueData.dsMonOptions",
+                          "item-title": "TenMon",
+                          "item-value": "MaMon"
+                        }
+                      },
+                      {
+                        "el": "v-autocomplete",
+                        "w": 12,
+                        "attr": {
+                          "v-model": "MaGV",
+                          "label": "Giáo viên",
+                          ":items": "vueData.dsGVOptions",
+                          "item-title": "HoTen",
+                          "item-value": "MaGV"
+                        }
+                      },
+                      {
+                        "el": "v-autocomplete",
+                        "w": 12,
+                        "attr": {
+                          "v-model": "MaPhong",
+                          "label": "Phòng (tuỳ chọn)",
+                          ":items": "vueData.dsPhongOptions",
+                          "item-title": "TenPhong",
+                          "item-value": "MaPhong",
+                          ":clearable": true
+                        }
+                      }
+                    ],
+                    ":update-api": {
+                      "edit": {
+                        "API": "/TkbKetQuaXepSuaTiet",
+                        "IN": {
+                          "ID": "item.ID",
+                          "MaMon": "item.MaMon",
+                          "MaGV": "item.MaGV",
+                          "MaPhong": "item.MaPhong"
+                        },
+                        "CALLBACK": [
+                          {
+                            "CALL": "fetchChiTiet"
+                          }
+                        ]
+                      },
+                      "delete": {
+                        "CONFIRM": "Gỡ tiết này ra khỏi lịch?",
+                        "API": "/TkbKetQuaXepGoTiet",
+                        "IN": {
+                          "ID": "item.ID"
+                        },
+                        "CALLBACK": [
+                          {
+                            "CALL": "fetchChiTiet"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ],
+              "w": 9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "hidden-container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-dialog",
+              "attr": {
+                "v-model": "vueData.dlThem",
+                "width": 650
+              },
+              "w": 12,
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "{{vueData.formThem.ID ? 'Sửa tiết' : 'Thêm tiết mới'}}"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlThem = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "grid-list-md px-4"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.formThem.MaLop",
+                                    "label": "Mã lớp",
+                                    ":disabled": "!!vueData.formThem.ID",
+                                    ":required": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formThem.MaMon",
+                                    "label": "Môn",
+                                    ":items": "vueData.dsMonOptions",
+                                    "item-title": "TenMon",
+                                    "item-value": "MaMon",
+                                    ":required": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formThem.MaGV",
+                                    "label": "Giáo viên",
+                                    ":items": "vueData.dsGVOptions",
+                                    "item-title": "HoTen",
+                                    "item-value": "MaGV",
+                                    ":required": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formThem.MaPhong",
+                                    "label": "Phòng (tuỳ chọn)",
+                                    ":items": "vueData.dsPhongOptions",
+                                    "item-title": "TenPhong",
+                                    "item-value": "MaPhong",
+                                    ":clearable": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "4",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.formThem.Thu",
+                                    "label": "Thứ",
+                                    ":items": "vueData.thuOptions",
+                                    "item-title": "text",
+                                    "item-value": "value"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "4",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.formThem.Buoi",
+                                    "label": "Buổi",
+                                    ":items": "vueData.buoiOptionsThem",
+                                    "item-title": "text",
+                                    "item-value": "value"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "4",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model.number": "vueData.formThem.Tiet",
+                                    "label": "Tiết",
+                                    "type": "number"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "color": "warning",
+                            "label": "Xoá",
+                            "icon-text": "mdi-delete-outline",
+                            "v-if": "vueData.formThem.ID",
+                            ":checkvalid": false,
+                            "action": {
+                              "CALL": "xoaTietTuGrid"
+                            }
+                          }
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            ":label": "vueData.formThem.ID ? 'Lưu' : 'Thêm'",
+                            "icon-text": "mdi-content-save",
+                            ":checkvalid": true,
+                            "action": [
+                              {
+                                "IF": "vueData.formThem.ID",
+                                "THEN": {
+                                  "CALL": "suaTietTuGrid"
+                                },
+                                "ELSE": {
+                                  "CALL": "themTietTuDo"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "el": "v-dialog",
+              "attr": {
+                "v-model": "vueData.dlDinhMuc",
+                "width": 650
+              },
+              "w": 12,
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "attr": {
+                            "class": "text-body-1"
+                          },
+                          "innerHTML": "{{vueData.dinhMucTieuDe}}"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "variant": "text",
+                            "v-on:click": "vueData.dlDinhMuc = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-text",
+                      "innerHTML": [
+                        {
+                          "el": "f-table",
+                          "attr": {
+                            ":items": "vueData.dsDinhMuc",
+                            "item-key": "MaLop",
+                            ":height": 400,
+                            ":headers": [
+                              {
+                                "title": "Lớp",
+                                "value": "MaLop",
+                                "width": "70px"
+                              },
+                              {
+                                "title": "Môn",
+                                "value": "TenMon"
+                              },
+                              {
+                                "title": "GV",
+                                "value": "HoTen"
+                              },
+                              {
+                                "title": "Định mức",
+                                "value": "SoTietChuanTuan",
+                                "align": "center",
+                                "width": "80px"
+                              },
+                              {
+                                "title": "Đã xếp",
+                                "value": "SoTietDaXep",
+                                "align": "center",
+                                "width": "80px"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

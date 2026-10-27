@@ -1,0 +1,70 @@
+[
+  {
+    "comID": 9842,
+    "comName": "uc-avatar"
+  },
+  {
+    "comID": 9872,
+    "comName": "uc-empty"
+  },
+  {
+    "comID": 9873,
+    "comName": "uc-file-upload"
+  },
+  {
+    "comID": 9871,
+    "comName": "uc-loading"
+  },
+  {
+    "comID": 9863,
+    "comName": "uc-modal"
+  },
+  {
+    "comID": 9886,
+    "comName": "uc-notification-dropdown"
+  },
+  {
+    "comID": 10467,
+    "comName": "uc-request-sign-canvas"
+  },
+  {
+    "comID": 9841,
+    "comName": "uc-select-user"
+  },
+  {
+    "comID": 9869,
+    "comName": "uc-table"
+  },
+  {
+    "comID": 12369,
+    "comName": "uc-tkb-checklist"
+  },
+  {
+    "comID": 11469,
+    "comName": "uc-tkb-dinhmuc-grid"
+  },
+  {
+    "comID": 11298,
+    "comName": "uc-tkb-grid"
+  },
+  {
+    "comID": 12348,
+    "comName": "uc-tkb-phong-lopmon"
+  },
+  {
+    "comID": 12342,
+    "comName": "uc-tkb-phong-tong"
+  },
+  {
+    "comID": 12246,
+    "comName": "uc-tkb-toantruong"
+  },
+  {
+    "comID": 12361,
+    "comName": "uc-tkb-tuanmoi"
+  },
+  {
+    "comID": 9770,
+    "comName": "uc-wf-shell"
+  }
+]

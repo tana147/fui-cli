@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/tkb-chuyen-tuan",
+  "url": "//kyso.lhbs.vn/tkb-chuyen-tuan",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "tkb-chuyen-tuan",
+  "ModuleName": "TKB - Chuyển tuần",
+  "UpdateTime": "2026-09-02 17:56:57",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-09-09",
+  "LoadCount": 6,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

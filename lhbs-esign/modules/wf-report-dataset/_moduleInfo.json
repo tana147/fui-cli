@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/wf-report-dataset",
+  "url": "//kyso.lhbs.vn/wf-report-dataset",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "wf-report-dataset",
+  "ModuleName": "Báo cáo / Nguồn dữ liệu",
+  "UpdateTime": "2026-10-21 16:44:07",
+  "UpdateUser": "DEV000026",
+  "LastLoad": null,
+  "LoadCount": 0,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

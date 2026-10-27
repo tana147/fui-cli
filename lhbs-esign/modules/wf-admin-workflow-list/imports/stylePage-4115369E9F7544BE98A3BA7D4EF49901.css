@@ -1,0 +1,301 @@
+.wf-search-field {
+    max-width: 220px;
+    margin-left: auto;
+}
+
+
+
+@media (max-width: 768px) {
+    .wf-sidebar {
+        display: none;
+    }
+
+    .wf-stat-strip--5 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .wf-stat-strip--4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+
+.wf-request-panel {
+    background: var(--wf-card);
+    border: 1px solid var(--wf-border);
+    border-radius: var(--wf-r-md);
+    padding: 18px;
+}
+
+
+
+@media (max-width: 1100px) {
+
+    .wf-page-header,
+    .wf-page-header--compact {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .wf-request-layout,
+    .wf-request-summary,
+    .wf-free-sign-layout,
+    .wf-free-sign-stage-layout,
+    .wf-request-mode-grid,
+    .wf-request-cat-grid,
+    .wf-request-definition-grid,
+    .wf-request-form-grid--2,
+    .wf-request-form-grid--3 {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-request-stepper {
+        position: static;
+    }
+
+    .wf-free-sign-sidebar,
+    .wf-free-sign-panel {
+        position: static;
+    }
+
+    .wf-free-sign-panel__advanced-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-free-sign-viewer-footer {
+        align-items: flex-start;
+    }
+
+    .wf-free-sign-canvas {
+        height: 68vh;
+    }
+}
+
+
+
+@media (max-width: 1200px) {
+    .wf-sign-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-sign-detail-block--full {
+        grid-column: auto;
+    }
+}
+
+
+
+@media (max-width: 1200px) {
+
+    .wf-request-sign-workspace,
+    .wf-request-sign-side,
+    .wf-request-detail-layout,
+    .wf-request-detail-doc-grid,
+    .wf-request-viewer-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-request-viewer-frame-wrap,
+    .wf-request-viewer-frame {
+        min-height: 420px;
+        height: 420px;
+    }
+
+    .wf-request-sign-frame,
+    .wf-request-sign-canvas-wrap .wf-free-sign-canvas {
+        min-height: 440px;
+        height: 62vh;
+    }
+
+    .wf-request-sign-side {
+        position: static;
+    }
+
+    .wf-request-detail-doc-info--compact {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-request-action-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-request-sign-stage-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-request-sign-stage-layout .wf-free-sign-sidebar {
+        position: static;
+        order: 2;
+    }
+}
+
+
+
+@media (max-width: 960px) {
+    .wf-report-dashboard-list-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-report-present-toolbar {
+        flex-direction: column;
+    }
+
+    .wf-report-present-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-user-sign-config__hero,
+    .wf-user-sign-config__workspace,
+    .wf-user-sign-config__mode-layout,
+    .wf-user-sign-config__editor-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-user-sign-config__hero-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-user-sign-config__grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .wf-user-sign-config__sticky-card {
+        position: static;
+    }
+}
+
+
+
+@media (max-width: 900px) {
+
+    .wf-report-canvas-toolbar,
+    .wf-report-widget__toolbar,
+    .wf-report-section-card__head,
+    .wf-report-section-composer__actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .wf-report-canvas-row {
+        flex-direction: column;
+    }
+
+    .wf-report-layout-select--section,
+    .wf-report-section-layout-badge {
+        max-width: none;
+        min-width: 0;
+    }
+
+    .wf-report-widget--compact,
+    .wf-report-widget--micro,
+    .wf-report-widget--third,
+    .wf-report-widget--half,
+    .wf-report-widget--two-third,
+    .wf-report-widget--three-quarter,
+    .wf-report-widget--five-sixth,
+    .wf-report-widget--wide,
+    .wf-report-widget--tall,
+    .wf-report-widget--hero {
+        grid-column: auto;
+        max-width: 100% !important;
+        flex-basis: 100% !important;
+    }
+}
+
+
+
+@media (max-width: 768px) {
+    .wf-report-layout-gallery {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-report-widget__head {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .wf-report-picker-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .wf-report-widget__footer {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-report-table-pager {
+        align-items: flex-start;
+    }
+
+    .wf-report-table-pager__actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+
+
+@media (max-width: 768px) {
+    .wf-report-kpi-stage__meta {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-admission-widget__grid,
+    .wf-admission-heatmap__row {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-admission-real-stat-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-admission-widget__source-chips {
+        justify-content: flex-start;
+    }
+
+    .wf-admission-heatmap__cell {
+        min-height: 44px;
+    }
+
+    .wf-admission-level-item__top,
+    .wf-admission-source-item {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+
+
+@media (max-width: 1100px) {
+
+    .wf-ai-import-layout,
+    .wf-ai-review-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+@media (max-width: 768px) {
+    .wf-ai-hero {
+        padding: 18px;
+    }
+
+    .wf-ai-hero h2 {
+        font-size: 22px;
+    }
+
+    .wf-ai-hero__meta,
+    .wf-ai-summary-grid,
+    .wf-ai-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wf-ai-review-step-card__header,
+    .wf-ai-role-item {
+        flex-direction: column;
+    }
+}

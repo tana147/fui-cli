@@ -1,0 +1,8 @@
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    .tkb-print-title {
+        text-align: center;
+    }
+}

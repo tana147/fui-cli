@@ -1,0 +1,466 @@
+{
+  "data": [
+    {
+      "filterKeyword": ""
+    },
+    {
+      "dsPhong": []
+    },
+    {
+      "dlForm": false,
+      "addNew": 1
+    },
+    {
+      "form": {
+        "MaPhong": "",
+        "TenPhong": "",
+        "KieuPhong": "Bo mon",
+        "MonHocChoPhep": "",
+        "SucChuaToiDa_TieuHoc": null,
+        "SucChuaToiDa_MamNon": null
+      }
+    },
+    {
+      "dsKieuPhong": [
+        "Bo mon",
+        "Da nang"
+      ]
+    },
+    {
+      "menuHanhDong": [
+        {
+          "color": "primary",
+          "icon-text": "mdi-pencil",
+          "text": "Sửa",
+          "action": [
+            {
+              "addNew": 0,
+              "form": {
+                "MaPhong": "item.MaPhong",
+                "TenPhong": "item.TenPhong",
+                "KieuPhong": "item.KieuPhong",
+                "MonHocChoPhep": "item.MonHocChoPhep",
+                "SucChuaToiDa_TieuHoc": "item.SucChuaToiDa_TieuHoc",
+                "SucChuaToiDa_MamNon": "item.SucChuaToiDa_MamNon"
+              }
+            },
+            {
+              "dlForm": true
+            }
+          ]
+        },
+        {
+          "color": "warning",
+          "icon-text": "mdi-delete",
+          "text": "Xóa",
+          "action": {
+            "CONFIRM": "Bạn có chắc muốn xoá phòng này?",
+            "API": "/TkbPhongHocDelete/`{{item.MaPhong}}",
+            "CALLBACK": [
+              {
+                "MESS": "Đã xoá"
+              },
+              {
+                "CALL": "fetchPhong"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "fetchPhong": {
+        "API": "/TkbPhongHocList",
+        "IN": {
+          "Keyword": "vueData.filterKeyword"
+        },
+        "OUT": "dsPhong"
+      }
+    },
+    {
+      "insertPhong": {
+        "API": "/TkbPhongHocInsert",
+        "IN": {
+          "MaPhong": "vueData.form.MaPhong",
+          "TenPhong": "vueData.form.TenPhong",
+          "KieuPhong": "vueData.form.KieuPhong",
+          "MonHocChoPhep": "vueData.form.MonHocChoPhep",
+          "SucChuaToiDa_TieuHoc": "vueData.form.SucChuaToiDa_TieuHoc",
+          "SucChuaToiDa_MamNon": "vueData.form.SucChuaToiDa_MamNon"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Thêm thành công"
+          },
+          {
+            "CALL": "fetchPhong"
+          }
+        ]
+      }
+    },
+    {
+      "updatePhong": {
+        "API": "/TkbPhongHocUpdate",
+        "IN": {
+          "MaPhong": "vueData.form.MaPhong",
+          "TenPhong": "vueData.form.TenPhong",
+          "KieuPhong": "vueData.form.KieuPhong",
+          "MonHocChoPhep": "vueData.form.MonHocChoPhep",
+          "SucChuaToiDa_TieuHoc": "vueData.form.SucChuaToiDa_TieuHoc",
+          "SucChuaToiDa_MamNon": "vueData.form.SucChuaToiDa_MamNon"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Cập nhật thành công"
+          },
+          {
+            "CALL": "fetchPhong"
+          }
+        ]
+      }
+    },
+    {
+      "savePhong": {
+        "IF": "vueData.addNew == 1",
+        "THEN": {
+          "CALL": "insertPhong"
+        },
+        "ELSE": {
+          "CALL": "updatePhong"
+        }
+      }
+    },
+    {
+      "CALL": "fetchPhong"
+    }
+  ],
+  "watch": {
+    "filterKeyword": {
+      "CALL": "fetchPhong"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-text-field",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterKeyword",
+                "label": "Tìm mã phòng / tên phòng",
+                ":required": false
+              },
+              "w": "260"
+            },
+            {
+              "el": "v-spacer",
+              "attr": {},
+              "w": ""
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "my-2",
+                "label": "Thêm phòng",
+                "icon-text": "mdi-plus",
+                ":checkvalid": false,
+                "action": [
+                  {
+                    "addNew": 1,
+                    "form": {
+                      "MaPhong": "",
+                      "TenPhong": "",
+                      "KieuPhong": "Bo mon",
+                      "MonHocChoPhep": "",
+                      "SucChuaToiDa_TieuHoc": null,
+                      "SucChuaToiDa_MamNon": null
+                    }
+                  },
+                  {
+                    "dlForm": true
+                  }
+                ]
+              },
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Danh mục phòng học",
+                ":items": "vueData.dsPhong",
+                "item-key": "MaPhong",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":height": -16,
+                ":headers": [
+                  {
+                    "align": "center",
+                    "title": "Mã phòng",
+                    "value": "MaPhong",
+                    "width": "100px"
+                  },
+                  {
+                    "title": "Tên phòng",
+                    "value": "TenPhong"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Kiểu",
+                    "value": "KieuPhong",
+                    "width": "100px"
+                  },
+                  {
+                    "title": "Môn học được phép",
+                    "value": "MonHocChoPhep"
+                  },
+                  {
+                    "align": "center",
+                    "title": "SC tối đa TH",
+                    "value": "SucChuaToiDa_TieuHoc",
+                    "width": "110px"
+                  },
+                  {
+                    "align": "center",
+                    "title": "SC tối đa MN",
+                    "value": "SucChuaToiDa_MamNon",
+                    "width": "110px"
+                  },
+                  {
+                    "el": "t-menu",
+                    "title": "Tác vụ",
+                    "value": "Actions",
+                    "width": "100px",
+                    "align": "center",
+                    "attr": {
+                      ":items": "vueData.menuHanhDong"
+                    }
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "hidden-container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlForm",
+                "width": 600
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Phòng học"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlForm = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "grid-list-md px-4"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.MaPhong",
+                                    "label": "Mã phòng",
+                                    ":disabled": "vueData.addNew==0"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.TenPhong",
+                                    "label": "Tên phòng"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.form.KieuPhong",
+                                    "label": "Kiểu phòng",
+                                    ":items": "vueData.dsKieuPhong"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.MonHocChoPhep",
+                                    "label": "Môn học được phép (cách nhau bởi dấu phẩy)",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model.number": "vueData.form.SucChuaToiDa_TieuHoc",
+                                    "label": "Sức chứa tối đa Tiểu học",
+                                    "type": "number",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model.number": "vueData.form.SucChuaToiDa_MamNon",
+                                    "label": "Sức chứa tối đa Mầm non",
+                                    "type": "number",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "label": "Lưu",
+                            "icon-text": "mdi-content-save",
+                            ":checkvalid": true,
+                            "action": {
+                              "CALL": "savePhong"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

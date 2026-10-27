@@ -1,0 +1,2887 @@
+{
+  "data": [
+    {
+      "selectedRunID": 0,
+      "filterLop": "",
+      "filterGV": ""
+    },
+    {
+      "xemToanKhoi": false,
+      "dsLichToanKhoi": [],
+      "dsLichToanKhoiRaw": []
+    },
+    {
+      "dsChecklistToanKhoi": []
+    },
+    {
+      "formNgayApDung": null
+    },
+    {
+      "fixedThuCols": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "fixedSlots": [
+        {
+          "Buoi": "Sang",
+          "Tiet": 1
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 2
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 3
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 4
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 5
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 1
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 2
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 3
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 4
+        }
+      ]
+    },
+    {
+      "dsRunKhaThi": []
+    },
+    {
+      "dsLop": []
+    },
+    {
+      "dsLich": [],
+      "dsLichRaw": []
+    },
+    {
+      "dsGroupSlots": []
+    },
+    {
+      "dsChecklist": []
+    },
+    {
+      "dsLichGV": [],
+      "dsLichGVRaw": []
+    },
+    {
+      "dsChecklistGV": []
+    },
+    {
+      "dlQuyTac": false,
+      "quyTacMon": {
+        "MaMon": "",
+        "TenMon": ""
+      },
+      "dsQuyTacChiTiet": []
+    },
+    {
+      "menuQuyTac": [
+        {
+          "color": "primary",
+          "icon-text": "mdi-information-outline",
+          "text": "Xem quy tắc",
+          "action": [
+            {
+              "quyTacMon.MaMon": "item.MaMon",
+              "quyTacMon.TenMon": "item.TenMon"
+            },
+            {
+              "dlQuyTac": true
+            },
+            {
+              "CALL": "fetchQuyTacChiTiet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "dsGVOptions": [],
+      "dsMonOptions": [],
+      "dsPhongOptions": []
+    },
+    {
+      "doiTietID1": null,
+      "doiTietID2": null,
+      "doiTietTrigger": 0
+    },
+    {
+      "chuyenTietID": null,
+      "chuyenTietThu": null,
+      "chuyenTietBuoi": null,
+      "chuyenTietTiet": null,
+      "chuyenTietTrigger": 0
+    },
+    {
+      "apDungItem": {
+        "MaLop": "",
+        "MaMon": "",
+        "MaGV": ""
+      },
+      "apDungThu": null,
+      "apDungBuoi": null,
+      "apDungTiet": null,
+      "apDungTrigger": 0
+    },
+    {
+      "dlThemTuDo": false,
+      "themTuDoThu": null,
+      "themTuDoBuoi": null,
+      "themTuDoTiet": null,
+      "dsChuaXepKhaThi": [],
+      "formThemTuDo": {
+        "MaMon": "",
+        "MaGV": "",
+        "MaPhong": ""
+      },
+      "themTuDoTrigger": 0
+    },
+    {
+      "toggleKhoaID": null,
+      "toggleKhoaTrigger": 0
+    },
+    {
+      "dlPhanConLai": false,
+      "maxSecsPhanConLai": 60,
+      "dangChayPhanConLai": false,
+      "ketQuaPhanConLai": {
+        "TrangThai": "",
+        "KhaThi": false,
+        "SoNhomKhongXepDuoc": null
+      }
+    },
+    {
+      "dsTuan": [],
+      "runQueue": [],
+      "runQueueDone": [],
+      "queueRunID": null,
+      "queueKhoi": null
+    },
+    {
+      "dlGVBaoBan": false,
+      "baoBanTuan": null,
+      "baoBanMaGV": null,
+      "baoBanSlots": [],
+      "dsLichGVBaoBan": [],
+      "dsLichGVBaoBanRaw": [],
+      "dsBaoBanAnhHuong": [],
+      "daXemBaoBan": false
+    },
+    {
+      "dlNgayNghi": false,
+      "ngayNghiTuan": null,
+      "ngayNghiPhamVi": "LOP",
+      "ngayNghiMaLop": null,
+      "ngayNghiKhoi": null,
+      "ngayNghiLyDo": "",
+      "ngayNghiSlots": [],
+      "dsLichNgayNghi": [],
+      "dsLichNgayNghiRaw": [],
+      "dsNgayNghiAnhHuong": [],
+      "daXemNgayNghi": false
+    },
+    {
+      "dsKhoiOptionsTkb": [
+        {
+          "text": "Khối 01",
+          "value": "01"
+        },
+        {
+          "text": "Khối 02",
+          "value": "02"
+        },
+        {
+          "text": "Khối 03",
+          "value": "03"
+        },
+        {
+          "text": "Khối 04",
+          "value": "04"
+        },
+        {
+          "text": "Khối 05",
+          "value": "05"
+        },
+        {
+          "text": "Khối 06",
+          "value": "06"
+        },
+        {
+          "text": "Khối 07",
+          "value": "07"
+        },
+        {
+          "text": "Khối 08",
+          "value": "08"
+        },
+        {
+          "text": "Khối 09",
+          "value": "09"
+        },
+        {
+          "text": "Khối 10",
+          "value": "10"
+        },
+        {
+          "text": "Khối 11",
+          "value": "11"
+        },
+        {
+          "text": "Khối 12",
+          "value": "12"
+        }
+      ]
+    },
+    {
+      "dlSua": false
+    },
+    {
+      "formSua": {
+        "ID": null,
+        "MaLop": "",
+        "MaMon": "",
+        "MaGV": "",
+        "MaPhong": ""
+      }
+    },
+    {
+      "goiYAI": "",
+      "goiYAILoading": false
+    },
+    {
+      "dsChuaXepDuoc": []
+    },
+    {
+      "menuGoiYChuaXep": [
+        {
+          "color": "primary",
+          "icon-text": "mdi-lightning-bolt",
+          "text": "Gợi ý chuỗi (tức thì)",
+          "action": [
+            {
+              "goiYChuaXepItem": "item",
+              "goiYChuaXepText": "",
+              "goiYChuaXepLoading": true,
+              "dlGoiYChuaXep": true
+            },
+            {
+              "CALL": "goiYChuoi"
+            }
+          ]
+        },
+        {
+          "color": "deep-purple",
+          "icon-text": "mdi-auto-fix",
+          "text": "Gợi ý AI (Gemini, chậm hơn)",
+          "action": [
+            {
+              "goiYChuaXepItem": "item",
+              "goiYChuaXepText": "",
+              "goiYChuaXepLoading": true,
+              "dlGoiYChuaXep": true
+            },
+            {
+              "CALL": "goiYChuaXep"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "dlGoiYChuaXep": false,
+      "goiYChuaXepItem": {
+        "MaLop": "",
+        "MaMon": "",
+        "TenMon": "",
+        "MaGV": "",
+        "TenGV": "",
+        "SoTiet": 1
+      },
+      "goiYChuaXepText": "",
+      "goiYChuaXepLoading": false
+    },
+    {
+      "fetchRunKhaThi": {
+        "API": "/TkbKetQuaXepRunListKhaThi",
+        "OUT": "dsRunKhaThi",
+        "CALLBACK": [
+          {
+            "EXE": "tkbAutoSelectRun()"
+          }
+        ]
+      }
+    },
+    {
+      "fetchLop": {
+        "API": "/TkbKetQuaXepLopList",
+        "IN": {
+          "RunID": "vueData.selectedRunID"
+        },
+        "OUT": "dsLop",
+        "CALLBACK": [
+          {
+            "EXE": "tkbAutoSelectLop()"
+          }
+        ]
+      }
+    },
+    {
+      "fetchLich": {
+        "API": "/TkbKetQuaXepList",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaLop": "vueData.filterLop"
+        },
+        "OUT": "dsLichRaw",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsLich = vueData.dsLichRaw.filter(r => r.MaLop === vueData.filterLop)"
+          }
+        ]
+      }
+    },
+    {
+      "fetchGroupSlots": {
+        "API": "/TkbCumTachSlotByLop",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaLop": "vueData.filterLop"
+        },
+        "OUT": "dsGroupSlots"
+      }
+    },
+    {
+      "fetchChecklist": {
+        "API": "/TkbKetQuaXepChecklist",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaLop": "vueData.filterLop"
+        },
+        "OUT": "dsChecklist"
+      }
+    },
+    {
+      "fetchLichToanKhoi": {
+        "API": "/TkbKetQuaXepList",
+        "IN": {
+          "RunID": "vueData.selectedRunID"
+        },
+        "OUT": "dsLichToanKhoiRaw",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsLichToanKhoi = vueData.dsLichToanKhoiRaw.filter(r => r.MaMon !== 'HOP');"
+          }
+        ]
+      }
+    },
+    {
+      "fetchChecklistToanKhoi": {
+        "API": "/TkbKetQuaXepChecklistToanKhoi",
+        "IN": {
+          "RunID": "vueData.selectedRunID"
+        },
+        "OUT": "dsChecklistToanKhoi"
+      }
+    },
+    {
+      "fetchChecklistGV": {
+        "API": "/TkbKetQuaXepChecklistGV",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaGV": "vueData.filterGV"
+        },
+        "OUT": "dsChecklistGV"
+      }
+    },
+    {
+      "fetchQuyTacChiTiet": {
+        "API": "/TkbMonQuyTacList",
+        "IN": {
+          "Keyword": "vueData.quyTacMon.MaMon"
+        },
+        "OUT": "dsQuyTacChiTiet",
+        "CALLBACK": {
+          "EXE": "vueData.dsQuyTacChiTiet = vueData.dsQuyTacChiTiet.filter(function(q){ return q.MaMon === vueData.quyTacMon.MaMon; });"
+        }
+      }
+    },
+    {
+      "fetchLichGV": {
+        "API": "/TkbKetQuaXepList",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaGV": "vueData.filterGV"
+        },
+        "OUT": "dsLichGVRaw",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsLichGV = vueData.dsLichGVRaw.filter(r => r.MaGV === vueData.filterGV)"
+          }
+        ]
+      }
+    },
+    {
+      "fetchGVOptions": {
+        "API": "/TkbGiaoVienList",
+        "IN": {
+          "Keyword": "",
+          "ChiThinhGiang": false
+        },
+        "OUT": "dsGVOptions",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsGVOptions = vueData.dsGVOptions.map(g => ({...g, GVDisplay: g.MaGV + ' - ' + g.HoTen}))"
+          }
+        ]
+      }
+    },
+    {
+      "fetchMonOptions": {
+        "API": "/TkbMonHocList",
+        "IN": {
+          "Keyword": ""
+        },
+        "OUT": "dsMonOptions",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsMonOptions = vueData.dsMonOptions.map(m => ({...m, MonDisplay: m.MaMon + ' - ' + m.TenMon}))"
+          }
+        ]
+      }
+    },
+    {
+      "fetchPhongOptions": {
+        "API": "/TkbPhongHocList",
+        "IN": {
+          "Keyword": ""
+        },
+        "OUT": "dsPhongOptions",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsPhongOptions = vueData.dsPhongOptions.map(p => ({...p, PhongDisplay: p.MaPhong + ' - ' + p.TenPhong}))"
+          }
+        ]
+      }
+    },
+    {
+      "updateNgayApDung": {
+        "API": "/TkbChayAutoLogNgayApDungUpdate",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "NgayApDung": "vueData.formNgayApDung"
+        },
+        "OUT": "updateNgayApDungResp",
+        "CALLBACK": [
+          {
+            "MESS": "{{vueData.updateNgayApDungResp[0].mess}}"
+          },
+          {
+            "CALL": "fetchRunKhaThi"
+          }
+        ]
+      }
+    },
+    {
+      "suaTiet": {
+        "API": "/TkbKetQuaXepSuaTiet",
+        "IN": {
+          "ID": "vueData.formSua.ID",
+          "MaMon": "vueData.formSua.MaMon",
+          "MaGV": "vueData.formSua.MaGV",
+          "MaPhong": "vueData.formSua.MaPhong"
+        },
+        "OUT": "suaTietResp",
+        "CALLBACK": [
+          {
+            "MESS": "{{vueData.suaTietResp[0].Message}}"
+          },
+          {
+            "EXE": "tkbHandleSuaTietResp(vueData.suaTietResp)"
+          }
+        ]
+      }
+    },
+    {
+      "doiTiet": {
+        "API": "/TkbKetQuaXepDoiTiet",
+        "IN": {
+          "ID1": "vueData.doiTietID1",
+          "ID2": "vueData.doiTietID2"
+        },
+        "OUT": "doiTietResp",
+        "CALLBACK": [
+          {
+            "MESS": "{{vueData.doiTietResp[0].Message}}"
+          },
+          {
+            "EXE": "tkbHandleDoiTietResp(vueData.doiTietResp)"
+          }
+        ]
+      }
+    },
+    {
+      "chuyenTiet": {
+        "API": "/TkbKetQuaXepChuyenTiet",
+        "IN": {
+          "ID": "vueData.chuyenTietID",
+          "Thu": "vueData.chuyenTietThu",
+          "Buoi": "vueData.chuyenTietBuoi",
+          "Tiet": "vueData.chuyenTietTiet"
+        },
+        "OUT": "chuyenTietResp",
+        "CALLBACK": [
+          {
+            "MESS": "{{vueData.chuyenTietResp[0].Message}}"
+          },
+          {
+            "EXE": "tkbHandleChuyenTietResp(vueData.chuyenTietResp)"
+          }
+        ]
+      }
+    },
+    {
+      "goiYXepTay": {
+        "API": "/TkbGoiYXepTay",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaLop": "vueData.formSua.MaLop",
+          "MaMon": "vueData.formSua.MaMon",
+          "MaGV": "vueData.formSua.MaGV",
+          "SoTiet": 1
+        },
+        "OUT": "goiYAIResp",
+        "CALLBACK": [
+          {
+            "EXE": "tkbHandleGoiYAIResp(vueData.goiYAIResp)"
+          }
+        ]
+      }
+    },
+    {
+      "goiYChuoi": {
+        "API": "/TkbGoiYChuoi",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaLop": "vueData.goiYChuaXepItem.MaLop",
+          "MaMon": "vueData.goiYChuaXepItem.MaMon",
+          "MaGV": "vueData.goiYChuaXepItem.MaGV"
+        },
+        "OUT": "goiYChuoiResp",
+        "CALLBACK": [
+          {
+            "EXE": "tkbHandleGoiYChuoiResp(vueData.goiYChuoiResp)"
+          }
+        ]
+      }
+    },
+    {
+      "apDungGoiY": {
+        "API": "/TkbGoiYApDung",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaLop": "vueData.apDungItem.MaLop",
+          "MaMon": "vueData.apDungItem.MaMon",
+          "MaGV": "vueData.apDungItem.MaGV",
+          "LoaiGoiY": "TRUC_TIEP",
+          "Thu": "vueData.apDungThu",
+          "Buoi": "vueData.apDungBuoi",
+          "Tiet": "vueData.apDungTiet"
+        },
+        "OUT": "apDungGoiYResp",
+        "CALLBACK": [
+          {
+            "MESS": "{{vueData.apDungGoiYResp[0].Message}}"
+          },
+          {
+            "EXE": "tkbHandleApDungGoiYResp(vueData.apDungGoiYResp)"
+          }
+        ]
+      }
+    },
+    {
+      "fetchChuaXepDuoc": {
+        "API": "/TkbChayAutoKhongXepDuocList",
+        "IN": {
+          "RunID": "vueData.selectedRunID"
+        },
+        "OUT": "dsChuaXepDuoc"
+      }
+    },
+    {
+      "fetchChuaXepKhaThi": {
+        "API": "/TkbChuaXepKhaThi",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaLop": "vueData.filterLop",
+          "Thu": "vueData.themTuDoThu",
+          "Buoi": "vueData.themTuDoBuoi",
+          "Tiet": "vueData.themTuDoTiet"
+        },
+        "OUT": "dsChuaXepKhaThi"
+      }
+    },
+    {
+      "themTuDo": {
+        "API": "/TkbKetQuaXepThemTuDo",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaLop": "vueData.filterLop",
+          "MaMon": "vueData.formThemTuDo.MaMon",
+          "MaGV": "vueData.formThemTuDo.MaGV",
+          "MaPhong": "vueData.formThemTuDo.MaPhong",
+          "Thu": "vueData.themTuDoThu",
+          "Buoi": "vueData.themTuDoBuoi",
+          "Tiet": "vueData.themTuDoTiet"
+        },
+        "OUT": "themTuDoResp",
+        "CALLBACK": [
+          {
+            "MESS": "{{vueData.themTuDoResp[0].Message}}"
+          },
+          {
+            "EXE": "tkbHandleThemTuDoResp(vueData.themTuDoResp)"
+          }
+        ]
+      }
+    },
+    {
+      "goiYChuaXep": {
+        "API": "/TkbGoiYXepTay",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaLop": "vueData.goiYChuaXepItem.MaLop",
+          "MaMon": "vueData.goiYChuaXepItem.MaMon",
+          "MaGV": "vueData.goiYChuaXepItem.MaGV",
+          "SoTiet": "vueData.goiYChuaXepItem.SoTiet"
+        },
+        "OUT": "goiYChuaXepResp",
+        "CALLBACK": [
+          {
+            "EXE": "tkbHandleGoiYChuaXepResp(vueData.goiYChuaXepResp)"
+          }
+        ]
+      }
+    },
+    {
+      "toggleKhoa": {
+        "API": "/TkbKetQuaXepToggleKhoa",
+        "IN": {
+          "ID": "vueData.toggleKhoaID"
+        },
+        "OUT": "toggleKhoaResp",
+        "CALLBACK": [
+          {
+            "EXE": "tkbHandleToggleKhoaResp(vueData.toggleKhoaResp)"
+          }
+        ]
+      }
+    },
+    {
+      "chayAutoPhanConLai": {
+        "API": "/TkbChayAutoPhanConLai",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaxSecs": "vueData.maxSecsPhanConLai"
+        },
+        "OUT": "chayAutoPhanConLaiResp",
+        "CALLBACK": [
+          {
+            "EXE": "tkbHandleChayAutoPhanConLaiResp(vueData.chayAutoPhanConLaiResp)"
+          }
+        ]
+      }
+    },
+    {
+      "checkTrangThaiPhanConLai": {
+        "API": "/TkbChayAutoTrangThai",
+        "IN": {
+          "RunID": "vueData.selectedRunID"
+        },
+        "OUT": "trangThaiPhanConLaiResp",
+        "CALLBACK": [
+          {
+            "EXE": "tkbHandleTrangThaiPhanConLaiResp(vueData.trangThaiPhanConLaiResp)"
+          }
+        ]
+      }
+    },
+    {
+      "chayAutoPhanConLaiQueue": {
+        "API": "/TkbChayAutoPhanConLai",
+        "IN": {
+          "RunID": "vueData.queueRunID",
+          "MaxSecs": "vueData.maxSecsPhanConLai"
+        },
+        "OUT": "chayAutoPhanConLaiResp",
+        "CALLBACK": [
+          {
+            "EXE": "tkbHandleQueuePhanConLaiResp(vueData.chayAutoPhanConLaiResp)"
+          }
+        ]
+      }
+    },
+    {
+      "checkTrangThaiQueue": {
+        "API": "/TkbChayAutoTrangThai",
+        "IN": {
+          "RunID": "vueData.queueRunID"
+        },
+        "OUT": "trangThaiPhanConLaiResp",
+        "CALLBACK": [
+          {
+            "EXE": "tkbHandleQueueTrangThaiResp(vueData.trangThaiPhanConLaiResp)"
+          }
+        ]
+      }
+    },
+    {
+      "fetchDsTuan": {
+        "API": "/TkbTuanList",
+        "IN": {
+          "NamHoc": "`2026-2027"
+        },
+        "OUT": "dsTuan"
+      }
+    },
+    {
+      "fetchLichGVBaoBan": {
+        "API": "/TkbTheoTuan_LichGV",
+        "IN": {
+          "Tuan": "vueData.baoBanTuan",
+          "MaGV": "vueData.baoBanMaGV"
+        },
+        "OUT": "dsLichGVBaoBan"
+      }
+    },
+    {
+      "fetchBaoBanAnhHuong": {
+        "API": "/TkbGVBaoBan_XacDinhAnhHuong",
+        "IN": {
+          "Tuan": "vueData.baoBanTuan",
+          "MaGV": "vueData.baoBanMaGV",
+          "SlotsJson": "JSON.stringify(vueData.baoBanSlots)"
+        },
+        "OUT": "dsBaoBanAnhHuong",
+        "CALLBACK": [
+          {
+            "daXemBaoBan": true
+          }
+        ]
+      }
+    },
+    {
+      "apDungBaoBan": {
+        "API": "/TkbGVBaoBan_ApDung",
+        "IN": {
+          "Tuan": "vueData.baoBanTuan",
+          "MaGV": "vueData.baoBanMaGV",
+          "SlotsJson": "JSON.stringify(vueData.baoBanSlots)"
+        },
+        "OUT": "affectedRunIDs",
+        "CALLBACK": [
+          {
+            "EXE": "tkbStartRunQueue(vueData.affectedRunIDs)"
+          }
+        ]
+      }
+    },
+    {
+      "fetchLichNgayNghi": {
+        "API": "/TkbTheoTuan_LichLop",
+        "IN": {
+          "Tuan": "vueData.ngayNghiTuan",
+          "MaLop": "vueData.ngayNghiMaLop"
+        },
+        "OUT": "dsLichNgayNghi"
+      }
+    },
+    {
+      "fetchNgayNghiAnhHuong": {
+        "API": "/TkbNgayNghi_XacDinhAnhHuong",
+        "IN": {
+          "Tuan": "vueData.ngayNghiTuan",
+          "PhamVi": "vueData.ngayNghiPhamVi",
+          "MaLop": "vueData.ngayNghiMaLop",
+          "Khoi": "vueData.ngayNghiKhoi",
+          "SlotsJson": "JSON.stringify(vueData.ngayNghiSlots)"
+        },
+        "OUT": "dsNgayNghiAnhHuong",
+        "CALLBACK": [
+          {
+            "daXemNgayNghi": true
+          }
+        ]
+      }
+    },
+    {
+      "apDungNgayNghi": {
+        "API": "/TkbNgayNghi_ApDung",
+        "IN": {
+          "Tuan": "vueData.ngayNghiTuan",
+          "PhamVi": "vueData.ngayNghiPhamVi",
+          "MaLop": "vueData.ngayNghiMaLop",
+          "Khoi": "vueData.ngayNghiKhoi",
+          "SlotsJson": "JSON.stringify(vueData.ngayNghiSlots)",
+          "LyDo": "vueData.ngayNghiLyDo"
+        },
+        "OUT": "affectedRunIDs",
+        "CALLBACK": [
+          {
+            "EXE": "tkbStartRunQueue(vueData.affectedRunIDs)"
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "fetchRunKhaThi"
+    },
+    {
+      "CALL": "fetchDsTuan"
+    },
+    {
+      "CALL": "fetchGVOptions"
+    },
+    {
+      "CALL": "fetchMonOptions"
+    },
+    {
+      "CALL": "fetchPhongOptions"
+    },
+    {
+      "EXE": "if (typeof selectedRunID !== 'undefined' && selectedRunID) { var _rid = Number(selectedRunID); vueData.selectedRunID = 0; window.setTimeout(function(){ vueData.selectedRunID = _rid; }, 400); }"
+    }
+  ],
+  "watch": {
+    "selectedRunID": [
+      {
+        "CALL": "fetchLop"
+      },
+      {
+        "CALL": "fetchChuaXepDuoc"
+      },
+      {
+        "EXE": "tkbSyncNgayApDung()"
+      },
+      {
+        "IF": "xemToanKhoi",
+        "THEN": [
+          {
+            "CALL": "fetchLichToanKhoi"
+          },
+          {
+            "CALL": "fetchChecklistToanKhoi"
+          }
+        ]
+      }
+    ],
+    "filterLop": [
+      {
+        "CALL": "fetchLich"
+      },
+      {
+        "CALL": "fetchChecklist"
+      },
+      {
+        "CALL": "fetchGroupSlots"
+      }
+    ],
+    "filterGV": [
+      {
+        "CALL": "fetchLichGV"
+      },
+      {
+        "CALL": "fetchChecklistGV"
+      }
+    ],
+    "doiTietTrigger": {
+      "CALL": "doiTiet"
+    },
+    "chuyenTietTrigger": {
+      "CALL": "chuyenTiet"
+    },
+    "apDungTrigger": {
+      "CALL": "apDungGoiY"
+    },
+    "themTuDoTrigger": {
+      "CALL": "themTuDo"
+    },
+    "toggleKhoaTrigger": {
+      "CALL": "toggleKhoa"
+    },
+    "dlThemTuDo": {
+      "IF": "dlThemTuDo",
+      "THEN": [
+        {
+          "CALL": "fetchChuaXepKhaThi"
+        }
+      ]
+    },
+    "xemToanKhoi": {
+      "IF": "xemToanKhoi",
+      "THEN": [
+        {
+          "CALL": "fetchLichToanKhoi"
+        },
+        {
+          "CALL": "fetchChecklistToanKhoi"
+        }
+      ]
+    },
+    "baoBanMaGV": {
+      "IF": "!!baoBanMaGV && !!baoBanTuan",
+      "THEN": [
+        {
+          "baoBanSlots": [],
+          "daXemBaoBan": false,
+          "dsBaoBanAnhHuong": []
+        },
+        {
+          "CALL": "fetchLichGVBaoBan"
+        }
+      ]
+    },
+    "baoBanTuan": {
+      "IF": "!!baoBanMaGV && !!baoBanTuan",
+      "THEN": [
+        {
+          "baoBanSlots": [],
+          "daXemBaoBan": false,
+          "dsBaoBanAnhHuong": []
+        },
+        {
+          "CALL": "fetchLichGVBaoBan"
+        }
+      ]
+    },
+    "ngayNghiMaLop": {
+      "IF": "!!ngayNghiMaLop && ngayNghiPhamVi === 'LOP' && !!ngayNghiTuan",
+      "THEN": [
+        {
+          "ngayNghiSlots": [],
+          "daXemNgayNghi": false,
+          "dsNgayNghiAnhHuong": []
+        },
+        {
+          "CALL": "fetchLichNgayNghi"
+        }
+      ]
+    },
+    "ngayNghiTuan": {
+      "IF": "!!ngayNghiMaLop && ngayNghiPhamVi === 'LOP' && !!ngayNghiTuan",
+      "THEN": [
+        {
+          "ngayNghiSlots": [],
+          "daXemNgayNghi": false,
+          "dsNgayNghiAnhHuong": []
+        },
+        {
+          "CALL": "fetchLichNgayNghi"
+        }
+      ]
+    },
+    "ngayNghiPhamVi": [
+      {
+        "ngayNghiSlots": [],
+        "daXemNgayNghi": false,
+        "dsNgayNghiAnhHuong": [],
+        "dsLichNgayNghi": []
+      }
+    ]
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.selectedRunID",
+                "label": "Lần chạy Auto (khả thi)",
+                ":items": "vueData.dsRunKhaThi",
+                ":item-title": "item => 'RunID ' + item.RunID + ' - Khối ' + (item.Khoi || 'Toàn trường') + ' - ' + (item.TenTuan || 'Chưa rõ tuần') + ' - ' + item.SoSlotDaXep + ' tiết'",
+                "item-value": "RunID",
+                ":required": false
+              },
+              "w": "340"
+            },
+            {
+              "el": "v-chip",
+              "col": {
+                "class": "shrink d-flex align-center"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "color": "primary",
+                "variant": "tonal",
+                "v-if": "vueData.dsRunKhaThi.find(r => r.RunID === vueData.selectedRunID) && vueData.dsRunKhaThi.find(r => r.RunID === vueData.selectedRunID).TuanThuTrongThang"
+              },
+              "text": "'Tuần thứ ' + (vueData.dsRunKhaThi.find(r => r.RunID === vueData.selectedRunID) || {}).TuanThuTrongThang + '/tháng ' + (vueData.dsRunKhaThi.find(r => r.RunID === vueData.selectedRunID) || {}).ThangHoc",
+              "w": ""
+            },
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterLop",
+                "label": "Lớp",
+                ":items": "vueData.dsLop",
+                "item-title": "MaLop",
+                "item-value": "MaLop",
+                ":required": false
+              },
+              "w": "160"
+            },
+            {
+              "el": "v-switch",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.xemToanKhoi",
+                "label": "Xem toàn khối",
+                ":hide-details": true
+              },
+              "w": ""
+            },
+            {
+              "el": "v-spacer",
+              "attr": {},
+              "w": ""
+            },
+            {
+              "el": "f-date",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.formNgayApDung",
+                "label": "Ngày áp dụng từ",
+                ":required": false
+              },
+              "w": "180"
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink d-flex align-center"
+              },
+              "attr": {
+                "class": "my-2",
+                "label": "Lưu",
+                "icon-text": "mdi-content-save",
+                ":checkvalid": false,
+                "action": {
+                  "CALL": "updateNgayApDung"
+                }
+              },
+              "w": ""
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink d-flex align-center"
+              },
+              "attr": {
+                "class": "my-2",
+                "color": "deep-purple",
+                "label": "Xếp Auto phần còn thiếu",
+                "icon-text": "mdi-auto-fix",
+                ":checkvalid": false,
+                "action": {
+                  "dlPhanConLai": true
+                }
+              },
+              "w": ""
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink d-flex align-center"
+              },
+              "attr": {
+                "class": "my-2",
+                "color": "warning",
+                "label": "GV báo bận",
+                "icon-text": "mdi-account-alert-outline",
+                ":checkvalid": false,
+                "action": {
+                  "baoBanTuan": null,
+                  "baoBanMaGV": null,
+                  "baoBanSlots": [],
+                  "dsLichGVBaoBan": [],
+                  "dsBaoBanAnhHuong": [],
+                  "daXemBaoBan": false,
+                  "dlGVBaoBan": true
+                }
+              },
+              "w": ""
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink d-flex align-center"
+              },
+              "attr": {
+                "class": "my-2",
+                "color": "brown",
+                "label": "Ngày nghỉ",
+                "icon-text": "mdi-calendar-remove-outline",
+                ":checkvalid": false,
+                "action": {
+                  "ngayNghiTuan": null,
+                  "ngayNghiPhamVi": "LOP",
+                  "ngayNghiMaLop": null,
+                  "ngayNghiKhoi": null,
+                  "ngayNghiLyDo": "",
+                  "ngayNghiSlots": [],
+                  "dsLichNgayNghi": [],
+                  "dsNgayNghiAnhHuong": [],
+                  "daXemNgayNghi": false,
+                  "dlNgayNghi": true
+                }
+              },
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "attr": {
+            "v-if": "!vueData.xemToanKhoi"
+          },
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "v-if": "vueData.dsChuaXepDuoc.length > 0",
+                "class": "mb-1"
+              },
+              "innerHTML": [
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-caption text-medium-emphasis mb-1"
+                  },
+                  "innerHTML": "Chưa xếp được — kéo vào ô trống trên lưới bên dưới để xếp trực tiếp:"
+                },
+                {
+                  "el": "v-chip",
+                  "attr": {
+                    "v-for": "(cxdItem, cxdIdx) in vueData.dsChuaXepDuoc",
+                    ":key": "cxdIdx",
+                    "draggable": "true",
+                    "v-on:dragstart": "$event.dataTransfer.setData('application/json', JSON.stringify(cxdItem))",
+                    "class": "mr-1 mb-1",
+                    "color": "orange-lighten-3",
+                    "size": "small",
+                    "label": ""
+                  },
+                  "innerHTML": "{{cxdItem.MaLop}} · {{cxdItem.TenMon}} · {{cxdItem.TenGV}} ({{cxdItem.SoTiet}})"
+                }
+              ],
+              "w": "12"
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "v-if": "vueData.dsChuaXepDuoc.length > 0",
+                ":label": "'Chưa xếp được (' + vueData.dsChuaXepDuoc.length + ')'",
+                "class": "text-caption",
+                ":items": "vueData.dsChuaXepDuoc",
+                "item-key": "MaLop",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":headers": [
+                  {
+                    "title": "Lớp",
+                    "value": "MaLop"
+                  },
+                  {
+                    "title": "Môn",
+                    "value": "TenMon"
+                  },
+                  {
+                    "title": "Giáo viên",
+                    "value": "TenGV"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Số tiết",
+                    "value": "SoTiet",
+                    "width": "60px"
+                  },
+                  {
+                    "el": "t-menu",
+                    "title": "",
+                    "value": "GoiY",
+                    "width": "40px",
+                    "align": "center",
+                    "attr": {
+                      ":items": "vueData.menuGoiYChuaXep"
+                    }
+                  }
+                ]
+              },
+              "w": "12"
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "uc-tkb-grid",
+              "attr": {
+                "v-if": "!vueData.xemToanKhoi",
+                ":items": "vueData.dsLich",
+                ":editable": true,
+                ":draggable": true,
+                ":addable": true,
+                ":show-khoa": true,
+                ":group-slots": "vueData.dsGroupSlots",
+                ":fixed-thu-cols": "vueData.fixedThuCols",
+                ":fixed-slots": "vueData.fixedSlots",
+                "sub-label-field": "TenGV",
+                "v-on:edit-cell": "vueData.filterGV = $event.MaGV, vueData.formSua = {ID: $event.ID, MaLop: vueData.filterLop, MaMon: $event.MaMon, MaGV: $event.MaGV, MaPhong: $event.MaPhong}, vueData.goiYAI = '', vueData.dlSua = true",
+                "v-on:select-cell": "vueData.filterGV = $event.MaGV",
+                "v-on:swap": "vueData.doiTietID1 = $event.id1, vueData.doiTietID2 = $event.id2, vueData.doiTietTrigger = vueData.doiTietTrigger + 1",
+                "v-on:move-cell": "vueData.chuyenTietID = $event.item.ID, vueData.chuyenTietThu = $event.Thu, vueData.chuyenTietBuoi = $event.Buoi, vueData.chuyenTietTiet = $event.Tiet, vueData.chuyenTietTrigger = vueData.chuyenTietTrigger + 1",
+                "v-on:drop-external": "vueData.apDungItem = $event.item, vueData.apDungThu = $event.Thu, vueData.apDungBuoi = $event.Buoi, vueData.apDungTiet = $event.Tiet, vueData.apDungTrigger = vueData.apDungTrigger + 1",
+                "v-on:add-cell": "vueData.themTuDoThu = $event.Thu, vueData.themTuDoBuoi = $event.Buoi, vueData.themTuDoTiet = $event.Tiet, vueData.formThemTuDo = {MaMon: '', MaGV: '', MaPhong: ''}, vueData.dlThemTuDo = true",
+                "v-on:toggle-khoa": "vueData.toggleKhoaID = $event.ID, vueData.toggleKhoaTrigger = vueData.toggleKhoaTrigger + 1"
+              },
+              "w": "8"
+            },
+            {
+              "el": "f-table",
+              "col": {
+                "class": "pl-2"
+              },
+              "attr": {
+                "v-if": "!vueData.xemToanKhoi",
+                "class": "text-caption",
+                "label": "Đối chiếu định mức",
+                ":items": "vueData.dsChecklist",
+                "item-key": "MaMon",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":height": 380,
+                ":item-class": "item => item.KetQua !== 'Đủ' ? 'red--text' : ''",
+                ":sum-format": {
+                  "DinhMuc": "0,0",
+                  "DaXep": "0,0"
+                },
+                ":headers": [
+                  {
+                    "title": "Môn",
+                    "value": "TenMon"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Định mức",
+                    "value": "DinhMuc",
+                    "width": "60px"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Đã xếp",
+                    "value": "DaXep",
+                    "width": "60px"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Kết quả",
+                    "value": "KetQua",
+                    "width": "60px"
+                  },
+                  {
+                    "title": "Quy tắc",
+                    "value": "QuyTacInfo"
+                  },
+                  {
+                    "el": "t-menu",
+                    "title": "",
+                    "value": "Actions",
+                    "width": "40px",
+                    "align": "center",
+                    "attr": {
+                      ":items": "vueData.menuQuyTac"
+                    }
+                  }
+                ]
+              },
+              "w": "4"
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "v-if": "vueData.xemToanKhoi",
+                "v-for": "lop in vueData.dsLop",
+                ":key": "lop.MaLop",
+                "class": "mb-6"
+              },
+              "w": 12,
+              "innerHTML": [
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-subtitle-1 font-weight-bold mt-2 mb-1 green--text text--darken-2"
+                  },
+                  "innerHTML": "Lớp {{ lop.MaLop }}"
+                },
+                {
+                  "el": "v-row",
+                  "attr": {},
+                  "innerHTML": [
+                    {
+                      "el": "v-col",
+                      "attr": {
+                        "cols": "8"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "uc-tkb-grid",
+                          "attr": {
+                            ":items": "vueData.dsLichToanKhoi.filter(r => r.MaLop === lop.MaLop)",
+                            ":editable": false,
+                            ":fixed-thu-cols": "vueData.fixedThuCols",
+                            ":fixed-slots": "vueData.fixedSlots",
+                            "sub-label-field": "TenGV"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-col",
+                      "attr": {
+                        "cols": "4"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "f-table",
+                          "attr": {
+                            "class": "text-caption",
+                            "label": "Đối chiếu định mức",
+                            ":items": "vueData.dsChecklistToanKhoi.filter(r => r.MaLop === lop.MaLop)",
+                            "item-key": "MaMon",
+                            ":items-per-page": -1,
+                            ":hide-default-footer": true,
+                            ":height": 430,
+                            ":item-class": "item => item.KetQua !== 'Đủ' ? 'red--text' : ''",
+                            ":sum-format": {
+                              "DinhMuc": "0,0",
+                              "DaXep": "0,0"
+                            },
+                            ":headers": [
+                              {
+                                "title": "Môn",
+                                "value": "TenMon"
+                              },
+                              {
+                                "align": "center",
+                                "title": "Định mức",
+                                "value": "DinhMuc",
+                                "width": "60px"
+                              },
+                              {
+                                "align": "center",
+                                "title": "Đã xếp",
+                                "value": "DaXep",
+                                "width": "60px"
+                              },
+                              {
+                                "align": "center",
+                                "title": "Kết quả",
+                                "value": "KetQua",
+                                "width": "60px"
+                              },
+                              {
+                                "title": "Quy tắc",
+                                "value": "QuyTacInfo"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-divider",
+              "attr": {
+                "class": "my-3"
+              },
+              "w": 12
+            },
+            {
+              "el": "v-autocomplete",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterGV",
+                "label": "TKB của giáo viên (bấm vào 1 tiết ở trên để tự chọn)",
+                ":items": "vueData.dsGVOptions",
+                "item-title": "GVDisplay",
+                "item-value": "MaGV",
+                "clearable": true,
+                ":required": false
+              },
+              "w": "360"
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "uc-tkb-grid",
+              "attr": {
+                ":items": "vueData.dsLichGV",
+                ":editable": false,
+                ":fixed-thu-cols": "vueData.fixedThuCols",
+                ":fixed-slots": "vueData.fixedSlots",
+                "sub-label-field": "MaLop"
+              },
+              "w": "8"
+            },
+            {
+              "el": "f-table",
+              "col": {
+                "class": "pl-2"
+              },
+              "attr": {
+                "class": "text-caption",
+                "label": "Định mức phân công giảng dạy",
+                ":items": "vueData.dsChecklistGV",
+                "item-key": "MaLop",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":height": 380,
+                ":item-class": "item => item.KetQua !== 'Đủ' ? 'red--text' : ''",
+                ":sum-format": {
+                  "DinhMuc": "0,0",
+                  "DaXep": "0,0"
+                },
+                ":headers": [
+                  {
+                    "align": "center",
+                    "title": "Lớp",
+                    "value": "MaLop",
+                    "width": "60px"
+                  },
+                  {
+                    "title": "Môn",
+                    "value": "TenMon"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Định mức",
+                    "value": "DinhMuc",
+                    "width": "60px"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Đã xếp",
+                    "value": "DaXep",
+                    "width": "60px"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Kết quả",
+                    "value": "KetQua",
+                    "width": "60px"
+                  },
+                  {
+                    "title": "Quy tắc",
+                    "value": "QuyTacInfo"
+                  },
+                  {
+                    "el": "t-menu",
+                    "title": "",
+                    "value": "Actions",
+                    "width": "40px",
+                    "align": "center",
+                    "attr": {
+                      ":items": "vueData.menuQuyTac"
+                    }
+                  }
+                ]
+              },
+              "w": "4"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "hidden-container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlSua",
+                "width": 550
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Sửa tiết học"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlSua = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "grid-list-md px-4"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formSua.MaMon",
+                                    "label": "Môn học",
+                                    ":items": "vueData.dsMonOptions",
+                                    "item-title": "MonDisplay",
+                                    "item-value": "MaMon"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formSua.MaGV",
+                                    "label": "Giáo viên",
+                                    ":items": "vueData.dsGVOptions",
+                                    "item-title": "GVDisplay",
+                                    "item-value": "MaGV"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formSua.MaPhong",
+                                    "label": "Phòng (tuỳ chọn)",
+                                    ":items": "vueData.dsPhongOptions",
+                                    "item-title": "PhongDisplay",
+                                    "item-value": "MaPhong",
+                                    ":clearable": true,
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-row",
+                          "attr": {
+                            "v-if": "vueData.goiYAILoading || vueData.goiYAI"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-progress-linear",
+                                  "attr": {
+                                    "v-if": "vueData.goiYAILoading",
+                                    ":indeterminate": true,
+                                    "color": "deep-purple"
+                                  }
+                                },
+                                {
+                                  "el": "div",
+                                  "attr": {
+                                    "v-if": "!vueData.goiYAILoading && vueData.goiYAI",
+                                    "class": "text-caption tkb-goiy-ai"
+                                  },
+                                  "innerHTML": "{{ vueData.goiYAI }}"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "color": "error",
+                            "label": "Gỡ tiết",
+                            "icon-text": "mdi-eraser",
+                            "action": {
+                              "CONFIRM": "Gỡ tiết này ra khỏi lịch? Khung giờ sẽ trống lại cho lớp.",
+                              "API": "/TkbKetQuaXepGoTiet",
+                              "IN": {
+                                "ID": "vueData.formSua.ID"
+                              },
+                              "OUT": "goTietResp",
+                              "CALLBACK": [
+                                {
+                                  "MESS": "{{vueData.goTietResp[0].Message}}"
+                                },
+                                {
+                                  "EXE": "tkbHandleGoTietResp(vueData.goTietResp)"
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "color": "deep-purple",
+                            "label": "Gợi ý AI",
+                            "icon-text": "mdi-auto-fix",
+                            ":loading": "vueData.goiYAILoading",
+                            "action": [
+                              {
+                                "goiYAILoading": true,
+                                "goiYAI": ""
+                              },
+                              {
+                                "CALL": "goiYXepTay"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "color": "warning",
+                            "label": "Đổi GV cho cả môn",
+                            "icon-text": "mdi-account-switch-outline",
+                            ":disabled": "!vueData.formSua.MaGV",
+                            "action": {
+                              "CONFIRM": "Đổi GV cho TOÀN BỘ tiết {{vueData.formSua.MaMon}} của lớp {{vueData.formSua.MaLop}} trong lần chạy này (giữ nguyên slot đã xếp)?",
+                              "API": "/TkbDoiGVHangLoat",
+                              "IN": {
+                                "RunID": "vueData.selectedRunID",
+                                "MaLop": "vueData.formSua.MaLop",
+                                "MaMon": "vueData.formSua.MaMon",
+                                "MaGVMoi": "vueData.formSua.MaGV"
+                              },
+                              "OUT": "doiGVHangLoatResp",
+                              "CALLBACK": [
+                                {
+                                  "MESS": "{{vueData.doiGVHangLoatResp[0].Message}}"
+                                },
+                                {
+                                  "EXE": "tkbHandleDoiGVHangLoatResp(vueData.doiGVHangLoatResp)"
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "label": "Lưu",
+                            "icon-text": "mdi-content-save",
+                            ":checkvalid": true,
+                            "action": {
+                              "CALL": "suaTiet"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlQuyTac",
+                "width": 600
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Quy tắc áp dụng — {{quyTacMon.TenMon}}"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlQuyTac = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "px-4 py-2"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "f-table",
+                          "attr": {
+                            "label": "Danh sách quy tắc",
+                            ":items": "vueData.dsQuyTacChiTiet",
+                            "item-key": "ID",
+                            ":items-per-page": -1,
+                            ":hide-default-footer": true,
+                            ":height": 360,
+                            ":headers": [
+                              {
+                                "align": "center",
+                                "title": "Khối",
+                                "value": "Khoi",
+                                "width": "70px"
+                              },
+                              {
+                                "title": "Loại quy tắc",
+                                "value": "LoaiQuyTac"
+                              },
+                              {
+                                "title": "Tham số",
+                                "value": "ThamSo"
+                              },
+                              {
+                                "title": "Ghi chú",
+                                "value": "GhiChu"
+                              }
+                            ]
+                          },
+                          "w": 12
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlGoiYChuaXep",
+                "width": 550
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "{{goiYChuaXepItem.MaLop}} — {{goiYChuaXepItem.TenMon}} ({{goiYChuaXepItem.TenGV}})"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlGoiYChuaXep = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "px-4 py-3"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-progress-linear",
+                          "attr": {
+                            "v-if": "vueData.goiYChuaXepLoading",
+                            ":indeterminate": true,
+                            "color": "deep-purple"
+                          }
+                        },
+                        {
+                          "el": "div",
+                          "attr": {
+                            "v-if": "!vueData.goiYChuaXepLoading && vueData.goiYChuaXepText",
+                            "class": "text-caption tkb-goiy-ai"
+                          },
+                          "innerHTML": "{{ vueData.goiYChuaXepText }}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlThemTuDo",
+                "width": 600
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Thêm tiết — {{vueData.filterLop}} · Thứ {{vueData.themTuDoThu}} - {{ {Sang:'Sáng',Chieu:'Chiều'}[vueData.themTuDoBuoi] }} - Tiết {{vueData.themTuDoTiet}}"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlThemTuDo = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "px-4 py-2"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "div",
+                          "attr": {
+                            "class": "text-subtitle-2 mb-1"
+                          },
+                          "innerHTML": "1. Còn thiếu theo định mức (đang rảnh đúng khung giờ này)"
+                        },
+                        {
+                          "el": "v-list",
+                          "attr": {
+                            "v-if": "vueData.dsChuaXepKhaThi.length > 0",
+                            "class": "mb-3",
+                            "density": "compact"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-list-item",
+                              "attr": {
+                                "v-for": "(ktItem, ktIdx) in vueData.dsChuaXepKhaThi",
+                                ":key": "ktIdx",
+                                "class": "border rounded mb-1",
+                                "prepend-icon": "mdi-arrow-right-bold-circle-outline",
+                                "v-on:click": "vueData.apDungItem = ktItem, vueData.apDungThu = vueData.themTuDoThu, vueData.apDungBuoi = vueData.themTuDoBuoi, vueData.apDungTiet = vueData.themTuDoTiet, vueData.apDungTrigger = vueData.apDungTrigger + 1",
+                                ":title": "ktItem.TenMon + ' · ' + ktItem.TenGV",
+                                ":subtitle": "'Còn thiếu ' + ktItem.SoTiet + ' tiết — bấm để xếp vào đây'"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "el": "div",
+                          "attr": {
+                            "v-if": "vueData.dsChuaXepKhaThi.length === 0",
+                            "class": "text-caption text-medium-emphasis mb-3"
+                          },
+                          "innerHTML": "Không có GV nào đang thiếu định mức mà rảnh đúng khung giờ này."
+                        },
+                        {
+                          "el": "v-divider",
+                          "attr": {
+                            "class": "mb-3"
+                          }
+                        },
+                        {
+                          "el": "div",
+                          "attr": {
+                            "class": "text-subtitle-2 mb-1"
+                          },
+                          "innerHTML": "2. Thêm tiết bất kỳ (phát sinh đột xuất, ngoài định mức)"
+                        },
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formThemTuDo.MaMon",
+                                    "label": "Môn học",
+                                    ":items": "vueData.dsMonOptions",
+                                    "item-title": "MonDisplay",
+                                    "item-value": "MaMon"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formThemTuDo.MaGV",
+                                    "label": "Giáo viên",
+                                    ":items": "vueData.dsGVOptions",
+                                    "item-title": "GVDisplay",
+                                    "item-value": "MaGV"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formThemTuDo.MaPhong",
+                                    "label": "Phòng (tuỳ chọn)",
+                                    ":items": "vueData.dsPhongOptions",
+                                    "item-title": "PhongDisplay",
+                                    "item-value": "MaPhong",
+                                    ":clearable": true,
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "label": "Thêm tiết",
+                            "icon-text": "mdi-plus",
+                            ":checkvalid": true,
+                            ":disabled": "!vueData.formThemTuDo.MaMon || !vueData.formThemTuDo.MaGV",
+                            "action": {
+                              "CALL": "themTuDo"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlPhanConLai",
+                ":persistent": "vueData.dangChayPhanConLai",
+                "width": 550
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Xếp Auto phần còn thiếu"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            ":disabled": "vueData.dangChayPhanConLai",
+                            "v-on:click": "vueData.dlPhanConLai = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "px-4 py-3"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "div",
+                          "attr": {
+                            "v-if": "!vueData.dangChayPhanConLai && !vueData.ketQuaPhanConLai.TrangThai",
+                            "class": "text-body-2"
+                          },
+                          "innerHTML": "Sẽ giữ nguyên mọi tiết bạn đã <b>khóa tay</b> (viền cam trên lưới — kéo-thả, thêm tiết tự do, sửa tiết đều tự động khóa). Các tiết <b>chưa khóa</b> (kể cả tiết do Auto xếp trước đó) sẽ bị xóa và đưa trở lại cho Auto tự xếp lại, có thể đổi vị trí."
+                        },
+                        {
+                          "el": "v-text-field",
+                          "attr": {
+                            "v-if": "!vueData.dangChayPhanConLai && !vueData.ketQuaPhanConLai.TrangThai",
+                            "class": "mt-3",
+                            "v-model.number": "vueData.maxSecsPhanConLai",
+                            "type": "number",
+                            "label": "Thời gian tìm kiếm tối đa (giây)",
+                            ":required": true
+                          }
+                        },
+                        {
+                          "el": "div",
+                          "attr": {
+                            "v-if": "vueData.dangChayPhanConLai",
+                            "class": "text-center py-4"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-progress-circular",
+                              "attr": {
+                                ":indeterminate": true,
+                                "color": "deep-purple",
+                                "size": 40
+                              }
+                            },
+                            {
+                              "el": "div",
+                              "attr": {
+                                "class": "text-body-2 mt-3"
+                              },
+                              "innerHTML": "Đang chạy Auto cho phần còn thiếu..."
+                            }
+                          ]
+                        },
+                        {
+                          "el": "div",
+                          "attr": {
+                            "v-if": "!vueData.dangChayPhanConLai && vueData.ketQuaPhanConLai.TrangThai",
+                            "class": "text-body-2"
+                          },
+                          "innerHTML": "Kết quả: <b>{{vueData.ketQuaPhanConLai.TrangThai}}</b>{{vueData.ketQuaPhanConLai.SoNhomKhongXepDuoc != null ? ' — còn ' + vueData.ketQuaPhanConLai.SoNhomKhongXepDuoc + ' nhóm chưa xếp được' : ''}}"
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "v-if": "!vueData.dangChayPhanConLai && !vueData.ketQuaPhanConLai.TrangThai",
+                            "variant": "text",
+                            "color": "deep-purple",
+                            "label": "Bắt đầu",
+                            "icon-text": "mdi-play",
+                            ":checkvalid": false,
+                            "action": [
+                              {
+                                "ketQuaPhanConLai": {
+                                  "TrangThai": "",
+                                  "KhaThi": false,
+                                  "SoNhomKhongXepDuoc": null
+                                }
+                              },
+                              {
+                                "CALL": "chayAutoPhanConLai"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlGVBaoBan",
+                "width": 800
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "GV báo bận"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlGVBaoBan = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "px-4 py-2"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model.number": "vueData.baoBanTuan",
+                                    "label": "Tuần",
+                                    ":items": "vueData.dsTuan",
+                                    "item-title": "TenTuan",
+                                    "item-value": "TuanTrongNam",
+                                    ":required": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.baoBanMaGV",
+                                    "v-on:update:model-value": "vueData.daXemBaoBan = false, vueData.dsBaoBanAnhHuong = []",
+                                    "label": "Giáo viên báo bận",
+                                    ":items": "vueData.dsGVOptions",
+                                    "item-title": "GVDisplay",
+                                    "item-value": "MaGV",
+                                    ":required": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1",
+                                "v-if": "vueData.baoBanMaGV && vueData.baoBanTuan"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "div",
+                                  "attr": {
+                                    "class": "text-caption text-medium-emphasis mb-1"
+                                  },
+                                  "innerHTML": "Bấm vào (các) tiết GV đang dạy để chọn báo bận (đang chọn {{vueData.baoBanSlots.length}} tiết) — bấm lại để bỏ chọn:"
+                                },
+                                {
+                                  "el": "uc-tkb-grid",
+                                  "attr": {
+                                    ":items": "vueData.dsLichGVBaoBan",
+                                    ":editable": false,
+                                    ":select-mode": true,
+                                    ":selected-slots": "vueData.baoBanSlots",
+                                    ":fixed-thu-cols": "vueData.fixedThuCols",
+                                    ":fixed-slots": "vueData.fixedSlots",
+                                    "sub-label-field": "MaLop",
+                                    "v-on:toggle-slot": "vueData.baoBanSlots = vueData.baoBanSlots.some(s => s.Thu === $event.Thu && s.Buoi === $event.Buoi && s.Tiet === $event.Tiet) ? vueData.baoBanSlots.filter(s => !(s.Thu === $event.Thu && s.Buoi === $event.Buoi && s.Tiet === $event.Tiet)) : [...vueData.baoBanSlots, {Thu: $event.Thu, Buoi: $event.Buoi, Tiet: $event.Tiet}], vueData.daXemBaoBan = false, vueData.dsBaoBanAnhHuong = []"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1 text-center"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "f-button",
+                                  "attr": {
+                                    "variant": "text",
+                                    "label": "Xem ảnh hưởng",
+                                    "icon-text": "mdi-magnify",
+                                    ":disabled": "!vueData.baoBanTuan || !vueData.baoBanMaGV || vueData.baoBanSlots.length === 0",
+                                    "action": {
+                                      "CALL": "fetchBaoBanAnhHuong"
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1",
+                                "v-if": "vueData.daXemBaoBan && vueData.dsBaoBanAnhHuong.length > 0"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "f-table",
+                                  "attr": {
+                                    "class": "text-caption",
+                                    ":label": "'Bị ảnh hưởng (' + vueData.dsBaoBanAnhHuong.length + ' tiết)'",
+                                    ":items": "vueData.dsBaoBanAnhHuong",
+                                    "item-key": "ID",
+                                    ":items-per-page": -1,
+                                    ":hide-default-footer": true,
+                                    ":height": 260,
+                                    ":headers": [
+                                      {
+                                        "title": "Lớp",
+                                        "value": "MaLop"
+                                      },
+                                      {
+                                        "title": "Môn",
+                                        "value": "TenMon"
+                                      },
+                                      {
+                                        "align": "center",
+                                        "title": "Thứ",
+                                        "value": "Thu",
+                                        "width": "60px"
+                                      },
+                                      {
+                                        "title": "Buổi",
+                                        "value": "Buoi",
+                                        "width": "70px"
+                                      },
+                                      {
+                                        "align": "center",
+                                        "title": "Tiết",
+                                        "value": "Tiet",
+                                        "width": "60px"
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "div",
+                              "attr": {
+                                "v-if": "vueData.daXemBaoBan && vueData.dsBaoBanAnhHuong.length === 0",
+                                "class": "text-caption text-medium-emphasis"
+                              },
+                              "innerHTML": "Không có tiết nào đang xếp bị ảnh hưởng trong khung giờ này."
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "v-if": "vueData.daXemBaoBan",
+                            "variant": "text",
+                            "color": "warning",
+                            "label": "Xác nhận & Xếp lại",
+                            "icon-text": "mdi-check",
+                            ":checkvalid": false,
+                            "action": [
+                              {
+                                "CONFIRM": "Xác nhận GV này báo bận? Các tiết bị ảnh hưởng sẽ được xóa và xếp lại cho GV khác (hoặc còn thiếu nếu không tìm được), khung giờ này sẽ không bao giờ xếp lại đúng GV này nữa.",
+                                "dlGVBaoBan": false,
+                                "dlPhanConLai": true,
+                                "ketQuaPhanConLai": {
+                                  "TrangThai": "",
+                                  "KhaThi": false,
+                                  "SoNhomKhongXepDuoc": null
+                                }
+                              },
+                              {
+                                "CALL": "apDungBaoBan"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlNgayNghi",
+                "width": 800
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Ngày nghỉ"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlNgayNghi = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "px-4 py-2"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "4",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model.number": "vueData.ngayNghiTuan",
+                                    "label": "Tuần",
+                                    ":items": "vueData.dsTuan",
+                                    "item-title": "TenTuan",
+                                    "item-value": "TuanTrongNam",
+                                    ":required": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "4",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.ngayNghiPhamVi",
+                                    "label": "Phạm vi",
+                                    ":items": "[{text:'Lớp', value:'LOP'}, {text:'Khối', value:'KHOI'}, {text:'Toàn trường', value:'TRUONG'}]",
+                                    "item-title": "text",
+                                    "item-value": "value",
+                                    ":required": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "4",
+                                "class": "py-1",
+                                "v-if": "vueData.ngayNghiPhamVi === 'LOP'"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.ngayNghiMaLop",
+                                    "label": "Lớp",
+                                    ":items": "vueData.dsLop",
+                                    "item-title": "MaLop",
+                                    "item-value": "MaLop",
+                                    ":required": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "4",
+                                "class": "py-1",
+                                "v-if": "vueData.ngayNghiPhamVi === 'KHOI'"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.ngayNghiKhoi",
+                                    "label": "Khối",
+                                    ":items": "vueData.dsKhoiOptionsTkb",
+                                    "item-title": "text",
+                                    "item-value": "value",
+                                    ":required": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "8",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.ngayNghiLyDo",
+                                    "label": "Lý do (tuỳ chọn, vd Nghỉ lễ Quốc khánh)",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1",
+                                "v-if": "vueData.ngayNghiTuan && (vueData.ngayNghiPhamVi !== 'LOP' || vueData.ngayNghiMaLop)"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "div",
+                                  "attr": {
+                                    "class": "text-caption text-medium-emphasis mb-1"
+                                  },
+                                  "innerHTML": "Bấm vào (các) khung giờ muốn cho nghỉ (đang chọn {{vueData.ngayNghiSlots.length}} tiết) — bấm lại để bỏ chọn:"
+                                },
+                                {
+                                  "el": "uc-tkb-grid",
+                                  "attr": {
+                                    ":items": "vueData.ngayNghiPhamVi === 'LOP' ? vueData.dsLichNgayNghi : []",
+                                    ":editable": false,
+                                    ":select-mode": true,
+                                    ":selected-slots": "vueData.ngayNghiSlots",
+                                    ":fixed-thu-cols": "vueData.fixedThuCols",
+                                    ":fixed-slots": "vueData.fixedSlots",
+                                    "sub-label-field": "TenGV",
+                                    "v-on:toggle-slot": "vueData.ngayNghiSlots = vueData.ngayNghiSlots.some(s => s.Thu === $event.Thu && s.Buoi === $event.Buoi && s.Tiet === $event.Tiet) ? vueData.ngayNghiSlots.filter(s => !(s.Thu === $event.Thu && s.Buoi === $event.Buoi && s.Tiet === $event.Tiet)) : [...vueData.ngayNghiSlots, {Thu: $event.Thu, Buoi: $event.Buoi, Tiet: $event.Tiet}], vueData.daXemNgayNghi = false, vueData.dsNgayNghiAnhHuong = []"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1 text-center"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "f-button",
+                                  "attr": {
+                                    "variant": "text",
+                                    "label": "Xem ảnh hưởng",
+                                    "icon-text": "mdi-magnify",
+                                    ":disabled": "!vueData.ngayNghiTuan || vueData.ngayNghiSlots.length === 0 || (vueData.ngayNghiPhamVi === 'LOP' && !vueData.ngayNghiMaLop) || (vueData.ngayNghiPhamVi === 'KHOI' && !vueData.ngayNghiKhoi)",
+                                    "action": {
+                                      "CALL": "fetchNgayNghiAnhHuong"
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1",
+                                "v-if": "vueData.daXemNgayNghi && vueData.dsNgayNghiAnhHuong.length > 0"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "f-table",
+                                  "attr": {
+                                    "class": "text-caption",
+                                    ":label": "'Bị ảnh hưởng (' + vueData.dsNgayNghiAnhHuong.length + ' tiết)'",
+                                    ":items": "vueData.dsNgayNghiAnhHuong",
+                                    "item-key": "ID",
+                                    ":items-per-page": -1,
+                                    ":hide-default-footer": true,
+                                    ":height": 260,
+                                    ":headers": [
+                                      {
+                                        "title": "Lớp",
+                                        "value": "MaLop"
+                                      },
+                                      {
+                                        "title": "Môn",
+                                        "value": "TenMon"
+                                      },
+                                      {
+                                        "title": "GV",
+                                        "value": "TenGV"
+                                      },
+                                      {
+                                        "align": "center",
+                                        "title": "Thứ",
+                                        "value": "Thu",
+                                        "width": "60px"
+                                      },
+                                      {
+                                        "title": "Buổi",
+                                        "value": "Buoi",
+                                        "width": "70px"
+                                      },
+                                      {
+                                        "align": "center",
+                                        "title": "Tiết",
+                                        "value": "Tiet",
+                                        "width": "60px"
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "div",
+                              "attr": {
+                                "v-if": "vueData.daXemNgayNghi && vueData.dsNgayNghiAnhHuong.length === 0",
+                                "class": "text-caption text-medium-emphasis"
+                              },
+                              "innerHTML": "Không có tiết nào đang xếp bị ảnh hưởng trong (các) khung giờ này."
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "v-if": "vueData.daXemNgayNghi",
+                            "variant": "text",
+                            "color": "brown",
+                            "label": "Xác nhận & Xếp lại",
+                            "icon-text": "mdi-check",
+                            ":checkvalid": false,
+                            "action": [
+                              {
+                                "CONFIRM": "Xác nhận cho nghỉ khung giờ đã chọn? Các tiết bị ảnh hưởng sẽ được xóa và xếp lại (hoặc còn thiếu nếu không tìm được), khung giờ này sẽ không bao giờ xếp lại cho phạm vi đã chọn nữa.",
+                                "dlNgayNghi": false,
+                                "dlPhanConLai": true,
+                                "ketQuaPhanConLai": {
+                                  "TrangThai": "",
+                                  "KhaThi": false,
+                                  "SoNhomKhongXepDuoc": null
+                                }
+                              },
+                              {
+                                "CALL": "apDungNgayNghi"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

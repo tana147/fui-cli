@@ -1,0 +1,1134 @@
+{
+  "data": [
+    {
+      "dsPhien": [],
+      "selectedRunID": null
+    },
+    {
+      "dlPhienMoi": false
+    },
+    {
+      "formPhienMoi": {
+        "Khoi": "",
+        "GhiChu": ""
+      }
+    },
+    {
+      "dlXepTay": false
+    },
+    {
+      "formXepTay": {
+        "MaLop": "",
+        "MaMon": "",
+        "MaGV": "",
+        "Thu": 2,
+        "Buoi": "Sang",
+        "Tiet": 1,
+        "MaPhong": ""
+      }
+    },
+    {
+      "dsLopOptions": [],
+      "dsGVOptions": [],
+      "dsMonOptions": [],
+      "dsPhongOptions": []
+    },
+    {
+      "khoaPhongMsg": "",
+      "lichHopMsg": "",
+      "xepTayErrMsg": ""
+    },
+    {
+      "khoiOptions": [
+        {
+          "text": "Khối 1",
+          "value": "01"
+        },
+        {
+          "text": "Khối 2",
+          "value": "02"
+        },
+        {
+          "text": "Khối 3",
+          "value": "03"
+        },
+        {
+          "text": "Khối 4",
+          "value": "04"
+        },
+        {
+          "text": "Khối 5",
+          "value": "05"
+        },
+        {
+          "text": "Khối 6",
+          "value": "06"
+        },
+        {
+          "text": "Khối 7",
+          "value": "07"
+        },
+        {
+          "text": "Khối 8",
+          "value": "08"
+        },
+        {
+          "text": "Khối 9",
+          "value": "09"
+        },
+        {
+          "text": "Khối 10",
+          "value": "10"
+        },
+        {
+          "text": "Khối 11",
+          "value": "11"
+        },
+        {
+          "text": "Khối 12",
+          "value": "12"
+        }
+      ]
+    },
+    {
+      "fetchPhien": {
+        "API": "/TkbPhienDangXayList",
+        "OUT": "dsPhien"
+      }
+    },
+    {
+      "taoPhienMoi": {
+        "API": "/TkbPhienMoi",
+        "IN": {
+          "Khoi": "vueData.formPhienMoi.Khoi",
+          "GhiChu": "vueData.formPhienMoi.GhiChu"
+        },
+        "OUT": "phienMoiResp",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.selectedRunID = vueData.phienMoiResp[0].RunID"
+          },
+          {
+            "EXE": "vueData.dlPhienMoi = false"
+          },
+          {
+            "MESS": "Đã tạo phiên TKB mới"
+          },
+          {
+            "CALL": "fetchPhien"
+          }
+        ]
+      }
+    },
+    {
+      "apDungKhoaPhong": {
+        "API": "/TkbKhoaPhongDungChungApDung",
+        "IN": {
+          "RunID": "vueData.selectedRunID"
+        },
+        "OUT": "respKhoaPhong",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.khoaPhongMsg = 'Đã chèn ' + vueData.respKhoaPhong[0].SoLuongChen + ' dòng khóa phòng dùng chung vào phiên.'"
+          },
+          {
+            "CALL": "fetchPhien"
+          }
+        ]
+      }
+    },
+    {
+      "apDungLichHop": {
+        "API": "/TkbLichHopCoDinhApDung",
+        "IN": {
+          "RunID": "vueData.selectedRunID"
+        },
+        "OUT": "respLichHop",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.lichHopMsg = 'Đã chèn ' + vueData.respLichHop[0].SoLuongChen + ' dòng lịch họp vào phiên.'"
+          },
+          {
+            "CALL": "fetchPhien"
+          }
+        ]
+      }
+    },
+    {
+      "fetchLopOptions": {
+        "API": "/TkbLopList",
+        "IN": {
+          "Khoi": "",
+          "Keyword": ""
+        },
+        "OUT": "dsLopOptions",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsLopOptions = vueData.dsLopOptions.map(l => ({...l, LopDisplay: l.MaLop + ' (Khối ' + l.Khoi + ')'}))"
+          }
+        ]
+      }
+    },
+    {
+      "fetchGVOptions": {
+        "API": "/TkbGiaoVienList",
+        "IN": {
+          "Keyword": "",
+          "ChiThinhGiang": false
+        },
+        "OUT": "dsGVOptions",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsGVOptions = vueData.dsGVOptions.map(g => ({...g, GVDisplay: g.MaGV + ' - ' + g.HoTen}))"
+          }
+        ]
+      }
+    },
+    {
+      "fetchMonOptions": {
+        "API": "/TkbMonHocList",
+        "IN": {
+          "Keyword": ""
+        },
+        "OUT": "dsMonOptions",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsMonOptions = vueData.dsMonOptions.map(m => ({...m, MonDisplay: m.MaMon + ' - ' + m.TenMon}))"
+          }
+        ]
+      }
+    },
+    {
+      "fetchPhongOptions": {
+        "API": "/TkbPhongHocList",
+        "IN": {
+          "Keyword": ""
+        },
+        "OUT": "dsPhongOptions",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsPhongOptions = vueData.dsPhongOptions.map(p => ({...p, PhongDisplay: p.MaPhong + ' - ' + p.TenPhong}))"
+          }
+        ]
+      }
+    },
+    {
+      "xepTay": {
+        "API": "/TkbKetQuaXepChenKhoa",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaLop": "vueData.formXepTay.MaLop",
+          "Thu": "vueData.formXepTay.Thu",
+          "Buoi": "vueData.formXepTay.Buoi",
+          "Tiet": "vueData.formXepTay.Tiet",
+          "MaMon": "vueData.formXepTay.MaMon",
+          "MaGV": "vueData.formXepTay.MaGV",
+          "MaPhong": "vueData.formXepTay.MaPhong"
+        },
+        "OUT": "respXepTay",
+        "CALLBACK": [
+          {
+            "IF": "vueData.respXepTay[0].Success",
+            "THEN": [
+              {
+                "EXE": "vueData.dlXepTay = false"
+              },
+              {
+                "MESS": "Đã xếp tay vào phiên"
+              },
+              {
+                "CALL": "fetchPhien"
+              }
+            ],
+            "ELSE": {
+              "EXE": "vueData.xepTayErrMsg = vueData.respXepTay[0].Message"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "fetchPhien"
+    },
+    {
+      "CALL": "fetchLopOptions"
+    },
+    {
+      "CALL": "fetchGVOptions"
+    },
+    {
+      "CALL": "fetchMonOptions"
+    },
+    {
+      "CALL": "fetchPhongOptions"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "text-body-2 grey--text text--darken-1 my-2"
+              },
+              "innerHTML": "Trang trung tâm điều phối quy trình xếp Thời khóa biểu: chọn hoặc tạo 1 phiên TKB đang xây, khóa tay dần các luật cố định, sau đó chạy Auto để lấp phần còn lại.",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.selectedRunID",
+                "label": "Phiên TKB đang xây",
+                ":items": "vueData.dsPhien",
+                ":item-title": "item => 'RunID ' + item.RunID + ' - Khối ' + item.Khoi + ' - ' + item.SoDongDaKhoa + ' dòng đã khóa'",
+                "item-value": "RunID",
+                ":required": false
+              },
+              "w": "380"
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "my-2",
+                "label": "Tạo phiên mới",
+                "icon-text": "mdi-plus",
+                ":checkvalid": false,
+                "action": [
+                  {
+                    "formPhienMoi": {
+                      "Khoi": "",
+                      "GhiChu": ""
+                    }
+                  },
+                  {
+                    "dlPhienMoi": true
+                  }
+                ]
+              },
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-alert",
+              "attr": {
+                "v-if": "!vueData.selectedRunID",
+                "type": "warning",
+                "variant": "tonal",
+                "density": "compact"
+              },
+              "innerHTML": "Chưa chọn phiên TKB nào — hãy chọn 1 phiên đang xây ở trên hoặc bấm \"Tạo phiên mới\" trước khi thao tác các bước bên dưới.",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-card",
+              "attr": {
+                "class": "pa-3 mb-3",
+                "outlined": ""
+              },
+              "w": 12,
+              "innerHTML": [
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-subtitle-1 font-weight-bold"
+                  },
+                  "innerHTML": "Bước 1 — Khóa phòng dùng chung"
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-body-2 grey--text text--darken-1 mb-2"
+                  },
+                  "innerHTML": "Khóa các khung giờ phòng bị chiếm dụng cố định (vd Hồ bơi, Phòng Âm nhạc) theo danh mục đã thiết lập."
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "d-flex align-center flex-wrap"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "class": "mr-2 mb-1",
+                        "label": "Áp dụng",
+                        "icon-text": "mdi-lock",
+                        ":checkvalid": false,
+                        ":disabled": "!vueData.selectedRunID",
+                        "action": {
+                          "CALL": "apDungKhoaPhong"
+                        }
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "class": "mb-1",
+                        "variant": "text",
+                        "label": "Sửa danh mục",
+                        "icon-text": "mdi-cog",
+                        ":checkvalid": false,
+                        "action": {
+                          "FUN": "openWindow",
+                          "IN": {
+                            "url": "'/tkb-danhmuc-khoaphong'"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "v-if": "!!vueData.khoaPhongMsg",
+                    "class": "text-body-2 success--text mt-1"
+                  },
+                  "innerHTML": "{{vueData.khoaPhongMsg}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-card",
+              "attr": {
+                "class": "pa-3 mb-3",
+                "outlined": ""
+              },
+              "w": 12,
+              "innerHTML": [
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-subtitle-1 font-weight-bold"
+                  },
+                  "innerHTML": "Bước 2 — Lịch họp tổ / khối"
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-body-2 grey--text text--darken-1 mb-2"
+                  },
+                  "innerHTML": "Chèn lịch họp cố định hàng tuần của các Tổ chuyên môn / Khối / Khối trưởng vào TKB của GV liên quan."
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "d-flex align-center flex-wrap"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "class": "mr-2 mb-1",
+                        "label": "Áp dụng",
+                        "icon-text": "mdi-lock",
+                        ":checkvalid": false,
+                        ":disabled": "!vueData.selectedRunID",
+                        "action": {
+                          "CALL": "apDungLichHop"
+                        }
+                      }
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "class": "mb-1",
+                        "variant": "text",
+                        "label": "Sửa danh mục",
+                        "icon-text": "mdi-cog",
+                        ":checkvalid": false,
+                        "action": {
+                          "FUN": "openWindow",
+                          "IN": {
+                            "url": "'/tkb-danhmuc-lichhop'"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "v-if": "!!vueData.lichHopMsg",
+                    "class": "text-body-2 success--text mt-1"
+                  },
+                  "innerHTML": "{{vueData.lichHopMsg}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-card",
+              "attr": {
+                "class": "pa-3 mb-3",
+                "outlined": ""
+              },
+              "w": 12,
+              "innerHTML": [
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-subtitle-1 font-weight-bold"
+                  },
+                  "innerHTML": "Bước 3 — Chào cờ khối"
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-body-2 grey--text text--darken-1 mb-2"
+                  },
+                  "innerHTML": "Khung giờ chào cờ được Auto tự động né khi chạy — chỉ cần khai báo đúng danh mục, không cần khóa tay."
+                },
+                {
+                  "el": "f-button",
+                  "attr": {
+                    "variant": "text",
+                    "label": "Sửa danh mục",
+                    "icon-text": "mdi-cog",
+                    ":checkvalid": false,
+                    "action": {
+                      "FUN": "openWindow",
+                      "IN": {
+                        "url": "'/tkb-danhmuc-chaoco'"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-card",
+              "attr": {
+                "class": "pa-3 mb-3",
+                "outlined": ""
+              },
+              "w": 12,
+              "innerHTML": [
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-subtitle-1 font-weight-bold"
+                  },
+                  "innerHTML": "Bước 4 — Xếp tay ưu tiên"
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-body-2 grey--text text--darken-1 mb-2"
+                  },
+                  "innerHTML": "GV (cơ hữu hoặc thỉnh giảng) cần cố định 1 slot cụ thể trước khi Auto chạy (vd để đi họp/công tác)."
+                },
+                {
+                  "el": "f-button",
+                  "attr": {
+                    "label": "Xếp tay",
+                    "icon-text": "mdi-calendar-edit",
+                    ":checkvalid": false,
+                    ":disabled": "!vueData.selectedRunID",
+                    "action": [
+                      {
+                        "formXepTay": {
+                          "MaLop": "",
+                          "MaMon": "",
+                          "MaGV": "",
+                          "Thu": 2,
+                          "Buoi": "Sang",
+                          "Tiet": 1,
+                          "MaPhong": ""
+                        },
+                        "xepTayErrMsg": ""
+                      },
+                      {
+                        "dlXepTay": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-card",
+              "attr": {
+                "class": "pa-3 mb-3",
+                "outlined": ""
+              },
+              "w": 12,
+              "innerHTML": [
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-subtitle-1 font-weight-bold"
+                  },
+                  "innerHTML": "Bước 5 — GV vắng / đi công tác"
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-body-2 grey--text text--darken-1 mb-2"
+                  },
+                  "innerHTML": "Đánh dấu GV vắng vào ngày cụ thể và tìm GV dạy thay, dựa trên 1 phiên TKB đã khả thi."
+                },
+                {
+                  "el": "f-button",
+                  "attr": {
+                    "variant": "text",
+                    "label": "Mở trang Dạy thay",
+                    "icon-text": "mdi-open-in-new",
+                    ":checkvalid": false,
+                    "action": {
+                      "FUN": "openWindow",
+                      "IN": {
+                        "url": "'/tkb-day-thay'"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-card",
+              "attr": {
+                "class": "pa-3 mb-3",
+                "outlined": ""
+              },
+              "w": 12,
+              "innerHTML": [
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-subtitle-1 font-weight-bold"
+                  },
+                  "innerHTML": "Bước 6 — Chạy Auto"
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-body-2 grey--text text--darken-1 mb-2"
+                  },
+                  "innerHTML": "Sau khi khóa tay xong các bước trên, chạy CP-SAT solver để tự động lấp phần còn lại của TKB."
+                },
+                {
+                  "el": "f-button",
+                  "attr": {
+                    "variant": "text",
+                    "label": "Mở trang Chạy Auto",
+                    "icon-text": "mdi-open-in-new",
+                    ":checkvalid": false,
+                    "action": {
+                      "FUN": "openWindow",
+                      "IN": {
+                        "url": "'/tkb-chay-auto'"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-card",
+              "attr": {
+                "class": "pa-3 mb-3",
+                "outlined": ""
+              },
+              "w": 12,
+              "innerHTML": [
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-subtitle-1 font-weight-bold"
+                  },
+                  "innerHTML": "Bước 7 — Xem / sửa thời khóa biểu"
+                },
+                {
+                  "el": "div",
+                  "attr": {
+                    "class": "text-body-2 grey--text text--darken-1 mb-2"
+                  },
+                  "innerHTML": "Xem lại TKB hoàn chỉnh (theo lớp/GV/phòng) và chỉnh tay từng ô nếu cần."
+                },
+                {
+                  "el": "f-button",
+                  "attr": {
+                    "variant": "text",
+                    "label": "Mở trang Sửa tay",
+                    "icon-text": "mdi-open-in-new",
+                    ":checkvalid": false,
+                    "action": {
+                      "FUN": "openWindow",
+                      "IN": {
+                        "url": "'/tkb-sua-tay'"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "hidden-container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlPhienMoi",
+                "width": 550
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Tạo phiên TKB mới"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlPhienMoi = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "px-4"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.formPhienMoi.Khoi",
+                                    "label": "Khối",
+                                    ":items": "vueData.khoiOptions",
+                                    "item-title": "text",
+                                    "item-value": "value"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.formPhienMoi.GhiChu",
+                                    "label": "Ghi chú",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "label": "Tạo phiên",
+                            "icon-text": "mdi-content-save",
+                            ":checkvalid": true,
+                            "action": {
+                              "CALL": "taoPhienMoi"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlXepTay",
+                "width": 600
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Xếp tay ưu tiên"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlXepTay = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "px-4"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "v-if": "!!vueData.xepTayErrMsg",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-alert",
+                                  "attr": {
+                                    "type": "error",
+                                    "variant": "tonal",
+                                    "density": "compact"
+                                  },
+                                  "innerHTML": "{{vueData.xepTayErrMsg}}"
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formXepTay.MaLop",
+                                    "label": "Lớp",
+                                    ":items": "vueData.dsLopOptions",
+                                    "item-title": "LopDisplay",
+                                    "item-value": "MaLop"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formXepTay.MaMon",
+                                    "label": "Môn học",
+                                    ":items": "vueData.dsMonOptions",
+                                    "item-title": "MonDisplay",
+                                    "item-value": "MaMon"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formXepTay.MaGV",
+                                    "label": "Giáo viên",
+                                    ":items": "vueData.dsGVOptions",
+                                    "item-title": "GVDisplay",
+                                    "item-value": "MaGV"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "4",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.formXepTay.Thu",
+                                    "label": "Thứ",
+                                    ":items": [
+                                      {
+                                        "text": "Thứ 2",
+                                        "value": 2
+                                      },
+                                      {
+                                        "text": "Thứ 3",
+                                        "value": 3
+                                      },
+                                      {
+                                        "text": "Thứ 4",
+                                        "value": 4
+                                      },
+                                      {
+                                        "text": "Thứ 5",
+                                        "value": 5
+                                      },
+                                      {
+                                        "text": "Thứ 6",
+                                        "value": 6
+                                      },
+                                      {
+                                        "text": "Thứ 7",
+                                        "value": 7
+                                      }
+                                    ],
+                                    "item-title": "text",
+                                    "item-value": "value"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "4",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.formXepTay.Buoi",
+                                    "label": "Buổi",
+                                    ":items": [
+                                      {
+                                        "text": "Sáng",
+                                        "value": "Sang"
+                                      },
+                                      {
+                                        "text": "Chiều",
+                                        "value": "Chieu"
+                                      }
+                                    ],
+                                    "item-title": "text",
+                                    "item-value": "value"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "4",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model.number": "vueData.formXepTay.Tiet",
+                                    "label": "Tiết",
+                                    "type": "number"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formXepTay.MaPhong",
+                                    "label": "Phòng (tuỳ chọn)",
+                                    ":items": "vueData.dsPhongOptions",
+                                    "item-title": "PhongDisplay",
+                                    "item-value": "MaPhong",
+                                    ":clearable": true,
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "label": "Lưu",
+                            "icon-text": "mdi-content-save",
+                            ":checkvalid": true,
+                            "action": {
+                              "CALL": "xepTay"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

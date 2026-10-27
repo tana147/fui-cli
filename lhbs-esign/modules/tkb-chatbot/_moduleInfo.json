@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/tkb-chatbot",
+  "url": "//kyso.lhbs.vn/tkb-chatbot",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "tkb-chatbot",
+  "ModuleName": "TKB - Trợ lý AI",
+  "UpdateTime": "2026-09-04 14:04:49",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-09-09",
+  "LoadCount": 6,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "name": "https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js",
+    "type": ".js",
+    "contentType": "link",
+    "fileID": "EF7D984BFCB74FAA906A3E2FB0D520A9",
+    "scope": "module",
+    "sort": 50
+  }
+]

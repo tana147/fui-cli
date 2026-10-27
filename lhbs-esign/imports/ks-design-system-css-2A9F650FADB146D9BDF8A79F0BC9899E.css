@@ -1,0 +1,411 @@
+/* =====================================================
+   KYSO Design System (v2) — phẳng, gọn, ít trang trí.
+   Namespace ks-* riêng, token-based, KHÔNG trùng wf-* cũ.
+   Dùng chung project-scope cho toàn bộ module mới.
+   ===================================================== */
+:root {
+    --ks-bg: #f8fafc;
+    --ks-surface: #ffffff;
+    --ks-border: #e5e7eb;
+    --ks-border-soft: #f1f5f9;
+    --ks-border-strong: #cbd5e1;
+    --ks-text-1: #0f172a;
+    --ks-text-2: #475569;
+    --ks-text-3: #64748b;
+    --ks-text-muted: #94a3b8;
+    --ks-primary: #2563eb;
+    --ks-success: #16a34a;
+    --ks-warning: #d97706;
+    --ks-danger: #dc2626;
+    --ks-r: 8px;
+    --ks-fs-sm: 11px;
+    --ks-fs-base: 13px;
+    --ks-fs-md: 14px;
+}
+
+/* ===== KHUNG TRANG ===== */
+.ks-page {
+    background: var(--ks-bg);
+    min-height: 100%;
+    padding: 14px 16px;
+    font-family: "Be Vietnam Pro", "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    color: var(--ks-text-1);
+}
+
+.ks-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.ks-page-title {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.25;
+    margin: 0;
+}
+
+.ks-page-subtitle {
+    margin: 2px 0 0;
+    font-size: var(--ks-fs-base);
+    color: var(--ks-text-3);
+}
+
+/* ===== THANH LỌC ===== */
+.ks-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+.ks-toolbar__spacer { flex: 1; }
+.ks-filter { min-width: 140px; max-width: 180px; }
+
+/* ===== THẺ THỐNG KÊ ===== */
+.ks-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.ks-stat {
+    background: var(--ks-surface);
+    border: 1px solid var(--ks-border);
+    border-radius: var(--ks-r);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.ks-stat__label {
+    font-size: var(--ks-fs-sm);
+    color: var(--ks-text-3);
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+.ks-stat__value { font-size: 24px; font-weight: 600; line-height: 1; color: var(--ks-text-1); }
+.ks-stat--accent .ks-stat__value { color: var(--ks-primary); }
+
+/* ===== CARD ===== */
+.ks-card {
+    background: var(--ks-surface);
+    border: 1px solid var(--ks-border);
+    border-radius: var(--ks-r);
+    overflow: hidden;
+}
+.ks-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--ks-border);
+}
+.ks-card__title { font-size: var(--ks-fs-md); font-weight: 600; margin: 0; }
+.ks-card__count { font-size: var(--ks-fs-sm); color: var(--ks-text-3); }
+
+/* ===== BẢNG ===== */
+.ks-table-wrap {
+    background: var(--ks-surface);
+    border: 1px solid var(--ks-border);
+    border-radius: var(--ks-r);
+    overflow: hidden;
+}
+.ks-table { width: 100%; border-collapse: collapse; font-size: var(--ks-fs-base); }
+.ks-table thead th {
+    text-align: left;
+    font-size: var(--ks-fs-sm);
+    font-weight: 600;
+    color: var(--ks-text-3);
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--ks-border);
+    white-space: nowrap;
+    background: #fbfcfd;
+}
+.ks-table tbody td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--ks-border-soft);
+    color: var(--ks-text-1);
+    vertical-align: middle;
+}
+.ks-table tbody tr:last-child td { border-bottom: none; }
+.ks-table tbody tr:hover { background: var(--ks-bg); }
+.ks-table__stt { width: 48px; color: var(--ks-text-3); }
+.ks-table__name { font-weight: 500; color: var(--ks-primary); cursor: pointer; }
+.ks-table__name:hover { text-decoration: underline; }
+.ks-col-center { text-align: center; }
+.ks-col-nowrap { white-space: nowrap; }
+
+.ks-status { font-weight: 500; }
+.ks-status--done { color: var(--ks-success); }
+.ks-status--pending { color: var(--ks-primary); }
+.ks-status--reject { color: var(--ks-danger); }
+
+.ks-signer-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 22px;
+    padding: 0 9px;
+    border-radius: 5px;
+    background: #fff8e6;
+    color: #b45309;
+    font-size: var(--ks-fs-sm);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.ks-tag { font-size: var(--ks-fs-sm); font-weight: 500; white-space: nowrap; }
+.ks-tag--noibo { color: var(--ks-text-2); }
+.ks-tag--phaply { color: var(--ks-warning); }
+
+.ks-actions { display: flex; align-items: center; gap: 10px; }
+.ks-action-ico { cursor: pointer; color: var(--ks-text-3); font-size: 17px; line-height: 1; }
+.ks-action-ico:hover { color: var(--ks-text-1); }
+.ks-action-ico--download:hover { color: var(--ks-primary); }
+.ks-action-ico--share:hover { color: var(--ks-success); }
+.ks-action-ico--delete:hover { color: var(--ks-danger); }
+
+.ks-sign-link {
+    font-size: var(--ks-fs-base);
+    font-weight: 500;
+    color: var(--ks-primary);
+    cursor: pointer;
+    white-space: nowrap;
+}
+.ks-sign-link:hover { text-decoration: underline; }
+
+.ks-table-foot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--ks-border-soft);
+    font-size: var(--ks-fs-sm);
+    color: var(--ks-text-3);
+}
+
+/* ===== TRẠNG THÁI RỖNG ===== */
+.ks-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 44px 20px;
+    text-align: center;
+    color: var(--ks-text-muted);
+    gap: 6px;
+    font-size: var(--ks-fs-base);
+}
+.ks-empty__title { font-size: var(--ks-fs-md); font-weight: 500; color: var(--ks-text-2); }
+
+/* ===== VIEWER KÝ (2 cột) ===== */
+.ks-viewer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 14px;
+    align-items: start;
+}
+.ks-viewer__doc {
+    background: var(--ks-surface);
+    border: 1px solid var(--ks-border);
+    border-radius: var(--ks-r);
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.ks-viewer__doc-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--ks-border);
+}
+.ks-viewer__doc-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef2f6;
+    min-height: 440px;
+    padding: 20px;
+}
+.ks-doc-frame { width: 100%; height: 70vh; border: none; background: #fff; }
+.ks-doc-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--ks-text-muted);
+    text-align: center;
+    font-size: var(--ks-fs-base);
+}
+
+.ks-viewer__panel { display: flex; flex-direction: column; gap: 12px; }
+.ks-panel-card {
+    background: var(--ks-surface);
+    border: 1px solid var(--ks-border);
+    border-radius: var(--ks-r);
+    overflow: hidden;
+}
+.ks-panel-card__title {
+    font-size: var(--ks-fs-base);
+    font-weight: 600;
+    color: var(--ks-text-1);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--ks-border-soft);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.ks-panel-card__body { padding: 12px 14px; }
+
+/* Hộp "lượt ký của tôi" nổi bật */
+.ks-my-turn {
+    border: 1px solid rgba(37, 99, 235, 0.25);
+    background: #f5f8ff;
+}
+.ks-my-turn__label { font-size: var(--ks-fs-sm); color: var(--ks-text-3); margin-bottom: 8px; }
+.ks-my-turn__name { font-size: var(--ks-fs-md); font-weight: 600; color: var(--ks-text-1); }
+.ks-my-turn__actions { display: flex; gap: 8px; margin-top: 12px; }
+
+.ks-btn {
+    flex: 1;
+    height: 34px;
+    border-radius: var(--ks-r);
+    border: none;
+    font-size: var(--ks-fs-base);
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.ks-btn--primary { background: var(--ks-primary); color: #fff; }
+.ks-btn--primary:hover { background: #1d4ed8; }
+.ks-btn--danger { background: #fff; color: var(--ks-danger); border: 1px solid #fecaca; }
+.ks-btn--danger:hover { background: #fef2f2; }
+
+/* Dòng người ký */
+.ks-signer-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--ks-border-soft);
+}
+.ks-signer-row:last-child { border-bottom: none; }
+.ks-signer-row__idx {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #eef2f6;
+    color: var(--ks-text-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--ks-fs-sm);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.ks-signer-row__idx--done { background: #dcfce7; color: var(--ks-success); }
+.ks-signer-row__idx--me { background: var(--ks-primary); color: #fff; }
+.ks-signer-row__body { flex: 1; min-width: 0; }
+.ks-signer-row__name { font-size: var(--ks-fs-base); font-weight: 500; color: var(--ks-text-1); }
+.ks-signer-row__meta { font-size: var(--ks-fs-sm); color: var(--ks-text-3); margin-top: 1px; }
+
+/* Timeline lịch sử */
+.ks-timeline { display: flex; flex-direction: column; gap: 2px; }
+.ks-tl-item { display: flex; gap: 10px; padding: 6px 0; }
+.ks-tl-dot {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #eef2f6;
+    color: var(--ks-text-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.ks-tl-body { flex: 1; min-width: 0; }
+.ks-tl-title { font-size: var(--ks-fs-base); font-weight: 500; color: var(--ks-text-1); }
+.ks-tl-time { font-size: var(--ks-fs-sm); color: var(--ks-text-3); margin-top: 1px; }
+
+/* ===== MINI-MAP TRANG (canvas ký dùng chung) =====
+   Tinh chỉnh đè lên .wf-free-sign-page-thumb gốc (wf-global-style):
+   thumbnail dọc, ảnh preview trang thật, số trang nằm dưới.
+   Load sau wf-global-style nên thắng cascade — 1 nguồn tinh chỉnh duy nhất. */
+.wf-free-sign-page-thumb {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 4px;
+    padding: 5px 4px;
+    border-radius: 8px;
+    transition: background .15s ease;
+}
+.wf-free-sign-page-thumb:hover { background: rgba(15, 23, 42, .035); }
+.wf-free-sign-page-thumb.active { transform: none; background: rgba(37, 99, 235, .07); }
+
+.wf-free-sign-page-thumb__preview {
+    width: 52px;
+    min-height: 0;
+    aspect-ratio: 3 / 4;
+    border-radius: 4px;
+    border: 1px solid rgba(15, 23, 42, .12);
+    background: #fff;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.wf-free-sign-page-thumb.active .wf-free-sign-page-thumb__preview {
+    border-color: rgba(37, 99, 235, .55);
+    box-shadow: 0 0 0 1px rgba(37, 99, 235, .35);
+}
+.wf-free-sign-page-thumb__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+}
+.wf-free-sign-page-thumb__placeholder {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    border: none;
+    border-radius: 0;
+    background: #f8fafc;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.wf-free-sign-page-thumb__label {
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    padding-bottom: 0;
+    color: var(--ks-text-3);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 960px) {
+    .ks-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ks-viewer { grid-template-columns: 1fr; }
+    .ks-viewer__panel { flex-direction: column; }
+}
+@media (max-width: 600px) {
+    .ks-stat-grid { grid-template-columns: 1fr; }
+    .ks-page { padding: 12px; }
+}

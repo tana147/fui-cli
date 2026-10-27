@@ -1,0 +1,761 @@
+{
+  "data": [
+    {
+      "dsChaoCo": [],
+      "dsChaoCoGrid": []
+    },
+    {
+      "dsChaoCoTuan": []
+    },
+    {
+      "dlForm": false,
+      "addNew": 1
+    },
+    {
+      "form": {
+        "ID": null,
+        "Khoi": "",
+        "Thu": 2,
+        "Buoi": "Sang",
+        "Tiet": 1,
+        "GhiChu": ""
+      }
+    },
+    {
+      "fixedThuCols": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "fixedSlots": [
+        {
+          "Buoi": "Sang",
+          "Tiet": 1
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 2
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 3
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 4
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 5
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 1
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 2
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 3
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 4
+        }
+      ]
+    },
+    {
+      "khoiOptions": [
+        {
+          "text": "Khối 1",
+          "value": "01"
+        },
+        {
+          "text": "Khối 2",
+          "value": "02"
+        },
+        {
+          "text": "Khối 3",
+          "value": "03"
+        },
+        {
+          "text": "Khối 4",
+          "value": "04"
+        },
+        {
+          "text": "Khối 5",
+          "value": "05"
+        },
+        {
+          "text": "Khối 6",
+          "value": "06"
+        },
+        {
+          "text": "Khối 7",
+          "value": "07"
+        },
+        {
+          "text": "Khối 8",
+          "value": "08"
+        },
+        {
+          "text": "Khối 9",
+          "value": "09"
+        },
+        {
+          "text": "Khối 10",
+          "value": "10"
+        },
+        {
+          "text": "Khối 11",
+          "value": "11"
+        },
+        {
+          "text": "Khối 12",
+          "value": "12"
+        }
+      ]
+    },
+    {
+      "fetchChaoCo": {
+        "API": "/TkbChaoCoKhoiList",
+        "OUT": "dsChaoCo",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsChaoCoGrid = vueData.dsChaoCo.map(function(r){ return Object.assign({}, r, {MaMon: 'Khối ' + r.Khoi}); })"
+          }
+        ]
+      }
+    },
+    {
+      "insertChaoCo": {
+        "API": "/TkbChaoCoKhoiInsert",
+        "IN": {
+          "Khoi": "vueData.form.Khoi",
+          "Thu": "vueData.form.Thu",
+          "Buoi": "vueData.form.Buoi",
+          "Tiet": "vueData.form.Tiet",
+          "GhiChu": "vueData.form.GhiChu"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Thêm thành công"
+          },
+          {
+            "CALL": "fetchChaoCo"
+          }
+        ]
+      }
+    },
+    {
+      "updateChaoCo": {
+        "API": "/TkbChaoCoKhoiUpdate",
+        "IN": {
+          "ID": "vueData.form.ID",
+          "Khoi": "vueData.form.Khoi",
+          "Thu": "vueData.form.Thu",
+          "Buoi": "vueData.form.Buoi",
+          "Tiet": "vueData.form.Tiet",
+          "GhiChu": "vueData.form.GhiChu"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Cập nhật thành công"
+          },
+          {
+            "CALL": "fetchChaoCo"
+          }
+        ]
+      }
+    },
+    {
+      "saveChaoCo": {
+        "IF": "vueData.addNew == 1",
+        "THEN": {
+          "CALL": "insertChaoCo"
+        },
+        "ELSE": {
+          "CALL": "updateChaoCo"
+        }
+      }
+    },
+    {
+      "moveChaoCo": {
+        "API": "/TkbChaoCoKhoiUpdate",
+        "IN": {
+          "ID": "vueData.moveItem.ID",
+          "Khoi": "vueData.moveItem.Khoi",
+          "Thu": "vueData.moveItem.Thu",
+          "Buoi": "vueData.moveItem.Buoi",
+          "Tiet": "vueData.moveItem.Tiet",
+          "GhiChu": "vueData.moveItem.GhiChu"
+        },
+        "CALLBACK": [
+          {
+            "MESS": "Đã dời lịch chào cờ"
+          },
+          {
+            "CALL": "fetchChaoCo"
+          }
+        ]
+      }
+    },
+    {
+      "moveItem": {
+        "ID": null,
+        "Khoi": "",
+        "Thu": 2,
+        "Buoi": "Sang",
+        "Tiet": 1,
+        "GhiChu": ""
+      },
+      "moveTrigger": 0
+    },
+    {
+      "fetchChaoCoTuan": {
+        "API": "/TkbChaoCoKhoiTuanList",
+        "OUT": "dsChaoCoTuan",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsChaoCoTuan = vueData.dsChaoCoTuan.map(function(r){ return Object.assign({}, r, {ThuText: 'Thứ ' + r.Thu, BuoiText: r.Buoi === 'Sang' ? 'Sáng' : 'Chiều'}); })"
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "fetchChaoCo"
+    },
+    {
+      "CALL": "fetchChaoCoTuan"
+    }
+  ],
+  "watch": {
+    "moveTrigger": {
+      "CALL": "moveChaoCo"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "text-body-2 grey--text text--darken-1 my-2"
+              },
+              "innerHTML": "Khung giờ chào cờ cố định của từng khối — solver sẽ tự tránh xếp môn học khác vào đúng khung giờ này khi chạy Auto (không cần khóa tay). Bấm ô trống để thêm, bấm bút để sửa, hoặc kéo-thả 1 ô đã có sang ô trống để dời giờ.",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "uc-tkb-grid",
+              "attr": {
+                ":items": "vueData.dsChaoCoGrid",
+                ":editable": true,
+                ":addable": true,
+                ":draggable": true,
+                ":fixed-thu-cols": "vueData.fixedThuCols",
+                ":fixed-slots": "vueData.fixedSlots",
+                "sub-label-field": "GhiChu",
+                "v-on:edit-cell": "vueData.addNew = 0, vueData.form = {ID: $event.ID, Khoi: $event.Khoi, Thu: $event.Thu, Buoi: $event.Buoi, Tiet: $event.Tiet, GhiChu: $event.GhiChu}, vueData.dlForm = true",
+                "v-on:add-cell": "vueData.addNew = 1, vueData.form = {ID: null, Khoi: '', Thu: $event.Thu, Buoi: $event.Buoi, Tiet: $event.Tiet, GhiChu: ''}, vueData.dlForm = true",
+                "v-on:move-cell": "vueData.moveItem = {ID: $event.item.ID, Khoi: $event.item.Khoi, Thu: $event.Thu, Buoi: $event.Buoi, Tiet: $event.Tiet, GhiChu: $event.item.GhiChu}, vueData.moveTrigger = vueData.moveTrigger + 1"
+              },
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-card",
+              "attr": {
+                "v-if": "vueData.dlForm",
+                "class": "pa-0 mt-3",
+                "outlined": ""
+              },
+              "w": 12,
+              "innerHTML": [
+                {
+                  "el": "v-toolbar",
+                  "attr": {
+                    "dense": "",
+                    "flat": ""
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar-title",
+                      "innerHTML": "Lịch chào cờ khối"
+                    },
+                    {
+                      "el": "v-spacer"
+                    },
+                    {
+                      "el": "v-btn",
+                      "attr": {
+                        "icon": "",
+                        "v-on:click": "vueData.dlForm = false"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-icon",
+                          "innerHTML": "mdi-close"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "el": "v-container",
+                  "attr": {
+                    "class": "px-4"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-row",
+                      "attr": {},
+                      "innerHTML": [
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": "12",
+                            "sm": "3",
+                            "class": "py-1"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-select",
+                              "attr": {
+                                "v-model": "vueData.form.Khoi",
+                                "label": "Khối",
+                                ":items": "vueData.khoiOptions",
+                                "item-title": "text",
+                                "item-value": "value"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": "6",
+                            "sm": "2",
+                            "class": "py-1"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-select",
+                              "attr": {
+                                "v-model": "vueData.form.Thu",
+                                "label": "Thứ",
+                                ":items": [
+                                  {
+                                    "text": "Thứ 2",
+                                    "value": 2
+                                  },
+                                  {
+                                    "text": "Thứ 3",
+                                    "value": 3
+                                  },
+                                  {
+                                    "text": "Thứ 4",
+                                    "value": 4
+                                  },
+                                  {
+                                    "text": "Thứ 5",
+                                    "value": 5
+                                  },
+                                  {
+                                    "text": "Thứ 6",
+                                    "value": 6
+                                  },
+                                  {
+                                    "text": "Thứ 7",
+                                    "value": 7
+                                  }
+                                ],
+                                "item-title": "text",
+                                "item-value": "value"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": "6",
+                            "sm": "2",
+                            "class": "py-1"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-select",
+                              "attr": {
+                                "v-model": "vueData.form.Buoi",
+                                "label": "Buổi",
+                                ":items": [
+                                  {
+                                    "text": "Sáng",
+                                    "value": "Sang"
+                                  },
+                                  {
+                                    "text": "Chiều",
+                                    "value": "Chieu"
+                                  }
+                                ],
+                                "item-title": "text",
+                                "item-value": "value"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": "6",
+                            "sm": "2",
+                            "class": "py-1"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-text-field",
+                              "attr": {
+                                "v-model.number": "vueData.form.Tiet",
+                                "label": "Tiết",
+                                "type": "number"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "el": "v-col",
+                          "attr": {
+                            "cols": "12",
+                            "sm": "3",
+                            "class": "py-1"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-text-field",
+                              "attr": {
+                                "v-model": "vueData.form.GhiChu",
+                                "label": "Ghi chú",
+                                ":required": false
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "el": "v-card-actions",
+                  "attr": {
+                    "class": "mr-1 mb-1"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "variant": "text",
+                        "color": "warning",
+                        "label": "Xoá",
+                        "icon-text": "mdi-delete",
+                        "v-if": "vueData.addNew == 0",
+                        ":checkvalid": false,
+                        "action": {
+                          "CONFIRM": "Bạn có chắc muốn xoá lịch chào cờ này?",
+                          "API": "/TkbChaoCoKhoiDelete/`{{vueData.form.ID}}",
+                          "CALLBACK": [
+                            {
+                              "EXE": "vueData.dlForm = false"
+                            },
+                            {
+                              "MESS": "Đã xoá"
+                            },
+                            {
+                              "CALL": "fetchChaoCo"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "el": "v-spacer"
+                    },
+                    {
+                      "el": "f-button",
+                      "attr": {
+                        "variant": "text",
+                        "label": "Lưu",
+                        "icon-text": "mdi-content-save",
+                        ":checkvalid": true,
+                        "action": {
+                          "CALL": "saveChaoCo"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "text-body-2 grey--text text--darken-1 mt-6 mb-2"
+              },
+              "innerHTML": "Ngoại lệ theo tuần — khi 1 tuần cụ thể có lịch sinh hoạt/chào cờ KHÁC với khung giờ cố định ở trên (vd đổi buổi, đổi tiết), thêm 1 dòng riêng cho đúng khối + đúng tuần đó tại đây. Solver sẽ ưu tiên dùng dòng này thay cho khung giờ cố định khi chạy Auto đúng tuần đó.",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                ":items": "vueData.dsChaoCoTuan",
+                "item-key": "ID",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":height": 300,
+                ":headers": [
+                  {
+                    "text": "Tuần",
+                    "value": "Tuan",
+                    "align": "center",
+                    "width": "80px"
+                  },
+                  {
+                    "text": "Khối",
+                    "value": "Khoi",
+                    "align": "center",
+                    "width": "80px"
+                  },
+                  {
+                    "text": "Thứ",
+                    "value": "ThuText",
+                    "align": "center",
+                    "width": "80px"
+                  },
+                  {
+                    "text": "Buổi",
+                    "value": "BuoiText",
+                    "align": "center",
+                    "width": "90px"
+                  },
+                  {
+                    "text": "Tiết",
+                    "value": "Tiet",
+                    "align": "center",
+                    "width": "70px"
+                  },
+                  {
+                    "text": "Ghi chú",
+                    "value": "GhiChu"
+                  },
+                  {
+                    "text": "Sửa",
+                    "value": "ctrl-update",
+                    "align": "center",
+                    "width": "90px"
+                  }
+                ],
+                ":update-form": [
+                  {
+                    "el": "v-text-field",
+                    "w": 6,
+                    "attr": {
+                      "v-model.number": "Tuan",
+                      "label": "Tuần (số thứ tự trong năm học)",
+                      "type": "number",
+                      ":required": true
+                    }
+                  },
+                  {
+                    "el": "v-select",
+                    "w": 6,
+                    "attr": {
+                      "v-model": "Khoi",
+                      "label": "Khối",
+                      ":items": "vueData.khoiOptions",
+                      "item-title": "text",
+                      "item-value": "value",
+                      ":required": true
+                    }
+                  },
+                  {
+                    "el": "v-select",
+                    "w": 4,
+                    "attr": {
+                      "v-model": "Thu",
+                      "label": "Thứ",
+                      ":items": [
+                        {
+                          "text": "Thứ 2",
+                          "value": 2
+                        },
+                        {
+                          "text": "Thứ 3",
+                          "value": 3
+                        },
+                        {
+                          "text": "Thứ 4",
+                          "value": 4
+                        },
+                        {
+                          "text": "Thứ 5",
+                          "value": 5
+                        },
+                        {
+                          "text": "Thứ 6",
+                          "value": 6
+                        },
+                        {
+                          "text": "Thứ 7",
+                          "value": 7
+                        }
+                      ],
+                      "item-title": "text",
+                      "item-value": "value"
+                    }
+                  },
+                  {
+                    "el": "v-select",
+                    "w": 4,
+                    "attr": {
+                      "v-model": "Buoi",
+                      "label": "Buổi",
+                      ":items": [
+                        {
+                          "text": "Sáng",
+                          "value": "Sang"
+                        },
+                        {
+                          "text": "Chiều",
+                          "value": "Chieu"
+                        }
+                      ],
+                      "item-title": "text",
+                      "item-value": "value"
+                    }
+                  },
+                  {
+                    "el": "v-text-field",
+                    "w": 4,
+                    "attr": {
+                      "v-model.number": "Tiet",
+                      "label": "Tiết",
+                      "type": "number"
+                    }
+                  },
+                  {
+                    "el": "v-text-field",
+                    "w": 12,
+                    "attr": {
+                      "v-model": "GhiChu",
+                      "label": "Ghi chú"
+                    }
+                  }
+                ],
+                ":update-api": {
+                  "default-item": {
+                    "Tuan": null,
+                    "Khoi": "",
+                    "Thu": 2,
+                    "Buoi": "Sang",
+                    "Tiet": 1,
+                    "GhiChu": ""
+                  },
+                  "new": {
+                    "API": "/TkbChaoCoKhoiTuanInsert",
+                    "IN": {
+                      "Tuan": "item.Tuan",
+                      "Khoi": "item.Khoi",
+                      "Thu": "item.Thu",
+                      "Buoi": "item.Buoi",
+                      "Tiet": "item.Tiet",
+                      "GhiChu": "item.GhiChu"
+                    },
+                    "CALLBACK": [
+                      {
+                        "MESS": "Thêm thành công"
+                      },
+                      {
+                        "CALL": "fetchChaoCoTuan"
+                      }
+                    ]
+                  },
+                  "edit": {
+                    "API": "/TkbChaoCoKhoiTuanUpdate",
+                    "IN": {
+                      "ID": "item.ID",
+                      "Tuan": "item.Tuan",
+                      "Khoi": "item.Khoi",
+                      "Thu": "item.Thu",
+                      "Buoi": "item.Buoi",
+                      "Tiet": "item.Tiet",
+                      "GhiChu": "item.GhiChu"
+                    },
+                    "CALLBACK": [
+                      {
+                        "MESS": "Cập nhật thành công"
+                      },
+                      {
+                        "CALL": "fetchChaoCoTuan"
+                      }
+                    ]
+                  },
+                  "delete": {
+                    "CONFIRM": "Bạn có chắc muốn xoá ngoại lệ tuần này?",
+                    "API": "/TkbChaoCoKhoiTuanDelete",
+                    "IN": {
+                      "ID": "item.ID"
+                    },
+                    "CALLBACK": [
+                      {
+                        "MESS": "Đã xoá"
+                      },
+                      {
+                        "CALL": "fetchChaoCoTuan"
+                      }
+                    ]
+                  }
+                }
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

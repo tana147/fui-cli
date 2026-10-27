@@ -1,0 +1,575 @@
+{
+  "data": [
+    {
+      "filterKeyword": ""
+    },
+    {
+      "dsQuyTac": []
+    },
+    {
+      "dlForm": false,
+      "addNew": 1
+    },
+    {
+      "form": {
+        "ID": null,
+        "MaMon": "",
+        "Khoi": "",
+        "LoaiQuyTac": "",
+        "ThamSo": "{}",
+        "GhiChu": "",
+        "Enable": true
+      }
+    },
+    {
+      "dsLoaiQuyTac": [
+        {
+          "text": "Tối đa N tiết/ngày",
+          "value": "MaxTietMoiNgay"
+        },
+        {
+          "text": "Tối đa N tiết đôi/ngày",
+          "value": "MaxDoiMoiNgay"
+        },
+        {
+          "text": "Cấm khung giờ cố định",
+          "value": "CamKhungGio"
+        },
+        {
+          "text": "Khóa cứng lịch họp (toàn cục)",
+          "value": "HopBatBuocKhoaCung"
+        },
+        {
+          "text": "Mẫu TV khối 1",
+          "value": "TV_Khoi1_Pattern"
+        },
+        {
+          "text": "Mẫu TV khối 2",
+          "value": "TV_Khoi2_Pattern"
+        },
+        {
+          "text": "Mẫu TV khối 3",
+          "value": "TV_Khoi3_Pattern"
+        },
+        {
+          "text": "Mẫu TV khối 4-5",
+          "value": "TV_Khoi45_Pattern"
+        },
+        {
+          "text": "Mẫu HĐTN1",
+          "value": "HDTN1_Pattern"
+        }
+      ]
+    },
+    {
+      "dsKhoiOptions": [
+        {
+          "text": "Tất cả khối",
+          "value": ""
+        },
+        {
+          "text": "Khối 1",
+          "value": "01"
+        },
+        {
+          "text": "Khối 2",
+          "value": "02"
+        },
+        {
+          "text": "Khối 3",
+          "value": "03"
+        },
+        {
+          "text": "Khối 4",
+          "value": "04"
+        },
+        {
+          "text": "Khối 5",
+          "value": "05"
+        },
+        {
+          "text": "Khối 6",
+          "value": "06"
+        },
+        {
+          "text": "Khối 7",
+          "value": "07"
+        },
+        {
+          "text": "Khối 8",
+          "value": "08"
+        },
+        {
+          "text": "Khối 9",
+          "value": "09"
+        },
+        {
+          "text": "Khối 10",
+          "value": "10"
+        },
+        {
+          "text": "Khối 11",
+          "value": "11"
+        },
+        {
+          "text": "Khối 12",
+          "value": "12"
+        }
+      ]
+    },
+    {
+      "menuHanhDong": [
+        {
+          "color": "primary",
+          "icon-text": "mdi-pencil",
+          "text": "Sửa",
+          "action": [
+            {
+              "addNew": 0,
+              "form": {
+                "ID": "item.ID",
+                "MaMon": "item.MaMon",
+                "Khoi": "item.Khoi",
+                "LoaiQuyTac": "item.LoaiQuyTac",
+                "ThamSo": "item.ThamSo",
+                "GhiChu": "item.GhiChu",
+                "Enable": "item.Enable"
+              }
+            },
+            {
+              "dlForm": true
+            }
+          ]
+        },
+        {
+          "color": "warning",
+          "icon-text": "mdi-delete",
+          "text": "Xóa",
+          "action": {
+            "CONFIRM": "Bạn có chắc muốn xoá quy tắc này?",
+            "API": "/TkbMonQuyTacDelete/`{{item.ID}}",
+            "CALLBACK": [
+              {
+                "MESS": "Đã xoá"
+              },
+              {
+                "CALL": "fetchQuyTac"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "fetchQuyTac": {
+        "API": "/TkbMonQuyTacList",
+        "IN": {
+          "Keyword": "vueData.filterKeyword"
+        },
+        "OUT": "dsQuyTac"
+      }
+    },
+    {
+      "insertQuyTac": {
+        "API": "/TkbMonQuyTacInsert",
+        "IN": {
+          "MaMon": "vueData.form.MaMon",
+          "Khoi": "vueData.form.Khoi",
+          "LoaiQuyTac": "vueData.form.LoaiQuyTac",
+          "ThamSo": "vueData.form.ThamSo",
+          "GhiChu": "vueData.form.GhiChu"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Thêm thành công"
+          },
+          {
+            "CALL": "fetchQuyTac"
+          }
+        ]
+      }
+    },
+    {
+      "updateQuyTac": {
+        "API": "/TkbMonQuyTacUpdate",
+        "IN": {
+          "ID": "vueData.form.ID",
+          "MaMon": "vueData.form.MaMon",
+          "Khoi": "vueData.form.Khoi",
+          "LoaiQuyTac": "vueData.form.LoaiQuyTac",
+          "ThamSo": "vueData.form.ThamSo",
+          "GhiChu": "vueData.form.GhiChu",
+          "Enable": "vueData.form.Enable"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Cập nhật thành công"
+          },
+          {
+            "CALL": "fetchQuyTac"
+          }
+        ]
+      }
+    },
+    {
+      "saveQuyTac": {
+        "IF": "vueData.addNew == 1",
+        "THEN": {
+          "CALL": "insertQuyTac"
+        },
+        "ELSE": {
+          "CALL": "updateQuyTac"
+        }
+      }
+    },
+    {
+      "CALL": "fetchQuyTac"
+    }
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "text-body-2 grey--text text--darken-1 my-2"
+              },
+              "innerHTML": "Cấu hình các luật xếp lịch tổng quát hóa được (áp dụng theo Môn, tùy chọn theo Khối) — solver đọc bảng này để quyết định áp dụng luật cho môn nào, không cần sửa code. Khối để trống = áp dụng mọi khối.",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-text-field",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterKeyword",
+                "label": "Tìm mã môn / loại quy tắc",
+                ":required": false
+              },
+              "w": "280"
+            },
+            {
+              "el": "v-spacer",
+              "attr": {},
+              "w": ""
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "my-2",
+                "label": "Thêm quy tắc",
+                "icon-text": "mdi-plus",
+                ":checkvalid": false,
+                "action": [
+                  {
+                    "addNew": 1,
+                    "form": {
+                      "ID": null,
+                      "MaMon": "",
+                      "Khoi": "",
+                      "LoaiQuyTac": "",
+                      "ThamSo": "{}",
+                      "GhiChu": "",
+                      "Enable": true
+                    }
+                  },
+                  {
+                    "dlForm": true
+                  }
+                ]
+              },
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Danh mục quy tắc",
+                ":items": "vueData.dsQuyTac",
+                "item-key": "ID",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":height": -16,
+                ":headers": [
+                  {
+                    "align": "center",
+                    "title": "Mã môn",
+                    "value": "MaMon",
+                    "width": "90px"
+                  },
+                  {
+                    "title": "Tên môn",
+                    "value": "TenMon"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Khối",
+                    "value": "Khoi",
+                    "width": "80px"
+                  },
+                  {
+                    "title": "Loại quy tắc",
+                    "value": "LoaiQuyTac"
+                  },
+                  {
+                    "title": "Tham số",
+                    "value": "ThamSo"
+                  },
+                  {
+                    "title": "Ghi chú",
+                    "value": "GhiChu"
+                  },
+                  {
+                    "el": "v-icon",
+                    "align": "center",
+                    "title": "Bật",
+                    "value": "Enable",
+                    "width": "70px"
+                  },
+                  {
+                    "el": "t-menu",
+                    "title": "Tác vụ",
+                    "value": "Actions",
+                    "width": "100px",
+                    "align": "center",
+                    "attr": {
+                      ":items": "vueData.menuHanhDong"
+                    }
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "hidden-container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlForm",
+                "width": 550
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Quy tắc xếp lịch"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlForm = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "px-4"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.MaMon",
+                                    "label": "Mã môn (* = mọi môn)"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.form.Khoi",
+                                    "label": "Khối",
+                                    ":items": "vueData.dsKhoiOptions",
+                                    "item-title": "text",
+                                    "item-value": "value",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.form.LoaiQuyTac",
+                                    "label": "Loại quy tắc",
+                                    ":items": "vueData.dsLoaiQuyTac",
+                                    "item-title": "text",
+                                    "item-value": "value"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.ThamSo",
+                                    "label": "Tham số (JSON, vd {\"soTiet\":1})",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-textarea",
+                                  "attr": {
+                                    "v-model": "vueData.form.GhiChu",
+                                    "label": "Ghi chú",
+                                    "rows": 2,
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1",
+                                "v-if": "vueData.addNew == 0"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-switch",
+                                  "attr": {
+                                    "v-model": "vueData.form.Enable",
+                                    "label": "Đang bật"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "label": "Lưu",
+                            "icon-text": "mdi-content-save",
+                            ":checkvalid": true,
+                            "action": {
+                              "CALL": "saveQuyTac"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

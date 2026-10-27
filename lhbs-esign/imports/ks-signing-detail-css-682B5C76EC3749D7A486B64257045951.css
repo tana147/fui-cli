@@ -1,0 +1,115 @@
+/* =====================================================
+   KYSO — Viewer chi tiết ký (unify wf-user-request-detail
+   sang look ks-*). Namespace ks-vd-* riêng.
+   ===================================================== */
+
+/* Panel card title bọc <h3> */
+.ks-panel-card__title h3 {
+    margin: 0;
+    font-size: var(--ks-fs-base);
+    font-weight: 600;
+    color: var(--ks-text-1);
+}
+.ks-panel-card__title .v-chip,
+.ks-panel-card__title .v-spacer { margin-left: auto; }
+
+/* Nội dung trực tiếp trong panel card (không có __body) */
+.ks-panel-card > .ks-vd-status,
+.ks-panel-card > .ks-vd-meta,
+.ks-panel-card > .ks-vd-action,
+.ks-panel-card > .ks-vd-reject,
+.ks-panel-card > .ks-vd-doc-info,
+.ks-panel-card > .ks-vd-box-list,
+.ks-panel-card > .ks-empty,
+.ks-panel-card > .wf-request-fields-table {
+    padding: 12px 14px;
+}
+
+/* Header trang chi tiết */
+.ks-vd-header { align-items: flex-start; }
+.ks-vd-header h1 { font-size: 17px; font-weight: 600; margin: 0; line-height: 1.25; color: var(--ks-text-1); }
+.ks-vd-header p { margin: 3px 0 0; font-size: var(--ks-fs-base); color: var(--ks-text-3); }
+.ks-vd-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--ks-fs-sm);
+    color: var(--ks-primary);
+    cursor: pointer;
+    margin-bottom: 4px;
+}
+.ks-vd-back:hover { text-decoration: underline; }
+.ks-vd-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* Khung tài liệu (canvas không padding) */
+.ks-vd-doc-body { padding: 0 !important; display: block !important; background: #eef2f6; }
+.ks-vd-doc-title { min-width: 0; }
+.ks-vd-doc-name {
+    font-size: var(--ks-fs-base); font-weight: 500; color: var(--ks-text-1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ks-vd-doc-meta { font-size: var(--ks-fs-sm); color: var(--ks-text-3); margin-top: 1px; }
+
+/* Hộp trạng thái thao tác */
+.ks-vd-status {
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    background: #f5f8ff;
+    border-radius: var(--ks-r);
+    padding: 12px 14px;
+    margin: 12px 14px;
+}
+.ks-vd-status__title { font-size: var(--ks-fs-md); font-weight: 600; color: var(--ks-primary); }
+.ks-vd-status__sub { font-size: var(--ks-fs-sm); color: var(--ks-text-2); margin-top: 3px; line-height: 1.45; }
+
+/* Dòng label/value */
+.ks-info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    font-size: var(--ks-fs-base);
+    border-bottom: 1px solid var(--ks-border-soft);
+}
+.ks-info-row:last-child { border-bottom: none; }
+.ks-info-row .label { color: var(--ks-text-3); flex-shrink: 0; }
+.ks-info-row .value { color: var(--ks-text-1); font-weight: 500; text-align: right; word-break: break-word; }
+
+/* Khối thao tác ký */
+.ks-vd-action { padding: 0 14px 12px; }
+.ks-vd-mode-card {
+    border: 1px solid var(--ks-border);
+    border-radius: var(--ks-r);
+    background: #fbfcfd;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+.ks-vd-mode-card__title { font-size: var(--ks-fs-base); font-weight: 600; margin-bottom: 8px; color: var(--ks-text-1); }
+.ks-vd-form-grid { display: grid; gap: 10px; }
+.ks-vd-action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ks-vd-action-btns .v-btn { width: 100%; }
+
+/* Hộp từ chối */
+.ks-vd-reject {
+    margin: 0 14px 12px;
+    border: 1px solid #fecaca;
+    background: #fef7f7;
+    border-radius: var(--ks-r);
+    padding: 12px;
+}
+.ks-vd-reject__title { font-size: var(--ks-fs-base); font-weight: 600; color: var(--ks-danger); margin-bottom: 8px; }
+
+/* Danh sách vị trí ký */
+.ks-vd-box-list { display: grid; gap: 8px; }
+.ks-vd-box-item {
+    border: 1px solid var(--ks-border);
+    border-radius: var(--ks-r);
+    background: #fbfcfd;
+    padding: 10px 12px;
+}
+.ks-vd-box-item.active { border-color: rgba(37, 99, 235, 0.4); background: #f5f8ff; }
+.ks-vd-box-item__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ks-vd-box-item__title { font-size: var(--ks-fs-base); font-weight: 600; color: var(--ks-text-1); }
+.ks-vd-box-item__meta { font-size: var(--ks-fs-sm); color: var(--ks-text-3); margin-top: 4px; }
+
+/* Bảng biểu mẫu (giữ grid cũ, làm phẳng) */
+.wf-request-fields-table .wf-trow { font-size: var(--ks-fs-sm); }

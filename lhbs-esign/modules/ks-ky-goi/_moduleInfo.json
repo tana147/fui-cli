@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/ks-ky-goi",
+  "url": "//kyso.lhbs.vn/ks-ky-goi",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "ks-ky-goi",
+  "ModuleName": "Ký gói tự do",
+  "UpdateTime": "2026-07-11 22:59:07",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-07-12",
+  "LoadCount": 11,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

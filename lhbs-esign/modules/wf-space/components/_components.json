@@ -1,0 +1,62 @@
+[
+  {
+    "comID": 9878,
+    "comName": "uc-backlog"
+  },
+  {
+    "comID": 10026,
+    "comName": "uc-board"
+  },
+  {
+    "comID": 9879,
+    "comName": "uc-filter-builder"
+  },
+  {
+    "comID": 9880,
+    "comName": "uc-list-view"
+  },
+  {
+    "comID": 9881,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 9942,
+    "comName": "uc-project-create-dialog"
+  },
+  {
+    "comID": 9943,
+    "comName": "uc-project-members"
+  },
+  {
+    "comID": 9983,
+    "comName": "uc-space-cockpit"
+  },
+  {
+    "comID": 9949,
+    "comName": "uc-space-create-dialog"
+  },
+  {
+    "comID": 10014,
+    "comName": "uc-space-portfolio"
+  },
+  {
+    "comID": 9882,
+    "comName": "uc-space-settings"
+  },
+  {
+    "comID": 9950,
+    "comName": "uc-space-timeline"
+  },
+  {
+    "comID": 10025,
+    "comName": "uc-task-create-dialog"
+  },
+  {
+    "comID": 9952,
+    "comName": "uc-workflow-create-dialog"
+  },
+  {
+    "comID": 10024,
+    "comName": "uc-workitem-detail"
+  }
+]

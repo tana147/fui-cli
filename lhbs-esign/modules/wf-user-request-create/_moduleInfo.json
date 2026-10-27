@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/wf-user-request-create",
+  "url": "//kyso.lhbs.vn/wf-user-request-create",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "wf-user-request-create",
+  "ModuleName": "wf-user-request-create",
+  "UpdateTime": "2026-07-10 14:58:25",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-10-23",
+  "LoadCount": 58,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

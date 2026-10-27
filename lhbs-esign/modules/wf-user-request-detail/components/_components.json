@@ -1,0 +1,22 @@
+[
+  {
+    "comID": 9835,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 9834,
+    "comName": "uc-request-detail-flow"
+  },
+  {
+    "comID": 9833,
+    "comName": "uc-request-detail-history"
+  },
+  {
+    "comID": 9837,
+    "comName": "uc-request-external-tracking"
+  },
+  {
+    "comID": 9838,
+    "comName": "uc-request-sign-activity"
+  }
+]

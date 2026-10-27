@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/wf-admin-templates",
+  "url": "//kyso.lhbs.vn/wf-admin-templates",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "wf-admin-templates",
+  "ModuleName": "wf-admin-templates",
+  "UpdateTime": "2026-07-10 14:57:21",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-10-23",
+  "LoadCount": 302,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

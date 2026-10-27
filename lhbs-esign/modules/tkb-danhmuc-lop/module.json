@@ -1,0 +1,536 @@
+{
+  "data": [
+    {
+      "filterKhoi": "",
+      "filterKeyword": ""
+    },
+    {
+      "dsLop": []
+    },
+    {
+      "dlForm": false,
+      "addNew": 1
+    },
+    {
+      "form": {
+        "MaLop": "",
+        "Khoi": "",
+        "ChuongTrinhDaoTao": "",
+        "CoPhongTruyenThong": true,
+        "LaLopGoc": true,
+        "LopGocMa": ""
+      }
+    },
+    {
+      "dsKhoi": [
+        {
+          "value": "01",
+          "text": "Khối 1"
+        },
+        {
+          "value": "02",
+          "text": "Khối 2"
+        },
+        {
+          "value": "03",
+          "text": "Khối 3"
+        },
+        {
+          "value": "04",
+          "text": "Khối 4"
+        },
+        {
+          "value": "05",
+          "text": "Khối 5"
+        },
+        {
+          "value": "06",
+          "text": "Khối 6"
+        },
+        {
+          "value": "07",
+          "text": "Khối 7"
+        },
+        {
+          "value": "08",
+          "text": "Khối 8"
+        },
+        {
+          "value": "09",
+          "text": "Khối 9"
+        },
+        {
+          "value": "10",
+          "text": "Khối 10"
+        },
+        {
+          "value": "11",
+          "text": "Khối 11"
+        },
+        {
+          "value": "12",
+          "text": "Khối 12"
+        }
+      ]
+    },
+    {
+      "menuHanhDong": [
+        {
+          "color": "primary",
+          "icon-text": "mdi-pencil",
+          "text": "Sửa",
+          "action": [
+            {
+              "addNew": 0,
+              "form": {
+                "MaLop": "item.MaLop",
+                "Khoi": "item.Khoi",
+                "ChuongTrinhDaoTao": "item.ChuongTrinhDaoTao",
+                "CoPhongTruyenThong": "item.CoPhongTruyenThong",
+                "LaLopGoc": "item.LaLopGoc",
+                "LopGocMa": "item.LopGocMa"
+              }
+            },
+            {
+              "dlForm": true
+            }
+          ]
+        },
+        {
+          "color": "warning",
+          "icon-text": "mdi-delete",
+          "text": "Xóa",
+          "action": {
+            "CONFIRM": "Bạn có chắc muốn xoá lớp này?",
+            "API": "/TkbLopDelete/`{{item.MaLop}}",
+            "CALLBACK": [
+              {
+                "MESS": "Đã xoá"
+              },
+              {
+                "CALL": "fetchLop"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "fetchLop": {
+        "API": "/TkbLopList",
+        "IN": {
+          "Khoi": "vueData.filterKhoi",
+          "Keyword": "vueData.filterKeyword"
+        },
+        "OUT": "dsLop"
+      }
+    },
+    {
+      "insertLop": {
+        "API": "/TkbLopInsert",
+        "IN": {
+          "MaLop": "vueData.form.MaLop",
+          "Khoi": "vueData.form.Khoi",
+          "ChuongTrinhDaoTao": "vueData.form.ChuongTrinhDaoTao",
+          "CoPhongTruyenThong": "vueData.form.CoPhongTruyenThong",
+          "LaLopGoc": "vueData.form.LaLopGoc",
+          "LopGocMa": "vueData.form.LopGocMa"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Thêm thành công"
+          },
+          {
+            "CALL": "fetchLop"
+          }
+        ]
+      }
+    },
+    {
+      "updateLop": {
+        "API": "/TkbLopUpdate",
+        "IN": {
+          "MaLop": "vueData.form.MaLop",
+          "Khoi": "vueData.form.Khoi",
+          "ChuongTrinhDaoTao": "vueData.form.ChuongTrinhDaoTao",
+          "CoPhongTruyenThong": "vueData.form.CoPhongTruyenThong",
+          "LaLopGoc": "vueData.form.LaLopGoc",
+          "LopGocMa": "vueData.form.LopGocMa"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Cập nhật thành công"
+          },
+          {
+            "CALL": "fetchLop"
+          }
+        ]
+      }
+    },
+    {
+      "saveLop": {
+        "IF": "vueData.addNew == 1",
+        "THEN": {
+          "CALL": "insertLop"
+        },
+        "ELSE": {
+          "CALL": "updateLop"
+        }
+      }
+    },
+    {
+      "CALL": "fetchLop"
+    }
+  ],
+  "watch": {
+    "filterKhoi": {
+      "CALL": "fetchLop"
+    },
+    "filterKeyword": {
+      "CALL": "fetchLop"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterKhoi",
+                "label": "Khối",
+                ":items": "vueData.dsKhoi",
+                "item-title": "text",
+                "item-value": "value",
+                ":required": false,
+                ":clearable": true
+              },
+              "w": "180"
+            },
+            {
+              "el": "v-text-field",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterKeyword",
+                "label": "Tìm mã lớp",
+                ":required": false
+              },
+              "w": "220"
+            },
+            {
+              "el": "v-spacer",
+              "attr": {},
+              "w": ""
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "my-2",
+                "label": "Thêm lớp",
+                "icon-text": "mdi-plus",
+                ":checkvalid": false,
+                "action": [
+                  {
+                    "addNew": 1,
+                    "form": {
+                      "MaLop": "",
+                      "Khoi": "",
+                      "ChuongTrinhDaoTao": "",
+                      "CoPhongTruyenThong": true,
+                      "LaLopGoc": true,
+                      "LopGocMa": ""
+                    }
+                  },
+                  {
+                    "dlForm": true
+                  }
+                ]
+              },
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Danh mục lớp",
+                ":items": "vueData.dsLop",
+                "item-key": "MaLop",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":height": -16,
+                ":headers": [
+                  {
+                    "align": "center",
+                    "title": "Mã lớp",
+                    "value": "MaLop",
+                    "width": "100px"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Khối",
+                    "value": "Khoi",
+                    "width": "80px"
+                  },
+                  {
+                    "title": "Chương trình đào tạo",
+                    "value": "ChuongTrinhDaoTao"
+                  },
+                  {
+                    "el": "v-icon",
+                    "align": "center",
+                    "title": "Có phòng TT",
+                    "value": "CoPhongTruyenThong",
+                    "width": "110px"
+                  },
+                  {
+                    "el": "v-icon",
+                    "align": "center",
+                    "title": "Lớp gốc",
+                    "value": "LaLopGoc",
+                    "width": "90px"
+                  },
+                  {
+                    "title": "Lớp gốc (nếu là lớp ghép)",
+                    "value": "LopGocMa",
+                    "width": "160px"
+                  },
+                  {
+                    "el": "t-menu",
+                    "title": "Tác vụ",
+                    "value": "Actions",
+                    "width": "100px",
+                    "align": "center",
+                    "attr": {
+                      ":items": "vueData.menuHanhDong"
+                    }
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "hidden-container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlForm",
+                "width": 550
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Lớp"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlForm = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "grid-list-md px-4"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.MaLop",
+                                    "label": "Mã lớp",
+                                    ":disabled": "vueData.addNew==0"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.form.Khoi",
+                                    "label": "Khối",
+                                    ":items": "vueData.dsKhoi",
+                                    "item-title": "text",
+                                    "item-value": "value"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.ChuongTrinhDaoTao",
+                                    "label": "Chương trình đào tạo",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-checkbox",
+                                  "attr": {
+                                    "v-model": "vueData.form.CoPhongTruyenThong",
+                                    "label": "Có phòng truyền thống"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-checkbox",
+                                  "attr": {
+                                    "v-model": "vueData.form.LaLopGoc",
+                                    "label": "Là lớp gốc (có GVCN riêng)"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.LopGocMa",
+                                    "label": "Mã lớp gốc (nếu là lớp ghép nhóm)",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "label": "Lưu",
+                            "icon-text": "mdi-content-save",
+                            ":checkvalid": true,
+                            "action": {
+                              "CALL": "saveLop"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

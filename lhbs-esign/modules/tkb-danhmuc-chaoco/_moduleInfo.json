@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/tkb-danhmuc-chaoco",
+  "url": "//kyso.lhbs.vn/tkb-danhmuc-chaoco",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "tkb-danhmuc-chaoco",
+  "ModuleName": "TKB - Danh mục Chào cờ khối",
+  "UpdateTime": "2026-09-12 13:05:44",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-09-12",
+  "LoadCount": 30,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

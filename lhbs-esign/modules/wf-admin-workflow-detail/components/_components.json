@@ -1,0 +1,46 @@
+[
+  {
+    "comID": 9810,
+    "comName": "uc-main-page"
+  },
+  {
+    "comID": 9813,
+    "comName": "uc-request-detail-view"
+  },
+  {
+    "comID": 9811,
+    "comName": "uc-workflow-condition-group"
+  },
+  {
+    "comID": 9812,
+    "comName": "uc-workflow-fields"
+  },
+  {
+    "comID": 9814,
+    "comName": "uc-workflow-settings"
+  },
+  {
+    "comID": 9819,
+    "comName": "uc-workflow-step-automation"
+  },
+  {
+    "comID": 9815,
+    "comName": "uc-workflow-step-checklist"
+  },
+  {
+    "comID": 9816,
+    "comName": "uc-workflow-step-field-mapping"
+  },
+  {
+    "comID": 9817,
+    "comName": "uc-workflow-step-sidebar"
+  },
+  {
+    "comID": 9818,
+    "comName": "uc-workflow-step-signers"
+  },
+  {
+    "comID": 9820,
+    "comName": "uc-workflow-step-tasks"
+  }
+]

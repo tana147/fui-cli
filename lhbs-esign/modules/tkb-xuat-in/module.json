@@ -1,0 +1,282 @@
+{
+  "data": [
+    {
+      "selectedRunID": 0,
+      "filterLoai": "`Lop",
+      "filterMa": ""
+    },
+    {
+      "fixedThuCols": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "fixedSlots": [
+        {
+          "Buoi": "Sang",
+          "Tiet": 1
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 2
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 3
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 4
+        },
+        {
+          "Buoi": "Sang",
+          "Tiet": 5
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 1
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 2
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 3
+        },
+        {
+          "Buoi": "Chieu",
+          "Tiet": 4
+        }
+      ]
+    },
+    {
+      "dsRunKhaThi": []
+    },
+    {
+      "dsLop": [],
+      "dsGV": [],
+      "dsPhong": []
+    },
+    {
+      "dsLich": [],
+      "dsLichRaw": []
+    },
+    {
+      "fetchRunKhaThi": {
+        "API": "/TkbKetQuaXepRunListKhaThi",
+        "OUT": "dsRunKhaThi",
+        "CALLBACK": [
+          {
+            "EXE": "tkbAutoSelectRun()"
+          }
+        ]
+      }
+    },
+    {
+      "fetchDoiTuong": {
+        "API": "/TkbKetQuaXepLopList",
+        "IN": {
+          "RunID": "vueData.selectedRunID"
+        },
+        "OUT": "dsLop",
+        "CALLBACK": [
+          {
+            "CALL": "fetchDoiTuongGV"
+          }
+        ]
+      }
+    },
+    {
+      "fetchDoiTuongGV": {
+        "API": "/TkbKetQuaXepGVList",
+        "IN": {
+          "RunID": "vueData.selectedRunID"
+        },
+        "OUT": "dsGV",
+        "CALLBACK": [
+          {
+            "CALL": "fetchDoiTuongPhong"
+          }
+        ]
+      }
+    },
+    {
+      "fetchDoiTuongPhong": {
+        "API": "/TkbKetQuaXepPhongList",
+        "IN": {
+          "RunID": "vueData.selectedRunID"
+        },
+        "OUT": "dsPhong",
+        "CALLBACK": [
+          {
+            "EXE": "tkbAutoSelectDoiTuong()"
+          }
+        ]
+      }
+    },
+    {
+      "fetchLich": {
+        "API": "/TkbKetQuaXepList",
+        "IN": {
+          "RunID": "vueData.selectedRunID",
+          "MaLop": "vueData.filterLoai === 'Lop' ? vueData.filterMa : ''",
+          "MaGV": "vueData.filterLoai === 'GV' ? vueData.filterMa : ''",
+          "MaPhong": "vueData.filterLoai === 'Phong' ? vueData.filterMa : ''"
+        },
+        "OUT": "dsLichRaw",
+        "CALLBACK": [
+          {
+            "EXE": "tkbFilterDsLich()"
+          }
+        ]
+      }
+    },
+    {
+      "CALL": "fetchRunKhaThi"
+    }
+  ],
+  "watch": {
+    "selectedRunID": {
+      "CALL": "fetchDoiTuong"
+    },
+    "filterLoai": {
+      "EXE": "tkbAutoSelectDoiTuong()"
+    },
+    "filterMa": {
+      "CALL": "fetchLich"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row no-print",
+          "cols": [
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.selectedRunID",
+                "label": "Lần chạy Auto (khả thi)",
+                ":items": "vueData.dsRunKhaThi",
+                ":item-title": "item => 'RunID ' + item.RunID + ' - Khối ' + (item.Khoi || 'Toàn trường') + ' - ' + item.SoSlotDaXep + ' tiết'",
+                "item-value": "RunID",
+                ":required": false
+              },
+              "w": "340"
+            },
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterLoai",
+                "label": "Xem theo",
+                ":items": "[{title:'Lớp', value:'Lop'}, {title:'Giáo viên', value:'GV'}, {title:'Phòng học', value:'Phong'}]",
+                "item-title": "title",
+                "item-value": "value",
+                ":required": false
+              },
+              "w": "160"
+            },
+            {
+              "el": "v-autocomplete",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterMa",
+                "label": "Chọn đối tượng",
+                ":items": "vueData.filterLoai === 'Lop' ? vueData.dsLop : (vueData.filterLoai === 'GV' ? vueData.dsGV : vueData.dsPhong)",
+                ":item-title": "item => (!item || typeof item !== 'object') ? '' : (vueData.filterLoai === 'Lop' ? item.MaLop : (vueData.filterLoai === 'GV' ? item.MaGV + ' - ' + item.TenGV : item.MaPhong + ' - ' + (item.TenPhong || '')))",
+                ":item-value": "vueData.filterLoai === 'Lop' ? 'MaLop' : (vueData.filterLoai === 'GV' ? 'MaGV' : 'MaPhong')",
+                ":required": false
+              },
+              "w": "320"
+            },
+            {
+              "el": "v-spacer",
+              "attr": {},
+              "w": ""
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "my-2",
+                "label": "Xuất Excel",
+                "icon-text": "mdi-file-excel",
+                "color": "success",
+                ":checkvalid": false,
+                "action": {
+                  "EXE": "tkbXuatExcel()"
+                }
+              },
+              "w": ""
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "my-2",
+                "label": "In",
+                "icon-text": "mdi-printer",
+                ":checkvalid": false,
+                "action": {
+                  "EXE": "window.print()"
+                }
+              },
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "div",
+              "attr": {
+                "class": "text-h6 mb-2 tkb-print-title"
+              },
+              "innerHTML": "{{ 'Thời khóa biểu - ' + (vueData.filterLoai === 'Lop' ? 'Lớp ' : (vueData.filterLoai === 'GV' ? 'GV ' : 'Phòng ')) + vueData.filterMa }}",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "uc-tkb-grid",
+              "attr": {
+                ":items": "vueData.dsLich",
+                ":editable": false,
+                ":fixed-thu-cols": "vueData.fixedThuCols",
+                ":fixed-slots": "vueData.fixedSlots",
+                ":sub-label-field": "vueData.filterLoai === 'GV' ? 'MaLop' : 'TenGV'"
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

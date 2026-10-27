@@ -1,0 +1,20 @@
+[
+  {
+    "name": "style",
+    "type": ".css",
+    "contentType": "text/css",
+    "fileID": "FC9A064AA8BE4CDBAA0192487B077FBA",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/style-FC9A064AA8BE4CDBAA0192487B077FBA.css"
+  },
+  {
+    "name": "api-services",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "5A6294EA262D4A62A75BA0A528031F59",
+    "scope": "module",
+    "sort": 50,
+    "filePath": "imports/api-services-5A6294EA262D4A62A75BA0A528031F59.js"
+  }
+]

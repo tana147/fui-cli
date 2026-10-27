@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/wf-report-my-reports",
+  "url": "//kyso.lhbs.vn/wf-report-my-reports",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "wf-report-my-reports",
+  "ModuleName": "Báo cáo / Báo cáo của tôi",
+  "UpdateTime": "2026-10-21 16:43:59",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-10-21",
+  "LoadCount": 1,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

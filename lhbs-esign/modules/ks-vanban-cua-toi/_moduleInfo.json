@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/ks-vanban-cua-toi",
+  "url": "//kyso.lhbs.vn/ks-vanban-cua-toi",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "ks-vanban-cua-toi",
+  "ModuleName": "Văn bản của tôi",
+  "UpdateTime": "2026-07-11 22:40:02",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-09-08",
+  "LoadCount": 14,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

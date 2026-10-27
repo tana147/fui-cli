@@ -1,0 +1,16 @@
+.wf-signer-preview-box {
+    min-height: 88px;
+    border: 1px dashed #d5d9df;
+    border-radius: 6px;
+    padding: 8px;
+    background: #f8faf9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wf-signer-preview-image {
+    max-height: 72px;
+    max-width: 100%;
+    object-fit: contain;
+}

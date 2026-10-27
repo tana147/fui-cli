@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-esign/wf-report-dashboard-list",
+  "url": "//kyso.lhbs.vn/wf-report-dashboard-list",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "wf-report-dashboard-list",
+  "ModuleName": "Dashboard / Danh sách dashboard",
+  "UpdateTime": "2026-10-21 16:43:51",
+  "UpdateUser": "DEV000026",
+  "LastLoad": "2026-10-21",
+  "LoadCount": 7,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

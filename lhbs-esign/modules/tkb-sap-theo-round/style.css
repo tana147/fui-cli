@@ -1,0 +1,12 @@
+/* 2026-09-16 (theo de xuat nguoi dung "border do mong thoi do ap luc"): vien khoa mac dinh cua
+   uc-tkb-grid la box-shadow inset 1.5px mau cam dam (#e65100) — day thanh 1px, do nhe hon. */
+.uc-tkb-grid__cell--khoa {
+  box-shadow: rgb(211, 47, 47) 0px 0px 0px 1px inset !important;
+}
+/* 2026-09-16 (thay f-table bang v-list vi f-table header custom "el" — t-button/f-button/v-icon deu
+   khong render duoc trong FTableItemComponent cua Framework V3 dang chay, xem module.json cho GV
+   Round 2 va Chan doan chua xep duoc): gioi han chieu cao + cuon cho danh sach dai. */
+.tkb-scroll-list {
+  max-height: 400px;
+  overflow-y: auto;
+}

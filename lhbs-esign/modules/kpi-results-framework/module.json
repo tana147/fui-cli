@@ -1,0 +1,26 @@
+{
+  "data": [
+    {}
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid pa-0 ma-0",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-kpi-rf",
+              "w": 12,
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false
+  }
+}

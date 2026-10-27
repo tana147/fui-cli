@@ -1,0 +1,536 @@
+{
+  "data": [
+    {
+      "selectedRunID": 0,
+      "filterGV": "",
+      "filterNgay": ""
+    },
+    {
+      "dsRunKhaThi": []
+    },
+    {
+      "dsGVOptions": []
+    },
+    {
+      "dsTietGV": []
+    },
+    {
+      "dlDanhDau": false
+    },
+    {
+      "formDanhDau": {
+        "KetQuaXepID": null,
+        "MaGVDayThay": "",
+        "LyDo": ""
+      }
+    },
+    {
+      "filterLichSuGV": "",
+      "dsLichSuDayThay": []
+    },
+    {
+      "fetchRunKhaThi": {
+        "API": "/TkbKetQuaXepRunListKhaThi",
+        "OUT": "dsRunKhaThi",
+        "CALLBACK": [
+          {
+            "EXE": "tkbAutoSelectRun()"
+          }
+        ]
+      }
+    },
+    {
+      "fetchGVOptions": {
+        "API": "/TkbGiaoVienList",
+        "IN": {
+          "Keyword": "",
+          "ChiThinhGiang": false
+        },
+        "OUT": "dsGVOptions",
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dsGVOptions = vueData.dsGVOptions.map(g => ({...g, GVDisplay: g.MaGV + ' - ' + g.HoTen}))"
+          }
+        ]
+      }
+    },
+    {
+      "fetchTietGV": {
+        "IF": "!!vueData.selectedRunID && !!vueData.filterGV && !!vueData.filterNgay",
+        "THEN": {
+          "API": "/TkbDayThayTietTheoThu",
+          "IN": {
+            "RunID": "vueData.selectedRunID",
+            "MaGV": "vueData.filterGV",
+            "NgayApDung": "vueData.filterNgay"
+          },
+          "OUT": "dsTietGV"
+        },
+        "ELSE": {
+          "EXE": "vueData.dsTietGV = []"
+        }
+      }
+    },
+    {
+      "danhDauVang": {
+        "API": "/TkbDayThayInsert",
+        "IN": {
+          "NgayApDung": "vueData.filterNgay",
+          "MaGVVang": "vueData.filterGV",
+          "ItemsJson": "JSON.stringify([vueData.formDanhDau])"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlDanhDau = false"
+          },
+          {
+            "MESS": "Đã lưu dạy thay"
+          },
+          {
+            "CALL": "fetchTietGV"
+          },
+          {
+            "CALL": "fetchLichSuDayThay"
+          }
+        ]
+      }
+    },
+    {
+      "fetchLichSuDayThay": {
+        "API": "/TkbDayThayList",
+        "IN": {
+          "MaGV": "vueData.filterLichSuGV"
+        },
+        "OUT": "dsLichSuDayThay"
+      }
+    },
+    {
+      "menuDanhDau": [
+        {
+          "color": "primary",
+          "icon-text": "mdi-account-off",
+          "text": "Đánh dấu vắng",
+          "action": [
+            {
+              "formDanhDau": {
+                "KetQuaXepID": "item.KetQuaXepID",
+                "MaGVDayThay": "",
+                "LyDo": ""
+              }
+            },
+            {
+              "dlDanhDau": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menuLichSu": [
+        {
+          "color": "warning",
+          "icon-text": "mdi-delete",
+          "text": "Xóa",
+          "action": {
+            "CONFIRM": "Bạn có chắc muốn xoá bản ghi dạy thay này? Tiết học sẽ trở lại như TKB gốc.",
+            "API": "/TkbDayThayDelete/`{{item.ID}}",
+            "CALLBACK": [
+              {
+                "MESS": "Đã xoá"
+              },
+              {
+                "CALL": "fetchLichSuDayThay"
+              },
+              {
+                "CALL": "fetchTietGV"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "CALL": "fetchRunKhaThi"
+    },
+    {
+      "CALL": "fetchGVOptions"
+    },
+    {
+      "CALL": "fetchLichSuDayThay"
+    }
+  ],
+  "watch": {
+    "filterGV": {
+      "CALL": "fetchTietGV"
+    },
+    "filterNgay": {
+      "CALL": "fetchTietGV"
+    },
+    "selectedRunID": {
+      "CALL": "fetchTietGV"
+    },
+    "filterLichSuGV": {
+      "CALL": "fetchLichSuDayThay"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-select",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.selectedRunID",
+                "label": "Lần chạy Auto (khả thi)",
+                ":items": "vueData.dsRunKhaThi",
+                ":item-title": "item => 'RunID ' + item.RunID + ' - Khối ' + (item.Khoi || 'Toàn trường') + ' - ' + item.SoSlotDaXep + ' tiết'",
+                "item-value": "RunID",
+                ":required": false
+              },
+              "w": "340"
+            },
+            {
+              "el": "v-autocomplete",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterGV",
+                "label": "Giáo viên vắng / đi công tác",
+                ":items": "vueData.dsGVOptions",
+                "item-title": "GVDisplay",
+                "item-value": "MaGV",
+                ":required": false
+              },
+              "w": "300"
+            },
+            {
+              "el": "v-text-field",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterNgay",
+                "label": "Ngày vắng",
+                "type": "date",
+                ":required": false
+              },
+              "w": "200"
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Các tiết của GV vào ngày đã chọn",
+                ":items": "vueData.dsTietGV",
+                "item-key": "KetQuaXepID",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":item-class": "item => item.DaDanhDauVang ? 'warning lighten-4' : ''",
+                ":headers": [
+                  {
+                    "align": "center",
+                    "title": "Buổi",
+                    "value": "Buoi",
+                    "width": "90px"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Tiết",
+                    "value": "Tiet",
+                    "width": "70px"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Lớp",
+                    "value": "MaLop",
+                    "width": "90px"
+                  },
+                  {
+                    "title": "Môn",
+                    "value": "TenMon"
+                  },
+                  {
+                    "el": "v-icon",
+                    "align": "center",
+                    "title": "Đã đánh dấu vắng",
+                    "value": "DaDanhDauVang",
+                    "width": "140px"
+                  },
+                  {
+                    "el": "t-menu",
+                    "title": "Hành động",
+                    "value": "Actions",
+                    "width": "100px",
+                    "align": "center",
+                    "attr": {
+                      ":items": "vueData.menuDanhDau"
+                    }
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-divider",
+              "attr": {
+                "class": "my-3"
+              },
+              "w": 12
+            },
+            {
+              "el": "div",
+              "attr": {
+                "class": "text-h6"
+              },
+              "innerHTML": "Lịch sử dạy thay",
+              "w": 12
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-autocomplete",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterLichSuGV",
+                "label": "Lọc theo GV (để trống = tất cả)",
+                ":items": "vueData.dsGVOptions",
+                "item-title": "GVDisplay",
+                "item-value": "MaGV",
+                ":clearable": true,
+                ":required": false
+              },
+              "w": "300"
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Lịch sử dạy thay",
+                ":items": "vueData.dsLichSuDayThay",
+                "item-key": "ID",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":height": -16,
+                ":headers": [
+                  {
+                    "align": "center",
+                    "title": "Ngày",
+                    "value": "NgayApDung",
+                    "width": "110px"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Buổi",
+                    "value": "Buoi",
+                    "width": "90px"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Tiết",
+                    "value": "Tiet",
+                    "width": "70px"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Lớp",
+                    "value": "MaLop",
+                    "width": "90px"
+                  },
+                  {
+                    "title": "Môn",
+                    "value": "TenMon"
+                  },
+                  {
+                    "title": "GV vắng",
+                    "value": "TenGVVang"
+                  },
+                  {
+                    "title": "GV dạy thay",
+                    "value": "TenGVDayThay"
+                  },
+                  {
+                    "title": "Lý do",
+                    "value": "LyDo"
+                  },
+                  {
+                    "el": "t-menu",
+                    "title": "Tác vụ",
+                    "value": "Actions",
+                    "width": "100px",
+                    "align": "center",
+                    "attr": {
+                      ":items": "vueData.menuLichSu"
+                    }
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "hidden-container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlDanhDau",
+                "width": 550
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Đánh dấu vắng / dạy thay"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlDanhDau = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "grid-list-md px-4"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-autocomplete",
+                                  "attr": {
+                                    "v-model": "vueData.formDanhDau.MaGVDayThay",
+                                    "label": "GV dạy thay (để trống nếu chưa có)",
+                                    ":items": "vueData.dsGVOptions",
+                                    "item-title": "GVDisplay",
+                                    "item-value": "MaGV",
+                                    ":clearable": true,
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.formDanhDau.LyDo",
+                                    "label": "Lý do (vd: Đi công tác, Nghỉ ốm)",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "label": "Lưu",
+                            "icon-text": "mdi-content-save",
+                            ":checkvalid": true,
+                            "action": {
+                              "CALL": "danhDauVang"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

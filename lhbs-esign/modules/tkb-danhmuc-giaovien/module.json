@@ -1,0 +1,529 @@
+{
+  "data": [
+    {
+      "filterKeyword": "",
+      "filterChiThinhGiang": false
+    },
+    {
+      "dsGV": []
+    },
+    {
+      "dlForm": false,
+      "addNew": 1
+    },
+    {
+      "form": {
+        "MaGV": "",
+        "HoTen": "",
+        "LaThinhGiang": false,
+        "BuoiBanCoDinh": "",
+        "GhiChu": "",
+        "NgaySinh": null,
+        "GioiTinh": "",
+        "PhongBanChucVu": ""
+      }
+    },
+    {
+      "menuHanhDong": [
+        {
+          "color": "primary",
+          "icon-text": "mdi-pencil",
+          "text": "Sửa",
+          "action": [
+            {
+              "addNew": 0,
+              "form": {
+                "MaGV": "item.MaGV",
+                "HoTen": "item.HoTen",
+                "LaThinhGiang": "item.LaThinhGiang",
+                "BuoiBanCoDinh": "item.BuoiBanCoDinh",
+                "GhiChu": "item.GhiChu",
+                "NgaySinh": "item.NgaySinh",
+                "GioiTinh": "item.GioiTinh",
+                "PhongBanChucVu": "item.PhongBanChucVu"
+              }
+            },
+            {
+              "dlForm": true
+            }
+          ]
+        },
+        {
+          "color": "warning",
+          "icon-text": "mdi-delete",
+          "text": "Xóa",
+          "action": {
+            "CONFIRM": "Bạn có chắc muốn xoá giáo viên này?",
+            "API": "/TkbGiaoVienDelete/`{{item.MaGV}}",
+            "CALLBACK": [
+              {
+                "MESS": "Đã xoá"
+              },
+              {
+                "CALL": "fetchGV"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "fetchGV": {
+        "API": "/TkbGiaoVienList",
+        "IN": {
+          "Keyword": "vueData.filterKeyword",
+          "ChiThinhGiang": "vueData.filterChiThinhGiang"
+        },
+        "OUT": "dsGV"
+      }
+    },
+    {
+      "insertGV": {
+        "API": "/TkbGiaoVienInsert",
+        "IN": {
+          "MaGV": "vueData.form.MaGV",
+          "HoTen": "vueData.form.HoTen",
+          "LaThinhGiang": "vueData.form.LaThinhGiang",
+          "BuoiBanCoDinh": "vueData.form.BuoiBanCoDinh",
+          "GhiChu": "vueData.form.GhiChu",
+          "NgaySinh": "vueData.form.NgaySinh",
+          "GioiTinh": "vueData.form.GioiTinh",
+          "PhongBanChucVu": "vueData.form.PhongBanChucVu"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Thêm thành công"
+          },
+          {
+            "CALL": "fetchGV"
+          }
+        ]
+      }
+    },
+    {
+      "updateGV": {
+        "API": "/TkbGiaoVienUpdate",
+        "IN": {
+          "MaGV": "vueData.form.MaGV",
+          "HoTen": "vueData.form.HoTen",
+          "LaThinhGiang": "vueData.form.LaThinhGiang",
+          "BuoiBanCoDinh": "vueData.form.BuoiBanCoDinh",
+          "GhiChu": "vueData.form.GhiChu",
+          "NgaySinh": "vueData.form.NgaySinh",
+          "GioiTinh": "vueData.form.GioiTinh",
+          "PhongBanChucVu": "vueData.form.PhongBanChucVu"
+        },
+        "CALLBACK": [
+          {
+            "EXE": "vueData.dlForm = false"
+          },
+          {
+            "MESS": "Cập nhật thành công"
+          },
+          {
+            "CALL": "fetchGV"
+          }
+        ]
+      }
+    },
+    {
+      "saveGV": {
+        "IF": "vueData.addNew == 1",
+        "THEN": {
+          "CALL": "insertGV"
+        },
+        "ELSE": {
+          "CALL": "updateGV"
+        }
+      }
+    },
+    {
+      "CALL": "fetchGV"
+    }
+  ],
+  "watch": {
+    "filterKeyword": {
+      "CALL": "fetchGV"
+    },
+    "filterChiThinhGiang": {
+      "CALL": "fetchGV"
+    }
+  },
+  "controls": [
+    {
+      "prop": "fluid grid-list-md",
+      "rows": [
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "v-text-field",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterKeyword",
+                "label": "Tìm mã GV / họ tên",
+                ":required": false
+              },
+              "w": "260"
+            },
+            {
+              "el": "v-checkbox",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "flex-md-grow-0 my-2",
+                "v-model": "vueData.filterChiThinhGiang",
+                "label": "Chỉ GV thỉnh giảng"
+              },
+              "w": "200"
+            },
+            {
+              "el": "v-spacer",
+              "attr": {},
+              "w": ""
+            },
+            {
+              "el": "f-button",
+              "col": {
+                "class": "shrink"
+              },
+              "attr": {
+                "class": "my-2",
+                "label": "Thêm giáo viên",
+                "icon-text": "mdi-plus",
+                ":checkvalid": false,
+                "action": [
+                  {
+                    "addNew": 1,
+                    "form": {
+                      "MaGV": "",
+                      "HoTen": "",
+                      "LaThinhGiang": false,
+                      "BuoiBanCoDinh": "",
+                      "GhiChu": "",
+                      "NgaySinh": null,
+                      "GioiTinh": "",
+                      "PhongBanChucVu": ""
+                    }
+                  },
+                  {
+                    "dlForm": true
+                  }
+                ]
+              },
+              "w": ""
+            }
+          ]
+        },
+        {
+          "prop": "row",
+          "cols": [
+            {
+              "el": "f-table",
+              "attr": {
+                "label": "Danh mục giáo viên",
+                ":items": "vueData.dsGV",
+                "item-key": "MaGV",
+                ":items-per-page": -1,
+                ":hide-default-footer": true,
+                ":height": -16,
+                ":item-class": "item => item.LaThinhGiang ? 'warning lighten-4' : ''",
+                ":headers": [
+                  {
+                    "align": "center",
+                    "title": "Mã GV",
+                    "value": "MaGV",
+                    "width": "110px"
+                  },
+                  {
+                    "title": "Họ tên",
+                    "value": "HoTen"
+                  },
+                  {
+                    "align": "center",
+                    "title": "Giới tính",
+                    "value": "GioiTinh",
+                    "width": "90px"
+                  },
+                  {
+                    "title": "Phòng ban / Chức vụ",
+                    "value": "PhongBanChucVu",
+                    "width": "260px"
+                  },
+                  {
+                    "el": "v-icon",
+                    "align": "center",
+                    "title": "Thỉnh giảng",
+                    "value": "LaThinhGiang",
+                    "width": "110px"
+                  },
+                  {
+                    "title": "Buổi bận cố định",
+                    "value": "BuoiBanCoDinh",
+                    "width": "220px"
+                  },
+                  {
+                    "title": "Ghi chú",
+                    "value": "GhiChu"
+                  },
+                  {
+                    "el": "t-menu",
+                    "title": "Tác vụ",
+                    "value": "Actions",
+                    "width": "100px",
+                    "align": "center",
+                    "attr": {
+                      ":items": "vueData.menuHanhDong"
+                    }
+                  }
+                ]
+              },
+              "w": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "hidden-container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-dialog",
+              "col": {},
+              "w": "",
+              "attr": {
+                "v-model": "vueData.dlForm",
+                "width": 600
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Giáo viên"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.dlForm = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-container",
+                      "attr": {
+                        "class": "grid-list-md px-4"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-row",
+                          "attr": {},
+                          "innerHTML": [
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.MaGV",
+                                    "label": "Mã GV",
+                                    ":disabled": "vueData.addNew==0"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "6",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.HoTen",
+                                    "label": "Họ tên"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "4",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.NgaySinh",
+                                    "label": "Ngày sinh",
+                                    "type": "date",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "4",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-select",
+                                  "attr": {
+                                    "v-model": "vueData.form.GioiTinh",
+                                    "label": "Giới tính",
+                                    ":items": [
+                                      "Nam",
+                                      "Nữ"
+                                    ],
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "4",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.PhongBanChucVu",
+                                    "label": "Phòng ban / Chức vụ",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-checkbox",
+                                  "attr": {
+                                    "v-model": "vueData.form.LaThinhGiang",
+                                    "label": "Giáo viên thỉnh giảng (cần pin lịch trước khi chạy Auto)"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-text-field",
+                                  "attr": {
+                                    "v-model": "vueData.form.BuoiBanCoDinh",
+                                    "label": "Buổi bận cố định (vd: Sáng T2, Chiều T5)",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "el": "v-col",
+                              "attr": {
+                                "cols": "12",
+                                "class": "py-1"
+                              },
+                              "innerHTML": [
+                                {
+                                  "el": "v-textarea",
+                                  "attr": {
+                                    "v-model": "vueData.form.GhiChu",
+                                    "label": "Ghi chú",
+                                    ":required": false
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "f-button",
+                          "attr": {
+                            "variant": "text",
+                            "label": "Lưu",
+                            "icon-text": "mdi-content-save",
+                            ":checkvalid": true,
+                            "action": {
+                              "CALL": "saveGV"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

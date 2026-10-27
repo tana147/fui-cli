@@ -1,0 +1,25 @@
+{
+  "data": [
+    {}
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid grid-list-md pa-0 ma-0 overflow-hidden",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-main-page",
+              "w": 24
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false
+  }
+}
