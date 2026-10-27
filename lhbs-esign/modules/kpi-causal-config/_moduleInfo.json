@@ -1,0 +1,13 @@
+{
+  "id": "lhbs-esign/kpi-causal-config",
+  "url": "//kyso.lhbs.vn/kpi-causal-config",
+  "mDomain": "",
+  "ProjectID": "lhbs-esign",
+  "ModuleID": "kpi-causal-config",
+  "ModuleName": "Cấu Hình Nhân Quả & Tham Số KPI",
+  "UpdateInfo": null,
+  "LoadInfo": null,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

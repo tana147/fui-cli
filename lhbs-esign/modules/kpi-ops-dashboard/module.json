@@ -1,0 +1,27 @@
+{
+  "data": [
+    {}
+  ],
+  "watch": {},
+  "controls": [
+    {
+      "prop": "fluid pa-0 ma-0",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "uc-kpi-ops",
+              "w": 12,
+              "attr": {}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "set": {
+    "menu": false,
+    "apiDomain": "https://tapi.lhbs.vn/"
+  }
+}
