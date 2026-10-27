@@ -34,8 +34,8 @@ function ajaxGETCALLPromise(url, params = null) {
             success: (res) => resolve(res),
             error: (err) => {
                 console.error("GET Error:", err);
-                const errMsg = err.responseJSON && err.responseJSON.Message
-                    ? err.responseJSON.Message
+                const errMsg = err.responseJSON && err.responseJSON.Message 
+                    ? err.responseJSON.Message 
                     : "Lỗi kết nối máy chủ";
                 if (typeof Vue !== "undefined" && Vue.$toast) {
                     Vue.$toast.error(errMsg, { position: "top" });
@@ -45,4 +45,3 @@ function ajaxGETCALLPromise(url, params = null) {
         });
     });
 }
-

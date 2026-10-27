@@ -35,7 +35,7 @@ project-root/
 │   └── uc-wf-shell.vue
 ├── imports/                     ← Global JS/CSS (scope: project)
 │   ├── _imports.json
-│   ├── global-util-js-WF001.js  ← ajaxCALLPromise, ajaxGETCALLPromise
+│   ├── global-util-js-03DA6AAE5A0B4213B5BD4B852EF282AE.js  ← ajaxCALLPromise, ajaxGETCALLPromise
 │   ├── wf-helpers-js-*.js       ← apiCall, apiCallAsync, showToast, showConfirm, ajaxCALL_File
 │   ├── wf-pdf-helper-js-*.js    ← PDF utilities
 │   ├── wf-formula-js-*.js       ← formula helpers
@@ -80,7 +80,7 @@ project-root/
 | FE module    | `modules/kpi-*/module.json` (khi cần)             |
 | FE script    | `modules/kpi-*/script.js` (khi cần, hiếm)         |
 | FE import    | `modules/kpi-*/imports/_imports.json`             |
-| Global util  | `imports/global-util-js-WF001.js` (khi root cause nằm ở đây) |
+| Global util  | `imports/global-util-js-03DA6AAE5A0B4213B5BD4B852EF282AE.js` (khi root cause nằm ở đây) |
 | SQL          | Stored procedure / table có tên chứa `KPI` hoặc phục vụ module `kpi-*` |
 
 ### Tuyệt đối KHÔNG sửa
@@ -227,7 +227,7 @@ export default {
 ### Helpers có sẵn (global, không cần import)
 
 ```javascript
-// global-util-js-WF001.js
+// global-util-js-03DA6AAE5A0B4213B5BD4B852EF282AE.js
 ajaxCALLPromise(url, params)     // POST → trả res.data, tự handle error + toast
 ajaxGETCALLPromise(url, params)  // GET với Authorization header, tự handle error + toast
 

@@ -95,11 +95,11 @@
   },
   {
     "name": "global-util-js",
-    "type": ".js",
+    "type": "js",
     "contentType": "text/javascript",
-    "fileID": "WF001",
+    "fileID": "03DA6AAE5A0B4213B5BD4B852EF282AE",
     "scope": "project",
-    "sort": 8,
-    "filePath": "imports/global-util-js-WF001.js"
+    "sort": 20,
+    "filePath": "imports/global-util-js-03DA6AAE5A0B4213B5BD4B852EF282AE.js"
   }
 ]

@@ -23,7 +23,7 @@
   - **Current task changes:**
     - `lhbs-esign/.md/AGENTS.md`: Quy định cứng cho agent (KPI-only scope, cấu trúc thực tế, API helpers, pattern chuẩn).
     - `lhbs-esign/.md/DESIGN.md`: Design system toàn diện cho tất cả module `kpi-*` (Executive Fluent palette, 4 tầng Results Framework, component patterns, tabular-nums).
-    - `lhbs-esign/imports/global-util-js-WF001.js`: Thư viện global utility chứa `ajaxCALLPromise` và `ajaxGETCALLPromise`.
+    - `lhbs-esign/imports/global-util-js-03DA6AAE5A0B4213B5BD4B852EF282AE.js`: Thư viện global utility chứa `ajaxCALLPromise` và `ajaxGETCALLPromise` (đã publish lên FUI server).
     - `lhbs-esign/imports/_imports.json`: Đăng ký import toàn cục cho `global-util-js`.
   - **Pre-existing dirty / unrelated:**
     - `../_logs/tool-errors.jsonl` (DO NOT touch/revert)
@@ -49,7 +49,7 @@
   - `lhbs-esign/.md/DESIGN.md`
   - `lhbs-esign/docs/2026.10.19_Phương án xây dựng Dashboard vận hành.docx`
 - **Code Locations:**
-  - `lhbs-esign/imports/global-util-js-WF001.js:1-48` (`ajaxCALLPromise`, `ajaxGETCALLPromise`) — Promise-based API utility helpers.
+  - `lhbs-esign/imports/global-util-js-03DA6AAE5A0B4213B5BD4B852EF282AE.js:1-48` (`ajaxCALLPromise`, `ajaxGETCALLPromise`) — Promise-based API utility helpers.
   - `lhbs-esign/modules/kpi-results-framework/components/uc-kpi-rf.vue` — Component tham chiếu chuẩn của KPI Results Framework.
 
 ## 6. SESSION KNOWLEDGE (FACTS vs HYPOTHESES)
@@ -83,3 +83,4 @@
   - Scope constraint: Chỉ được sửa code và SQL liên quan đến KPI (không đụng vào `ks-*`, `tkb-*`, `wf-*`).
   - Signature `ajaxCALLPromise(url, params)` và `ajaxGETCALLPromise(url, params)` trả trực tiếp dữ liệu và tự handle toast lỗi.
   - Border radius của UI KPI tối đa là 2px (`rounded-xs`).
+
