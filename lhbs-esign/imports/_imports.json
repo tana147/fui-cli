@@ -77,6 +77,15 @@
     "filePath": "imports/wf-helpers-js-68B8D48F056945D58496BE765118DAAB.js"
   },
   {
+    "name": "global-util-js",
+    "type": ".js",
+    "contentType": "text/javascript",
+    "fileID": "03DA6AAE5A0B4213B5BD4B852EF282AE",
+    "scope": "project",
+    "sort": 20,
+    "filePath": "imports/global-util-js-03DA6AAE5A0B4213B5BD4B852EF282AE.js"
+  },
+  {
     "name": "https://cdn.jsdelivr.net/npm/sortablejs@1.15.7/Sortable.min.js",
     "type": ".js",
     "contentType": "link",
@@ -92,14 +101,5 @@
     "scope": "project",
     "sort": 20,
     "filePath": "imports/wf-formula-js-4208719905AC4082A06F788212189092.js"
-  },
-  {
-    "name": "global-util-js",
-    "type": "js",
-    "contentType": "text/javascript",
-    "fileID": "03DA6AAE5A0B4213B5BD4B852EF282AE",
-    "scope": "project",
-    "sort": 20,
-    "filePath": "imports/global-util-js-03DA6AAE5A0B4213B5BD4B852EF282AE.js"
   }
 ]
