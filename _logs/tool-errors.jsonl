@@ -283,3 +283,5 @@
 {"ts":"2026-10-26T03:07:08.863Z","pid":46832,"tool":"fui exec","message":"❌ tAPI HTTP 400: Standard execution after deploy: 656 ms\r\nWarning: Null value is eliminated by an aggregate or other SET operation.\r\nWarning: Null value is eliminated by an aggregate or other SET operation."}
 {"ts":"2026-10-26T03:07:13.565Z","pid":46877,"tool":"fui exec","message":"❌ tAPI HTTP 400: Nganh 102 execution after deploy: 839 ms\r\nWarning: Null value is eliminated by an aggregate or other SET operation."}
 {"ts":"2026-10-26T03:15:52.918Z","pid":50948,"tool":"fui exec","message":"❌ tAPI HTTP 400: History call time: 15 ms"}
+{"ts":"2026-10-27T02:26:26.230Z","pid":20105,"tool":"fui query","message":"❌ tAPI HTTP 400: Invalid column name 'ThanhVienID'."}
+{"ts":"2026-10-27T02:28:25.062Z","pid":22402,"tool":"fui file status","message":"❌ module commands need both -p <project> and -m <module>"}

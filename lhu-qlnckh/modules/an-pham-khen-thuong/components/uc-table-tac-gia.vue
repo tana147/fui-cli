@@ -502,7 +502,25 @@
 			if (!this.model || !this.model.MaNV) {
 				return
 			}
-			this.NhanVien_Get(this.model.MaNV)
+			this.editedItem.MaNhanVien = this.model.MaNV
+			this.editedItem.HoTacGia = this.model.HoNV || ""
+			this.editedItem.TenTacGia = this.model.TenNV || ""
+			if (this.model.Email) {
+				this.editedItem.EmailTacGia = this.model.Email
+			}
+			if (this.model.TenPhongBan) {
+				this.editedItem.TenPhongBan = this.model.TenPhongBan
+				this.editedItem.NguonCapKinhPhi = this.model.TenPhongBan
+			}
+			if (this.model.SoTaiKhoan) {
+				this.editedItem.SoTaiKhoan = this.model.SoTaiKhoan
+			}
+			if (this.model.NganHang) {
+				this.editedItem.NganHang = this.model.NganHang
+			}
+			if (this.model.TenChuTaiKhoan) {
+				this.editedItem.TenChuTaiKhoan = this.model.TenChuTaiKhoan
+			}
 			this.TaiKhoanNH_Get(this.model.MaNV)
 		},
 		async TaiKhoanNH_Get(UserID) {
@@ -528,8 +546,8 @@
 					let data = res.data
 					if (data && data.length > 0) {
 						this.editedItem.MaNhanVien = data[0].UserID
-						this.editedItem.HoTacGia = data[0].LastName
-						this.editedItem.TenTacGia = data[0].FirstName
+						this.editedItem.HoTacGia = data[0].FirstName
+						this.editedItem.TenTacGia = data[0].LastName
 						this.editedItem.TenPhongBan = data[0].DepartmentID
 						this.editedItem.NguonCapKinhPhi = data[0].DepartmentID
 					}

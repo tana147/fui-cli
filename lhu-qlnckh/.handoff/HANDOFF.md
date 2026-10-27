@@ -1,7 +1,7 @@
 # AGENT HANDOFF: lhu-qlnckh
 
-- **Generated At:** 2026-10-24T23:58:00+07:00
-- **Workspace Root:** `D:/CODE/IOTSOFT/fui-cli/lhu-qlnckh`
+- **Generated At:** 2026-10-27T09:31:00+07:00
+- **Workspace Root:** `/home/iot/CODE/fui-cli/lhu-qlnckh`
 - **Status:** `done`
 - **Next Session Focus:** Đưa 5 trường thông tin khoa học STM vào bản in PDF và ma trận kiểm tra đủ/thiếu của Lý lịch khoa học (`hdkh-ly-lich-khoa-hoc`); tích hợp dữ liệu Chuyển giao công nghệ (CGCN) từ bảng `ChuyenGiaoCongNghe_ThanhVien` vào tab NCKH và bản in PDF của LLKH.
 
@@ -23,87 +23,63 @@
 ## 3. GIT & COMMIT STATE
 - **Branch:** `main`
 - **Relevant Recent Commits:**
+  - `b5e2152` — feat(lhu-qldetaisdh): tich hop huy hoi dong, tra cuu lich su va toi uu api hoi dong
+  - `4fbf573` — feat(lhu-qlnckh): nang cap thanh vien cgcn bang rieng, them stm va xoa cgcn-quan-ly
   - `c601ec7` — feat(lhu-qlnckh): chuan hoa module cgcn va khen thuong, bo sung sp va cap nhat handoff
-  - `bf48986` — feat(lhu-qldetaisdh): bo sung input ty le trung lap trong dialog tu choi buoc 5
 - **Working Tree Ownership:**
   - **Current task changes:**
-    - `_db/qlnckh/spAPI_CGCN_ThanhVien_Get.sql` (SP đọc danh sách thành viên theo CGCNID)
-    - `_db/qlnckh/spAPI_CGCN_ThanhVien_Save.sql` (SP lưu danh sách thành viên vào bảng riêng và đồng bộ ngược text ChuNhiemDeTai/ThanhVienDeTai)
-    - `_db/qlnckh/spAPI_CGCN_Get_ByID.sql` (Bổ sung ThanhVienList dạng JSON)
-    - `_db/qlnckh/spAPI_CGCN_Ins.sql` (Hỗ trợ tạo hồ sơ CGCN và đồng bộ thành viên)
-    - `_db/qlnckh/spAPI_HDKH_LLKH_STM_Save.sql` (SP lưu 5 trường thông tin khoa học STM)
-    - `_db/qlnckh/spAPI_HDKH_LLKH_SHTT_ChiTiet_Save.sql` (SP lưu chi tiết SoVanBang, NamCap, NoiCapVanBang cho SHTT)
-    - `_db/qlnckh/spAPI_HDKH_LLKH_NCKH_Select.sql` (Bổ sung 5 trường STM ở Set 0, 3 trường SHTT ở Set 3)
-    - `modules/cgcn-ke-khai/components/uc-modal-contract.vue` (Bảng thành viên, tìm kiếm nhân sự LHU, chọn vai trò, lưu bảng riêng)
-    - `modules/cgcn-quan-tri/components/uc-modal-add.vue` (Thêm mới CGCN kèm bảng thành viên chuẩn)
-    - `modules/cgcn-quan-tri/components/uc-modal-edit.vue` (Sửa/duyệt CGCN kèm bảng thành viên, load chi tiết và lưu bảng riêng)
-    - `modules/hdkh-ly-lich-khoa-hoc/components/uc-so-yeu-ly-lich.vue` (Popup & form cập nhật 5 trường STM)
-    - `modules/hdkh-ly-lich-khoa-hoc/components/uc-shtt.vue` (Popup cập nhật SoVanBang, NamCap, NoiCapVanBang cho SHTT)
-    - `modules/hdkh-ly-lich-khoa-hoc/components/uc-main.vue` (Bắt sự kiện reload sau khi cập nhật STM và SHTT)
-    - `modules/hdkh-ly-lich-khoa-hoc/script.js` (Map STM, xử lý nguồn SHTT, sửa lỗi cú pháp const trong array)
-    - `modules/cgcn-quan-ly/` (Đã sao lưu và xóa hoàn toàn khỏi dự án và FUI server)
+    - `modules/an-pham-khen-thuong/components/uc-table-tac-gia.vue` (Sửa lỗi đảo ngược Họ và Tên tác giả khi tìm kiếm/nhập mã nhân viên LHU)
+    - `_db/qlnckh/schema.json` (Đồng bộ schema và store procedures mới nhất từ database `qlnckh`)
+    - `modules/_modules.json` (Làm mới danh sách 31 module từ server FUI)
+    - `modules/*/_moduleInfo.json` (Làm mới metadata cache các module sau khi sync)
     - `.handoff/HANDOFF.md` (Tài liệu bàn giao phiên làm việc)
   - **Pre-existing dirty / unrelated:**
-    - `_logs/tool-errors.jsonl`, `_projectInfo.json`
+    - `../_logs/tool-errors.jsonl`
 - **Quick Inspect Commands:**
-  - `git diff --stat modules/cgcn-ke-khai modules/cgcn-quan-tri modules/hdkh-ly-lich-khoa-hoc`
-  - `fui file status -p lhu-qlnckh --all`
+  - `git diff modules/an-pham-khen-thuong/components/uc-table-tac-gia.vue`
+  - `fui file status -p lhu-qlnckh -m an-pham-khen-thuong`
 
 ## 4. PROBLEM & SYSTEM FLOW
-- **Objective:** Tách bảng riêng `ChuyenGiaoCongNghe_ThanhVien` để lưu `MaDinhDanh` cho thành viên hợp đồng CGCN, nâng cấp UI kê khai và quản trị CGCN, bổ sung trường STM và điểm khuyết SHTT trên LLKH, dọn dẹp module thừa `cgcn-quan-ly`.
-- **Expected:** Thành viên CGCN được lưu độc lập với `MaDinhDanh` để sẵn sàng liên kết LLKH; module kê khai và quản trị hỗ trợ tìm kiếm nhân sự LHU; LLKH cập nhật được thông tin STM và chi tiết SHTT; module cũ `cgcn-quan-ly` được xóa sạch.
-- **Actual:** Hoàn thành 100% mục tiêu đề ra; tất cả module đã validate và publish lên server FUI (`# 0 unpublished file(s)`).
+- **Objective:** Sửa lỗi hiển thị và lưu đảo ngược Họ và Tên tác giả trong dialog Thêm mới tác giả của module `an-pham-khen-thuong`; đồng bộ schema/SP và danh sách module từ hệ thống.
+- **Expected:** Khi tìm kiếm hoặc nhập mã nhân viên, ô "Họ tác giả" nhận đúng Họ và tên đệm (VD: `Trương Lê`), ô "Tên tác giả" nhận đúng Tên chính (VD: `Hoàng`); bảng danh sách tác giả render `{{ item.HoTacGia }} {{ item.TenTacGia }}` đúng thứ tự tự nhiên `Trương Lê Hoàng`.
+- **Actual:** Hoàn thành 100%; module `an-pham-khen-thuong` đã validate và publish lên server FUI (`# 0 unpublished file(s)`).
 - **Flow Analysis:**
-  - **Input:** Khai báo CGCN (TenDuAn, NamHoc, GiaTriHopDong, danh sách thành viên gồm MaDinhDanh, HoTen, VaiTro, TenPhongBan); cập nhật STM (ORCID, GoogleScholar, ResearchGate, MaSTI, TomTatKinhNghiem); cập nhật chi tiết SHTT.
+  - **Input:** Chọn nhân viên từ autocomplete `v-autocomplete` (`this.model` từ `/TaiKhoan_Seach`) hoặc nhập mã nhân viên vào textfield `MaNhanVien` (`blurMaNhanVien`).
   - **Process:**
-    - `modules/cgcn-ke-khai/components/uc-modal-contract.vue:saveItem` → `/CGCN_Ins` hoặc `/CGCN_Upd` → `/CGCN_ThanhVien_Save`
-    - `spAPI_CGCN_ThanhVien_Save.sql` → INSERT/UPDATE `ChuyenGiaoCongNghe_ThanhVien` → UPDATE `ChuNhiemDeTai`/`ThanhVienDeTai` trên `ChuyenGiaoCongNghe` (backward compatibility)
-    - `modules/hdkh-ly-lich-khoa-hoc/components/uc-so-yeu-ly-lich.vue` → `/HDKH_LLKH_STM_Save` → `tblHDKH_Profile_CaNhan`
-    - `modules/hdkh-ly-lich-khoa-hoc/components/uc-shtt.vue` → `/HDKH_LLKH_SHTT_ChiTiet_Save`
-  - **State:** `ChuyenGiaoCongNghe_ThanhVien` (bảng mới), `ChuyenGiaoCongNghe`, `tblHDKH_Profile_CaNhan`, `tblHDKH_Field_Definition`.
-  - **Output:** Dữ liệu thành viên CGCN có định danh `MaDinhDanh`, chuỗi text tương thích ngược; LLKH hiển thị và lưu thành công thông tin STM & SHTT.
-  - **Side Effects:** Zero breaking change trên các màn hình hiển thị cũ; `cgcn-quan-ly` đã được xoá an toàn sau khi sao lưu.
+    - `changeNhanVien()`: Gán trực tiếp `HoNV` vào `HoTacGia` và `TenNV` vào `TenTacGia` từ `this.model`, đồng thời điền email, phòng ban, thông tin ngân hàng.
+    - `NhanVien_Get(UserID)`: Gán đúng `data[0].FirstName` vào `HoTacGia` và `data[0].LastName` vào `TenTacGia` khi nhận phản hồi từ `https://tapi.lhu.edu.vn/acc/UserInfo_ByID`.
+  - **State:** `this.editedItem` trong component `uc-table-tac-gia.vue`.
+  - **Output:** Giao diện dialog hiển thị đúng Họ và Tên ở hai ô input riêng biệt; bảng tác giả hiển thị đúng thứ tự; `spAPI_AnPhamTacGia_INS` / `spAPI_AnPhamTacGia_Udp` lưu đúng hai cột `HoTacGia` và `TenTacGia` vào bảng `AnPham_TacGia`.
+  - **Side Effects:** Zero breaking change, giữ nguyên API và schema.
 
 ## 5. RELEVANT CODE & ARTIFACT REFERENCES
 - **Specs / Plans / Issues / ADRs:** None
 - **Code Locations:**
-  - `lhu-qlnckh/_db/qlnckh/spAPI_CGCN_ThanhVien_Save.sql` — Thủ tục đồng bộ thành viên CGCN vào bảng riêng và chuỗi text
-  - `lhu-qlnckh/_db/qlnckh/spAPI_CGCN_ThanhVien_Get.sql` — Thủ tục lấy thành viên theo CGCNID
-  - `lhu-qlnckh/modules/cgcn-ke-khai/components/uc-modal-contract.vue` — Giao diện kê khai CGCN tích hợp bảng thành viên và tìm nhân sự
-  - `lhu-qlnckh/modules/cgcn-quan-tri/components/uc-modal-edit.vue` — Giao diện duyệt và sửa CGCN của quản trị viên
-  - `lhu-qlnckh/modules/cgcn-quan-tri/components/uc-modal-add.vue` — Giao diện thêm mới trực tiếp CGCN của quản trị viên
-  - `lhu-qlnckh/modules/hdkh-ly-lich-khoa-hoc/components/uc-so-yeu-ly-lich.vue` — Quản lý 5 trường STM
-  - `lhu-qlnckh/modules/hdkh-ly-lich-khoa-hoc/components/uc-shtt.vue` — Quản lý Số văn bằng, Năm cấp, Nơi cấp SHTT
+  - `modules/an-pham-khen-thuong/components/uc-table-tac-gia.vue:502-553` — Hàm `changeNhanVien`, `TaiKhoanNH_Get`, `NhanVien_Get`
+  - `_db/qlnckh/spAPI_TaiKhoan_Seach.sql` — SP tìm kiếm nhân viên kèm tài khoản, trả về `HoNV`, `TenNV`, `HoTen`
 
 ## 6. SESSION KNOWLEDGE (FACTS vs HYPOTHESES)
 ### Verified Facts
-- [FACT] Bảng `ChuyenGiaoCongNghe_ThanhVien` đã tạo với 16 cột và 2 index `IX_CGCN_ThanhVien_CGCNID`, `IX_CGCN_ThanhVien_MaDinhDanh` (Evidence: `fui query --db qlnckh "SELECT TOP 5 CGCNID FROM ChuyenGiaoCongNghe_ThanhVien"`).
-- [FACT] Cú pháp SP trên tAPI không cho phép khai báo tham số gán giá trị mặc định `= ...` (Evidence: lỗi guard tAPI khi deploy `spAPI_HDKH_LLKH_STM_Save`).
-- [FACT] Khai báo `const` bên trong array literal trả về của hàm gây lỗi `Unexpected token 'const'` tại runtime Vue (Evidence: lỗi console B54A6.js trên `script.js`).
-- [FACT] `cgcn-quan-ly` không nằm trong menu hay routing của `project.json` và đã được xoá an toàn (Evidence: `fui module delete -p lhu-qlnckh -m cgcn-quan-ly`).
+- [FACT] API `https://tapi.lhu.edu.vn/acc/UserInfo_ByID?UserID=${UserID}` trả về `FirstName` là phần họ/chữ lót và `LastName` là từ tên chính cuối cùng (Evidence: so sánh đối chiếu với dữ liệu `TaiKhoan` và `NhanVien` trong database `qlnckh`).
+- [FACT] `spAPI_TaiKhoan_Seach` trả về đối tượng có sẵn các trường `HoNV`, `TenNV`, `HoTen`, `Email`, `TenPhongBan`, `SoTaiKhoan`, `NganHang`, `TenChuTaiKhoan` (Evidence: `_db/qlnckh/spAPI_TaiKhoan_Seach.sql`).
+- [FACT] Module `an-pham-khen-thuong` đã publish thành công lên server FUI (Evidence: `fui file status -p lhu-qlnckh -m an-pham-khen-thuong` ra `# 0 unpublished file(s)`).
 
 ### Active Hypotheses
 - None.
 
 ### Assumptions & Unknowns
-- [ASSUMPTION] 203 bản ghi CGCN lịch sử không bắt buộc phải link cá nhân vào LLKH ngay, chỉ áp dụng từ các hồ sơ mới kê khai có `MaDinhDanh`.
+- [ASSUMPTION] Các bản ghi tác giả cũ đã lưu ngược trước đây trong bảng `AnPham_TacGia` trên môi trường production có thể chạy script UPDATE hoán đổi nếu nhà trường yêu cầu chuẩn hóa toàn diện dữ liệu lịch sử.
 
 ## 7. TESTS, LOGS & DIAGNOSTICS
 - **Overall Verification Status:** `PASS`
 - **Test / Benchmark Runs:**
-  - `fui module validate -p lhu-qlnckh -m cgcn-ke-khai` → **Result:** PASS (0 semantic errors)
-  - `fui module validate -p lhu-qlnckh -m cgcn-quan-tri` → **Result:** PASS (0 semantic errors)
-  - `fui module validate -p lhu-qlnckh -m hdkh-ly-lich-khoa-hoc` → **Result:** PASS (0 semantic errors)
-  - `fui file status -p lhu-qlnckh --all` → **Result:** PASS (# 0 unpublished file(s))
+  - `fui module validate -p lhu-qlnckh -m an-pham-khen-thuong` → **Result:** PASS (0 semantic errors)
+  - `fui file status -p lhu-qlnckh -m an-pham-khen-thuong` → **Result:** PASS (# 0 unpublished file(s))
 - **Critical Error / Log Snippet:** None
 
 ## 8. ATTEMPTS & DEAD ENDS (DO NOT REPEAT)
-- Attempt 1: Đặt khai báo `const allSHTT_GV = ...` trực tiếp trong array literal `return [ ... ]` của `script.js` → Lỗi `Unexpected token 'const'` tại runtime trình duyệt. Cần khai báo biến trước lệnh `return`.
-- Attempt 2: Dùng `v-btn block height="40"` cho nút Thêm thành viên CGCN → Nút bị to và dính sát ô Vai trò. Đã tối ưu về `small` (28px), bỏ `block`, thêm `pl-3` đệm khoảng cách hợp lý.
+- Không có.
 
 ## 9. CONSTRAINTS & RISKS
-- Contracts to Preserve:
-  - Bảng `ChuyenGiaoCongNghe` vẫn phải duy trì 2 cột `ChuNhiemDeTai` và `ThanhVienDeTai` dạng chuỗi text phân cách bằng dấu phẩy để tương thích các báo cáo/export Excel hiện hành.
-  - Không sửa PDF và giao diện LLKH đối với CGCN khi chưa có chỉ đạo từ người dùng.
-- Side Effects / Tradeoffs:
-  - Bản backup `_backup/backup_20261024_cgcn_quan_ly` và `_backup/backup_20261024_cgcn_llkh` cần được lưu trữ cẩn thận để đối chiếu khi cần.
+- **Contracts to Preserve:** Giữ nguyên contract gọi `spAPI_AnPhamTacGia_INS` và `spAPI_AnPhamTacGia_Udp` với cấu trúc `AuthorsObjArr` chứa `HoTacGia` và `TenTacGia`.
+- **Side Effects / Tradeoffs:** Không có.
