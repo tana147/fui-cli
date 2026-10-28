@@ -1958,3 +1958,1040 @@
   color: #065f46;
 }
 
+
+/* ==========================================================================
+   Kế Thừa Tinh Hoa kpi-results-framework: Value Bridge, Harvey Balls, Matrix & Audit
+   ========================================================================== */
+
+/* 1. Value Bridge Waterfall Chart SVG */
+.uc-kpi-ops__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  font-family: inherit;
+}
+.uc-kpi-ops__svg .g-grid {
+  stroke: #edebe9;
+  stroke-width: 1;
+}
+.uc-kpi-ops__svg .g-axis {
+  fill: #605e5c;
+  font-size: 10.5px;
+  font-weight: 500;
+}
+.uc-kpi-ops__svg .g-val {
+  fill: #252423;
+  font-size: 11px;
+  font-weight: 700;
+}
+.uc-kpi-ops__svg .g-money {
+  fill: #d13438;
+  font-size: 11px;
+  font-weight: 600;
+}
+.uc-kpi-ops__svg .g-money.is-good {
+  fill: #107c41;
+}
+.uc-kpi-ops__svg .g-conn {
+  stroke: #a19f9d;
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+.uc-kpi-ops__svg .g-total {
+  fill: #1B365D;
+}
+.uc-kpi-ops__svg .g-end {
+  fill: #3A6EA5;
+}
+.uc-kpi-ops__svg .g-up {
+  fill: #1a9e4b;
+}
+.uc-kpi-ops__svg .g-down {
+  fill: #d13438;
+}
+.uc-kpi-ops__svg .g-plan {
+  stroke: #d13438;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+.uc-kpi-ops__svg .g-plan-txt {
+  fill: #d13438;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* 2. Harvey Balls (Độ tin cậy dữ liệu) */
+.uc-kpi-ops__hb {
+  width: 13px;
+  height: 13px;
+  vertical-align: -2px;
+  margin-right: 6px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+.uc-kpi-ops__hb .hb-o {
+  fill: #ffffff;
+  stroke: #1B365D;
+  stroke-width: 1.2;
+}
+.uc-kpi-ops__hb .hb-f {
+  fill: #1B365D;
+}
+
+/* 3. Trung Tâm Kiểm Toán & Điểm Vênh Số Liệu (Audit Discrepancies) */
+.uc-kpi-ops__audit-box {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--bad);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.uc-kpi-ops__audit-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.uc-kpi-ops__audit-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.uc-kpi-ops__audit-badge {
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.uc-kpi-ops__audit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 12px;
+}
+.uc-kpi-ops__audit-card {
+  background: #fdfcfe;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #f59e0b;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.uc-kpi-ops__audit-card.is-critical {
+  border-left-color: #ef4444;
+  background: #fffbfa;
+}
+.uc-kpi-ops__audit-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
+}
+.uc-kpi-ops__audit-card-code {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+}
+.uc-kpi-ops__audit-card-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.35;
+}
+.uc-kpi-ops__audit-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+.uc-kpi-ops__audit-compare-side {
+  font-size: 11px;
+  color: #475569;
+}
+.uc-kpi-ops__audit-compare-side b {
+  display: block;
+  font-size: 12.5px;
+  color: #0f172a;
+  margin-top: 2px;
+}
+.uc-kpi-ops__audit-desc {
+  font-size: 12px;
+  color: #334155;
+  line-height: 1.45;
+}
+.uc-kpi-ops__audit-action {
+  font-size: 11.5px;
+  color: #0369a1;
+  background: #f0f9ff;
+  border: 1px dashed #bae6fd;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+.uc-kpi-ops__audit-owner {
+  font-size: 11px;
+  color: #64748b;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+/* 4. Campus Accountability Matrix (Ma Trận 5 Cơ Sở) */
+.uc-kpi-ops__matrix-box {
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.uc-kpi-ops__matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.uc-kpi-ops__matrix-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  text-align: left;
+  padding: 9px 12px;
+  border-bottom: 2px solid #cbd5e1;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.uc-kpi-ops__matrix-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+.uc-kpi-ops__matrix-table tr:hover td {
+  background: #f8fafc;
+}
+.uc-kpi-ops__matrix-unit {
+  font-weight: 700;
+  color: var(--accent2);
+}
+.uc-kpi-ops__matrix-unit small {
+  display: block;
+  font-weight: 400;
+  color: #64748b;
+  font-size: 11px;
+}
+.uc-kpi-ops__matrix-val {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.uc-kpi-ops__matrix-val small {
+  display: block;
+  font-size: 10.5px;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* 5. Causal Modal Filter Tags */
+.uc-kpi-ops__filter-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.uc-kpi-ops__tag-btn {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.uc-kpi-ops__tag-btn.is-active {
+  background: var(--accent2);
+  color: #fff;
+  border-color: var(--accent2);
+  font-weight: 600;
+}
+.uc-kpi-ops__chain-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.uc-kpi-ops__chain-tag.tag-linear {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+.uc-kpi-ops__chain-tag.tag-feedback-pos {
+  background: #dcfce7;
+  color: #15803d;
+}
+.uc-kpi-ops__chain-tag.tag-feedback-neg {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.uc-kpi-ops__chain-tag.tag-paradox {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+/* ==========================================================================
+   Tối Ưu Dashboard Vận Hành (High-Density Executive UI & No-Emoji Clean Theme)
+   ========================================================================== */
+
+/* 1. Thanh Sub-Tabs Điều Hành Fold 1 */
+.uc-kpi-ops__subtabs {
+  display: flex;
+  gap: 4px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 4px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.uc-kpi-ops__subtab-btn {
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink2);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.uc-kpi-ops__subtab-btn:hover {
+  color: var(--accent2);
+  background: #f8fafc;
+}
+.uc-kpi-ops__subtab-btn.is-active {
+  background: var(--accent2);
+  color: #fff;
+  border-color: var(--accent2);
+}
+.uc-kpi-ops__subtab-count {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.08);
+}
+.uc-kpi-ops__subtab-btn.is-active .uc-kpi-ops__subtab-count {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+/* 2. Split Layout 7:5 (Value Bridge & 4 Đòn Bẩy) */
+.uc-kpi-ops__split-grid {
+  display: grid;
+  grid-template-columns: 58fr 42fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+@media (max-width: 1024px) {
+  .uc-kpi-ops__split-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.uc-kpi-ops__split-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+}
+.uc-kpi-ops__levers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: space-between;
+  height: 100%;
+}
+.uc-kpi-ops__lever-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 3px solid var(--accent);
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.uc-kpi-ops__lever-item.is-priority {
+  border-left-color: var(--good);
+  background: #f0fdf4;
+}
+.uc-kpi-ops__lever-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+}
+.uc-kpi-ops__lever-desc {
+  font-size: 10.5px;
+  color: #64748b;
+}
+.uc-kpi-ops__lever-stat {
+  text-align: right;
+  flex-shrink: 0;
+}
+.uc-kpi-ops__lever-hs {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--good);
+}
+.uc-kpi-ops__lever-money {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #0369a1;
+}
+
+/* 3. Grid 5 Thẻ Cơ Sở Tinh Gọn (5 Compact Campus Cards) */
+.uc-kpi-ops__campus-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
+}
+@media (max-width: 1200px) {
+  .uc-kpi-ops__campus-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 768px) {
+  .uc-kpi-ops__campus-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.uc-kpi-ops__campus-tile {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-top: 3px solid #cbd5e1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.uc-kpi-ops__campus-tile.is-good {
+  border-top-color: var(--good);
+}
+.uc-kpi-ops__campus-tile.is-warn {
+  border-top-color: var(--warn);
+}
+.uc-kpi-ops__campus-tile.is-bad {
+  border-top-color: var(--bad);
+}
+.uc-kpi-ops__campus-tile-h {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.uc-kpi-ops__campus-tile-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent2);
+}
+.uc-kpi-ops__campus-tile-st {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+.uc-kpi-ops__campus-tile-st.is-good {
+  background: #dcfce7;
+  color: #15803d;
+}
+.uc-kpi-ops__campus-tile-st.is-warn {
+  background: #fef3c7;
+  color: #b45309;
+}
+.uc-kpi-ops__campus-tile-st.is-bad {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.uc-kpi-ops__campus-tile-nums {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.uc-kpi-ops__campus-tile-cur {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.uc-kpi-ops__campus-tile-tar {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* 4. Bullet Meter (Thanh đo công suất) */
+.uc-kpi-ops__bullet-meter {
+  position: relative;
+  height: 10px;
+  background: #edebe9;
+  border-radius: 2px;
+  overflow: visible;
+  margin: 4px 0;
+}
+.uc-kpi-ops__bullet-meter-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: #3A6EA5;
+}
+.uc-kpi-ops__bullet-meter-fill.is-good {
+  background: var(--good);
+}
+.uc-kpi-ops__bullet-meter-fill.is-warn {
+  background: var(--warn);
+}
+.uc-kpi-ops__bullet-meter-fill.is-bad {
+  background: var(--bad);
+}
+.uc-kpi-ops__bullet-meter-target {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: #0f172a;
+  z-index: 2;
+}
+.uc-kpi-ops__campus-tile-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 6px;
+  font-size: 10.5px;
+  color: #64748b;
+}
+.uc-kpi-ops__campus-tile-meta b {
+  display: block;
+  font-size: 11.5px;
+  color: #0f172a;
+}
+
+/* 5. Dải Phân Bổ Tỷ Trọng Rút Học (Stacked Distribution Bar) */
+.uc-kpi-ops__dist-box {
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 10px 14px;
+  margin-bottom: 8px;
+}
+.uc-kpi-ops__dist-bar {
+  display: flex;
+  height: 16px;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 8px 0;
+  background: #e2e8f0;
+}
+.uc-kpi-ops__dist-seg {
+  height: 100%;
+  transition: width 0.2s ease;
+}
+.uc-kpi-ops__dist-seg.seg-bus { background: #d13438; }
+.uc-kpi-ops__dist-seg.seg-other { background: #605e5c; }
+.uc-kpi-ops__dist-seg.seg-eco { background: #d9822b; }
+.uc-kpi-ops__dist-seg.seg-ill { background: #3A6EA5; }
+.uc-kpi-ops__dist-seg.seg-abroad { background: #107c41; }
+.uc-kpi-ops__dist-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 11.5px;
+  color: var(--ink2);
+}
+.uc-kpi-ops__dist-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.uc-kpi-ops__dist-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+/* 6. Spacing Tối Giản */
+.uc-kpi-ops .mb-compact { margin-bottom: 8px !important; }
+.uc-kpi-ops .p-compact { padding: 10px 14px !important; }
+
+/* ==========================================================================
+   7. EXECUTIVE ROI SIMULATOR & RISK RADAR (HĐQT PHÂN BỔ VỐN & DỰ BÁO RỦI RO)
+   ========================================================================== */
+
+/* Subtab Badge biến thể */
+.uc-kpi-ops__subtab-badge.badge-danger {
+  background: #fde7e9;
+  color: #a80000;
+  border: 1px solid #f3b2b7;
+}
+.uc-kpi-ops__subtab-badge.badge-warning {
+  background: #fff4ce;
+  color: #795b00;
+  border: 1px solid #ffe380;
+}
+
+/* Tab 5: Risk Radar Layout */
+.uc-kpi-ops__risk-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.uc-kpi-ops__risk-hero {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-left: 4px solid #d13438;
+  border-radius: 4px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.uc-kpi-ops__risk-hero-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.uc-kpi-ops__risk-hero-desc {
+  font-size: 11.5px;
+  color: var(--ink2);
+  line-height: 1.4;
+}
+.uc-kpi-ops__risk-hero-stat {
+  display: flex;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.uc-kpi-ops__risk-stat-item {
+  text-align: right;
+  border-left: 1px solid var(--line);
+  padding-left: 12px;
+}
+.uc-kpi-ops__risk-stat-val {
+  font-size: 16px;
+  font-weight: 700;
+  color: #d13438;
+}
+.uc-kpi-ops__risk-stat-lbl {
+  font-size: 10.5px;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* 5 Risk Cards Grid */
+.uc-kpi-ops__risk-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+.uc-kpi-ops__risk-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.uc-kpi-ops__risk-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+.uc-kpi-ops__risk-card.level-red {
+  border-top: 3.5px solid #d13438;
+}
+.uc-kpi-ops__risk-card.level-yellow {
+  border-top: 3.5px solid #d9822b;
+}
+.uc-kpi-ops__risk-card.level-green {
+  border-top: 3.5px solid #1a9e4b;
+}
+
+.uc-kpi-ops__risk-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+.uc-kpi-ops__risk-campus-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.uc-kpi-ops__risk-campus-sub {
+  font-size: 10.5px;
+  color: var(--ink3);
+}
+.uc-kpi-ops__risk-score-badge {
+  font-size: 13px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: inherit;
+}
+.level-red .uc-kpi-ops__risk-score-badge {
+  background: #fde7e9;
+  color: #a80000;
+  border: 1px solid #f3b2b7;
+}
+.level-yellow .uc-kpi-ops__risk-score-badge {
+  background: #fff4ce;
+  color: #795b00;
+  border: 1px solid #ffe380;
+}
+.level-green .uc-kpi-ops__risk-score-badge {
+  background: #dff6dd;
+  color: #107c41;
+  border: 1px solid #b7ebb4;
+}
+
+.uc-kpi-ops__risk-forecast-box {
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
+  border-radius: 3px;
+  padding: 6px 8px;
+  margin: 6px 0;
+  font-size: 11px;
+}
+.uc-kpi-ops__risk-forecast-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+.uc-kpi-ops__risk-forecast-val {
+  font-weight: 700;
+}
+.level-red .uc-kpi-ops__risk-forecast-val { color: #d13438; }
+.level-yellow .uc-kpi-ops__risk-forecast-val { color: #d9822b; }
+.level-green .uc-kpi-ops__risk-forecast-val { color: #1a9e4b; }
+
+.uc-kpi-ops__risk-axes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0;
+}
+.uc-kpi-ops__risk-axis-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--ink2);
+}
+.uc-kpi-ops__risk-axis-bar-bg {
+  width: 55px;
+  height: 5px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.uc-kpi-ops__risk-axis-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.uc-kpi-ops__risk-card-action {
+  font-size: 10.5px;
+  color: #0369a1;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 3px;
+  padding: 5px 7px;
+  line-height: 1.35;
+  margin-top: 4px;
+}
+
+/* Split Grid cho Matrix & Checklist */
+.uc-kpi-ops__risk-detail-split {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: 10px;
+}
+.uc-kpi-ops__risk-matrix-box,
+.uc-kpi-ops__risk-checklist-box {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 14px;
+}
+.uc-kpi-ops__risk-subhead {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Risk Checklist Table */
+.uc-kpi-ops__checklist-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+.uc-kpi-ops__checklist-table th {
+  background: #f8fafc;
+  color: var(--ink2);
+  text-align: left;
+  padding: 6px 8px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--line);
+}
+.uc-kpi-ops__checklist-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+.uc-kpi-ops__checklist-status-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.uc-kpi-ops__checklist-status-badge.is-urgent {
+  background: #fde7e9;
+  color: #a80000;
+  border: 1px solid #f3b2b7;
+}
+.uc-kpi-ops__checklist-status-badge.is-action {
+  background: #fff4ce;
+  color: #795b00;
+  border: 1px solid #ffe380;
+}
+
+/* ROI Simulator Modal */
+.uc-kpi-ops__roi-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+.uc-kpi-ops__roi-modal-dialog {
+  background: #ffffff;
+  border-radius: 6px;
+  width: 100%;
+  max-width: 980px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+.uc-kpi-ops__roi-modal-head {
+  padding: 12px 18px;
+  background: #1B365D;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.uc-kpi-ops__roi-modal-head-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.uc-kpi-ops__roi-modal-head-sub {
+  font-size: 11px;
+  color: #93c5fd;
+}
+.uc-kpi-ops__roi-modal-close {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.uc-kpi-ops__roi-scenarios-bar {
+  display: flex;
+  gap: 6px;
+  padding: 8px 18px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--line);
+}
+.uc-kpi-ops__roi-scenario-tab {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  color: var(--ink2);
+  padding: 5px 12px;
+  border-radius: 3px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.uc-kpi-ops__roi-scenario-tab:hover {
+  background: #f1f5f9;
+}
+.uc-kpi-ops__roi-scenario-tab.is-active {
+  background: #1B365D;
+  color: #ffffff;
+  border-color: #1B365D;
+}
+
+.uc-kpi-ops__roi-modal-body {
+  padding: 16px 18px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: 16px;
+}
+
+/* Left: Sliders & Controls */
+.uc-kpi-ops__roi-controls-card {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.uc-kpi-ops__roi-ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.uc-kpi-ops__roi-ctrl-label-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11.5px;
+  color: var(--ink);
+  font-weight: 600;
+}
+.uc-kpi-ops__roi-ctrl-val {
+  color: #1B365D;
+  font-weight: 700;
+  background: #e0f2fe;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+.uc-kpi-ops__roi-slider {
+  width: 100%;
+  accent-color: #1B365D;
+  cursor: pointer;
+}
+.uc-kpi-ops__roi-slider-hints {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9.5px;
+  color: var(--ink3);
+}
+
+/* Right: KPI Summary & Flow */
+.uc-kpi-ops__roi-results-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.uc-kpi-ops__roi-kpi-4grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.uc-kpi-ops__roi-kpi-tile {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.uc-kpi-ops__roi-kpi-tile.tile-cost {
+  border-left: 3.5px solid #d9822b;
+}
+.uc-kpi-ops__roi-kpi-tile.tile-rev {
+  border-left: 3.5px solid #1a9e4b;
+}
+.uc-kpi-ops__roi-kpi-tile.tile-profit {
+  border-left: 3.5px solid #1B365D;
+}
+.uc-kpi-ops__roi-kpi-tile.tile-roi {
+  border-left: 3.5px solid #7c3aed;
+}
+
+.uc-kpi-ops__roi-kpi-tile-lbl {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.uc-kpi-ops__roi-kpi-tile-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.uc-kpi-ops__roi-kpi-tile-sub {
+  font-size: 10.5px;
+  color: var(--ink2);
+}
+
+.uc-kpi-ops__roi-verdict-box {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 4px;
+  padding: 10px 12px;
+}
+.uc-kpi-ops__roi-verdict-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.uc-kpi-ops__roi-verdict-tag {
+  background: #16a34a;
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.uc-kpi-ops__roi-verdict-text {
+  font-size: 11.5px;
+  color: #166534;
+  line-height: 1.4;
+}
+
+.uc-kpi-ops__roi-modal-foot {
+  padding: 10px 18px;
+  background: #f8fafc;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

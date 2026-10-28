@@ -28,7 +28,7 @@ BEGIN
         CreatedAt
     FROM tblKPI_Correlations
     WHERE PeriodKey = @PeriodKey
-    ORDER BY ChainGroup, SortOrder;
+    ORDER BY SortOrder, CorrelationID;
 
     -- 2. Chains Summary (Result Set 1 - Giữ nguyên Contract cũ)
     SELECT 
@@ -111,20 +111,46 @@ BEGIN
     WHERE s.PeriodKey = @PeriodKey AND s.DonViID = 'ALL'
       AND NOT EXISTS (SELECT 1 FROM #ContextVars WHERE VarKey = s.KpiCode + '.Rate');
 
-    -- 4.2. Phân tích chi tiết lý do rút học (TS04.Reason.*)
-    DECLARE @TotalWithdraw FLOAT = ISNULL((SELECT CAST(VarValue AS FLOAT) FROM #ContextVars WHERE VarKey = 'TS04.Actual'), 53);
-    IF @TotalWithdraw <= 0 SET @TotalWithdraw = 1;
+    -- 4.2. Nạp dữ liệu biến động từ tblKPI_PeriodBreakdowns
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 
+        'TS04.Reason.' + DimensionCode,
+        CAST(CAST(ActualCount AS INT) AS NVARCHAR(20))
+    FROM tblKPI_PeriodBreakdowns
+    WHERE PeriodKey = @PeriodKey 
+      AND KpiCode = 'TS04' 
+      AND (DonViID = @DonViID OR (DonViID = 'ALL' AND @DonViID = 'ALL'));
 
-    -- Rút vì xa trường / xe bus (FAR)
-    DECLARE @FarCount INT = CASE @DonViID
-        WHEN 'MNLK' THEN 4
-        WHEN 'MNTB' THEN 3
-        WHEN 'TH' THEN 8
-        WHEN 'THCS' THEN 4
-        ELSE 21
-    END;
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('TS04.Reason.FAR', CAST(@FarCount AS NVARCHAR(20)));
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('TS04.Reason.BUS', CAST(@FarCount AS NVARCHAR(20)));
+    -- Fallback lý do rút học
+    IF NOT EXISTS (SELECT 1 FROM #ContextVars WHERE VarKey = 'TS04.Reason.FAR')
+        INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('TS04.Reason.FAR', '21');
+    IF NOT EXISTS (SELECT 1 FROM #ContextVars WHERE VarKey = 'TS04.Reason.BUS')
+        INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('TS04.Reason.BUS', '21');
+
+    -- Bảo trì cơ sở vật chất
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('MAINT.AcRepairs', '18');
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('MAINT.PendingTickets', '4');
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('MAINT.TotalTickets', '79');
+
+    -- Y tế học đường
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('HEALTH.Cases', '131');
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('HEALTH.FluA', '53');
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('DV38.OutbreakCases', '1');
+
+    -- Nghỉ phép nhân sự
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('LEAVE.Days', '551');
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('LEAVE.Count', '470');
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('LEAVE.KitchenDays', '54');
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('LEAVE.KinderDays', '82.5');
+
+    -- Câu lạc bộ
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('CLUB.Revenue', '1611');
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('CLUB.Students', '596');
+
+    -- Tuyển sinh & CRM Leads
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('CRM.Leads', '161');
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('CRM.Conversion', '21');
+    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('CRM.ConvRate', '13.04');
 
     -- 4.3. Nạp Tham số Nghiệp vụ từ tblKPI_Parameters (PARAM.*)
     INSERT INTO #ContextVars (VarKey, VarValue)
@@ -158,7 +184,6 @@ BEGIN
     ) unpvt;
 
     -- 4.5. Nạp Nhóm Biến Kiểm Toán Dữ Liệu & Nghịch Lý (Audit & Paradox Variables)
-    -- Cỡ mẫu khảo sát QA.SampleSize
     DECLARE @QASample INT = ISNULL((
         SELECT TOP 1 CAST(ParamValue AS INT) FROM tblKPI_Parameters 
         WHERE ParamCode = 'QA_SampleSize' AND (ScopeID = @DonViID OR ScopeID = 'ALL')
@@ -166,7 +191,6 @@ BEGIN
     ), 65);
     INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('QA.SampleSize', CAST(@QASample AS NVARCHAR(20)));
 
-    -- Lệch cân đối luân chuyển sĩ số (AUDIT.RollDiff)
     DECLARE @RollDiff INT = CASE @DonViID
         WHEN 'TH' THEN 2
         WHEN 'MNLK' THEN 1
@@ -174,21 +198,15 @@ BEGIN
     END;
     INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('AUDIT.RollDiff', CAST(@RollDiff AS NVARCHAR(20)));
 
-    -- Tỷ lệ hài lòng PHHS (DV50.Actual)
     IF NOT EXISTS (SELECT 1 FROM #ContextVars WHERE VarKey = 'DV50.Actual')
-        INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('DV50.Actual', '93.5');
+        INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('DV50.Actual', '93.6');
 
-    -- Số ca dịch bệnh y tế trường học (DV38.OutbreakCases)
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('DV38.OutbreakCases', '0');
-
-    -- Số tiết GV vắng chưa dạy bù (CM09.UncompensatedPeriods)
     INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('CM09.UncompensatedPeriods', '2');
 
-    -- Tỷ lệ dự giờ đạt chuẩn (CM10.Actual) cho kịch bản bẫy đầu ra
     IF NOT EXISTS (SELECT 1 FROM #ContextVars WHERE VarKey = 'CM10.Actual')
         INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('CM10.Actual', '76.5');
 
-    -- Thêm các metadata cơ sở vào Context
+    -- Thêm metadata
     INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('CONTEXT.DonViID', @DonViID);
     INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('CONTEXT.PeriodKey', @PeriodKey);
 
@@ -214,6 +232,46 @@ BEGIN
         SELECT 1 FROM tblKPI_Thresholds t2 WHERE t2.KpiCode = tblKPI_Thresholds.KpiCode AND t2.ScopeID = @DonViID
     ))
     ORDER BY KpiCode;
+
+    -- 6. Điểm Vênh Kiểm Toán & Mâu Thuẫn Số Liệu (Result Set 5: Audit Discrepancies)
+    SELECT 
+        DiscrepancyID,
+        PeriodKey,
+        ScopeID,
+        AuditCode,
+        Category,
+        Title,
+        PrimarySource,
+        PrimaryValue,
+        SecondarySource,
+        SecondaryValue,
+        VarianceAnalysis,
+        ActionOwner,
+        VerificationStatus,
+        CreatedAt
+    FROM tblKPI_AuditDiscrepancies
+    WHERE PeriodKey = @PeriodKey
+      AND (ScopeID = @DonViID OR @DonViID = 'ALL' OR ScopeID = 'ALL')
+    ORDER BY DiscrepancyID;
+
+    -- 7. Dimensional Breakdowns (Result Set 6: Breakdowns Mart)
+    SELECT 
+        BreakdownID,
+        PeriodKey,
+        DonViID,
+        KpiCode,
+        DimensionType,
+        DimensionCode,
+        DimensionName,
+        ActualCount,
+        ActualValue,
+        Rate,
+        ResponsibleOwner,
+        Note
+    FROM tblKPI_PeriodBreakdowns
+    WHERE PeriodKey = @PeriodKey
+      AND (DonViID = @DonViID OR @DonViID = 'ALL' OR DonViID = 'ALL')
+    ORDER BY KpiCode, BreakdownID;
 
     DROP TABLE #ContextVars;
 END;

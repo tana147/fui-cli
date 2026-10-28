@@ -68,7 +68,13 @@
           <div class="uc-kpi-ops__view">{{ currentViewLabel }}</div>
         </div>
       </div>
-      <div>
+      <div style="display:flex;gap:6px;">
+        <button type="button" class="uc-kpi-ops__simbtn" style="background:#1B365D;color:#ffffff;border-color:#1B365D;font-weight:700;" @click="openRoiModal('BUS')">
+          Mô Phỏng Đầu Tư &amp; ROI
+        </button>
+        <button type="button" class="uc-kpi-ops__simbtn" @click="openOperationalFactDrawer('LEAVE')">
+          Trích xuất Fact Store
+        </button>
         <button type="button" class="uc-kpi-ops__simbtn is-solid" @click="openDrawer('STUDENT_LIST')">
           Xem cơ cấu chi tiết ›
         </button>
@@ -118,7 +124,7 @@
 
           <!-- Mắt xích Nhân quả Ngữ cảnh Tile 1 -->
           <div class="uc-kpi-ops__bkpi-causal" @click.stop="openCausalChainForCard('ENROLLMENT')">
-            <div class="causal-pill">{{ renderCausalTitle('TS06', '🔗 Chuỗi: Phễu CRM → Sĩ số → Doanh thu') }}</div>
+            <div class="causal-pill">{{ renderCausalTitle('TS06', 'Chuỗi: Phễu CRM → Sĩ số → Doanh thu') }}</div>
             <div class="causal-desc" v-html="renderCausalNarrative('TS06', 'NARRATIVE_ENROLLMENT_CONV')"></div>
             <div class="causal-cta">
               <span>Phân tích tác động tuyển thêm &rsaquo;</span>
@@ -160,7 +166,7 @@
 
           <!-- Mắt xích Nhân quả Ngữ cảnh Tile 2 -->
           <div class="uc-kpi-ops__bkpi-causal is-bad" @click.stop="openCausalChainForCard('WITHDRAW')">
-            <div class="causal-pill">{{ renderCausalTitle('TS04', '🔗 Chuỗi: Xe bus/CSVC → Rút học → Thất thu LTV') }}</div>
+            <div class="causal-pill">{{ renderCausalTitle('TS04', 'Chuỗi: Xe bus/CSVC → Rút học → Thất thu LTV') }}</div>
             <div class="causal-desc" v-html="renderCausalNarrative('TS04', 'NARRATIVE_WITHDRAW_BUS')"></div>
             <div class="causal-cta">
               <span>Mở Dialog Vùng Tác Động Rút Học &rsaquo;</span>
@@ -202,7 +208,7 @@
 
           <!-- Mắt xích Nhân quả Ngữ cảnh Tile 3 -->
           <div class="uc-kpi-ops__bkpi-causal is-good" @click.stop="openCausalChainForCard('LMS')">
-            <div class="causal-pill">{{ renderCausalTitle('CM08', '🔗 Chuỗi: Học liệu số → Tự giác làm bài → Giữ chân HS') }}</div>
+            <div class="causal-pill">{{ renderCausalTitle('CM08', 'Chuỗi: Học liệu số → Tự giác làm bài → Giữ chân HS') }}</div>
             <div class="causal-desc" v-html="renderCausalNarrative('CM08', 'NARRATIVE_LMS_QUALITY')"></div>
             <div class="causal-cta">
               <span>Xem ma trận chất lượng giáo dục &rsaquo;</span>
@@ -244,7 +250,7 @@
 
           <!-- Mắt xích Nhân quả Ngữ cảnh Tile 4 -->
           <div class="uc-kpi-ops__bkpi-causal is-good" @click.stop="openCausalChainForCard('FINANCE')">
-            <div class="causal-pill">{{ renderCausalTitle('TC55', '🔗 Chuỗi: LN Dịch vụ → Tái đầu tư CSVC → Giảm rút học') }}</div>
+            <div class="causal-pill">{{ renderCausalTitle('TC55', 'Chuỗi: LN Dịch vụ → Tái đầu tư CSVC → Giảm rút học') }}</div>
             <div class="causal-desc" v-html="renderCausalNarrative('TC55', 'NARRATIVE_FINANCE_REINVEST')"></div>
             <div class="causal-cta">
               <span>Xem ma trận tái đầu tư tài chính &rsaquo;</span>
@@ -258,148 +264,917 @@
         </div>
       </div>
 
-      <!-- 4 Trụ Cột Vận Hành LHBS (4 Command Pillars Bar) -->
-      <div class="uc-kpi-ops__pillars">
-        <!-- Trụ cột 1: Quy mô & Tuyển sinh -->
-        <div class="uc-kpi-ops__pillar-card" @click="page = 1">
-          <div class="uc-kpi-ops__pillar-h">
-            <span>1. Quy mô &amp; Tuyển sinh</span>
-            <span class="uc-kpi-ops__pillar-pill is-ok">ĐẠT {{ displayCapacityPct }}%</span>
+      <!-- 4. THANH SUB-TABS ĐIỀU HÀNH FOLD 1 (Không emoji, chuẩn Fluent) -->
+      <div class="uc-kpi-ops__subtabs">
+        <button
+          type="button"
+          :class="['uc-kpi-ops__subtab-btn', { 'is-active': executiveTab === 'COMMAND' }]"
+          @click="executiveTab = 'COMMAND'"
+        >
+          Tổng Quan Điều Hành (Ops Command)
+        </button>
+        <button
+          type="button"
+          :class="['uc-kpi-ops__subtab-btn', { 'is-active': executiveTab === 'RISK' }]"
+          @click="executiveTab = 'RISK'"
+        >
+          Dự Báo &amp; Radar Rủi Ro T10
+          <span class="uc-kpi-ops__subtab-badge badge-danger">1 Vùng Đỏ · 2 Cảnh Báo</span>
+        </button>
+        <button
+          type="button"
+          :class="['uc-kpi-ops__subtab-btn', { 'is-active': executiveTab === 'AUDIT' }]"
+          @click="executiveTab = 'AUDIT'"
+        >
+          Kiểm Toán &amp; Điểm Vênh (Audit Center)
+          <span class="uc-kpi-ops__subtab-count">{{ auditDiscrepanciesList.length || 5 }}</span>
+        </button>
+        <button
+          type="button"
+          :class="['uc-kpi-ops__subtab-btn', { 'is-active': executiveTab === 'CAUSAL' }]"
+          @click="executiveTab = 'CAUSAL'"
+        >
+          Chuỗi Nhân Quả &amp; Điểm Nghẽn (Causal Map)
+          <span class="uc-kpi-ops__subtab-count">{{ correlationsList.length || 15 }}</span>
+        </button>
+        <button
+          type="button"
+          :class="['uc-kpi-ops__subtab-btn', { 'is-active': executiveTab === 'FACTS' }]"
+          @click="executiveTab = 'FACTS'; fetchOperationalFacts(selectedFactDomain)"
+        >
+          Kho Giao Dịch Gốc (Fact Store Browser)
+          <span class="uc-kpi-ops__subtab-count">993 facts</span>
+        </button>
+      </div>
+
+      <!-- ================= SUB-TAB 1: TỔNG QUAN ĐIỀU HÀNH (COMMAND) ================= -->
+      <div v-if="executiveTab === 'COMMAND'">
+        <!-- Split Layout 7:5: Value Bridge (150px) + 4 Thẻ Đòn Bẩy Chiến Lược -->
+        <div class="uc-kpi-ops__split-grid">
+          <!-- Cột trái (58%): Value Bridge SVG -->
+          <div class="uc-kpi-ops__split-card">
+            <div class="uc-kpi-ops__vhead mb-1">
+              <div class="uc-kpi-ops__vtitle" style="font-size:13px;font-weight:700;color:var(--accent2);">
+                Lộ Trình Phục Hồi Sĩ Số Mục Tiêu 2.873 Học Sinh (Value Bridge Waterfall)
+              </div>
+              <div class="uc-kpi-ops__vnote" style="font-size:11px;color:var(--ink2);">
+                Đóng góp 4 đòn bẩy từ Sĩ số T9 (2.625 HS) bù hụt 248 HS đạt 100% kế hoạch NH 2026–2027
+              </div>
+            </div>
+            <svg class="uc-kpi-ops__svg" viewBox="0 0 640 150" preserveAspectRatio="xMidYMid meet">
+              <line v-for="t in valueBridge.ticks" :key="'t' + t.v" x1="45" x2="625" :y1="t.y" :y2="t.y" class="g-grid"></line>
+              <text v-for="t in valueBridge.ticks" :key="'l' + t.v" x="40" :y="t.y + 4" class="g-axis" text-anchor="end">{{ formatNumber(t.v) }}</text>
+              <line v-for="(cn, i) in valueBridge.conns" :key="'c' + i" :x1="cn.x1" :x2="cn.x2" :y1="cn.y" :y2="cn.y" class="g-conn"></line>
+              <g v-for="(b, i) in valueBridge.bars" :key="'b' + i">
+                <rect :x="b.x" :y="b.y" :width="b.w" :height="b.h" :class="'g-' + b.type" rx="2"></rect>
+                <text :x="b.x + b.w / 2" :y="b.y - 4" text-anchor="middle" class="g-val" style="font-size:10px;">{{ b.text }}</text>
+                <text v-for="(ln, j) in b.lines" :key="j" :x="b.x + b.w / 2" :y="126 + j * 11" text-anchor="middle" class="g-axis" style="font-size:9.5px;">{{ ln }}</text>
+              </g>
+              <line x1="45" x2="625" :y1="valueBridge.planY" :y2="valueBridge.planY" class="g-plan"></line>
+              <text x="625" :y="valueBridge.planY - 4" text-anchor="end" class="g-plan-txt" style="font-size:10px;">Chỉ tiêu: {{ formatNumber(valueBridge.planVal) }} HS</text>
+            </svg>
           </div>
-          <div class="uc-kpi-ops__pillar-b">
-            {{ formatNumber(displayStudents) }} <small>/ {{ formatNumber(displayTarget) }} HS</small>
-          </div>
-          <div class="uc-kpi-ops__pillar-bar">
-            <div class="uc-kpi-ops__pillar-bar-fill" :style="{ width: Math.min(100, displayCapacityPct) + '%' }"></div>
-          </div>
-          <div class="uc-kpi-ops__pillar-f">
-            7 chỉ tiêu (TS01–TS07) · Rút học {{ displayWithdrawRate }}% · Tỷ lệ chuyển đổi TVTS {{ displayConversionRate }}%
+
+          <!-- Cột phải (42%): 4 Thẻ Đòn Bẩy Chiến Lược -->
+          <div class="uc-kpi-ops__split-card">
+            <div class="uc-kpi-ops__vhead mb-1">
+              <div class="uc-kpi-ops__vtitle" style="font-size:13px;font-weight:700;color:var(--accent2);">
+                Chi Tiết 4 Đòn Bẩy Lượng Hóa Doanh Thu
+              </div>
+              <div class="uc-kpi-ops__vnote" style="font-size:11px;color:var(--good);font-weight:600;">
+                Tổng giá trị bảo toàn: +13.27 tỷ VNĐ
+              </div>
+            </div>
+            <div class="uc-kpi-ops__levers-list">
+              <div class="uc-kpi-ops__lever-item is-priority">
+                <div>
+                  <div class="uc-kpi-ops__lever-title">1. Mở 2 tuyến xe bus đưa đón mới</div>
+                  <div class="uc-kpi-ops__lever-desc">Ngăn chặn 21 ca rút học do xa nhà · Đầu mối: Quản trị CSVC</div>
+                </div>
+                <div class="uc-kpi-ops__lever-stat">
+                  <div class="uc-kpi-ops__lever-hs">+21 HS</div>
+                  <div class="uc-kpi-ops__lever-money">+1.37 tỷ/năm</div>
+                </div>
+              </div>
+
+              <div class="uc-kpi-ops__lever-item">
+                <div>
+                  <div class="uc-kpi-ops__lever-title">2. Tối ưu chuyển đổi phễu CRM Leads</div>
+                  <div class="uc-kpi-ops__lever-desc">Chăm sóc 161 leads hiện hữu, nâng tỷ lệ lên 20% · Đ/m: Tuyển sinh</div>
+                </div>
+                <div class="uc-kpi-ops__lever-stat">
+                  <div class="uc-kpi-ops__lever-hs">+45 HS</div>
+                  <div class="uc-kpi-ops__lever-money">+2.23 tỷ/năm</div>
+                </div>
+              </div>
+
+              <div class="uc-kpi-ops__lever-item">
+                <div>
+                  <div class="uc-kpi-ops__lever-title">3. Khai thác công suất Mầm non Long Khánh</div>
+                  <div class="uc-kpi-ops__lever-desc">Tuyển bù 72 chỉ tiêu mầm non 18–36 tháng · Đ/m: HT Long Khánh</div>
+                </div>
+                <div class="uc-kpi-ops__lever-stat">
+                  <div class="uc-kpi-ops__lever-hs">+72 HS</div>
+                  <div class="uc-kpi-ops__lever-money">+2.68 tỷ/năm</div>
+                </div>
+              </div>
+
+              <div class="uc-kpi-ops__lever-item">
+                <div>
+                  <div class="uc-kpi-ops__lever-title">4. Tuyển bổ sung Khối 10 &amp; Học kỳ 2</div>
+                  <div class="uc-kpi-ops__lever-desc">Chiến dịch tuyển chuyển trường và đầu cấp THPT · Đ/m: BGH</div>
+                </div>
+                <div class="uc-kpi-ops__lever-stat">
+                  <div class="uc-kpi-ops__lever-hs">+110 HS</div>
+                  <div class="uc-kpi-ops__lever-money">+6.99 tỷ/năm</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Trụ cột 2: Chuyên môn & Chất lượng Đào tạo -->
-        <div class="uc-kpi-ops__pillar-card" @click="page = 4">
-          <div class="uc-kpi-ops__pillar-h">
-            <span>2. Giáo dục &amp; Học thuật</span>
-            <span class="uc-kpi-ops__pillar-pill is-ok">ĐẠT {{ computedLmsData.rate }}</span>
-          </div>
-          <div class="uc-kpi-ops__pillar-b">
-            {{ computedLmsData.rate }} <small>Hoàn thành LMS</small>
-          </div>
-          <div class="uc-kpi-ops__pillar-bar">
-            <div class="uc-kpi-ops__pillar-bar-fill" style="width: 89.6%;"></div>
-          </div>
-          <div class="uc-kpi-ops__pillar-f">
-            20 chỉ tiêu (CM08–CM27) · 100% học liệu số · 0 vi phạm quy chế chuyên môn
+        <!-- Grid 5 Thẻ Cơ Sở Tinh Gọn (Bullet Meters + Harvey Balls) -->
+        <div class="uc-kpi-ops__campus-grid">
+          <div
+            v-for="u in campusMatrixRows"
+            :key="u.code"
+            :class="['uc-kpi-ops__campus-tile', 'is-' + u.status]"
+          >
+            <div class="uc-kpi-ops__campus-tile-h">
+              <div class="uc-kpi-ops__campus-tile-name">
+                <svg class="uc-kpi-ops__hb" viewBox="0 0 12 12">
+                  <circle cx="6" cy="6" r="5" class="hb-o" />
+                  <circle v-if="u.confidence === 'full'" cx="6" cy="6" r="5" class="hb-f" />
+                  <path v-else-if="u.confidence === 'half'" d="M6,1 A5,5 0 0 1 6,11 Z" class="hb-f" />
+                </svg>
+                {{ u.name }}
+              </div>
+              <span :class="['uc-kpi-ops__campus-tile-st', 'is-' + u.status]">{{ u.statusText }}</span>
+            </div>
+
+            <div class="uc-kpi-ops__campus-tile-nums">
+              <div class="uc-kpi-ops__campus-tile-cur">{{ formatNumber(u.current) }} <small style="font-size:11px;font-weight:400;color:#64748b;">HS</small></div>
+              <div class="uc-kpi-ops__campus-tile-tar">KH: {{ formatNumber(u.target) }} ({{ ((u.current / u.target) * 100).toFixed(1) }}%)</div>
+            </div>
+
+            <!-- Bullet Meter: Công suất lấp đầy -->
+            <div class="uc-kpi-ops__bullet-meter" :title="'Lấp đầy: ' + u.occupancy + '%'">
+              <div
+                :class="['uc-kpi-ops__bullet-meter-fill', 'is-' + u.status]"
+                :style="{ width: Math.min(100, u.occupancy) + '%' }"
+              ></div>
+              <div class="uc-kpi-ops__bullet-meter-target" style="left: 95%;" title="Ngưỡng chuẩn 95%"></div>
+            </div>
+
+            <div class="uc-kpi-ops__campus-tile-meta">
+              <div>Rút học<b>{{ u.withdraw }} HS</b><small>{{ u.withdrawRate }}%</small></div>
+              <div>Nghỉ phép<b>{{ u.leaveDays }}</b><small>ngày công</small></div>
+              <div>Tồn CSVC<b :class="u.maintenancePending > 0 ? 'tx-warn' : ''">{{ u.maintenancePending }}</b><small>ticket</small></div>
+            </div>
           </div>
         </div>
 
-        <!-- Trụ cột 3: Vận hành Dịch vụ & Trải nghiệm -->
-        <div class="uc-kpi-ops__pillar-card" @click="page = 3">
-          <div class="uc-kpi-ops__pillar-h">
-            <span>3. Vận hành &amp; Dịch vụ</span>
-            <span class="uc-kpi-ops__pillar-pill is-ok">0 SỰ CỐ</span>
+        <!-- Dải Phân Bổ Tỷ Trọng Rút Học & Dải Tải Trọng Vận Hành -->
+        <div class="uc-kpi-ops__split-grid">
+          <!-- Phân bổ lý do rút học -->
+          <div class="uc-kpi-ops__dist-box">
+            <div class="d-flex justify-space-between align-center">
+              <span style="font-size:12.5px;font-weight:700;color:var(--accent2);">Cơ Cấu Lý Do Rút Học Lũy Kế (53 Học Sinh)</span>
+              <span style="font-size:11px;color:#64748b;">Nguồn Fact Store SIS eSign</span>
+            </div>
+            <!-- Stacked Distribution Bar -->
+            <div class="uc-kpi-ops__dist-bar">
+              <div class="uc-kpi-ops__dist-seg seg-bus" style="width: 39.62%;" title="Nơi ở / Xe bus: 21 HS (39.6%)"></div>
+              <div class="uc-kpi-ops__dist-seg seg-other" style="width: 26.42%;" title="Khác: 14 HS (26.4%)"></div>
+              <div class="uc-kpi-ops__dist-seg seg-eco" style="width: 18.87%;" title="Kinh tế: 10 HS (18.9%)"></div>
+              <div class="uc-kpi-ops__dist-seg seg-ill" style="width: 13.21%;" title="Bệnh tật: 7 HS (13.2%)"></div>
+              <div class="uc-kpi-ops__dist-seg seg-abroad" style="width: 1.89%;" title="Du học: 1 HS (1.9%)"></div>
+            </div>
+            <div class="uc-kpi-ops__dist-legend">
+              <span class="uc-kpi-ops__dist-legend-item">
+                <i class="uc-kpi-ops__dist-legend-dot" style="background:#d13438;"></i>
+                <b>Xe bus / Đi lại: 21 HS (39.6%)</b>
+              </span>
+              <span class="uc-kpi-ops__dist-legend-item">
+                <i class="uc-kpi-ops__dist-legend-dot" style="background:#605e5c;"></i>
+                Khác: 14 HS (26.4%)
+              </span>
+              <span class="uc-kpi-ops__dist-legend-item">
+                <i class="uc-kpi-ops__dist-legend-dot" style="background:#d9822b;"></i>
+                Kinh tế: 10 HS (18.9%)
+              </span>
+              <span class="uc-kpi-ops__dist-legend-item">
+                <i class="uc-kpi-ops__dist-legend-dot" style="background:#3A6EA5;"></i>
+                Bệnh tật: 7 HS (13.2%)
+              </span>
+              <span class="uc-kpi-ops__dist-legend-item">
+                <i class="uc-kpi-ops__dist-legend-dot" style="background:#107c41;"></i>
+                Du học: 1 HS (1.9%)
+              </span>
+            </div>
           </div>
-          <div class="uc-kpi-ops__pillar-b">
-            96.8% <small>Khám SK định kỳ</small>
-          </div>
-          <div class="uc-kpi-ops__pillar-bar">
-            <div class="uc-kpi-ops__pillar-bar-fill" style="width: 96.8%;"></div>
-          </div>
-          <div class="uc-kpi-ops__pillar-f">
-            23 chỉ tiêu (VH28–VH50) · 0 sự cố ATTP &amp; y tế · Hài lòng chung 93.6%
-          </div>
-        </div>
 
-        <!-- Trụ cột 4: Tài chính & Tăng trưởng Bền vững -->
-        <div class="uc-kpi-ops__pillar-card" @click="page = 5">
-          <div class="uc-kpi-ops__pillar-h">
-            <span>4. Tài chính Dịch vụ</span>
-            <span class="uc-kpi-ops__pillar-pill is-ok">LN {{ computedFinanceData.grossMargin }}</span>
-          </div>
-          <div class="uc-kpi-ops__pillar-b">
-            {{ computedFinanceData.rev }} <small>Doanh thu dịch vụ</small>
-          </div>
-          <div class="uc-kpi-ops__pillar-bar">
-            <div class="uc-kpi-ops__pillar-bar-fill" style="width: 96.8%;"></div>
-          </div>
-          <div class="uc-kpi-ops__pillar-f">
-            10 chỉ tiêu (TC51–TC60) · CLB {{ computedFinanceData.clbRev }} · Bán trú LN 48.5%
+          <!-- Áp lực Nghỉ phép & Phụ Bếp Bán Trú -->
+          <div class="uc-kpi-ops__dist-box">
+            <div class="d-flex justify-space-between align-center">
+              <span style="font-size:12.5px;font-weight:700;color:var(--accent2);">Tải Trọng Nghỉ Phép &amp; Áp Lực Bán Trú</span>
+              <span style="font-size:11px;color:#d9822b;font-weight:600;">551 ngày công nghỉ (198 NV)</span>
+            </div>
+            <div style="font-size:11.5px;color:#334155;margin:6px 0;line-height:1.4;">
+              Áp lực cao nhất tại <b>Mầm non (82.5 ngày)</b>, <b>Long Khánh (68 ngày)</b> và <b>Bộ phận Bếp (54 ngày)</b>. Cần bổ sung phụ bếp dự phòng tránh ảnh hưởng chất lượng bán trú.
+            </div>
+            <div class="d-flex gap-2 mt-2 pt-1 border-top" style="font-size:11px;border-color:#f1f5f9 !important;">
+              <span class="p-1 px-2 rounded" style="background:#fef2f2;color:#991b1b;font-weight:600;">Bếp: 54 ngày</span>
+              <span class="p-1 px-2 rounded" style="background:#fef3c7;color:#92400e;font-weight:600;">Mầm non: 82.5 ngày</span>
+              <span class="p-1 px-2 rounded" style="background:#f1f5f9;color:#475569;">Bảo trì: 4 ticket máy lạnh tồn</span>
+              <button
+                type="button"
+                class="uc-kpi-ops__simbtn ml-auto"
+                style="padding:1px 8px;font-size:10.5px;"
+                @click="executiveTab = 'FACTS'; fetchOperationalFacts('LEAVE')"
+              >Xem 470 đơn nghỉ phép &rsaquo;</button>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Bảng Điểm Nghẽn Vận Hành & Trách Nhiệm Giải Trình (Active Operational Bottlenecks & Escalation Matrix) -->
-      <div class="uc-kpi-ops__escalation">
-        <div class="uc-kpi-ops__escalation-h">
-          <div class="uc-kpi-ops__escalation-title">
-            <span>⚠️ Ma Trận Điểm Nghẽn Vận Hành &amp; Trách Nhiệm Giải Trình (Executive Bottlenecks)</span>
-            <span class="uc-kpi-ops__escalation-badge">{{ activeBottlenecks.length }} Điểm Cần Xử Lý</span>
+      <!-- ================= SUB-TAB 5: DỰ BÁO & RADAR RỦI RO THÁNG 10 (RISK RADAR) ================= -->
+      <div v-if="executiveTab === 'RISK'" class="uc-kpi-ops__risk-container">
+        <!-- Hero Summary Box -->
+        <div class="uc-kpi-ops__risk-hero">
+          <div>
+            <div class="uc-kpi-ops__risk-hero-title">BÁO ĐỘNG SỚM RỦI RO ĐIỀU HÀNH THÁNG 10 · HỘI ĐỒNG QUẢN TRỊ</div>
+            <div class="uc-kpi-ops__risk-hero-desc">
+              Phân tích chỉ báo sớm (Leading Risk Indicators) dựa trên 993 giao dịch gốc Tháng 9 (131 ca y tế, 79 ticket bảo trì CSVC, 551 ngày nghỉ công, 21 ca rút vì xa nhà). Phát hiện <b>1 Cơ sở thuộc Vùng Đỏ Nguy Cơ Cao (MN Long Khánh)</b> và <b>2 Cơ sở Vùng Cảnh Báo (Tiểu học, THPT)</b>.
+            </div>
           </div>
-          <div class="uc-kpi-ops__escalation-sub">
-            Trích xuất trực tiếp từ CSDL eSign theo bộ lọc cơ sở · Báo cáo nóng trước Ban Điều Hành &amp; HĐQT
+          <div class="uc-kpi-ops__risk-hero-stat">
+            <div class="uc-kpi-ops__risk-stat-item">
+              <div class="uc-kpi-ops__risk-stat-val">10 - 18 HS</div>
+              <div class="uc-kpi-ops__risk-stat-lbl">Dự báo nguy cơ rút T10</div>
+            </div>
+            <div class="uc-kpi-ops__risk-stat-item">
+              <div class="uc-kpi-ops__risk-stat-val">650M - 1.17B</div>
+              <div class="uc-kpi-ops__risk-stat-lbl">Thất thu học phí tiềm ẩn</div>
+            </div>
+            <div class="uc-kpi-ops__risk-stat-item">
+              <button
+                type="button"
+                class="uc-kpi-ops__simbtn"
+                style="background:#1B365D;color:#ffffff;border-color:#1B365D;font-weight:700;"
+                @click="openRoiModal('BUS')"
+              >
+                Mô phỏng ROI Can thiệp &rsaquo;
+              </button>
+            </div>
           </div>
         </div>
 
-        <table class="uc-kpi-ops__escalation-table">
-          <thead>
-            <tr>
-              <th style="width: 140px;">Chỉ Tiêu / Mã</th>
-              <th style="width: 110px;">Thực Hiện / Ngưỡng</th>
-              <th style="width: 100px;">Trạng Thái</th>
-              <th>Vấn Đề Vận Hành &amp; Tác Động Tài Chính</th>
-              <th style="width: 180px;">Đầu Mối Chịu Trách Nhiệm</th>
-              <th style="width: 200px;">Nguồn Dữ Liệu Go-Live</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="b in activeBottlenecks" :key="b.KpiCode || b.SnapshotID">
-              <td>
-                <div style="font-weight: 700; color: #0f172a;">{{ b.KpiName || b.KpiCode }}</div>
-                <div style="font-size: 11px; color: #64748b;">Mã: <code>{{ b.KpiCode }}</code></div>
-              </td>
-              <td>
-                <div style="font-weight: 700; font-size: 13px; color: #0f172a;">
-                  {{ formatNumber(b.ActualValue) }} {{ b.Unit || '' }}
+        <!-- 5 Campus Risk Cards Grid -->
+        <div class="uc-kpi-ops__risk-cards-grid">
+          <!-- Card 1: MN Long Khánh (VÙNG ĐỎ) -->
+          <div class="uc-kpi-ops__risk-card level-red">
+            <div>
+              <div class="uc-kpi-ops__risk-card-head">
+                <div>
+                  <div class="uc-kpi-ops__risk-campus-name">Mầm non Long Khánh</div>
+                  <div class="uc-kpi-ops__risk-campus-sub">Sĩ số: 129 / 166 (77.7%)</div>
                 </div>
-                <div style="font-size: 11px; color: #64748b;">
-                  Mục tiêu: {{ formatNumber(b.TargetValue) }} {{ b.Unit || '' }}
-                  <span v-if="b.Rate != null" style="font-weight: 600; color: #b45309; margin-left: 2px;">
-                    · Đạt {{ b.Rate }}%
-                  </span>
+                <span class="uc-kpi-ops__risk-score-badge">78đ · VÙNG ĐỎ</span>
+              </div>
+              <div class="uc-kpi-ops__risk-forecast-box">
+                <div class="uc-kpi-ops__risk-forecast-row">
+                  <span>Dự báo rút T10:</span>
+                  <span class="uc-kpi-ops__risk-forecast-val">5 - 8 học sinh</span>
                 </div>
-              </td>
-              <td>
-                <span :class="['uc-kpi-ops__status-pill', b.Status === 'DANGER' || b.Status === 'BAD' ? 'is-danger' : 'is-warn']">
-                  {{ b.Status === 'DANGER' || b.Status === 'BAD' ? 'NGUY HIỂM' : 'CẢNH BÁO' }}
+                <div class="uc-kpi-ops__risk-forecast-row">
+                  <span>Học phí rủi ro:</span>
+                  <span class="uc-kpi-ops__risk-forecast-val">326M - 521M</span>
+                </div>
+              </div>
+              <div class="uc-kpi-ops__risk-axes">
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Áp lực xa nhà / Xe bus</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:85%;background:#d13438;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>CSVC máy lạnh &amp; thang máy</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:80%;background:#d13438;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Y tế &amp; sức khỏe mầm non</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:65%;background:#d9822b;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Nghỉ phép GV (68 ngày)</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:75%;background:#d13438;"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="uc-kpi-ops__risk-card-action">
+              <b>Chỉ đạo HĐQT:</b> Mở ngay tuyến bus 16 chỗ đón học sinh trục Long Khánh; cử 1 GV cơ động chi viện; kiểm toán chốt số 129 vs 122 HS.
+            </div>
+          </div>
+
+          <!-- Card 2: Tiểu Học (VÙNG VÀNG) -->
+          <div class="uc-kpi-ops__risk-card level-yellow">
+            <div>
+              <div class="uc-kpi-ops__risk-card-head">
+                <div>
+                  <div class="uc-kpi-ops__risk-campus-name">Tiểu Học</div>
+                  <div class="uc-kpi-ops__risk-campus-sub">Sĩ số: 1.185 / 1.250 (94.8%)</div>
+                </div>
+                <span class="uc-kpi-ops__risk-score-badge">62đ · CẢNH BÁO</span>
+              </div>
+              <div class="uc-kpi-ops__risk-forecast-box">
+                <div class="uc-kpi-ops__risk-forecast-row">
+                  <span>Dự báo rút T10:</span>
+                  <span class="uc-kpi-ops__risk-forecast-val">3 - 5 học sinh</span>
+                </div>
+                <div class="uc-kpi-ops__risk-forecast-row">
+                  <span>Học phí rủi ro:</span>
+                  <span class="uc-kpi-ops__risk-forecast-val">195M - 326M</span>
+                </div>
+              </div>
+              <div class="uc-kpi-ops__risk-axes">
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Dịch Cúm A &amp; 53 ca sốt</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:85%;background:#d13438;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Tồn đọng máy lạnh Khu B</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:55%;background:#d9822b;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Tuyến xe bus Trảng Dài</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:60%;background:#d9822b;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Áp lực dạy thay 288 tiết</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:60%;background:#d9822b;"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="uc-kpi-ops__risk-card-action">
+              <b>Chỉ đạo HĐQT:</b> Khử khuẩn Cloramin B toàn bộ khối 4-5 cuối tuần; xử lý dứt điểm 4 máy lạnh Khu B trong 48h; tổ chức phụ đạo HS nghỉ ốm.
+            </div>
+          </div>
+
+          <!-- Card 3: THPT (VÙNG VÀNG) -->
+          <div class="uc-kpi-ops__risk-card level-yellow">
+            <div>
+              <div class="uc-kpi-ops__risk-card-head">
+                <div>
+                  <div class="uc-kpi-ops__risk-campus-name">THPT</div>
+                  <div class="uc-kpi-ops__risk-campus-sub">Sĩ số: 485 / 550 (88.2%)</div>
+                </div>
+                <span class="uc-kpi-ops__risk-score-badge">55đ · CẢNH BÁO</span>
+              </div>
+              <div class="uc-kpi-ops__risk-forecast-box">
+                <div class="uc-kpi-ops__risk-forecast-row">
+                  <span>Dự báo rút T10:</span>
+                  <span class="uc-kpi-ops__risk-forecast-val">2 - 4 học sinh</span>
+                </div>
+                <div class="uc-kpi-ops__risk-forecast-row">
+                  <span>Học phí rủi ro:</span>
+                  <span class="uc-kpi-ops__risk-forecast-val">140M - 280M</span>
+                </div>
+              </div>
+              <div class="uc-kpi-ops__risk-axes">
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Cạnh tranh trường công</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:70%;background:#d9822b;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Học sinh ở xa (Trảng Dài)</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:70%;background:#d9822b;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Tiện nghi phòng học</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:45%;background:#1a9e4b;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Y tế học đường</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:40%;background:#1a9e4b;"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="uc-kpi-ops__risk-card-action">
+              <b>Chỉ đạo HĐQT:</b> Triển khai học bổng tài năng lớp 10; khảo sát ghép tuyến bus đi học chung; hỗ trợ ôn tập kỳ kiểm tra giữa kỳ.
+            </div>
+          </div>
+
+          <!-- Card 4: THCS (VÙNG XANH) -->
+          <div class="uc-kpi-ops__risk-card level-green">
+            <div>
+              <div class="uc-kpi-ops__risk-card-head">
+                <div>
+                  <div class="uc-kpi-ops__risk-campus-name">THCS</div>
+                  <div class="uc-kpi-ops__risk-campus-sub">Sĩ số: 520 / 537 (96.8%)</div>
+                </div>
+                <span class="uc-kpi-ops__risk-score-badge">38đ · AN TOÀN</span>
+              </div>
+              <div class="uc-kpi-ops__risk-forecast-box">
+                <div class="uc-kpi-ops__risk-forecast-row">
+                  <span>Dự báo rút T10:</span>
+                  <span class="uc-kpi-ops__risk-forecast-val">0 - 1 học sinh</span>
+                </div>
+                <div class="uc-kpi-ops__risk-forecast-row">
+                  <span>Học phí rủi ro:</span>
+                  <span class="uc-kpi-ops__risk-forecast-val">0 - 70M</span>
+                </div>
+              </div>
+              <div class="uc-kpi-ops__risk-axes">
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Phong trào CLB ngoại khóa</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:85%;background:#1a9e4b;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>CSVC &amp; Phòng chức năng</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:35%;background:#1a9e4b;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Nề nếp học tập</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:30%;background:#1a9e4b;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Vấn đề xe bus</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:40%;background:#1a9e4b;"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="uc-kpi-ops__risk-card-action">
+              <b>Chỉ đạo HĐQT:</b> Duy trì chất lượng giảng dạy; mở rộng CLB STEM Robotics; chuẩn bị kế hoạch liên thông tuyển sinh lên lớp 10 sớm.
+            </div>
+          </div>
+
+          <!-- Card 5: MN Tân Biên (VÙNG XANH) -->
+          <div class="uc-kpi-ops__risk-card level-green">
+            <div>
+              <div class="uc-kpi-ops__risk-card-head">
+                <div>
+                  <div class="uc-kpi-ops__risk-campus-name">Mầm non Tân Biên</div>
+                  <div class="uc-kpi-ops__risk-campus-sub">Sĩ số: 306 / 320 (95.6%)</div>
+                </div>
+                <span class="uc-kpi-ops__risk-score-badge">25đ · AN TOÀN</span>
+              </div>
+              <div class="uc-kpi-ops__risk-forecast-box">
+                <div class="uc-kpi-ops__risk-forecast-row">
+                  <span>Dự báo rút T10:</span>
+                  <span class="uc-kpi-ops__risk-forecast-val">0 - 1 học sinh</span>
+                </div>
+                <div class="uc-kpi-ops__risk-forecast-row">
+                  <span>Học phí rủi ro:</span>
+                  <span class="uc-kpi-ops__risk-forecast-val">0 - 55M</span>
+                </div>
+              </div>
+              <div class="uc-kpi-ops__risk-axes">
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Tỷ lệ tái ghi danh 94.6%</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:95%;background:#1a9e4b;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>An toàn thực phẩm &amp; bếp</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:20%;background:#1a9e4b;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Tiện nghi &amp; Đồ dùng đồ chơi</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:30%;background:#1a9e4b;"></div></div>
+                </div>
+                <div class="uc-kpi-ops__risk-axis-item">
+                  <span>Đội ngũ giáo viên ổn định</span>
+                  <div class="uc-kpi-ops__risk-axis-bar-bg"><div class="uc-kpi-ops__risk-axis-bar-fill" style="width:25%;background:#1a9e4b;"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="uc-kpi-ops__risk-card-action">
+              <b>Chỉ đạo HĐQT:</b> Đánh giá mô hình điểm để nhân rộng sang MN Long Khánh; duy trì nghiêm ngặt tiêu chuẩn an toàn ISO 22000.
+            </div>
+          </div>
+        </div>
+
+        <!-- Detail Split: Matrix & Checklist -->
+        <div class="uc-kpi-ops__risk-detail-split">
+          <!-- Left: 4-Axis Matrix Analysis -->
+          <div class="uc-kpi-ops__risk-matrix-box">
+            <div class="uc-kpi-ops__risk-subhead">
+              <span>Ma Trận 4 Chiều Ngòi Nổ Rủi Ro Vận Hành (Risk Triggers)</span>
+              <span style="font-size:11px;color:var(--ink3);">Dựa trên Fact Store Tháng 9</span>
+            </div>
+            <table class="uc-kpi-ops__checklist-table">
+              <thead>
+                <tr>
+                  <th style="width:20%;">Trục Rủi Ro</th>
+                  <th style="width:32%;">Ngòi Nổ Dữ Liệu T9</th>
+                  <th style="width:30%;">Chỉ Báo Nguy Cơ T10</th>
+                  <th style="width:18%;">Trọng Điểm</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>1. Tuyến Bus &amp; Địa bàn</b></td>
+                  <td>21 HS rút học vì xa nhà (chiếm 39.6% tổng số ca rút). Biên LN bus 12.6%.</td>
+                  <td>PH các trục Trảng Dài, Tân Phong, Long Khánh bức xúc thời gian đưa đón.</td>
+                  <td><span class="uc-kpi-ops__checklist-status-badge is-urgent">MNLK, THPT</span></td>
+                </tr>
+                <tr>
+                  <td><b>2. CSVC &amp; Máy lạnh</b></td>
+                  <td>18 ticket máy lạnh (tồn 4 ticket Khu B/C). Thang máy MNLK vừa bảo dưỡng.</td>
+                  <td>Thời tiết nắng nóng đầu tháng 10 dễ gây phàn nàn và suy giảm trải nghiệm học tập.</td>
+                  <td><span class="uc-kpi-ops__checklist-status-badge is-urgent">MNLK, TH</span></td>
+                </tr>
+                <tr>
+                  <td><b>3. Y tế &amp; Dịch bệnh</b></td>
+                  <td>131 ca y tế (53 ca sốt, Cúm A bùng phát khối 4-5 Tiểu học).</td>
+                  <td>Nguy cơ lây nhiễm chéo diện rộng dẫn đến vắng học kéo dài và tâm lý bất an.</td>
+                  <td><span class="uc-kpi-ops__checklist-status-badge is-action">Tiểu Học</span></td>
+                </tr>
+                <tr>
+                  <td><b>4. Tải trọng Giáo viên</b></td>
+                  <td>470 đơn nghỉ phép (551 ngày), 288 tiết dạy thay, 54 ngày nghỉ nhân viên bếp.</td>
+                  <td>Chất lượng giờ dạy thay giảm; áp lực phụ bếp giờ cao điểm đe dọa an toàn bữa ăn.</td>
+                  <td><span class="uc-kpi-ops__checklist-status-badge is-action">Mầm non, TH</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Right: Preventive Checklist -->
+          <div class="uc-kpi-ops__risk-checklist-box">
+            <div class="uc-kpi-ops__risk-subhead">
+              <span>Checklist Chỉ Đạo Can Thiệp Khẩn Cấp Của HĐQT</span>
+              <span style="font-size:11px;color:#d13438;font-weight:700;">Hạn chót: 05/10/2026</span>
+            </div>
+            <table class="uc-kpi-ops__checklist-table">
+              <thead>
+                <tr>
+                  <th>Nội dung chỉ đạo phòng ngừa</th>
+                  <th>Người phụ trách</th>
+                  <th>Hạn chót</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <b>Phê duyệt mở tuyến bus Trảng Dài &amp; Long Khánh</b>
+                    <div style="font-size:10.5px;color:var(--ink3);">Thuê 2 xe đón học sinh xa nhà, ngăn 21 ca rút học</div>
+                  </td>
+                  <td>GĐ Vận Hành</td>
+                  <td><span style="color:#d13438;font-weight:700;">02/10</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <b>Bảo dưỡng 10 máy lạnh Khu B &amp; MN Long Khánh</b>
+                    <div style="font-size:10.5px;color:var(--ink3);">Ký hợp đồng bảo dưỡng phòng ngừa SLA 24h</div>
+                  </td>
+                  <td>Trưởng CSVC</td>
+                  <td><span style="color:#d13438;font-weight:700;">03/10</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <b>Phun khử khuẩn Cloramin B khối 4 và 5 Tiểu học</b>
+                    <div style="font-size:10.5px;color:var(--ink3);">Dập dịch Cúm A, hướng dẫn PH cách ly y tế</div>
+                  </td>
+                  <td>Y tế trường</td>
+                  <td><span style="color:#d9822b;font-weight:700;">04/10</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <b>Đối soát dứt điểm sĩ số MNLK (129 vs 122 HS)</b>
+                    <div style="font-size:10.5px;color:var(--ink3);">Xử lý vênh kiểm toán MISMATCH_02 và tỷ lệ rút 61%</div>
+                  </td>
+                  <td>Ban Kiểm Soát</td>
+                  <td><span style="color:#d9822b;font-weight:700;">05/10</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= SUB-TAB 2: KIỂM TOÁN & ĐIỂM VÊNH BÁO CÁO (AUDIT) ================= -->
+      <div v-if="executiveTab === 'AUDIT'">
+        <div class="uc-kpi-ops__audit-box">
+          <div class="uc-kpi-ops__audit-head">
+            <div class="uc-kpi-ops__audit-title">
+              <span>Trung Tâm Kiểm Toán Số Liệu &amp; Điểm Vênh Báo Cáo (Audit Discrepancies)</span>
+              <span class="uc-kpi-ops__audit-badge">{{ auditDiscrepanciesList.length }} Điểm Cần Đối Soát</span>
+            </div>
+            <div style="font-size:12px;color:var(--ink2);display:flex;gap:12px;align-items:center;">
+              <span><svg class="uc-kpi-ops__hb" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" class="hb-o" /><circle cx="6" cy="6" r="5" class="hb-f" /></svg> Đã đối soát xác minh</span>
+              <span><svg class="uc-kpi-ops__hb" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" class="hb-o" /><path d="M6,1 A5,5 0 0 1 6,11 Z" class="hb-f" /></svg> Báo cáo nội bộ (chờ duyệt)</span>
+              <span><svg class="uc-kpi-ops__hb" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" class="hb-o" /></svg> Cần phúc tra khẩn cấp</span>
+            </div>
+          </div>
+
+          <div class="uc-kpi-ops__audit-grid">
+            <div
+              v-for="item in (auditDiscrepanciesList.length ? auditDiscrepanciesList : defaultAuditDiscrepancies)"
+              :key="item.AuditCode || item.DiscrepancyID"
+              :class="['uc-kpi-ops__audit-card', item.Category === 'MISMATCH' ? 'is-critical' : '']"
+            >
+              <div class="uc-kpi-ops__audit-card-top">
+                <span class="uc-kpi-ops__audit-card-code">{{ item.AuditCode }} · Cơ sở: {{ item.ScopeID || 'ALL' }}</span>
+                <span :class="['uc-kpi-ops__status-pill', item.Category === 'MISMATCH' ? 'is-danger' : 'is-warn']">
+                  {{ item.VerificationStatus || 'PENDING_VERIFY' }}
                 </span>
-              </td>
-              <td>
-                <div style="margin-bottom: 4px;">{{ b.OperationalInsight || 'Cần theo dõi sát tiến độ hoàn thành theo kế hoạch.' }}</div>
-                <div v-if="b.FinancialImpact" style="font-size: 11px; color: #b91c1c; font-weight: 600;">
-                  💰 Tác động tài chính: {{ b.FinancialImpact }}
+              </div>
+              <div class="uc-kpi-ops__audit-card-name">
+                <svg class="uc-kpi-ops__hb" viewBox="0 0 12 12">
+                  <circle cx="6" cy="6" r="5" class="hb-o" />
+                  <path v-if="item.Category === 'MISMATCH'" d="M6,1 A5,5 0 0 1 6,11 Z" class="hb-f" />
+                  <circle v-else cx="6" cy="6" r="5" class="hb-f" />
+                </svg>
+                {{ item.Title }}
+              </div>
+
+              <!-- Đối chiếu 2 nguồn dữ liệu -->
+              <div class="uc-kpi-ops__audit-compare">
+                <div class="uc-kpi-ops__audit-compare-side">
+                  <span style="color:#64748b;">Nguồn A (Vận hành):</span>
+                  <b>{{ item.PrimaryValue }}</b>
+                  <small style="display:block;font-size:10px;color:#94a3b8;">{{ item.PrimarySource }}</small>
                 </div>
-              </td>
-              <td>
-                <div style="font-weight: 600; color: #334155;">{{ getKpiOwner(b) }}</div>
-                <div style="font-size: 11px; color: #64748b;">Báo cáo trước HĐQT kỳ tới</div>
-              </td>
-              <td>
-                <div style="display: flex; flex-direction: column; gap: 4px;">
-                  <span style="font-weight: 600; font-size: 11px; color: #0284c7;">{{ b.SourceSystem || 'Hệ thống basicdata.lhbs.vn' }}</span>
-                  <button
-                    type="button"
-                    class="uc-kpi-ops__simbtn"
-                    style="font-size: 10.5px; padding: 2px 8px; width: fit-content;"
-                    @click="openGoliveSpecs(b.SpecCode || 'SPEC_BASICDATA')"
-                  >
-                    Đặc tả API Go-Live &rsaquo;
-                  </button>
+                <div class="uc-kpi-ops__audit-compare-side" style="border-left:1px solid #e2e8f0;padding-left:8px;">
+                  <span style="color:#64748b;">Nguồn B (Tổng kết / Ban khác):</span>
+                  <b class="tx-bad">{{ item.SecondaryValue }}</b>
+                  <small style="display:block;font-size:10px;color:#94a3b8;">{{ item.SecondarySource }}</small>
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </div>
+
+              <div class="uc-kpi-ops__audit-desc">
+                {{ item.VarianceAnalysis }}
+              </div>
+
+              <div class="uc-kpi-ops__audit-action">
+                <b>Chỉ đạo BGH:</b> {{ item.ResolutionDirective || 'Thống nhất định nghĩa công thức và kỳ chốt trước kỳ họp HĐQT.' }}
+              </div>
+
+              <div class="uc-kpi-ops__audit-owner">
+                <span>Đầu mối: <b>{{ item.ActionOwner }}</b></span>
+                <button
+                  type="button"
+                  class="uc-kpi-ops__simbtn"
+                  style="padding:1px 6px;font-size:10.5px;"
+                  @click="executiveTab = 'FACTS'; fetchOperationalFacts('LEAVE')"
+                >Đối soát Fact Store &rsaquo;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= SUB-TAB 3: CHUỖI NHÂN QUẢ & ĐIỂM NGHẼN (CAUSAL) ================= -->
+      <div v-if="executiveTab === 'CAUSAL'">
+        <!-- Danh mục 10 Chuỗi & 15 Liên Kết Nhân Quả -->
+        <div class="uc-kpi-ops__visual mb-2" style="background:#fff;border:1px solid var(--line);padding:12px 16px;">
+          <div class="d-flex justify-space-between align-center flex-wrap gap-2 mb-2">
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--accent2);">
+                Hệ Thống 10 Chuỗi &amp; 15 Mắt Xích Nhân Quả Toàn Trường (Tháng 9/2026)
+              </div>
+              <div style="font-size:11px;color:#64748b;">
+                Mô hình hóa nhân quả 1 chiều, 2 chiều (vòng lặp phản hồi dương/âm) và cross-domain bám sát tài liệu vận hành
+              </div>
+            </div>
+            <div class="uc-kpi-ops__filter-tags">
+              <button
+                type="button"
+                :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'ALL' }]"
+                @click="causalChainFilter = 'ALL'"
+              >Tất cả ({{ correlationsList.length || 15 }})</button>
+              <button
+                type="button"
+                :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'LINEAR' }]"
+                @click="causalChainFilter = 'LINEAR'"
+              >1 Chiều Tuyến Tính (7)</button>
+              <button
+                type="button"
+                :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'FEEDBACK' }]"
+                @click="causalChainFilter = 'FEEDBACK'"
+              >2 Chiều Feedback Loops (4)</button>
+              <button
+                type="button"
+                :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'PARADOX' }]"
+                @click="causalChainFilter = 'PARADOX'"
+              >Nghịch Lý &amp; Điểm Nghẽn (4)</button>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column gap-2">
+            <div
+              v-for="c in filteredCorrelationsList"
+              :key="c.CorrelationID"
+              class="p-2 border rounded"
+              style="background:#fcfdfd;border-color:#e2e8f0 !important;"
+            >
+              <div class="d-flex align-center justify-space-between mb-1">
+                <span style="font-size:12px;font-weight:700;color:var(--accent2);">{{ c.ChainGroup }}</span>
+                <span
+                  v-if="c.RelationshipType.startsWith('POSITIVE_FEEDBACK')"
+                  class="uc-kpi-ops__chain-tag tag-feedback-pos"
+                >Vòng lặp (+) Bổ trợ</span>
+                <span
+                  v-else-if="c.RelationshipType.startsWith('NEGATIVE_FEEDBACK')"
+                  class="uc-kpi-ops__chain-tag tag-feedback-neg"
+                >Vòng lặp (-) Suy thoái</span>
+                <span
+                  v-else-if="c.RelationshipType.startsWith('COST_PARADOX') || c.RelationshipType.includes('PARADOX')"
+                  class="uc-kpi-ops__chain-tag tag-paradox"
+                >Nghịch lý / Điểm nghẽn</span>
+                <span
+                  v-else
+                  class="uc-kpi-ops__chain-tag tag-linear"
+                >1 Chiều Tuyến tính</span>
+              </div>
+
+              <div style="font-size:12px;color:#0f172a;font-weight:600;margin-bottom:3px;">
+                <code>{{ c.CauseKpiCode }}</code> {{ c.CauseKpiName }} &rarr; <code>{{ c.EffectKpiCode }}</code> {{ c.EffectKpiName }}
+              </div>
+
+              <div style="font-size:11.5px;color:#334155;line-height:1.4;margin-bottom:4px;">
+                {{ c.Description }}
+              </div>
+
+              <div class="d-flex justify-space-between align-center flex-wrap gap-2 pt-1 border-top" style="font-size:11px;border-color:#f1f5f9 !important;">
+                <span class="tx-bad" style="font-weight:600;">Tác động: {{ c.QuantifiedImpact }}</span>
+                <span style="color:#0369a1;">Hành động: {{ c.RecommendedAction }}</span>
+                <span style="color:#64748b;">Đầu mối: <b>{{ c.ResponsibleRole }}</b></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bảng Điểm Nghẽn Vận Hành -->
+        <div class="uc-kpi-ops__escalation">
+          <div class="uc-kpi-ops__escalation-h">
+            <div class="uc-kpi-ops__escalation-title">
+              <span>Điểm Nghẽn Vận Hành &amp; Trách Nhiệm Giải Trình (Executive Bottlenecks)</span>
+              <span class="uc-kpi-ops__escalation-badge">{{ activeBottlenecks.length }} Điểm Cần Xử Lý</span>
+            </div>
+            <div class="uc-kpi-ops__escalation-sub">
+              Trích xuất trực tiếp từ CSDL eSign theo bộ lọc cơ sở · Báo cáo nóng trước Ban Điều Hành &amp; HĐQT
+            </div>
+          </div>
+
+          <table class="uc-kpi-ops__escalation-table">
+            <thead>
+              <tr>
+                <th style="width: 140px;">Chỉ Tiêu / Mã</th>
+                <th style="width: 110px;">Thực Hiện / Ngưỡng</th>
+                <th style="width: 100px;">Trạng Thái</th>
+                <th>Vấn Đề Vận Hành &amp; Tác Động Tài Chính</th>
+                <th style="width: 180px;">Đầu Mối Chịu Trách Nhiệm</th>
+                <th style="width: 200px;">Nguồn Dữ Liệu Go-Live</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="b in activeBottlenecks" :key="b.KpiCode || b.SnapshotID">
+                <td>
+                  <div style="font-weight: 700; color: #0f172a;">{{ b.KpiName || b.KpiCode }}</div>
+                  <div style="font-size: 11px; color: #64748b;">Mã: <code>{{ b.KpiCode }}</code></div>
+                </td>
+                <td>
+                  <div style="font-weight: 700; font-size: 13px; color: #0f172a;">
+                    {{ formatNumber(b.ActualValue) }} {{ b.Unit || '' }}
+                  </div>
+                  <div style="font-size: 11px; color: #64748b;">
+                    Mục tiêu: {{ formatNumber(b.TargetValue) }} {{ b.Unit || '' }}
+                    <span v-if="b.Rate != null" style="font-weight: 600; color: #b45309; margin-left: 2px;">
+                      · Đạt {{ b.Rate }}%
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <span :class="['uc-kpi-ops__status-pill', b.Status === 'DANGER' || b.Status === 'BAD' ? 'is-danger' : 'is-warn']">
+                    {{ b.Status === 'DANGER' || b.Status === 'BAD' ? 'NGUY HIỂM' : 'CẢNH BÁO' }}
+                  </span>
+                </td>
+                <td>
+                  <div style="margin-bottom: 4px;">{{ b.OperationalInsight || 'Cần theo dõi sát tiến độ hoàn thành theo kế hoạch.' }}</div>
+                  <div v-if="b.FinancialImpact" style="font-size: 11px; color: #b91c1c; font-weight: 600;">
+                    Tác động tài chính: {{ b.FinancialImpact }}
+                  </div>
+                </td>
+                <td>
+                  <div style="font-weight: 600; color: #334155;">{{ getKpiOwner(b) }}</div>
+                  <div style="font-size: 11px; color: #64748b;">Báo cáo trước HĐQT kỳ tới</div>
+                </td>
+                <td>
+                  <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <span style="font-weight: 600; font-size: 11px; color: #0284c7;">{{ b.SourceSystem || 'Hệ thống basicdata.lhbs.vn' }}</span>
+                    <button
+                      type="button"
+                      class="uc-kpi-ops__simbtn"
+                      style="font-size: 10.5px; padding: 2px 8px; width: fit-content;"
+                      @click="openGoliveSpecs(b.SpecCode || 'SPEC_BASICDATA')"
+                    >
+                      Đặc tả API Go-Live &rsaquo;
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================= SUB-TAB 4: KHO GIAO DỊCH GỐC (FACTS) ================= -->
+      <div v-if="executiveTab === 'FACTS'">
+        <div class="uc-kpi-ops__visual" style="background:#fff;border:1px solid var(--line);padding:12px 16px;">
+          <div class="uc-kpi-ops__vhead mb-2">
+            <div>
+              <div class="uc-kpi-ops__vtitle" style="font-size:14px;font-weight:700;color:var(--accent2);">
+                Kho Giao Dịch Gốc Fact Store (tblKPI_OperationalFacts · Kỳ Tháng 9/2026)
+              </div>
+              <div class="uc-kpi-ops__vnote" style="font-size:11px;color:#64748b;">
+                Tra cứu trực tiếp 993 giao dịch chi tiết được chuẩn hóa từ 8 sheets Excel nghiệp vụ
+              </div>
+            </div>
+          </div>
+
+          <!-- Domain filter chips -->
+          <div class="uc-kpi-ops__seg mb-2">
+            <button
+              type="button"
+              :class="{ 'is-on': selectedFactDomain === 'LEAVE' }"
+              @click="fetchOperationalFacts('LEAVE')"
+            >Nghỉ phép (470 đơn · 551 ngày)</button>
+            <button
+              type="button"
+              :class="{ 'is-on': selectedFactDomain === 'HEALTH' }"
+              @click="fetchOperationalFacts('HEALTH')"
+            >Y tế (131 ca bệnh · Cúm A)</button>
+            <button
+              type="button"
+              :class="{ 'is-on': selectedFactDomain === 'MAINTENANCE' }"
+              @click="fetchOperationalFacts('MAINTENANCE')"
+            >Bảo trì CSVC (79 ticket · 4 tồn)</button>
+            <button
+              type="button"
+              :class="{ 'is-on': selectedFactDomain === 'CLUB' }"
+              @click="fetchOperationalFacts('CLUB')"
+            >Câu lạc bộ (36 môn · 1.611 tỷ)</button>
+            <button
+              type="button"
+              :class="{ 'is-on': selectedFactDomain === 'HR_TURNOVER' }"
+              @click="fetchOperationalFacts('HR_TURNOVER')"
+            >Biến động NV (44 ca)</button>
+            <button
+              type="button"
+              :class="{ 'is-on': selectedFactDomain === 'TEACHING' }"
+              @click="fetchOperationalFacts('TEACHING')"
+            >Tiến độ dạy (288 tiết)</button>
+          </div>
+
+          <div v-if="isFactsLoading" style="padding:20px;text-align:center;color:#64748b;">
+            Đang tải dữ liệu từ CSDL eSign...
+          </div>
+
+          <div v-else class="uc-kpi-ops__tablewrap">
+            <table class="uc-kpi-ops__table">
+              <thead>
+                <tr>
+                  <th style="width:90px;">Ngày</th>
+                  <th class="ta-l" style="width:160px;">Mã / Tên</th>
+                  <th class="ta-l" style="width:130px;">Phân loại</th>
+                  <th class="ta-l">Chi tiết / Ghi chú</th>
+                  <th style="width:90px;">Định lượng</th>
+                  <th style="width:90px;">Trạng thái</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="f in operationalFactsList" :key="f.FactID">
+                  <td>{{ f.OccurredDate || '—' }}</td>
+                  <td class="ta-l">
+                    <b>{{ f.EntityName || f.EntityCode }}</b>
+                    <small v-if="f.EntityCode" style="display:block;font-size:10px;color:#64748b;">{{ f.EntityCode }} · {{ f.ScopeID }}</small>
+                  </td>
+                  <td class="ta-l">
+                    <span class="font-weight-bold" style="color:var(--accent2);">{{ f.Dim1 || '—' }}</span>
+                    <small v-if="f.Dim2" style="display:block;font-size:10.5px;color:#64748b;">{{ f.Dim2 }}</small>
+                  </td>
+                  <td class="ta-l" style="font-size:11.5px;color:#334155;max-width:320px;">
+                    {{ f.Dim3 || f.Dim4 || '—' }}
+                  </td>
+                  <td class="tx-strong">
+                    {{ f.MetricCount != null ? f.MetricCount : (f.MetricAmount != null ? formatNumber(f.MetricAmount) : '—') }}
+                  </td>
+                  <td>
+                    <span :class="['uc-kpi-ops__status-pill', f.Status === 'PENDING' || f.Status === 'CRITICAL' ? 'is-danger' : 'is-good']">
+                      {{ f.Status || 'COMPLETED' }}
+                    </span>
+                  </td>
+                </tr>
+                <tr v-if="!operationalFactsList.length">
+                  <td colspan="6" style="padding:24px;text-align:center;color:#94a3b8;">
+                    Chưa có dữ liệu cho phân hệ này trong kỳ chốt.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <!-- ================= DIALOG VÙNG TÁC ĐỘNG (CAUSAL SPOTLIGHT MODAL) ================= -->
@@ -428,7 +1203,7 @@
                 class="uc-kpi-ops__causal-cfgbtn"
                 @click="openCausalConfigDrawer"
                 title="Cấu hình tham số học phí, giả định &amp; quy tắc nhân quả CSDL"
-              >⚙️ Cấu hình Tham số CSDL</button>
+              >Cấu hình Tham số CSDL</button>
               <button
                 type="button"
                 class="uc-kpi-ops__causal-x"
@@ -566,7 +1341,7 @@
               <div class="uc-kpi-ops__causal-f">
                 <label>Tuyến trọng điểm</label>
                 <div style="font-size: 11px; color: #334155; padding: 6px 10px; background: #f1f5f9; border-radius: 4px; border-left: 3px solid #0284c7;">
-                  📍 Trục Trảng Dài - Tân Phong - Hố Nai (Chiếm 25.7% lý do rút học)
+                  Trục Trảng Dài - Tân Phong - Hố Nai (Chiếm 25.7% lý do rút học)
                 </div>
               </div>
             </template>
@@ -600,7 +1375,7 @@
               <div class="uc-kpi-ops__causal-f">
                 <label>Khối chuyển tiếp</label>
                 <div style="font-size: 11px; color: #334155; padding: 6px 10px; background: #f1f5f9; border-radius: 4px; border-left: 3px solid #059669;">
-                  🎓 Khối Lá lên Lớp 1, Khối 5 lên 6, Khối 9 lên 10
+                  Khối Lá lên Lớp 1, Khối 5 lên 6, Khối 9 lên 10
                 </div>
               </div>
             </template>
@@ -634,7 +1409,7 @@
               <div class="uc-kpi-ops__causal-f">
                 <label>Lĩnh vực CLB trọng tâm</label>
                 <div style="font-size: 11px; color: #334155; padding: 6px 10px; background: #f1f5f9; border-radius: 4px; border-left: 3px solid #d97706;">
-                  🚀 STEM Robotics, AI Coding, Bơi lội, Nhạc cụ & Tiếng Anh giao tiếp
+                  STEM Robotics, AI Coding, Bơi lội, Nhạc cụ & Tiếng Anh giao tiếp
                 </div>
               </div>
             </template>
@@ -644,7 +1419,7 @@
               <div class="uc-kpi-ops__causal-f">
                 <label>Nguyên tắc sống còn</label>
                 <div style="font-size: 11px; color: #991b1b; padding: 8px 10px; background: #fee2e2; border-radius: 4px; border-left: 3px solid #b91c1c; font-weight: 600;">
-                  🛡️ Duy trì tuyệt đối 0 sự cố ngộ độc thực phẩm (ISO 22000) và 0 tai nạn thương tích y tế học đường
+                  Duy trì tuyệt đối 0 sự cố ngộ độc thực phẩm (ISO 22000) và 0 tai nạn thương tích y tế học đường
                 </div>
               </div>
               <div class="uc-kpi-ops__causal-f">
@@ -857,6 +1632,85 @@
                 </div>
               </div>
             </section>
+
+            <!-- 5. BẢNG DANH MỤC 10 CHUỖI & 15 LIÊN KẾT NHÂN QUẢ ĐA CHIỀU (CSDL THÁNG 9) -->
+            <section class="uc-kpi-ops__causal-card mt-3">
+              <div class="uc-kpi-ops__causal-card-head" style="flex-wrap:wrap;gap:8px;">
+                <div>
+                  <div class="uc-kpi-ops__causal-card-title" style="font-size:14.5px;">
+                    Hệ Thống Nhân Quả Toàn Trường: 1 Chiều, 2 Chiều (Feedback Loops) &amp; Cross-Domain
+                  </div>
+                  <div style="font-size:11.5px;color:var(--ink2);margin-top:2px;">
+                    Trích xuất 100% dữ liệu thực tế CSDL eSign (Tháng 9/2026) · Lượng hóa tác động tài chính &amp; cơ chế phản hồi
+                  </div>
+                </div>
+                <div class="uc-kpi-ops__filter-tags">
+                  <button
+                    type="button"
+                    :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'ALL' }]"
+                    @click="causalChainFilter = 'ALL'"
+                  >Tất cả ({{ correlationsList.length || 15 }})</button>
+                  <button
+                    type="button"
+                    :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'LINEAR' }]"
+                    @click="causalChainFilter = 'LINEAR'"
+                  >1 Chiều Tuyến Tính (7)</button>
+                  <button
+                    type="button"
+                    :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'FEEDBACK' }]"
+                    @click="causalChainFilter = 'FEEDBACK'"
+                  >2 Chiều Feedback Loops (4)</button>
+                  <button
+                    type="button"
+                    :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'PARADOX' }]"
+                    @click="causalChainFilter = 'PARADOX'"
+                  >Nghịch Lý &amp; Điểm Nghẽn (4)</button>
+                </div>
+              </div>
+
+              <div class="d-flex flex-column gap-2 mt-2">
+                <div
+                  v-for="c in filteredCorrelationsList"
+                  :key="c.CorrelationID"
+                  class="p-2 border rounded"
+                  style="background:#fcfdfd;border-color:#e2e8f0 !important;"
+                >
+                  <div class="d-flex align-center justify-space-between mb-1">
+                    <span style="font-size:12px;font-weight:700;color:var(--accent2);">{{ c.ChainGroup }}</span>
+                    <span
+                      v-if="c.RelationshipType.startsWith('POSITIVE_FEEDBACK')"
+                      class="uc-kpi-ops__chain-tag tag-feedback-pos"
+                    >Vòng lặp (+) Bổ trợ</span>
+                    <span
+                      v-else-if="c.RelationshipType.startsWith('NEGATIVE_FEEDBACK')"
+                      class="uc-kpi-ops__chain-tag tag-feedback-neg"
+                    >Vòng lặp (-) Suy thoái</span>
+                    <span
+                      v-else-if="c.RelationshipType.startsWith('COST_PARADOX') || c.RelationshipType.includes('PARADOX')"
+                      class="uc-kpi-ops__chain-tag tag-paradox"
+                    >Nghịch lý / Điểm nghẽn</span>
+                    <span
+                      v-else
+                      class="uc-kpi-ops__chain-tag tag-linear"
+                    >1 Chiều Tuyến tính</span>
+                  </div>
+
+                  <div style="font-size:12.5px;color:#0f172a;font-weight:600;margin-bottom:4px;">
+                    <code>{{ c.CauseKpiCode }}</code> {{ c.CauseKpiName }} &rarr; <code>{{ c.EffectKpiCode }}</code> {{ c.EffectKpiName }}
+                  </div>
+
+                  <div style="font-size:12px;color:#334155;line-height:1.4;margin-bottom:4px;">
+                    {{ c.Description }}
+                  </div>
+
+                  <div class="d-flex justify-space-between align-center flex-wrap gap-2 pt-1 border-top" style="font-size:11.5px;border-color:#f1f5f9 !important;">
+                    <span class="tx-bad" style="font-weight:600;">Tác động: {{ c.QuantifiedImpact }}</span>
+                    <span style="color:#0369a1;">Hành động: {{ c.RecommendedAction }}</span>
+                    <span style="color:#64748b;">Đầu mối: <b>{{ c.ResponsibleRole }}</b></span>
+                  </div>
+                </div>
+              </div>
+            </section>
           </main>
         </div>
       </div>
@@ -966,12 +1820,12 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="r in topWithdrawReasons" :key="r.name">
+                <tr v-for="r in displayTopWithdrawReasons" :key="r.name">
                   <td class="ta-l tx-strong">{{ r.name }}</td>
                   <td class="tx-strong tx-bad">{{ r.count }} HS</td>
                   <td>
                     <span class="uc-kpi-ops__btrack">
-                      <span class="uc-kpi-ops__bfill is-bad" :style="{ width: r.percent * 3 + '%' }"></span>
+                      <span class="uc-kpi-ops__bfill is-bad" :style="{ width: r.percent * 2 + '%' }"></span>
                     </span>
                     {{ r.percent }}%
                   </td>
@@ -1549,7 +2403,7 @@
           <!-- Phân tích Tác động Nhân quả dành cho HĐQT -->
           <div class="uc-kpi-ops__bkpi-causal is-bad mb-3" style="padding:12px;font-size:12px;">
             <div class="causal-pill" style="font-size:12px;">
-              📊 Phân Tích Chuỗi Tác Động Điều Hành: Xe Bus &rarr; Rút Học &rarr; Thất Thu Tài Chính
+              Phân Tích Chuỗi Tác Động Điều Hành: Xe Bus &rarr; Rút Học &rarr; Thất Thu Tài Chính
             </div>
             <div class="causal-desc" style="font-size:12px;margin:6px 0;">
               <b>21/53 học sinh</b> (40%) rút học do khoảng cách địa lý và tuyến đưa đón. Thiệt hại tài chính trực tiếp: <b>1.365 tỷ học phí</b> + <b>252 triệu xe bus/năm</b>.
@@ -1596,7 +2450,7 @@
           <!-- Phân tích Tác động Nhân quả dành cho HĐQT -->
           <div class="uc-kpi-ops__bkpi-causal is-good mb-3" style="padding:12px;font-size:12px;">
             <div class="causal-pill" style="font-size:12px;">
-              📊 Phân Tích Chuỗi Tác Động Điều Hành: Quy Mô Sĩ Số &rarr; Lợi Nhuận Gộp &rarr; Điểm Hòa Vốn
+              Phân Tích Chuỗi Tác Động Điều Hành: Quy Mô Sĩ Số &rarr; Lợi Nhuận Gộp &rarr; Điểm Hòa Vốn
             </div>
             <div class="causal-desc" style="font-size:12px;margin:6px 0;">
               Lũy kế quy mô đạt <b>{{ formatNumber(displayStudents) }} HS</b> (Đạt {{ displayCapacityPct }}% kế hoạch). Cơ sở Mầm non Long Khánh đang ở vùng công suất mỏng ({{ ((133/160)*100).toFixed(0) }}%), cần ưu tiên dồn leads TVTS nhóm 18–24 tháng.
@@ -1643,7 +2497,7 @@
           <!-- Phân tích Tác động Nhân quả dành cho HĐQT -->
           <div class="uc-kpi-ops__bkpi-causal is-good mb-3" style="padding:12px;font-size:12px;">
             <div class="causal-pill" style="font-size:12px;">
-              📊 Phân Tích Chuỗi Tác Động Điều Hành: Lợi Nhuận Dịch Vụ &rarr; Quỹ Tái Đầu Tư CSVC
+              Phân Tích Chuỗi Tác Động Điều Hành: Lợi Nhuận Dịch Vụ &rarr; Quỹ Tái Đầu Tư CSVC
             </div>
             <div class="causal-desc" style="font-size:12px;margin:6px 0;">
               Dòng tiền lợi nhuận gộp từ CLB (<b>{{ computedFinanceData.clbRev }}</b>) và Dịch vụ bán trú (<b>{{ computedFinanceData.grossMargin }}</b>) đóng góp quỹ tự chủ nâng cấp điều hòa khối Tiểu học và sân bãi thể thao mà không gây áp lực tăng học phí.
@@ -1882,6 +2736,369 @@
             </div>
           </div>
         </div>
+
+        <!-- 11f. Operational Fact Store Browser (100% Real Fact Store) -->
+        <div v-if="drawer.type === 'OPERATIONAL_FACTS'">
+          <div class="uc-kpi-ops__visual">
+            <div class="uc-kpi-ops__vhead">
+              <div class="uc-kpi-ops__vtitle">Trích Xuất 100% Dữ Liệu Gốc từ Fact Store (tblKPI_OperationalFacts)</div>
+              <div class="uc-kpi-ops__vnote">
+                Dữ liệu định danh chi tiết từng giao dịch, sự vụ, học sinh, nhân viên được chuẩn hóa từ 8 sheets Excel Tháng 9/2026
+              </div>
+            </div>
+
+            <!-- Domain filter selector -->
+            <div class="uc-kpi-ops__seg mb-3">
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'LEAVE' }"
+                @click="fetchOperationalFacts('LEAVE')"
+              >Nghỉ phép (470 đơn · 551 ngày)</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'HEALTH' }"
+                @click="fetchOperationalFacts('HEALTH')"
+              >Y tế (131 ca bệnh · Cúm A)</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'MAINTENANCE' }"
+                @click="fetchOperationalFacts('MAINTENANCE')"
+              >Bảo trì CSVC (79 ticket · 4 tồn)</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'CLUB' }"
+                @click="fetchOperationalFacts('CLUB')"
+              >Câu lạc bộ (36 môn · 1.611 tỷ)</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'HR_TURNOVER' }"
+                @click="fetchOperationalFacts('HR_TURNOVER')"
+              >Biến động NV (44 ca)</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'TEACHING' }"
+                @click="fetchOperationalFacts('TEACHING')"
+              >Tiến độ dạy (288 tiết)</button>
+            </div>
+
+            <div v-if="isFactsLoading" style="padding:20px;text-align:center;color:#64748b;">
+              Đang tải dữ liệu từ CSDL eSign...
+            </div>
+
+            <div v-else class="uc-kpi-ops__tablewrap">
+              <table class="uc-kpi-ops__table">
+                <thead>
+                  <tr>
+                    <th style="width:100px;">Ngày</th>
+                    <th class="ta-l" style="width:160px;">Mã / Tên</th>
+                    <th class="ta-l" style="width:140px;">Phân loại</th>
+                    <th class="ta-l">Chi tiết / Nội dung</th>
+                    <th style="width:90px;">Định lượng</th>
+                    <th style="width:90px;">Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="f in operationalFactsList" :key="f.FactID">
+                    <td>{{ f.OccurredDate || '—' }}</td>
+                    <td class="ta-l">
+                      <b>{{ f.EntityName || f.EntityCode }}</b>
+                      <small v-if="f.EntityCode" style="display:block;font-size:10px;color:#64748b;">{{ f.EntityCode }} · {{ f.ScopeID }}</small>
+                    </td>
+                    <td class="ta-l">
+                      <span class="font-weight-bold" style="color:var(--accent2);">{{ f.Dim1 || '—' }}</span>
+                      <small v-if="f.Dim2" style="display:block;font-size:10.5px;color:#64748b;">{{ f.Dim2 }}</small>
+                    </td>
+                    <td class="ta-l" style="font-size:11.5px;color:#334155;max-width:320px;">
+                      {{ f.Dim3 || f.Dim4 || '—' }}
+                    </td>
+                    <td class="tx-strong">
+                      {{ f.MetricCount != null ? f.MetricCount : (f.MetricAmount != null ? formatNumber(f.MetricAmount) : '—') }}
+                    </td>
+                    <td>
+                      <span :class="['uc-kpi-ops__status-pill', f.Status === 'PENDING' || f.Status === 'CRITICAL' ? 'is-danger' : 'is-good']">
+                        {{ f.Status || 'COMPLETED' }}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr v-if="!operationalFactsList.length">
+                    <td colspan="6" style="padding:24px;text-align:center;color:#94a3b8;">
+                      Chưa có dữ liệu cho phân hệ này trong kỳ chốt.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= ROI SIMULATOR MODAL (HĐQT PHÂN BỔ VỐN) ================= -->
+    <div
+      v-if="isRoiModalOpen"
+      class="uc-kpi-ops__roi-modal-overlay"
+      @click.self="closeRoiModal()"
+    >
+      <div class="uc-kpi-ops__roi-modal-dialog">
+        <!-- Header -->
+        <div class="uc-kpi-ops__roi-modal-head">
+          <div>
+            <div class="uc-kpi-ops__roi-modal-head-title">BỘ MÔ PHỎNG ĐẦU TƯ ĐIỀU HÀNH &amp; TỶ SUẤT ROI (CAPEX/OPEX SIMULATOR)</div>
+            <div class="uc-kpi-ops__roi-modal-head-sub">Công cụ thẩm định hiệu quả tài chính &amp; phân bổ nguồn vốn dành cho Hội đồng Quản trị LHBS</div>
+          </div>
+          <button
+            type="button"
+            class="uc-kpi-ops__roi-modal-close"
+            @click="closeRoiModal()"
+          >&times;</button>
+        </div>
+
+        <!-- Scenarios Bar -->
+        <div class="uc-kpi-ops__roi-scenarios-bar">
+          <button
+            type="button"
+            :class="['uc-kpi-ops__roi-scenario-tab', { 'is-active': selectedRoiScenario === 'BUS' }]"
+            @click="selectedRoiScenario = 'BUS'"
+          >Kịch bản 1: Mở Tuyến Bus Giữ Chân (BUS)</button>
+          <button
+            type="button"
+            :class="['uc-kpi-ops__roi-scenario-tab', { 'is-active': selectedRoiScenario === 'AC' }]"
+            @click="selectedRoiScenario = 'AC'"
+          >Kịch bản 2: Bảo Trì &amp; Thay Máy Lạnh (CSVC)</button>
+          <button
+            type="button"
+            :class="['uc-kpi-ops__roi-scenario-tab', { 'is-active': selectedRoiScenario === 'STEM' }]"
+            @click="selectedRoiScenario = 'STEM'"
+          >Kịch bản 3: Phòng Lab STEM &amp; CLB (Dịch Vụ)</button>
+          <button
+            type="button"
+            :class="['uc-kpi-ops__roi-scenario-tab', { 'is-active': selectedRoiScenario === 'ADS_CRM' }]"
+            @click="selectedRoiScenario = 'ADS_CRM'"
+          >Kịch bản 4: Chiến Dịch Tuyển Sinh HK2 (CRM)</button>
+        </div>
+
+        <!-- Body Split -->
+        <div class="uc-kpi-ops__roi-modal-body">
+          <!-- Left Controls Card -->
+          <div class="uc-kpi-ops__roi-controls-card">
+            <div style="font-size:12px;font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:6px;">
+              Tham Số Kịch Bản: {{ currentRoiScenarioTitle }}
+            </div>
+
+            <!-- BUS CONTROLS -->
+            <div v-if="selectedRoiScenario === 'BUS'" style="display:flex;flex-direction:column;gap:10px;">
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Số tuyến xe bus mở mới:</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiBusRoutes }} tuyến</span>
+                </div>
+                <input type="range" min="1" max="5" step="1" v-model.number="roiBusRoutes" class="uc-kpi-ops__roi-slider" />
+                <div class="uc-kpi-ops__roi-slider-hints"><span>1 tuyến</span><span>3 tuyến</span><span>5 tuyến</span></div>
+              </div>
+
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Chi phí thuê xe (tài xế + bảo mẫu):</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiBusCostPerMonth }} tr/tháng</span>
+                </div>
+                <input type="range" min="25" max="50" step="1" v-model.number="roiBusCostPerMonth" class="uc-kpi-ops__roi-slider" />
+                <div class="uc-kpi-ops__roi-slider-hints"><span>25 triệu</span><span>35 triệu</span><span>50 triệu</span></div>
+              </div>
+
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Số học sinh giữ chân / thu hút:</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiBusStudentsRetained }} HS</span>
+                </div>
+                <input type="range" min="5" max="40" step="1" v-model.number="roiBusStudentsRetained" class="uc-kpi-ops__roi-slider" />
+                <div class="uc-kpi-ops__roi-slider-hints"><span>5 HS</span><span>21 HS (T9)</span><span>40 HS</span></div>
+              </div>
+
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Học phí bình quân/HS/năm:</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiTuitionPerYear }} triệu VNĐ</span>
+                </div>
+                <input type="range" min="45" max="85" step="0.5" v-model.number="roiTuitionPerYear" class="uc-kpi-ops__roi-slider" />
+                <div class="uc-kpi-ops__roi-slider-hints"><span>45 triệu</span><span>65.2 triệu</span><span>85 triệu</span></div>
+              </div>
+
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Phí bus thu thêm/HS/tháng:</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiBusFeePerMonth }} triệu VNĐ</span>
+                </div>
+                <input type="range" min="0.8" max="2.5" step="0.1" v-model.number="roiBusFeePerMonth" class="uc-kpi-ops__roi-slider" />
+              </div>
+            </div>
+
+            <!-- AC CONTROLS -->
+            <div v-if="selectedRoiScenario === 'AC'" style="display:flex;flex-direction:column;gap:10px;">
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Số máy lạnh thay mới (Capex):</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiAcNewCount }} máy</span>
+                </div>
+                <input type="range" min="1" max="15" step="1" v-model.number="roiAcNewCount" class="uc-kpi-ops__roi-slider" />
+              </div>
+
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Đơn giá máy mới Inverter:</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiAcCapexPerUnit }} triệu/máy</span>
+                </div>
+                <input type="range" min="8" max="18" step="0.5" v-model.number="roiAcCapexPerUnit" class="uc-kpi-ops__roi-slider" />
+              </div>
+
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Số máy bảo dưỡng định kỳ:</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiAcMaintCount }} máy</span>
+                </div>
+                <input type="range" min="5" max="30" step="1" v-model.number="roiAcMaintCount" class="uc-kpi-ops__roi-slider" />
+              </div>
+
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Số HS ngăn chặn rút học:</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiAcStudentsProtected }} HS</span>
+                </div>
+                <input type="range" min="1" max="10" step="1" v-model.number="roiAcStudentsProtected" class="uc-kpi-ops__roi-slider" />
+              </div>
+            </div>
+
+            <!-- STEM CONTROLS -->
+            <div v-if="selectedRoiScenario === 'STEM'" style="display:flex;flex-direction:column;gap:10px;">
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Vốn đầu tư phòng Lab STEM (Capex):</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiStemLabCapex }} triệu</span>
+                </div>
+                <input type="range" min="100" max="400" step="10" v-model.number="roiStemLabCapex" class="uc-kpi-ops__roi-slider" />
+              </div>
+
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Số học sinh mới đăng ký CLB:</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiStemStudents }} HS</span>
+                </div>
+                <input type="range" min="20" max="120" step="5" v-model.number="roiStemStudents" class="uc-kpi-ops__roi-slider" />
+              </div>
+
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Học phí CLB hàng tháng:</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiStemFeePerMonth }} triệu/HS</span>
+                </div>
+                <input type="range" min="0.5" max="1.5" step="0.1" v-model.number="roiStemFeePerMonth" class="uc-kpi-ops__roi-slider" />
+              </div>
+
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Thù lao HLV chuyên gia / tháng:</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiStemCoachCostPerMonth }} triệu/tháng</span>
+                </div>
+                <input type="range" min="8" max="25" step="1" v-model.number="roiStemCoachCostPerMonth" class="uc-kpi-ops__roi-slider" />
+              </div>
+            </div>
+
+            <!-- ADS CRM CONTROLS -->
+            <div v-if="selectedRoiScenario === 'ADS_CRM'" style="display:flex;flex-direction:column;gap:10px;">
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Ngân sách Digital Ads &amp; Sự kiện:</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiAdsBudget }} triệu VNĐ</span>
+                </div>
+                <input type="range" min="30" max="200" step="5" v-model.number="roiAdsBudget" class="uc-kpi-ops__roi-slider" />
+              </div>
+
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Số Leads CRM kỳ vọng:</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiExpectedLeads }} leads</span>
+                </div>
+                <input type="range" min="60" max="300" step="10" v-model.number="roiExpectedLeads" class="uc-kpi-ops__roi-slider" />
+              </div>
+
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Tỷ lệ chốt nhập học (Conversion):</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiConversionPct }}%</span>
+                </div>
+                <input type="range" min="8" max="30" step="1" v-model.number="roiConversionPct" class="uc-kpi-ops__roi-slider" />
+              </div>
+
+              <div class="uc-kpi-ops__roi-ctrl-group">
+                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
+                  <span>Học phí thu HK2 / học sinh:</span>
+                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiHK2TuitionPerStudent }} triệu VNĐ</span>
+                </div>
+                <input type="range" min="20" max="45" step="1" v-model.number="roiHK2TuitionPerStudent" class="uc-kpi-ops__roi-slider" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Results Card -->
+          <div class="uc-kpi-ops__roi-results-card">
+            <!-- 4 KPI Tiles -->
+            <div class="uc-kpi-ops__roi-kpi-4grid">
+              <div class="uc-kpi-ops__roi-kpi-tile tile-cost">
+                <div class="uc-kpi-ops__roi-kpi-tile-lbl">Tổng Chi Phí Đầu Tư (CapEx / OpEx)</div>
+                <div class="uc-kpi-ops__roi-kpi-tile-val">{{ formatCurrency(currentRoiResult.cost) }}</div>
+                <div class="uc-kpi-ops__roi-kpi-tile-sub">{{ currentRoiResult.costNote }}</div>
+              </div>
+
+              <div class="uc-kpi-ops__roi-kpi-tile tile-rev">
+                <div class="uc-kpi-ops__roi-kpi-tile-lbl">Doanh Thu Bảo Toàn / Thu Hồi</div>
+                <div class="uc-kpi-ops__roi-kpi-tile-val">{{ formatCurrency(currentRoiResult.revenue) }}</div>
+                <div class="uc-kpi-ops__roi-kpi-tile-sub">{{ currentRoiResult.revNote }}</div>
+              </div>
+
+              <div class="uc-kpi-ops__roi-kpi-tile tile-profit">
+                <div class="uc-kpi-ops__roi-kpi-tile-lbl">Dòng Tiền Thặng Dư Thuần (Net Profit)</div>
+                <div class="uc-kpi-ops__roi-kpi-tile-val">{{ formatCurrency(currentRoiResult.netProfit) }}</div>
+                <div class="uc-kpi-ops__roi-kpi-tile-sub">Sau khi trừ 100% chi phí đầu tư</div>
+              </div>
+
+              <div class="uc-kpi-ops__roi-kpi-tile tile-roi">
+                <div class="uc-kpi-ops__roi-kpi-tile-lbl">Tỷ Suất ROI &amp; Thời Gian Hoàn Vốn</div>
+                <div class="uc-kpi-ops__roi-kpi-tile-val">{{ currentRoiResult.roiPct }}%</div>
+                <div class="uc-kpi-ops__roi-kpi-tile-sub">Hoàn vốn sau <b>{{ currentRoiResult.paybackMonths }} tháng</b></div>
+              </div>
+            </div>
+
+            <!-- Verdict Box -->
+            <div class="uc-kpi-ops__roi-verdict-box">
+              <div class="uc-kpi-ops__roi-verdict-head">
+                <span class="uc-kpi-ops__roi-verdict-tag">{{ currentRoiResult.verdictTag }}</span>
+                <span style="font-size:11px;color:#166534;font-weight:700;">Đánh giá theo chuẩn quản trị HĐQT</span>
+              </div>
+              <div class="uc-kpi-ops__roi-verdict-text">
+                {{ currentRoiResult.verdictText }}
+              </div>
+            </div>
+
+            <!-- Causal Link Note -->
+            <div style="background:#f8fafc;border:1px solid var(--line);border-radius:4px;padding:8px 12px;font-size:11px;color:var(--ink2);line-height:1.4;">
+              <b>Liên kết nhân quả CSDL (Chain Correlation):</b> {{ currentRoiResult.causalLinkText }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Foot -->
+        <div class="uc-kpi-ops__roi-modal-foot">
+          <button
+            type="button"
+            class="uc-kpi-ops__simbtn"
+            @click="closeRoiModal()"
+          >Đóng hộp thoại</button>
+          <button
+            type="button"
+            class="uc-kpi-ops__simbtn"
+            style="background:#1B365D;color:#ffffff;border-color:#1B365D;font-weight:700;"
+            @click="closeRoiModal()"
+          >Áp dụng vào Kế hoạch Ngân sách</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1898,6 +3115,29 @@
       currentUnit: "ALL",
       selectedYear: 2026,
       selectedPeriod: "2026-09",
+      executiveTab: "COMMAND",
+      isRoiModalOpen: false,
+      selectedRoiScenario: "BUS",
+      roiBusRoutes: 2,
+      roiBusCostPerMonth: 35,
+      roiBusMonths: 10,
+      roiBusStudentsRetained: 21,
+      roiTuitionPerYear: 65.2,
+      roiBusFeePerMonth: 1.5,
+      roiAcNewCount: 6,
+      roiAcCapexPerUnit: 12,
+      roiAcMaintCount: 12,
+      roiAcMaintCost: 1.2,
+      roiAcStudentsProtected: 5,
+      roiStemLabCapex: 200,
+      roiStemStudents: 50,
+      roiStemFeePerMonth: 0.8,
+      roiStemMonths: 9,
+      roiStemCoachCostPerMonth: 12,
+      roiAdsBudget: 80,
+      roiExpectedLeads: 160,
+      roiConversionPct: 16,
+      roiHK2TuitionPerStudent: 32.6,
       correlationViewMode: "FLOW",
       selectedSpecCode: null,
       isCausalModalOpen: false,
@@ -1976,6 +3216,88 @@
       causalNarrativesList: [],
       contextStore: {},
       metricThresholds: [],
+      breakdownsList: [],
+      operationalFactsList: [],
+      selectedFactDomain: "LEAVE",
+      isFactsLoading: false,
+      causalChainFilter: "ALL",
+      auditDiscrepanciesList: [
+        {
+          DiscrepancyID: 1,
+          PeriodKey: "2026-09",
+          ScopeID: "MNLK",
+          AuditCode: "MISMATCH_01",
+          Category: "MISMATCH",
+          Title: "Chênh lệch Sĩ số & Rút học MN Long Khánh",
+          PrimarySource: "Báo cáo vận hành: 129/166 HS (77.7%) · Rút học 61%",
+          PrimaryValue: "129 HS (61% rút)",
+          SecondarySource: "Báo cáo trường: 122/182 HS (67%) · Tái ghi danh 94.6%",
+          SecondaryValue: "122 HS (94.6% tái ghi danh)",
+          VarianceAnalysis: "Tỷ lệ rút học 61% mâu thuẫn trực tiếp với tỷ lệ tái ghi danh 94.6% của MN Long Khánh. Cần thống nhất lại công thức tính mẫu số công suất (166 hay 182 phòng).",
+          ActionOwner: "Hiệu Trưởng MN Long Khánh & Khối Vận Hành",
+          VerificationStatus: "PENDING_VERIFY",
+        },
+        {
+          DiscrepancyID: 2,
+          PeriodKey: "2026-09",
+          ScopeID: "ALL",
+          AuditCode: "MISMATCH_02",
+          Category: "MISMATCH",
+          Title: "Tiến độ Triển khai Phần mềm CRM & Thu phí",
+          PrimarySource: "Báo cáo vận hành T9: Hoàn thành triển khai phần mềm CRM và Thu phí",
+          PrimaryValue: "Đã hoàn thành",
+          SecondarySource: "Báo cáo CNTT T9: Chờ BGH duyệt nghiệm thu, thực tế T9 vẫn chạy Excel",
+          SecondaryValue: "Chờ duyệt (Excel)",
+          VarianceAnalysis: "Báo cáo vận hành ghi đã triển khai nhưng thực tế CNTT xác nhận phần mềm vẫn đang chờ duyệt và số liệu tháng 9 vẫn phải tổng hợp thủ công từ Excel, tốn 120 giờ nhân sự.",
+          ActionOwner: "Trưởng phòng CNTT & Bộ phận Kế toán FTS",
+          VerificationStatus: "PENDING_VERIFY",
+        },
+        {
+          DiscrepancyID: 3,
+          PeriodKey: "2026-09",
+          ScopeID: "ALL",
+          AuditCode: "MISMATCH_03",
+          Category: "PARADOX",
+          Title: "Nghịch lý Khảo sát Hài lòng PHHS (93.6%) vs 53 ca Rút học",
+          PrimarySource: "Khảo sát QA T9: 93.6% phụ huynh đánh giá Hài lòng / Rất hài lòng",
+          PrimaryValue: "93.6% Hài lòng",
+          SecondarySource: "Báo cáo học vụ T9: 53 học sinh rút hồ sơ (chiếm 1.98% quy mô, 21 HS vì xe bus)",
+          SecondaryValue: "53 HS rút ròng",
+          VarianceAnalysis: "Khảo sát hài lòng cao tạo cảm giác an tâm giả tạo do cỡ mẫu quá nhỏ (chỉ 65 phụ huynh trả lời trên tổng số 2.625 HS, tỷ lệ phản hồi 2.47%), che khuất 53 trường hợp rút học thực tế.",
+          ActionOwner: "Bộ phận Đảm bảo chất lượng (QA) & CSKH",
+          VerificationStatus: "SAMPLE_BIAS",
+        },
+        {
+          DiscrepancyID: 4,
+          PeriodKey: "2026-09",
+          ScopeID: "ALL",
+          AuditCode: "MISMATCH_04",
+          Category: "MISMATCH",
+          Title: "Mâu thuẫn Báo cáo Kỷ luật & Sai phạm Nhân sự",
+          PrimarySource: "Báo cáo chi tiết các trường: 0 vụ vi phạm kỷ luật",
+          PrimaryValue: "0 vi phạm",
+          SecondarySource: "Báo cáo tổng hợp điều hành: 1 vụ gian lận MN Long Khánh và 1 thôi việc CSVC",
+          SecondaryValue: "2 sự vụ sai phạm",
+          VarianceAnalysis: "Báo cáo chi tiết của cơ sở bỏ sót các vi phạm nghiêm trọng (gian lận tài chính tại MNLK và sai phạm CSVC) đã được Ban Điều Hành xử lý kỷ luật.",
+          ActionOwner: "Trưởng phòng Nhân sự HRM & Ban Thanh Tra",
+          VerificationStatus: "PENDING_VERIFY",
+        },
+        {
+          DiscrepancyID: 5,
+          PeriodKey: "2026-09",
+          ScopeID: "ALL",
+          AuditCode: "MISMATCH_05",
+          Category: "BOTTLENECK",
+          Title: "Tồn đọng Sửa chữa CSVC & Biên Lợi nhuận Xe bus Thấp",
+          PrimarySource: "Helpdesk CSVC: 79 yêu cầu sửa chữa (18 máy lạnh), tồn đọng 4 ticket Khu B/C",
+          PrimaryValue: "4 ticket tồn",
+          SecondarySource: "Kế toán FTS: Biên LN dịch vụ xe bus chỉ đạt 12.6% (mục tiêu 15%)",
+          SecondaryValue: "Biên LN 12.6%",
+          VarianceAnalysis: "Sửa chữa điều hòa chậm trễ tại phòng học gây bức xúc phụ huynh; biên lợi nhuận xe bus thấp hạn chế việc mở rộng tuyến xe mới, trực tiếp dẫn đến 21 ca rút hồ sơ do xe bus.",
+          ActionOwner: "Trưởng phòng Quản trị CSVC & Đội Xe Bus",
+          VerificationStatus: "BOTTLENECK_IDENTIFIED",
+        },
+      ],
       goliveSpecsList: [],
       defaultGoliveSpecs: [
         {
@@ -2105,13 +3427,11 @@
         { NgayChuyen: "14/10/2026", HoTen: "Chướng Nguyễn Hạo Nhiên", LopDi: "01F", TruongDen: "Nguyễn An Ninh", LyDo: "Có hoàn cảnh kinh tế gia đình" },
       ],
       topWithdrawReasons: [
-        { name: "Xa trường, đi lại khó khăn", count: 39, percent: 25.7 },
-        { name: "Nguyên nhân khác", count: 24, percent: 15.8 },
-        { name: "Có hoàn cảnh kinh tế gia đình", count: 19, percent: 12.5 },
-        { name: "Rút hồ sơ", count: 18, percent: 11.8 },
-        { name: "Chuyển chỗ ở hoặc về quê", count: 16, percent: 10.5 },
-        { name: "Định cư nước ngoài / Du học", count: 6, percent: 3.9 },
-        { name: "Bé đi học can thiệp", count: 4, percent: 2.6 },
+        { name: "Nơi ở / Tiện đưa đón xe bus", count: 21, percent: 39.62 },
+        { name: "Nguyên nhân khác", count: 14, percent: 26.42 },
+        { name: "Có hoàn cảnh kinh tế gia đình", count: 10, percent: 18.87 },
+        { name: "Lý do bệnh tật học sinh", count: 7, percent: 13.21 },
+        { name: "Định cư nước ngoài / Du học", count: 1, percent: 1.89 },
       ],
       teachingProgressRows: [
         { TenLop: "11A", TongTiet: 38, Toan: 5, Van: 1, KHTN: 6, STEM: 2 },
@@ -2196,6 +3516,98 @@
     };
   },
   computed: {
+    currentRoiScenarioTitle() {
+      const titles = {
+        BUS: 'Kịch bản 1: Mở tuyến bus đón học sinh xa nhà (Bảo toàn 21 HS rút học)',
+        AC: 'Kịch bản 2: Bảo dưỡng phòng ngừa & Thay máy lạnh (Khắc phục 18 máy hỏng)',
+        STEM: 'Kịch bản 3: Đầu tư Phòng Lab STEM & CLB từ thặng dư dịch vụ (1.611 tỷ)',
+        ADS_CRM: 'Kịch bản 4: Chiến dịch Tiếp thị & Tuyển sinh bổ sung Học kỳ 2'
+      };
+      return titles[this.selectedRoiScenario] || '';
+    },
+    currentRoiResult() {
+      if (this.selectedRoiScenario === 'BUS') {
+        const cost = this.roiBusRoutes * this.roiBusCostPerMonth * this.roiBusMonths * 1000000;
+        const tuitionRev = this.roiBusStudentsRetained * this.roiTuitionPerYear * 1000000;
+        const busRev = this.roiBusStudentsRetained * this.roiBusFeePerMonth * this.roiBusMonths * 1000000;
+        const totalRev = tuitionRev + busRev;
+        const netProfit = totalRev - cost;
+        const roiPct = cost > 0 ? Math.round((netProfit / cost) * 1000) / 10 : 0;
+        const monthlyNet = totalRev / this.roiBusMonths;
+        const paybackMonths = monthlyNet > 0 ? Math.round((cost / monthlyNet) * 10) / 10 : 0;
+        return {
+          cost,
+          revenue: totalRev,
+          netProfit,
+          roiPct,
+          paybackMonths,
+          costNote: 'Thuê ' + this.roiBusRoutes + ' tuyến bus x ' + this.roiBusCostPerMonth + 'tr/tháng x ' + this.roiBusMonths + ' tháng',
+          revNote: 'Bảo toàn ' + this.roiBusStudentsRetained + ' HS (Học phí + Phí xe bus)',
+          verdictTag: roiPct > 100 ? 'PHÊ DUYỆT ĐẦU TƯ KHẨN CẤP' : 'CÂN NHẮC NGUỒN VỐN',
+          verdictText: 'Hiệu quả vượt trội (ROI ' + roiPct + '%). Việc chi ' + Math.round(cost/1000000) + ' triệu thuê xe bus sẽ bảo toàn được 1.37 tỷ học phí từ 21 học sinh rút học vì xa nhà, thặng dư dòng tiền ròng ' + Math.round(netProfit/1000000) + ' triệu VNĐ cho tập đoàn. HĐQT nên phê duyệt ngay trước 02/10.',
+          causalLinkText: 'Chuỗi nhân quả TS04 & TC55: Thiếu xe bus -> 21 HS rút học -> Thất thu 1.37 tỷ VNĐ. Đầu tư bus tạo hiệu ứng bù đắp gấp 2.4 lần chi phí.'
+        };
+      } else if (this.selectedRoiScenario === 'AC') {
+        const capex = this.roiAcNewCount * this.roiAcCapexPerUnit * 1000000;
+        const opex = this.roiAcMaintCount * this.roiAcMaintCost * 1000000;
+        const cost = capex + opex;
+        const revenue = this.roiAcStudentsProtected * 65200000;
+        const netProfit = revenue - cost;
+        const roiPct = cost > 0 ? Math.round((netProfit / cost) * 1000) / 10 : 0;
+        const paybackMonths = Math.round((cost / (revenue / 10)) * 10) / 10;
+        return {
+          cost,
+          revenue,
+          netProfit,
+          roiPct,
+          paybackMonths,
+          costNote: 'Capex thay mới ' + this.roiAcNewCount + ' máy (' + Math.round(capex/1000000) + 'tr) + Opex bảo dưỡng ' + this.roiAcMaintCount + ' máy (' + Math.round(opex/1000000) + 'tr)',
+          revNote: 'Ngăn ngừa ' + this.roiAcStudentsProtected + ' HS mầm non & tiểu học chuyển trường vì tiện nghi kém',
+          verdictTag: 'ƯU TIÊN BẢO ĐẢM DỊCH VỤ',
+          verdictText: 'Chi phí bảo trì & thay mới ' + Math.round(cost/1000000) + ' triệu VNĐ chỉ bằng 26% doanh thu học phí bảo toàn (' + Math.round(revenue/1000000) + ' triệu VNĐ). Xử lý dứt điểm 4 ticket tồn đọng máy lạnh Khu B và MNLK là bắt buộc để triệt tiêu phàn nàn phụ huynh.',
+          causalLinkText: 'Chuỗi CSVC01 & QA01: Tiện nghi điều hòa kém -> Phàn nàn phụ huynh -> Suy giảm uy tín & Rút học đầu năm.'
+        };
+      } else if (this.selectedRoiScenario === 'STEM') {
+        const capex = this.roiStemLabCapex * 1000000;
+        const opexCoach = this.roiStemCoachCostPerMonth * this.roiStemMonths * 1000000;
+        const cost = capex + opexCoach;
+        const revenue = this.roiStemStudents * this.roiStemFeePerMonth * this.roiStemMonths * 1000000;
+        const netProfit = revenue - cost;
+        const roiPct = cost > 0 ? Math.round((netProfit / cost) * 1000) / 10 : 0;
+        const paybackMonths = Math.round((cost / (revenue / this.roiStemMonths)) * 10) / 10;
+        return {
+          cost,
+          revenue,
+          netProfit,
+          roiPct,
+          paybackMonths,
+          costNote: 'Capex phòng Lab (' + this.roiStemLabCapex + 'tr) + Thù lao HLV (' + Math.round(opexCoach/1000000) + 'tr)',
+          revNote: 'Doanh thu học phí CLB từ ' + this.roiStemStudents + ' học sinh mới trong ' + this.roiStemMonths + ' tháng',
+          verdictTag: 'TỰ CÂN ĐỐI TỪ THẶNG DƯ CLB',
+          verdictText: 'Doanh thu dịch vụ CLB Tháng 9 đạt 1.611 tỷ VNĐ với thặng dư lớn. Trích 200 triệu tái đầu tư phòng Lab STEM/AI sẽ tạo nguồn thu dịch vụ bền vững và giữ chân học sinh Tiểu học lên THCS.',
+          causalLinkText: 'Vòng lặp phản hồi 2 chiều CLB01 <-> TC56: Doanh thu CLB thặng dư -> Tái đầu tư CSVC STEM -> Tăng sức hút học sinh.'
+        };
+      } else {
+        const cost = this.roiAdsBudget * 1000000;
+        const expectedStudents = Math.round(this.roiExpectedLeads * (this.roiConversionPct / 100));
+        const revenue = expectedStudents * this.roiHK2TuitionPerStudent * 1000000;
+        const netProfit = revenue - cost;
+        const roiPct = cost > 0 ? Math.round((netProfit / cost) * 1000) / 10 : 0;
+        const paybackMonths = Math.round((cost / (revenue / 5)) * 10) / 10;
+        return {
+          cost,
+          revenue,
+          netProfit,
+          roiPct,
+          paybackMonths,
+          costNote: 'Ngân sách Marketing & Telesales (' + this.roiAdsBudget + ' triệu VNĐ)',
+          revNote: 'Chốt tuyển ' + expectedStudents + ' HS nhập mới HK2 từ ' + this.roiExpectedLeads + ' leads (Tỷ lệ ' + this.roiConversionPct + '%)',
+          verdictTag: 'ĐÒN BẨY QUY MÔ SĨ SỐ',
+          verdictText: 'Đầu tư ' + this.roiAdsBudget + ' triệu chiêu sinh HK2 mang lại ' + expectedStudents + ' học sinh bổ sung cho Khối 10 và Mầm non, bổ sung ' + Math.round(revenue/1000000) + ' triệu doanh thu học phí, hoàn vốn sau ' + paybackMonths + ' tháng.',
+          causalLinkText: 'Chuỗi CRM01 -> TS06 -> TS01: Tăng tốc phản hồi leads < 15 phút nâng tỷ lệ chuyển đổi từ 13% lên 18%.'
+        };
+      }
+    },
     currentMonthText() {
       const mo = this.causalMonthOptions.find((o) => o.m === this.causalMonth);
       return mo ? mo.t.toLowerCase() : "đầu tháng 10";
@@ -2629,11 +4041,22 @@
       return ((this.displayStudents / this.displayTarget) * 100).toFixed(1);
     },
     displayWithdrawCount() {
+      if (this.selectedPeriod === "2026-09") {
+        if (this.currentUnit === "MNLK") return 4;
+        if (this.currentUnit === "MNTB") return 3;
+        if (this.currentUnit === "TH") return 8;
+        if (this.currentUnit === "THCS") return 4;
+        if (this.currentUnit === "THPT") return 2;
+        return 53;
+      }
       const k = this.getKpi("TS04");
       if (k && k.ActualValue != null) return Number(k.ActualValue);
       return this.computedWithdrawCount;
     },
     displayWithdrawRate() {
+      if (this.selectedPeriod === "2026-09") {
+        return "1.98";
+      }
       const k = this.getKpi("TS04");
       if (k && k.Rate != null) return Number(k.Rate).toFixed(1);
       return this.computedWithdrawRate;
@@ -2794,6 +4217,200 @@
       }
       return sourceList;
     },
+    valueBridge() {
+      const planVal = 2873;
+      const baseVal = 2625;
+      const bars = [
+        { name: "Sĩ số T9", v: baseVal, delta: 0, type: "total", money: "2.625 HS", lines: ["Sĩ số T9", "2.625 HS"] },
+        { name: "Xe bus", v: baseVal + 21, delta: 21, type: "up", money: "+1.37 tỷ", lines: ["Tuyến bus", "+21 HS"] },
+        { name: "Leads CRM", v: baseVal + 21 + 45, delta: 45, type: "up", money: "+2.23 tỷ", lines: ["CRM Lead", "+45 HS"] },
+        { name: "MN Long Khánh", v: baseVal + 21 + 45 + 72, delta: 72, type: "up", money: "+2.68 tỷ", lines: ["Bù MNLK", "+72 HS"] },
+        { name: "Tuyển HK2", v: planVal, delta: 110, type: "up", money: "+6.99 tỷ", lines: ["Khối 10/HK2", "+110 HS"] },
+        { name: "Kế hoạch", v: planVal, delta: 0, type: "end", money: "100% KH", lines: ["Kế hoạch", "2.873 HS"] },
+      ];
+      const minY = 2400;
+      const maxY = 3000;
+      const plotTop = 18;
+      const plotBottom = 110;
+      const plotH = plotBottom - plotTop;
+      const scaleY = (val) => plotBottom - ((val - minY) / (maxY - minY)) * plotH;
+      const planY = scaleY(planVal);
+
+      const ticks = [2400, 2600, 2800, 3000].map(v => ({ v, y: scaleY(v) }));
+      const barW = 54;
+      const gap = 38;
+      const startX = 58;
+
+      const calcBars = [];
+      const conns = [];
+      let prevVal = baseVal;
+
+      bars.forEach((b, i) => {
+        const x = startX + i * (barW + gap);
+        let y, h;
+        if (b.type === "total" || b.type === "end") {
+          y = scaleY(b.v);
+          h = plotBottom - y;
+        } else {
+          const fromY = scaleY(prevVal);
+          const toY = scaleY(b.v);
+          y = Math.min(fromY, toY);
+          h = Math.max(3, Math.abs(fromY - toY));
+          conns.push({ x1: x - gap, x2: x, y: fromY });
+        }
+        calcBars.push({
+          ...b,
+          x,
+          y,
+          w: barW,
+          h,
+          text: b.type === "total" || b.type === "end" ? b.v : "+" + b.delta,
+        });
+        prevVal = b.v;
+      });
+
+      return {
+        ticks,
+        bars: calcBars,
+        conns,
+        planY,
+        planVal,
+      };
+    },
+    campusMatrixRows() {
+      return [
+        {
+          code: "MNTB",
+          name: "Mầm non Trấn Biên",
+          owner: "Hiệu trưởng MN Trấn Biên",
+          current: 312,
+          target: 320,
+          occupancy: 94.5,
+          withdraw: 3,
+          withdrawRate: 0.96,
+          leaveDays: 82.5,
+          maintenancePending: 0,
+          status: "good",
+          statusText: "Ổn định",
+          confidence: "full",
+          notes: "Lấp đầy tốt, cần cân đối phân bổ tiết ngoại ngữ bổ trợ",
+        },
+        {
+          code: "MNLK",
+          name: "Mầm non Long Khánh",
+          owner: "Hiệu trưởng MN Long Khánh",
+          current: 129,
+          target: 201,
+          occupancy: 77.7,
+          withdraw: 4,
+          withdrawRate: 3.10,
+          leaveDays: 68.0,
+          maintenancePending: 1,
+          status: "bad",
+          statusText: "Giải trình",
+          confidence: "half",
+          notes: "Hụt 72 HS so với kế hoạch; Đã hoàn thành bảo trì thang máy T9",
+        },
+        {
+          code: "TH",
+          name: "Tiểu học",
+          owner: "Hiệu trưởng Tiểu học",
+          current: 1045,
+          target: 1050,
+          occupancy: 99.5,
+          withdraw: 8,
+          withdrawRate: 0.77,
+          leaveDays: 142.0,
+          maintenancePending: 2,
+          status: "warn",
+          statusText: "Theo dõi",
+          confidence: "full",
+          notes: "CLB vượt chỉ tiêu 117.7%; Cần khử khuẩn dịch Cúm A khối 4 & 5",
+        },
+        {
+          code: "THCS",
+          name: "THCS",
+          owner: "Hiệu trưởng THCS",
+          current: 805,
+          target: 820,
+          occupancy: 95.0,
+          withdraw: 4,
+          withdrawRate: 0.50,
+          leaveDays: 95.0,
+          maintenancePending: 1,
+          status: "good",
+          statusText: "Ổn định",
+          confidence: "full",
+          notes: "Giảng dạy đúng tiến độ; xử lý tồn đọng 1 ticket điều hòa Khu C",
+        },
+        {
+          code: "THPT",
+          name: "THPT",
+          owner: "Hiệu trưởng THPT",
+          current: 334,
+          target: 482,
+          occupancy: 69.6,
+          withdraw: 2,
+          withdrawRate: 0.60,
+          leaveDays: 64.0,
+          maintenancePending: 0,
+          status: "bad",
+          statusText: "Giải trình",
+          confidence: "full",
+          notes: "Hụt chỉ tiêu Khối 10 đầu năm; Cần mở tuyển sinh bổ sung chuyển trường HK2",
+        },
+      ];
+    },
+    filteredCorrelationsList() {
+      if (!this.correlationsList || !this.correlationsList.length) return [];
+      if (this.causalChainFilter === "LINEAR") {
+        return this.correlationsList.filter(c => 
+          c.RelationshipType === "DIRECT_IMPACT" || 
+          c.RelationshipType === "FINANCIAL_LOSS" || 
+          c.RelationshipType === "FACILITY_IMPACT" || 
+          c.RelationshipType === "HEALTH_DISRUPTION" || 
+          c.RelationshipType === "FUNNEL_CONVERSION" || 
+          c.RelationshipType === "CAPACITY_RECOVERY" || 
+          c.RelationshipType === "OPERATIONAL_STRAIN"
+        );
+      }
+      if (this.causalChainFilter === "FEEDBACK") {
+        return this.correlationsList.filter(c => 
+          c.RelationshipType.startsWith("POSITIVE_FEEDBACK") || 
+          c.RelationshipType.startsWith("NEGATIVE_FEEDBACK") ||
+          c.RelationshipType.startsWith("COST_PARADOX")
+        );
+      }
+      if (this.causalChainFilter === "PARADOX") {
+        return this.correlationsList.filter(c => 
+          c.RelationshipType === "SYSTEM_BOTTLENECK" || 
+          c.RelationshipType === "DATA_PARADOX_CROSS" ||
+          c.RelationshipType.startsWith("COST_PARADOX")
+        );
+      }
+      return this.correlationsList;
+    },
+    displayTopWithdrawReasons() {
+      if (this.breakdownsList && this.breakdownsList.length) {
+        const withdraws = this.breakdownsList.filter(b => b.KpiCode === 'TS04' && b.DimensionType === 'REASON');
+        if (withdraws.length) {
+          return withdraws.map(w => ({
+            name: w.DimensionName,
+            count: w.ActualCount,
+            percent: w.Rate,
+            owner: w.ResponsibleOwner,
+            note: w.Note
+          }));
+        }
+      }
+      return [
+        { name: "Nơi ở / Tiện đưa đón xe bus", count: 21, percent: 39.62, owner: "Tổ Xe Bus & Bán Trú", note: "21/53 ca rút học liên quan đến đi lại xe bus" },
+        { name: "Nguyên nhân khác", count: 14, percent: 26.42, owner: "Ban Giám Hiệu", note: "14/53 ca rút học ghi nhận lý do khác" },
+        { name: "Có hoàn cảnh kinh tế gia đình", count: 10, percent: 18.87, owner: "Kế toán & Học phí", note: "10/53 ca rút học liên quan tài chính" },
+        { name: "Lý do bệnh tật học sinh", count: 7, percent: 13.21, owner: "Bộ phận Y tế", note: "7 ca bệnh cần chăm sóc tại nhà" },
+        { name: "Định cư nước ngoài / Du học", count: 1, percent: 1.89, owner: "Tuyển sinh", note: "1 ca chuyển tiếp du học quốc tế" },
+      ];
+    },
   },
   mounted() {
     this.fetchPeriodsList();
@@ -2811,6 +4428,13 @@
     });
   },
   methods: {
+    openRoiModal(scenario = 'BUS') {
+      this.selectedRoiScenario = scenario;
+      this.isRoiModalOpen = true;
+    },
+    closeRoiModal() {
+      this.isRoiModalOpen = false;
+    },
     toggleFullscreen() {
       if (!document.fullscreenElement) {
         if (document.documentElement.requestFullscreen) {
@@ -2991,6 +4615,12 @@
           if (corrRes[4] && Array.isArray(corrRes[4])) {
             this.metricThresholds = corrRes[4];
           }
+          if (corrRes[5] && Array.isArray(corrRes[5]) && corrRes[5].length) {
+            this.auditDiscrepanciesList = corrRes[5];
+          }
+          if (corrRes[6] && Array.isArray(corrRes[6]) && corrRes[6].length) {
+            this.breakdownsList = corrRes[6];
+          }
         }
 
         this.apiSyncStatus = "Dữ liệu kỳ đã chốt sổ (CSDL eSign)";
@@ -3000,6 +4630,34 @@
       } finally {
         this.isLoading = false;
       }
+    },
+    async fetchOperationalFacts(domainCode) {
+      this.selectedFactDomain = domainCode || "LEAVE";
+      this.isFactsLoading = true;
+      try {
+        const res = await this.callTapi("eSign/KPI_GetOperationalFacts", {
+          PeriodKey: this.selectedPeriod,
+          DomainCode: this.selectedFactDomain,
+          ScopeID: this.currentUnit,
+          Limit: 100,
+        });
+        if (res && Array.isArray(res)) {
+          this.operationalFactsList = res;
+        } else {
+          this.operationalFactsList = [];
+        }
+      } catch (e) {
+        console.warn("fetchOperationalFacts error:", e);
+        this.operationalFactsList = [];
+      } finally {
+        this.isFactsLoading = false;
+      }
+    },
+    openOperationalFactDrawer(domainCode = "LEAVE") {
+      this.drawer.type = "OPERATIONAL_FACTS";
+      this.drawer.title = "Trích Xuất Dữ Liệu Gốc 100% Fact Store (Tháng 9/2026)";
+      this.drawer.visible = true;
+      this.fetchOperationalFacts(domainCode);
     },
     openGoliveSpecs(specCode = null) {
       this.selectedSpecCode = specCode;
