@@ -136,11 +136,20 @@ Hệ thống layout dùng CSS Grid 12 cột với gap **8px** (tối ưu mật �
 
 ### 5.2 Padding & Spacing cố định
 
-- **Khung trang (`.uc-kpi-rf__page`)**: `padding: 10px 20px 0;`
+- **Khung trang (`.uc-kpi-rf__page`)**: `padding: 10px 20px 0; width: 100%; box-sizing: border-box;` (KHÔNG dùng `max-width: 1440px; margin: 0 auto;`).
 - **Thanh Header trên cùng (`.uc-kpi-rf__top`)**: `padding: 12px 20px; border-bottom: 1px solid var(--line);`
 - **Thanh Slicer bộ lọc (`.uc-kpi-rf__slicers`)**: `padding: 10px 20px; border-bottom: 1px solid var(--line);`
 - **Thẻ Visual Panel (`.uc-kpi-rf__visual`)**: `padding: 10px 14px; background: var(--card); border: 1px solid var(--line);`
 - **Quy tắc Bo góc**: Chỉ dùng `border-radius: 2px` (hoặc `0` theo phong cách phẳng Fluent). Tuyệt đối không dùng bo góc tròn lớn.
+
+### 5.3 Responsive & Đa độ phân giải (HD, Full HD, 2K)
+
+BẮT BUỘC dashboard phải thích ứng mượt mà trên 3 độ phân giải chủ đạo:
+- **HD / Laptop phổ thông (1280x720 – 1366x768)**:
+  - Lưới 4 thẻ KPI chính (`.uc-kpi-[module]__bkpis`) tự động chuyển sang 2 cột (`grid-template-columns: repeat(2, minmax(0, 1fr))`) để thẻ không bị bóp nghẹt.
+  - Bảng số liệu bọc trong container có `overflow-x: auto; width: 100%`, không gây tràn ngang khung trang.
+- **Full HD (1920x1080)**: Chuẩn tối ưu mặc định. Khung trang chiếm 100% độ rộng màn hình, dàn đều 4 thẻ KPI và các bảng biểu.
+- **2K / Màn hình lớn (2560x1440 trở lên)**: Tận dụng không gian rộng, nội dung co giãn tự nhiên, các modal / causal dialog mở rộng tương ứng (`max-width: 90vw - 92vw`), tránh để hai khoảng xám lớn bên lề.
 
 ---
 
@@ -311,3 +320,4 @@ Mọi dòng trong bảng hoặc thẻ KPI có khả năng tương tác đều g�
 5. **KHÔNG dùng component Tab nặng của Vuetify (`v-tabs`, `v-tab-item`, `v-window`)**: Dùng thanh tab phẳng và biến số `page` với `v-if`.
 6. **KHÔNG nhúng thư viện đồ thị nặng bên ngoài** (như Chart.js, Highcharts, ECharts): Mọi biểu đồ (Waterfall, Sparkline, Bullet track) đều được dựng bằng **SVG thuần hoặc HTML/CSS** để đạt tốc độ tải tức thì, tối ưu in ấn và không phụ thuộc runtime bên ngoài.
 7. **KHÔNG quên `tabular-nums`**: Mọi vị trí hiển thị số liệu tiền tệ, học sinh, tỷ lệ % bắt buộc dùng font tabular-nums để số thẳng hàng.
+8. **KHÔNG khóa cứng chiều rộng container trang (ví dụ `max-width: 1440px; margin: 0 auto;`)**: Mọi màn hình dashboard vận hành phải thiết kế full-screen (`width: 100%`) và responsive thích ứng cho cả HD (1366px), Full HD (1920px) lẫn 2K (2560px).

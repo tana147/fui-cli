@@ -7,7 +7,12 @@ You MUST:
 1. Read this file first.
 2. Summarize relevant rules briefly.
 3. **Chỉ được sửa code và SQL liên quan đến KPI** — tuyệt đối không đụng vào module `ks-*`, `tkb-*`, `wf-*` hay bất kỳ thứ gì không có prefix `kpi-`.
-4. Then act.
+4. **Triết lý Dữ liệu & Tương quan Chỉ số (Cross-KPI Correlation)**: Dashboard KHÔNG ĐƯỢC chỉ hiển thị những con số thuần túy, rời rạc, vô tri vô giác. Mọi visual và báo cáo phải thể hiện được:
+   - **Sự liên quan và giao thoa giữa các con số**: Chỉ số này ảnh hưởng thế nào đến chỉ số khác (ví dụ: Rút học vì xa nhà tác động tuyến xe bus và doanh thu; Học liệu số/LMS tác động chất lượng và giữ chân HS).
+   - **Chuỗi nhân quả (Cause-and-Effect Chain)**: Bám sát Results Framework (Hoạt động -> Đầu ra -> Kết quả -> Tác động tài chính/quy mô).
+   - **Vùng tác động và Ý nghĩa điều hành**: Lượng hóa được tác động tài chính, rủi ro và đề xuất hành động cho Hội đồng trường.
+   - **Dữ liệu động theo kỳ chốt (Period Freeze)**: Thiết kế để nạp động và đóng băng dữ liệu theo Tuần / Tháng / Quý / Năm, không hard-code số tĩnh.
+5. Then act.
 
 Nếu không thực hiện đúng thứ tự trên, response là invalid.
 
@@ -120,6 +125,14 @@ project-root/
 - Ưu tiên Vuetify utility class trước khi viết CSS tay.
 - `border-radius` tối đa `2px` (`rounded-xs`) — không dùng `rounded-lg`, `rounded-xl`.
 - Tham khảo DESIGN.md để biết token màu, typography, component pattern.
+
+### Responsive & Screen Resolution rules (HD, Full HD, 2K)
+
+- **BẮT BUỘC** luôn tính tới và kiểm tra responsive cho các độ phân giải màn hình:
+  - **HD / Laptop phổ thông (1280x720 – 1366x768)**: Lưới card co giãn thông minh (lưới 4 cột tự động chuyển thành 2 cột), bảng dữ liệu có thanh cuộn ngang riêng (`overflow-x: auto`), tuyệt đối không làm tràn ngang trang.
+  - **Full HD (1920x1080)**: Chuẩn tối ưu mặc định. Khung trang tràn viền `width: 100%` (KHÔNG khóa cứng `max-width: 1440px`), dàn đều các cột và bảng biểu.
+  - **2K / Màn hình lớn (2560x1440 trở lên)**: Tận dụng tối đa không gian màn hình, nội dung co giãn tự nhiên, modal/drawer co giãn theo tỉ lệ `vw`/`vh`, không để khoảng trống vô nghĩa hai bên sườn.
+- **Toàn màn hình (Presentation / Fullscreen)**: Hỗ trợ kích hoạt chuẩn HTML5 Fullscreen API khi user bật chế độ trình chiếu.
 
 ### Text
 

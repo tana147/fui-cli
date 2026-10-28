@@ -5,7 +5,7 @@
 -- DB: eSignature (esign)
 -- ==============================================================================
 
-CREATE OR ALTER PROCEDURE spAPI_KPI_GetPeriodSnapshots
+CREATE   PROCEDURE spAPI_KPI_GetPeriodSnapshots
     @PeriodKey VARCHAR(20),
     @DonViID VARCHAR(20)
 AS

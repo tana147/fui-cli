@@ -165,8 +165,9 @@
 /* 3. Main Page Container */
 .uc-kpi-ops__page {
   padding: 12px 20px 0;
-  max-width: 1440px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* 4. Executive Headline Banner (Chuẩn kpi-results-framework) */
@@ -188,7 +189,7 @@
   font-size: 20px;
   line-height: 1.45;
   margin: 6px 0;
-  max-width: 1200px;
+  max-width: 100%;
 }
 .uc-kpi-ops__bhead-t b {
   color: #ffeb3b;
@@ -227,11 +228,48 @@
 .uc-kpi-ops__bkpi-h {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: 6px;
   font-size: 12px;
   font-weight: 600;
   color: var(--ink2);
+}
+.uc-kpi-ops__bkpi-title-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.uc-kpi-ops__gl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  min-width: 17px;
+  border-radius: 50%;
+  background: #e0f2fe;
+  border: 1px solid #7dd3fc;
+  color: #0284c7;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: all 0.15s ease;
+  vertical-align: middle;
+}
+.uc-kpi-ops__gl-btn:hover {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+  transform: scale(1.1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+.uc-kpi-ops__gl-btn .gl-icon {
+  font-family: inherit;
+  font-style: normal;
+  display: block;
 }
 .uc-kpi-ops__bkpi-h b {
   font-size: 11px;
@@ -629,13 +667,54 @@
   padding: 14px 18px 24px;
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
-  .uc-kpi-ops__bkpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* ==========================================================================
+   Responsive Breakpoints: HD (<=1366px), Full HD (1920px), 2K (>=2560px)
+   ========================================================================== */
+
+/* 2K & Màn hình lớn (>= 2200px) */
+@media (min-width: 2200px) {
+  .uc-kpi-ops__page {
+    padding: 16px 28px 0;
+  }
+  .uc-kpi-ops__bhead-t {
+    font-size: 22px;
+  }
+  .uc-kpi-ops__bkpi-v {
+    font-size: 30px;
+  }
+  .uc-kpi-ops__causal-dialog {
+    max-width: 92vw;
+    max-height: 94vh;
+  }
+}
+
+/* Full HD chuẩn (1401px - 2199px) */
+@media (min-width: 1401px) and (max-width: 2199px) {
+  .uc-kpi-ops__bkpis {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* HD & Laptop phổ thông (1024px - 1400px, ví dụ 1366x768, 1280x800) */
+@media (max-width: 1400px) {
+  .uc-kpi-ops__bkpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .uc-kpi-ops__causal-dialog {
+    max-width: 96vw;
+    max-height: 96vh;
+  }
+}
+
+/* Tablet & Mobile (< 1024px) */
+@media (max-width: 1024px) {
   .uc-kpi-ops__bcols { grid-template-columns: 1fr; }
   .uc-kpi-ops__bstrip { grid-template-columns: 1fr; }
+  .uc-kpi-ops__grid2 { grid-template-columns: 1fr; }
 }
+
 @media (max-width: 768px) {
+  .uc-kpi-ops__page { padding: 8px 12px 0; }
   .uc-kpi-ops__bkpis { grid-template-columns: 1fr; }
   .uc-kpi-ops__tabgrp-l { display: none; }
   .uc-kpi-ops__tabs button { padding: 6px 8px; font-size: 11px; }
@@ -990,7 +1069,7 @@
 }
 .uc-kpi-ops__causal-dialog {
   width: 100%;
-  max-width: 1440px;
+  max-width: 94vw;
   height: 100%;
   max-height: 96vh;
   background: #f8fafc;
