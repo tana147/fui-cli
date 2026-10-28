@@ -17,6 +17,7 @@
 ## 3. GIT & COMMIT STATE
 - **Branch:** `main`
 - **Relevant Recent Commits:**
+  - `4b62a6b` — fix(lhbs-esign): fix causal tree, slider feedback loop, dynamic correlation matching and remove redundant controls
   - `5fbe716` — feat(lhbs-esign): standardize Sep facts, add executive ROI simulator, risk radar & 5 sub-tabs
   - `cbe51a6` — feat(lhbs-esign): dynamic 100% kpi causal engine 60 chi tieu 5 co so va compact 3-space ui
 - **Working Tree Ownership:**
