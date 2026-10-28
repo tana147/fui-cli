@@ -1,96 +1,89 @@
 # AGENT HANDOFF: lhbs-esign
 
-- **Generated At:** 2026-10-28T10:03:00+07:00
+- **Generated At:** 2026-10-28T11:13:30+07:00
 - **Workspace Root:** `/home/iot/CODE/fui-cli/lhbs-esign`
 - **Status:** `done`
-- **Next Session Focus:** Tiếp tục hoàn thiện các phân hệ điều hành KPI vận hành, mở rộng kiểm thử tương tác trên các cơ sở trường khác nhau hoặc tích hợp thêm các API live khi các hệ thống nguồn (CRM, HRM, CSVC Helpdesk) chính thức mở kết nối.
+- **Next Session Focus:** Kiểm thử UAT trên môi trường thực tế với người dùng cuối, hoặc mở rộng thêm các kịch bản chuỗi nhân quả và tham số đặc thù cho các năm học tiếp theo nếu có yêu cầu.
 
 ## 1. NEXT SESSION ACTION PLAN
-1. Kiểm tra nghiệm thu giao diện Dashboard trên production URL `https://kyso.lhbs.vn/kpi-ops-dashboard` với các bộ lọc cơ sở (Toàn trường, MNTB, MNLK, TH, THCS, THPT).
-2. Khi hệ thống CRM hoặc Helpdesk CSVC mở API chính thức, cập nhật các Staging endpoints trong `goliveSpecsList` theo đặc tả tại `docs/KPI_DASHBOARD_CHECKLIST.md`.
-3. Mở rộng thêm các kịch bản What-If trong Causal Spotlight Modal dựa trên bảng `tblKPI_CausalNarratives` nếu Ban Giám hiệu yêu cầu bổ sung use-case mới.
+1. Trải nghiệm trực quan trên giao diện thực tế của 2 module: `/kpi-ops-dashboard` và `/kpi-causal-config`.
+2. Kiểm tra thao tác sửa ngưỡng, điều chỉnh tham số biểu phí cơ sở và xác nhận kiểm toán M&E trên Live Preview Sandbox.
+3. Nếu bổ sung thêm chỉ tiêu KPI mới trong tương lai, chỉ cần insert vào `tblKPI_Definitions` và thiết lập baseline trong `tblKPI_Thresholds` mà không cần sửa code.
 
 ## 2. SUGGESTED SKILLS
-- `minimal-feature-implementation`: Sử dụng khi cần thêm kịch bản chuỗi nhân quả mới hoặc kết nối thêm API live với minimal diff.
-- `session-bugflow`: Sử dụng ở đầu session mới nếu phát hiện lỗi hoặc cần review tính năng mới theo quy trình 2 pha.
+- `session-bugflow`: Khởi động session mới theo quy trình chuẩn và kiểm tra project instructions.
 
 ## 3. GIT & COMMIT STATE
 - **Branch:** `main`
 - **Relevant Recent Commits:**
+  - `d792564` — feat(lhbs-esign): cau hinh dong chuoi nhan qua kpi ops, responsive da man hinh va bo sung mau cau tu docs
   - `b5f3a32` — feat(lhbs-esign): tai thiet ke kpi-ops-dashboard, tich hop causal config va dong bo 100% database
-  - `4df1028` — fix(lhbs-esign): sua FileType cua global-util-js tu js thanh .js de codeeditor FUI nhan dien dung ngon ngu
 - **Working Tree Ownership:**
   - **Current task changes:**
-    - `lhbs-esign/.md/AGENTS.md` (Bổ sung rules bắt buộc responsive màn hình HD/FHD/2K)
-    - `lhbs-esign/.md/DESIGN.md` (Chuẩn thiết kế 5.3 & cấm số 8: luôn tính responsive)
-    - `lhbs-esign/_db/esign/spAPI_KPI_GetCorrelations.sql` (Cập nhật Stored Procedure tính toán biến số động ParamsJson theo @DonViID & @PeriodKey, trả 3 Result Sets)
-    - `lhbs-esign/_db/esign/spAPI_KPI_GetPeriodSnapshots.sql` (Stored procedure nạp snapshot KPI)
-    - `lhbs-esign/modules/kpi-ops-dashboard/components/uc-kpi-ops.vue` (Tích hợp getNarrative, interpolateTemplate, thu gọn Go-Live box thành icon '!', sửa lỗi bottlenecks, ẩn nút thừa)
-    - `lhbs-esign/modules/kpi-ops-dashboard/style.css` (Style full-screen 100%, responsive màn hình đa tỉ lệ HD/FHD/2K, style causal-desc nổi bật)
-    - `lhbs-esign/docs/Bao_cao_tong_ket_LHBS_NH_2025-2026_Ban_trinh_xin_y_kien.docx` (Tài liệu báo cáo tổng kết bóc tách mẫu câu)
-    - `lhbs-esign/.handoff/HANDOFF.md` (Tài liệu bàn giao session)
-  - **Pre-existing dirty / unrelated:** (DO NOT touch/revert)
-    - `../_logs/tool-errors.jsonl`
-    - `../lhu-qldetaisdh/*` (Dự án quản lý luận văn/đề tài sau đại học thuộc phân hệ khác)
+    - `_db/esign/migration_seed_60_kpis.sql` (Seed 60 KPI chuẩn hóa, ngưỡng đa tầng và tham số biểu phí 5 cơ sở)
+    - `_db/esign/migration_enhance_5_points.sql` (Bổ sung ApplicableScopes, ValueFormat, chuẩn hóa Target TS06=30%, cân đối Sĩ số - Công suất và kịch bản Nghịch lý/Kiểm toán)
+    - `_db/esign/migration_dynamic_kpi_engine.sql` (Migration nền tảng bảng Thresholds, Parameters, Narratives)
+    - `_db/esign/spAPI_KPI_GetCausalEngineData.sql` (SP trả 7 Result Sets phục vụ màn hình cấu hình)
+    - `_db/esign/spAPI_KPI_GetCorrelations.sql` (SP trả RS2 Narratives, RS3 ContextStore 89 biến phẳng, RS4 Thresholds)
+    - `_db/esign/spAPI_KPI_SaveNarrative.sql` (SP lưu mẫu câu biểu thức, scenario type và prompt kiểm toán)
+    - `_db/esign/spAPI_KPI_SaveParameter.sql` (SP lưu tham số biểu phí và quy mô cơ sở)
+    - `_db/esign/spAPI_KPI_SaveThreshold.sql` (SP lưu cấu hình ngưỡng đa tầng Baseline & Overrides)
+    - `modules/kpi-causal-config/components/uc-kpi-causal-config.vue` (Tái cấu trúc 3 Không Gian Nghiệp Vụ, hỗ trợ N/A scopes, Variable Chips tinh giản, M&E checklist)
+    - `modules/kpi-causal-config/style.css` (Giao diện Compact UI, thu gọn gap/padding, bổ sung badge và style mới)
+    - `modules/kpi-ops-dashboard/components/uc-kpi-ops.vue` (Tích hợp Token Expression Engine, badge ngưỡng động và nội suy câu What-If)
+  - **Pre-existing dirty / unrelated:**
+    - `../lhu-qldetaisdh/` (Dự án riêng biệt, không thuộc scope task này)
+    - `../_logs/tool-errors.jsonl` (File log môi trường, không commit)
 - **Quick Inspect Commands:**
-  - `git diff --stat HEAD -- lhbs-esign/`
-  - `fui remote diff`
+  - `git diff modules/kpi-causal-config/`
+  - `git diff modules/kpi-ops-dashboard/`
+  - `git diff _db/esign/`
 
 ## 4. PROBLEM & SYSTEM FLOW
-- **Objective:** Loại bỏ hoàn toàn hard-code chuỗi nhân quả trên 4 Tile KPI và Hero Sentence; chuyển sang cơ chế Narrative Template chứa placeholder `{Variable}` kết hợp SQL phân nhánh `IF/ELSE` tính toán động biến số thực tế theo cơ sở trường và kỳ chốt sổ; khai thác toàn bộ mẫu câu từ tài liệu đặc tả dự án.
-- **Expected:** Khi chọn cơ sở trường hoặc kỳ chốt sổ, nội dung câu chuyện nhân quả hiển thị đúng số liệu thực tế (sĩ số rút học, doanh thu thất thu, tỷ lệ chuyển đổi, bài tập LMS, doanh thu CLB) lấy từ CSDL `tblKPI_CausalNarratives` và `spAPI_KPI_GetCorrelations`.
-- **Actual:** Đã hoàn thành và triển khai thành công 100%, giao diện hiển thị mượt mà không bị lỗi duplicate dấu phần trăm (`%%`), giữ nguyên 100% backward compatibility cho API.
+- **Objective:** Chuyển đổi toàn bộ hệ thống KPI & Diễn giải Chuỗi nhân quả LHBS từ trạng thái hard-code sang Dynamic 100%, scale cho 60 tiêu chí x 5 cơ sở trường, có cơ chế kế thừa đa tầng và giao diện cấu hình trực quan 3 Không Gian Nghiệp Vụ.
+- **Expected:** Bỏ rẽ nhánh cứng trong SQL/Vue; tự động kế thừa baseline và cho phép ghi đè đặc thù; biểu thức tính toán linh hoạt `{TS04.Reason.FAR * PARAM.TuitionAnnual | currency}`; nhận diện đúng phạm vi cấp học (N/A); hỗ trợ kiểm toán dữ liệu và M&E confirm; giao diện compact hiển thị nhiều thông tin.
+- **Actual:** Hệ thống đã hoàn thành trọn vẹn, kiểm thử qua tAPI xác nhận trả về đầy đủ 60 chỉ tiêu, 5 cơ sở trường, nội suy câu chính xác, đã publish lên FUI server (`# 0 unpublished file(s)`).
 - **Flow Analysis:**
-  - **Input:** `@PeriodKey` (VD: '2026-09'), `@DonViID` (VD: 'ALL', 'MNLK', 'TH'...) từ Vue dropdown.
-  - **Process:** Frontend gọi API `eSign/KPI_GetCorrelations` -> Stored Procedure `spAPI_KPI_GetCorrelations` truy vấn `tblKPI_PeriodSnapshots` & `tblKPI_CausalAssumptions` -> Tính toán động chuỗi JSON `ParamsJson` -> Trả Result Set 2 danh sách `tblKPI_CausalNarratives` -> Vue nạp vào `causalNarrativesList` -> Helper `getNarrative()` và `interpolateTemplate()` thay thế placeholder `{Variable}` thành `<b class="tx-strong">Value</b>`.
-  - **State:** `causalNarrativesList`, `correlationsList`, `periodSnapshots` lưu trong state Vue reactivity của component `uc-kpi-ops`.
-  - **Output:** Khối văn bản chuỗi nhân quả hiển thị trực quan trên 4 Tile KPI của Page 0 và banner Hero Sentence trong Causal Modal.
-  - **Side Effects:** Bảng mới `tblKPI_CausalNarratives` trên database `eSignature`.
+  - **Input:** CSDL `tblKPI_Definitions`, `tblKPI_Thresholds`, `tblKPI_Parameters`, `tblKPI_CausalNarratives`.
+  - **Process:** Stored Procedures nạp ContextStore phẳng 89 biến -> `Token Expression Evaluator` trong Vue giải toán & format -> Live Preview Sandbox render câu thời gian thực -> Ghi nhận xác nhận kiểm toán M&E -> Hiển thị trên Dashboard.
+  - **State:** Lưu trữ đồng bộ trên database `eSignature` qua tAPI.
+  - **Output:** Giao diện Ma trận ngang 60 KPI x 5 cơ sở, Hồ sơ tham số 5 cơ sở, Visual Studio với Variable Chips tinh giản.
+  - **Side Effects:** Giữ nguyên Result Sets 0 và 1 của các SP cũ, bảo toàn tương thích ngược 100%.
 
 ## 5. RELEVANT CODE & ARTIFACT REFERENCES
-- **Specs / Plans / Issues / ADRs:**
-  - `docs/2026.10.19_Phương án xây dựng Dashboard vận hành.docx`
-  - `docs/KPI_DASHBOARD_CHECKLIST.md`
-  - `docs/Bao_cao_tong_ket_LHBS_NH_2025-2026_Ban_trinh_xin_y_kien.docx`
+- **Specs / Plans:** `dynamic-kpi-causal-config-scale-plan.md`, `walkthrough.md`.
 - **Code Locations:**
-  - `lhbs-esign/modules/kpi-ops-dashboard/components/uc-kpi-ops.vue:119-260` (`uc-kpi-ops` 4 Tile KPI Causal Blocks)
-  - `lhbs-esign/modules/kpi-ops-dashboard/components/uc-kpi-ops.vue:2325-2365` (`causalHeroSentence`)
-  - `lhbs-esign/modules/kpi-ops-dashboard/components/uc-kpi-ops.vue:3000-3075` (`fetchPeriodData`, `getNarrative`, `interpolateTemplate`)
-  - `lhbs-esign/_db/esign/spAPI_KPI_GetCorrelations.sql:65-175` (Stored Procedure dynamic calculation logic)
+  - `modules/kpi-causal-config/components/uc-kpi-causal-config.vue`: Component Quản trị cấu hình (3 không gian).
+  - `modules/kpi-causal-config/style.css`: Toàn bộ CSS Compact UI.
+  - `modules/kpi-ops-dashboard/components/uc-kpi-ops.vue`: Dashboard Vận hành (Expression Engine).
+  - `_db/esign/spAPI_KPI_GetCorrelations.sql`: Stored Procedure cấp dữ liệu tương quan và ContextStore.
+  - `_db/esign/spAPI_KPI_GetCausalEngineData.sql`: Stored Procedure cấp 7 result sets cấu hình.
 
 ## 6. SESSION KNOWLEDGE (FACTS vs HYPOTHESES)
 ### Verified Facts
-- [FACT] Bảng `tblKPI_CausalNarratives` đã lưu trữ 12 mẫu câu chuỗi nhân quả chuẩn hóa (Evidence: `fui query --db esign "SELECT COUNT(*) FROM tblKPI_CausalNarratives"` = 12).
-- [FACT] `spAPI_KPI_GetCorrelations` trả đúng 3 Result Sets: Result Set 0 (Correlations), Result Set 1 (Summary), Result Set 2 (Narratives tính toán động) (Evidence: test chạy trên SQL Server 2019 qua `fui query`).
-- [FACT] Component `uc-kpi-ops.vue` và CSS đã publish thành công lên FUI server, ComID 13057, `# 0 unpublished file(s)` (Evidence: `fui file status`).
-- [FACT] Đã xử lý triệt để lỗi duplicate dấu phần trăm (`%%`) trong hàm `interpolateTemplate` bằng regex smart deduplication.
-
-### Active Hypotheses
-*None* (Tất cả tính năng đã được implement và verify hoàn tất).
+- [FACT] tAPI không hỗ trợ default parameter trong khai báo SP header (`@Param = '...'`), phải bỏ giá trị mặc định khỏi header để tAPI router nhận diện.
+- [FACT] Cần chạy `GRANT EXECUTE ON [dbo].[spAPI_...] TO [public] AS [dbo]` để tAPI có quyền gọi các stored procedure mới.
+- [FACT] Quy mô 60 KPI gồm 4 nhóm: 7 TS, 20 CM, 24 DV, 9 TC; 5 cơ sở: MNTB, MNLK, TH, THCS, THPT.
+- [FACT] Tổng Sĩ số KH 2.873 HS cân đối chuẩn với công suất 3.200 HS toàn hệ thống; Tiểu học Sĩ số 1.020 HS / Công suất 1.150 HS.
 
 ### Assumptions & Unknowns
-- [ASSUMPTION] Tỷ lệ học phí và số liệu Leads TVTS tháng 9/2026 trong `tblKPI_CausalAssumptions` khớp với dữ liệu kế toán thực tế của trường.
-- [UNKNOWN] Thời điểm các hệ thống nguồn (CRM, HRM, Helpdesk CSVC) hoàn thiện để mở API trực tiếp thay cho Staging dữ liệu.
+- [ASSUMPTION] Dữ liệu snapshot hàng tháng của 5 cơ sở sẽ tiếp tục được đồng bộ định kỳ vào `tblKPI_PeriodSnapshots`.
 
 ## 7. TESTS, LOGS & DIAGNOSTICS
 - **Overall Verification Status:** `PASS`
-- **Test / Benchmark Runs:**
-  - Node.js Syntax & Div Balance Check: `div tags: open=413, close=413; Script syntax check: PASSED`.
-  - Node.js Template Interpolation Test: Xác nhận output format chính xác cả khi param có hoặc không có `%`.
-  - SP Execution Test: `EXEC spAPI_KPI_GetCorrelations @PeriodKey = '2026-09', @DonViID = 'MNLK'` -> Trả về đúng 12 narratives với params tính động cho MNLK.
-  - FUI Publish Diff Check: `fui remote diff` xác nhận `uc-kpi-ops.vue` identical 100% với server; `style.css` khớp 100% nội dung (1908 dòng không rỗng).
+- **Test Runs:**
+  - Kiểm tra cú pháp Vue SFC & cân bằng thẻ HTML (`Divs balance: 112/112`) -> **PASS**
+  - Kiểm tra tAPI `eSign/KPI_GetCausalEngineData` (7 Result Sets) -> **PASS**
+  - Kiểm tra tAPI `eSign/KPI_GetCorrelations` (ContextStore 89 biến) -> **PASS**
+  - Kiểm tra tAPI 3 API Save (`SaveThreshold`, `SaveParameter`, `SaveNarrative`) -> **PASS**
+  - Kiểm tra nội suy câu cho 5 cơ sở trường và kịch bản Nghịch lý/Kiểm toán -> **PASS**
+  - Kiểm tra FUI publish ledger (`# 0 unpublished file(s)`) -> **PASS**
 
 ## 8. ATTEMPTS & DEAD ENDS (DO NOT REPEAT)
-- Attempt 1: Nối chuỗi SQL không có tiền tố `N` dẫn đến lỗi font tiếng Việt trong chuỗi JSON (`tri?u`).
-  - Result: Ký tự Unicode bị chuyển thành dấu hỏi chấm.
-  - Conclusion: Luôn dùng tiền tố `N'...'` cho chuỗi ký tự tiếng Việt trong SQL Server khi nối JSON.
-- Attempt 2: Đẩy `style.css` qua `fui file push` bị skip do ledger hash khác biệt về dòng trống.
-  - Result: Server chưa cập nhật 52 dòng cuối.
-  - Conclusion: Sử dụng `fui module preview` và `fui module publish html --approval <token>` để đồng bộ toàn diện CSS lên module server.
+- *Attempt:* Khai báo `@ThresholdID INT = NULL` trong header của Stored Procedure `spAPI_KPI_SaveThreshold`.
+  - *Result:* tAPI guard báo lỗi và tAPI router trả về `The function doesn't exist`.
+  - *Conclusion:* Luôn khai báo tham số thuần không có `= default` trong SP header; đưa logic gán mặc định vào trong thân `BEGIN ... END`.
 
 ## 9. CONSTRAINTS & RISKS
-- **Contracts to Preserve:**
-  - Stored Procedure `spAPI_KPI_GetCorrelations` bắt buộc duy trì Result Set 0 và 1 như cũ để không làm gãy các component/consumer đang đọc `corrRes[0]`.
-  - Không thay đổi props và data binding hiện hữu của `uc-kpi-ops.vue`.
-- **Side Effects / Tradeoffs:**
-  - Việc gọi thêm Result Set 2 trong stored procedure làm tăng payload trả về thêm ~3KB (hoàn toàn chấp nhận được và không ảnh hưởng hiệu năng).
+- **Contracts to Preserve:** Giữ nguyên Result Sets 0 và 1 của `spAPI_KPI_GetCorrelations` để không phá vỡ các biểu đồ hoặc màn hình cũ đang gọi procedure này.
+- **Side Effects / Tradeoffs:** Không có. Toàn bộ mã nguồn đã đồng bộ trên FUI.

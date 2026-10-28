@@ -80,7 +80,7 @@
       <div class="uc-kpi-ops__bhead">
         <div class="uc-kpi-ops__bhead-k">Tóm tắt Điều hành Hội đồng trường · {{ currentPeriodName }} · {{ currentUnitTitle }}</div>
         <div class="uc-kpi-ops__bhead-t">
-          Tổng quy mô đạt <b>{{ formatNumber(displayStudents) }} học sinh</b> (Lấp đầy <b>{{ displayFillRate }}%</b> công suất). Tỷ lệ rút học ròng ở mức <b>{{ displayWithdrawRate }}%</b> ({{ displayWithdrawCount }} HS - ngưỡng an toàn &lt; 10%). Tỷ lệ hoàn thành bài tập trực tuyến LMS đạt <b>{{ computedLmsData.rate }}</b>. Lợi nhuận gộp dịch vụ trường học đạt <b>{{ computedFinanceData.grossMargin }}</b> (Doanh thu <b>{{ computedFinanceData.rev }}</b>). Duy trì <b>0 sự cố</b> an toàn học đường.
+          Tổng quy mô đạt <b>{{ formatNumber(displayStudents) }} học sinh</b> (Lấp đầy <b>{{ displayFillRate }}%</b> công suất). Tỷ lệ rút học ròng ở mức <b>{{ displayWithdrawRate }}%</b> ({{ displayWithdrawCount }} HS - ngưỡng an toàn {{ getMetricThresholdLabel('TS04') }}). Tỷ lệ hoàn thành bài tập trực tuyến LMS đạt <b>{{ computedLmsData.rate }}</b>. Lợi nhuận gộp dịch vụ trường học đạt <b>{{ computedFinanceData.grossMargin }}</b> (Doanh thu <b>{{ computedFinanceData.rev }}</b>). Duy trì <b>0 sự cố</b> an toàn học đường.
         </div>
         <div class="uc-kpi-ops__bhead-s">
           Kết nối trực tiếp CSDL eSign &amp; tapi.lhbs.vn · Tự động đồng bộ phản hồi theo bộ lọc cơ sở &amp; kỳ chốt sổ.
@@ -118,8 +118,8 @@
 
           <!-- Mắt xích Nhân quả Ngữ cảnh Tile 1 -->
           <div class="uc-kpi-ops__bkpi-causal" @click.stop="openCausalChainForCard('ENROLLMENT')">
-            <div class="causal-pill">🔗 Chuỗi Nhân Quả: Phễu CRM &rarr; Sĩ số &rarr; Doanh thu</div>
-            <div class="causal-desc" v-html="getNarrative('NARRATIVE_ENROLLMENT_CONV', 'Tỷ lệ chuyển đổi đạt {TyLeChuyenDoi}%. Mỗi +1% chuyển đổi giúp tuyển thêm {SoHSTuyenThem} HS, tạo thêm {DoanhThuThem} doanh thu học phí/năm.', { TyLeChuyenDoi: displayConversionRate, SoHSTuyenThem: '~6', DoanhThuThem: '~420 tr' })"></div>
+            <div class="causal-pill">{{ renderCausalTitle('TS06', '🔗 Chuỗi: Phễu CRM → Sĩ số → Doanh thu') }}</div>
+            <div class="causal-desc" v-html="renderCausalNarrative('TS06', 'NARRATIVE_ENROLLMENT_CONV')"></div>
             <div class="causal-cta">
               <span>Phân tích tác động tuyển thêm &rsaquo;</span>
             </div>
@@ -140,7 +140,7 @@
                 <span class="gl-icon">!</span>
               </button>
             </div>
-            <b :class="parseFloat(displayWithdrawRate) < 10 ? 'tx-good' : 'tx-bad'">{{ displayWithdrawRate }}% {{ parseFloat(displayWithdrawRate) < 10 ? 'AN TOÀN' : 'CẢNH BÁO' }}</b>
+            <b :class="'tx-' + getMetricStatus('TS04')">{{ displayWithdrawRate }}% {{ getMetricStatusText('TS04') }}</b>
           </div>
           <div class="uc-kpi-ops__bkpi-m">
             <div class="uc-kpi-ops__bkpi-v">{{ displayWithdrawRate }}% <small>({{ displayWithdrawCount }} HS)</small></div>
@@ -160,8 +160,8 @@
 
           <!-- Mắt xích Nhân quả Ngữ cảnh Tile 2 -->
           <div class="uc-kpi-ops__bkpi-causal is-bad" @click.stop="openCausalChainForCard('WITHDRAW')">
-            <div class="causal-pill">🔗 Chuỗi Nhân Quả: Xe bus/CSVC &rarr; Rút học &rarr; Thất thu LTV</div>
-            <div class="causal-desc" v-html="getNarrative('NARRATIVE_WITHDRAW_BUS', '{SoHSRut} HS ({TyLeRut}%) rút vì xa trường/xe bus &rarr; Thất thu {TienHocPhi} học phí + {TienBus} xe bus/năm.', { SoHSRut: displayReasonFar, TyLeRut: ((displayReasonFar / (displayWithdrawCount || 1)) * 100).toFixed(0), TienHocPhi: '1.365 tỷ', TienBus: '252 triệu' })"></div>
+            <div class="causal-pill">{{ renderCausalTitle('TS04', '🔗 Chuỗi: Xe bus/CSVC → Rút học → Thất thu LTV') }}</div>
+            <div class="causal-desc" v-html="renderCausalNarrative('TS04', 'NARRATIVE_WITHDRAW_BUS')"></div>
             <div class="causal-cta">
               <span>Mở Dialog Vùng Tác Động Rút Học &rsaquo;</span>
             </div>
@@ -202,8 +202,8 @@
 
           <!-- Mắt xích Nhân quả Ngữ cảnh Tile 3 -->
           <div class="uc-kpi-ops__bkpi-causal is-good" @click.stop="openCausalChainForCard('LMS')">
-            <div class="causal-pill">🔗 Chuỗi Nhân Quả: Học liệu số &rarr; Tự giác làm bài &rarr; Giữ chân HS</div>
-            <div class="causal-desc" v-html="getNarrative('NARRATIVE_LMS_QUALITY', '{TyLeHocLieuSo}% học liệu số hoàn thiện thúc đẩy {TyLeLamBaiLMS}% học sinh làm bài đúng hạn &rarr; Phát hiện sớm học lực yếu, bảo toàn sĩ số không phát sinh rút học vì học thuật.', { TyLeHocLieuSo: '100', TyLeLamBaiLMS: (computedLmsData.rate || '89.6').replace('%', '') })"></div>
+            <div class="causal-pill">{{ renderCausalTitle('CM08', '🔗 Chuỗi: Học liệu số → Tự giác làm bài → Giữ chân HS') }}</div>
+            <div class="causal-desc" v-html="renderCausalNarrative('CM08', 'NARRATIVE_LMS_QUALITY')"></div>
             <div class="causal-cta">
               <span>Xem ma trận chất lượng giáo dục &rsaquo;</span>
             </div>
@@ -244,8 +244,8 @@
 
           <!-- Mắt xích Nhân quả Ngữ cảnh Tile 4 -->
           <div class="uc-kpi-ops__bkpi-causal is-good" @click.stop="openCausalChainForCard('FINANCE')">
-            <div class="causal-pill">🔗 Chuỗi Nhân Quả: LN Dịch vụ &rarr; Tái đầu tư CSVC &rarr; Giảm rút học</div>
-            <div class="causal-desc" v-html="getNarrative('NARRATIVE_FINANCE_REINVEST', 'CLB đạt {DoanhThuCLB} ({SoHocVienCLB}), LN gộp dịch vụ {LoiNhuanGop} tạo quỹ giải ngân 100% bảo trì CSVC/Điều hòa mà không tăng học phí.', { DoanhThuCLB: computedFinanceData.clbRev, SoHocVienCLB: computedFinanceData.clbStudents, LoiNhuanGop: computedFinanceData.grossMargin })"></div>
+            <div class="causal-pill">{{ renderCausalTitle('TC55', '🔗 Chuỗi: LN Dịch vụ → Tái đầu tư CSVC → Giảm rút học') }}</div>
+            <div class="causal-desc" v-html="renderCausalNarrative('TC55', 'NARRATIVE_FINANCE_REINVEST')"></div>
             <div class="causal-cta">
               <span>Xem ma trận tái đầu tư tài chính &rsaquo;</span>
             </div>
@@ -1974,6 +1974,8 @@
       kpiGroupSummary: [],
       correlationsList: [],
       causalNarrativesList: [],
+      contextStore: {},
+      metricThresholds: [],
       goliveSpecsList: [],
       defaultGoliveSpecs: [
         {
@@ -2324,65 +2326,36 @@
       };
     },
     causalHeroSentence() {
+      const scenarioCodeMap = {
+        MO_TUYEN_BUS: "NARRATIVE_BUS_EXPANSION",
+        GIU_CHAN_CHUYEN_CAP: "NARRATIVE_TRANSITION_INCENTIVE",
+        MO_RONG_CLB: "NARRATIVE_CLB_GROWTH",
+        SU_CO_AN_TOAN: "NARRATIVE_CAMPUS_SAFETY",
+        TUYEN_THEM: "NARRATIVE_CAPACITY_OCCUPANCY",
+        RUT_HOC: "NARRATIVE_WITHDRAW_BUS",
+      };
+      const narrativeCode = scenarioCodeMap[this.causalScenario];
+      const item = this.causalNarrativesList.find((n) => n.NarrativeCode === narrativeCode);
+
+      if (item && item.TemplatePattern) {
+        const scenarioParams = {
+          "SCENARIO.BusRoutes": this.causalBusRoutes,
+          "SCENARIO.BusStudents": this.causalBusRoutes * this.causalBusStudentsPerRoute,
+          "SCENARIO.DiscountPct": this.causalDiscountPct,
+          "SCENARIO.TransitionRetained": this.causalTransitionRetained,
+          "SCENARIO.NewClbCount": this.causalNewClbCount,
+          "SCENARIO.AddClbStudents": this.causalAddClbStudents,
+          "SCENARIO.AddN": this.causalAddN,
+          "SCENARIO.WithdrawN": this.causalN,
+        };
+        const html = this.evaluateTemplate(item.TemplatePattern, this.contextStore, scenarioParams);
+        return html.replace(/<[^>]*>/g, "");
+      }
+
+      // Fallback tính toán nếu chưa cấu hình bản ghi tương ứng
       const c = this.causalCalc;
       const reasonName = this.currentCausalReason ? this.currentCausalReason.ReasonName : "Chưa rõ lý do";
       const act = this.currentCausalReason ? this.currentCausalReason.RecommendedAction : "Rà soát đối thoại với phụ huynh";
-      if (this.causalScenario === "TUYEN_THEM") {
-        return c.n + " học sinh tuyển thêm mang lại " + c.revNowSign.replace("+", "") + " tỷ doanh thu năm nay, khoảng " + c.revFutureSign.replace("+", "") + " tỷ doanh thu trọn vòng đời các năm sau, nâng tỷ lệ lấp đầy từ " + c.fillPctBefore + "% lên " + c.fillPctAfter + "%. Phụ trách tiếp nhận: " + this.currentCausalOwnerTitle + ".";
-      }
-      if (this.causalScenario === "MO_TUYEN_BUS") {
-        const totalBusStudents = this.causalBusRoutes * this.causalBusStudentsPerRoute;
-        return this.getNarrativeText(
-          "NARRATIVE_BUS_EXPANSION",
-          "Mở {SoTuyenBus} tuyến xe bus mới đưa đón {SoHSDiBus} học sinh tại trục {TrucTuyen}, giúp triệt tiêu {TyLeGiamRut}% lý do rút học xa nhà, bảo toàn khoảng {HocPhiBaoToan} học phí và tạo thêm {DoanhThuBus} doanh thu xe bus mỗi năm. Đầu mối: {DauMoi}.",
-          {
-            SoTuyenBus: this.causalBusRoutes,
-            SoHSDiBus: totalBusStudents,
-            TrucTuyen: "Trảng Dài - Hố Nai",
-            TyLeGiamRut: "25.7",
-            HocPhiBaoToan: "1.5 tỷ",
-            DoanhThuBus: "360 triệu",
-            DauMoi: "Tổ Xe Bus & Bán Trú",
-          }
-        );
-      }
-      if (this.causalScenario === "GIU_CHAN_CHUYEN_CAP") {
-        return this.getNarrativeText(
-          "NARRATIVE_TRANSITION_INCENTIVE",
-          "Áp dụng ưu đãi {UuDaiPct}% học phí trọn cấp giữ chân {SoHSChuyenCap} học sinh cuối cấp, nâng tỷ lệ chuyển tiếp từ {TyLeCu}% lên {TyLeMoi}%, bảo vệ quy mô đầu cấp và tiết kiệm hơn {TietKiemCAC} chi phí tuyển sinh Marketing (CAC). Đầu mối: {DauMoi}.",
-          {
-            UuDaiPct: this.causalDiscountPct,
-            SoHSChuyenCap: this.causalTransitionRetained,
-            TyLeCu: "70",
-            TyLeMoi: "85",
-            TietKiemCAC: "150 triệu VNĐ",
-            DauMoi: "Hiệu trưởng & Ban Tuyển sinh",
-          }
-        );
-      }
-      if (this.causalScenario === "MO_RONG_CLB") {
-        return this.getNarrativeText(
-          "NARRATIVE_CLB_GROWTH",
-          "Phát triển thêm {SoCLBMoi} CLB STEM/AI thu hút {SoHocVienMoi} học sinh, đóng góp thêm {DoanhThuThemCLB} doanh thu dịch vụ, thúc đẩy tiến độ hoàn thành mốc 1 triệu USD (KPI 3.2.1) và nâng biên lợi nhuận gộp lên trên {MucTieuLoiNhuan}%.",
-          {
-            SoCLBMoi: this.causalNewClbCount,
-            SoHocVienMoi: this.causalAddClbStudents,
-            DoanhThuThemCLB: "~450 triệu",
-            MucTieuLoiNhuan: "49",
-          }
-        );
-      }
-      if (this.causalScenario === "SU_CO_AN_TOAN") {
-        return this.getNarrativeText(
-          "NARRATIVE_CAMPUS_SAFETY",
-          "Duy trì nghiêm ngặt tiêu chuẩn {SoNgoDoc} sự cố ngộ độc thực phẩm (ISO 22000) và {SoTaiNan} tai nạn thương tích học đường. Triệt tiêu hoàn toàn rủi ro rút học dây chuyền và bảo vệ chỉ số hài lòng phụ huynh đạt {TyLeHaiLongPH}%.",
-          {
-            SoNgoDoc: "0",
-            SoTaiNan: "0",
-            TyLeHaiLongPH: "93.6",
-          }
-        );
-      }
       return c.n + " học sinh không phải '-" + c.n + " trên sĩ số', là " + c.revNowSign.replace("−", "").replace("-", "") + " tỷ doanh thu năm nay, khoảng " + c.revFutureSign.replace("−", "").replace("-", "") + " tỷ doanh thu các năm sau, và " + c.leadsNeed + " lead phải tìm thêm để bù. Chịu trách nhiệm giải trình: " + this.currentCausalOwnerTitle + ". Lý do " + reasonName.toLowerCase() + " — " + act + ".";
     },
     causalTreeNodes() {
@@ -3008,6 +2981,16 @@
           if (corrRes[2] && Array.isArray(corrRes[2])) {
             this.causalNarrativesList = corrRes[2];
           }
+          if (corrRes[3] && Array.isArray(corrRes[3])) {
+            const store = {};
+            corrRes[3].forEach((item) => {
+              store[item.VarKey] = item.VarValue;
+            });
+            this.contextStore = store;
+          }
+          if (corrRes[4] && Array.isArray(corrRes[4])) {
+            this.metricThresholds = corrRes[4];
+          }
         }
 
         this.apiSyncStatus = "Dữ liệu kỳ đã chốt sổ (CSDL eSign)";
@@ -3028,6 +3011,152 @@
       if (!str) return null;
       const m = str.match(/https?:\/\/[^\s\)\>]+/);
       return m ? m[0] : null;
+    },
+    // ==========================================
+    // DYNAMIC EXPRESSION & CAUSAL ENGINE (LHBS)
+    // ==========================================
+    evaluateMathExpr(expr, context) {
+      if (!expr) return 0;
+      let parsed = expr.replace(/([a-zA-Z0-9_\.]+)/g, (match) => {
+        if (match === "Math" || match === "true" || match === "false") return match;
+        if (context && context[match] !== undefined) {
+          const val = Number(context[match]);
+          return isNaN(val) ? `"${context[match]}"` : val;
+        }
+        return match;
+      });
+      try {
+        const fn = new Function(`return (${parsed});`);
+        const res = fn();
+        return typeof res === "number" && !isNaN(res) ? res : parsed;
+      } catch (e) {
+        return 0;
+      }
+    },
+    applyExpressionFilter(val, filterStr) {
+      if (!filterStr) return val;
+      const parts = filterStr.trim().split(":");
+      const fName = parts[0].trim();
+      const fArg = parts[1] ? parts[1].trim() : null;
+
+      if (fName === "currency") {
+        const num = Number(val);
+        if (isNaN(num)) return val;
+        if (Math.abs(num) >= 1000000000) {
+          return (num / 1000000000).toFixed(3).replace(/\.?0+$/, "").replace(".", ",") + " tỷ";
+        } else if (Math.abs(num) >= 1000) {
+          return (num / 1000).toFixed(3).replace(/\.?0+$/, "").replace(".", ",") + " tỷ";
+        } else {
+          return Math.round(num).toLocaleString("vi-VN") + " triệu";
+        }
+      }
+      if (fName === "round") {
+        const dec = fArg ? parseInt(fArg, 10) : 1;
+        const num = Number(val);
+        if (isNaN(num)) return val;
+        return num.toFixed(dec).replace(".", ",");
+      }
+      if (fName === "percent") {
+        const num = Number(val);
+        if (isNaN(num)) return val + "%";
+        return num.toFixed(1).replace(".", ",") + "%";
+      }
+      if (fName === "number") {
+        const num = Number(val);
+        if (isNaN(num)) return val;
+        return Math.round(num).toLocaleString("vi-VN");
+      }
+      return val;
+    },
+    evaluateTemplate(pattern, context = {}, scenarioParams = {}) {
+      if (!pattern) return "";
+      const merged = { ...context, ...scenarioParams };
+      return pattern.replace(/\{([^}]+)\}/g, (match, inner) => {
+        const [rawExpr, rawFilter] = inner.split("|").map((s) => s.trim());
+        let filterName = rawFilter;
+        let filterArg = null;
+        if (rawFilter && rawFilter.includes("(") && rawFilter.endsWith(")")) {
+          const m = rawFilter.match(/([a-zA-Z0-9_]+)\(([^)]*)\)/);
+          if (m) {
+            filterName = m[1];
+            filterArg = m[2].replace(/['"]/g, "");
+          }
+        }
+        let val = null;
+        if (merged[rawExpr] !== undefined) {
+          val = merged[rawExpr];
+        } else {
+          val = this.evaluateMathExpr(rawExpr, merged);
+        }
+        if (filterName === "default" && (val === null || val === undefined || val === 0 || val === "")) {
+          val = filterArg;
+        } else if (filterName) {
+          val = this.applyExpressionFilter(val, filterName + (filterArg ? ":" + filterArg : ""));
+        }
+        return `<b class="tx-strong">${val}</b>`;
+      });
+    },
+    evaluateCondition(conditionExpr, context = {}) {
+      if (!conditionExpr || conditionExpr === "1" || conditionExpr === "true") return true;
+      let expr = conditionExpr.replace(/([a-zA-Z0-9_\.]+)/g, (match) => {
+        if (match === "true" || match === "false" || match === "AND" || match === "OR") return match;
+        if (context && context[match] !== undefined) {
+          const num = Number(context[match]);
+          return isNaN(num) ? `"${context[match]}"` : num;
+        }
+        return match;
+      });
+      expr = expr.replace(/\bAND\b/g, "&&").replace(/\bOR\b/g, "||");
+      try {
+        const fn = new Function(`return Boolean(${expr});`);
+        return fn();
+      } catch (e) {
+        return false;
+      }
+    },
+    getMetricThreshold(kpiCode) {
+      return this.metricThresholds.find((t) => t.KpiCode === kpiCode) || null;
+    },
+    getMetricThresholdLabel(kpiCode) {
+      const t = this.getMetricThreshold(kpiCode);
+      if (!t) return "< 10%";
+      return (t.ComparisonOperator || "<=") + " " + t.TargetValue + (kpiCode === "TS04" ? "%" : "");
+    },
+    getMetricStatus(kpiCode) {
+      const thr = this.getMetricThreshold(kpiCode);
+      let val = parseFloat(this.contextStore[kpiCode + ".Actual"]);
+      if (isNaN(val)) {
+        if (kpiCode === "TS04") val = parseFloat(this.displayWithdrawRate);
+        else if (kpiCode === "TS01") val = parseFloat(this.displayCapacityPct);
+      }
+      if (!thr || isNaN(val)) return "good";
+      if (thr.ComparisonOperator === "<=" || thr.ComparisonOperator === "<") {
+        if (val > thr.TargetValue) return "bad";
+        if (val > thr.WarnThreshold) return "warn";
+        return "good";
+      } else {
+        if (thr.CriticalThreshold && val < thr.CriticalThreshold) return "bad";
+        if (val < thr.WarnThreshold) return "warn";
+        return "good";
+      }
+    },
+    getMetricStatusText(kpiCode) {
+      const thr = this.getMetricThreshold(kpiCode);
+      const st = this.getMetricStatus(kpiCode);
+      if (!thr) return st === "good" ? "AN TOÀN" : "CẢNH BÁO";
+      if (st === "good") return thr.StatusGoodLabel || "AN TOÀN";
+      if (st === "warn") return thr.StatusWarnLabel || "THEO DÕI";
+      return thr.StatusBadLabel || "CẢNH BÁO";
+    },
+    renderCausalNarrative(kpiCode, defaultCode, fallbackPattern, fallbackParams = {}) {
+      const item = this.causalNarrativesList.find((n) => n.AnchorKpiCode === kpiCode || n.NarrativeCode === defaultCode);
+      if (!item) return this.getNarrative(defaultCode, fallbackPattern, fallbackParams);
+      const pattern = item.TemplatePattern || fallbackPattern;
+      return this.evaluateTemplate(pattern, this.contextStore, fallbackParams);
+    },
+    renderCausalTitle(kpiCode, defaultTitle) {
+      const item = this.causalNarrativesList.find((n) => n.AnchorKpiCode === kpiCode);
+      return item && item.Title ? item.Title : defaultTitle;
     },
     getNarrative(code, fallbackPattern = "", fallbackParams = {}) {
       const item = this.causalNarrativesList.find((n) => n.NarrativeCode === code);
