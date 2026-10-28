@@ -1068,15 +1068,15 @@
   animation: ucKpiFade 0.18s ease-out;
 }
 .uc-kpi-ops__causal-dialog {
-  width: 100%;
-  max-width: 94vw;
-  height: 100%;
-  max-height: 96vh;
+  width: 96vw;
+  max-width: 1560px;
+  height: auto;
+  max-height: 90vh;
   background: #f8fafc;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
-  border-radius: 4px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+  border-radius: 6px;
   overflow: hidden;
   animation: ucKpiRise 0.22s ease-out;
 }
@@ -1091,23 +1091,24 @@
 .uc-kpi-ops__causal-head {
   background: #1e293b;
   color: #fff;
-  padding: 12px 20px;
+  padding: 6px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 44px;
 }
 .uc-kpi-ops__causal-x {
   background: transparent;
   border: none;
   color: #fff;
-  font-size: 28px;
+  font-size: 20px;
   line-height: 1;
   cursor: pointer;
-  padding: 0 6px;
-  margin-left: 8px;
+  padding: 2px 6px;
+  margin-left: 6px;
   opacity: 0.8;
   transition: opacity 0.2s, color 0.2s;
 }
@@ -1116,20 +1117,23 @@
   color: #f87171;
 }
 .uc-kpi-ops__causal-kicker {
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: #94a3b8;
   font-weight: 700;
+  line-height: 1.2;
 }
 .uc-kpi-ops__causal-head-title {
-  font-size: 16px;
+  font-size: 13.5px;
   font-weight: 700;
   color: #f8fafc;
-  margin-top: 2px;
+  margin-top: 1px;
+  line-height: 1.25;
 }
 .uc-kpi-ops__causal-scenarios {
   display: flex;
+  align-items: center;
   gap: 6px;
   flex-wrap: wrap;
 }
@@ -1137,9 +1141,10 @@
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #e2e8f0;
-  padding: 6px 14px;
+  padding: 4px 10px;
   border-radius: 3px;
-  font-size: 12.5px;
+  font-size: 11.5px;
+  line-height: 1.2;
   cursor: pointer;
   font-weight: 600;
   transition: all 0.2s;
@@ -1152,14 +1157,6 @@
   background: #0ea5e9;
   border-color: #0284c7;
   color: #fff;
-}
-.uc-kpi-ops__causal-cfgbtn {
-  background: #334155 !important;
-  color: #f1f5f9 !important;
-  border: 1px solid #475569 !important;
-}
-.uc-kpi-ops__causal-cfgbtn:hover {
-  background: #475569 !important;
 }
 
 /* Layout */
@@ -2994,4 +2991,628 @@
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+}
+
+/* ==========================================================
+   Executive Safeguard Strip & Quality Gatekeeper (HĐQT)
+   ========================================================== */
+.uc-kpi-ops__safeguard-strip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: linear-gradient(90deg, #f0fdf4 0%, #ffffff 100%);
+  border: 1px solid #bbf7d0;
+  border-left: 4px solid #16a34a;
+  border-radius: 4px;
+  padding: 8px 14px;
+  margin-bottom: 12px;
+  font-size: 11.5px;
+  color: #166534;
+}
+
+.uc-kpi-ops__safeguard-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.uc-kpi-ops__safeguard-item.is-zero-tol {
+  font-weight: 600;
+}
+
+.uc-kpi-ops__safeguard-item .safeguard-dot {
+  width: 7px;
+  height: 7px;
+  background: #16a34a;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.uc-kpi-ops__safeguard-item .safeguard-badge {
+  background: #1B365D;
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.is-bias-warning {
+  display: inline-block;
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+
+/* ==========================================================
+   Executive Chart Components (Visual Enhancements)
+   Replacing heavy tables with compact, intuitive charts
+   ========================================================== */
+
+/* 1. View Mode Switcher (Biểu đồ / Bảng) */
+.uc-kpi-ops__view-switcher {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 2px;
+  gap: 2px;
+}
+.uc-kpi-ops__switcher-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.uc-kpi-ops__switcher-btn:hover {
+  color: var(--accent2);
+}
+.uc-kpi-ops__switcher-btn.is-active {
+  background: #ffffff;
+  color: var(--accent2);
+  font-weight: 700;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+/* 2. Horizontal Stacked Bar Chart: Cơ Cấu Sĩ Số 12 Khối */
+.uc-kpi-ops__grade-chart-wrap {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 4px;
+}
+.uc-kpi-ops__chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  color: #475569;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.uc-kpi-ops__chart-legend .legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+.uc-kpi-ops__chart-legend .legend-dot.is-boy { background: #1e40af; }
+.uc-kpi-ops__chart-legend .legend-dot.is-girl { background: #0d9488; }
+.uc-kpi-ops__chart-legend .legend-dot.is-thin { background: #ea580c; }
+.uc-kpi-ops__chart-legend .legend-note {
+  margin-left: auto;
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 11px;
+}
+.uc-kpi-ops__grade-bars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.uc-kpi-ops__grade-bar-row {
+  display: grid;
+  grid-template-columns: 85px 1fr 140px;
+  align-items: center;
+  gap: 12px;
+}
+.uc-kpi-ops__grade-bar-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+}
+.uc-kpi-ops__grade-bar-track {
+  position: relative;
+  background: #f1f5f9;
+  height: 20px;
+  border-radius: 3px;
+  overflow: visible;
+}
+.uc-kpi-ops__grade-bar-inner {
+  display: flex;
+  height: 100%;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+  transition: width 0.3s ease;
+}
+.uc-kpi-ops__grade-segment {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: #ffffff;
+  user-select: none;
+}
+.uc-kpi-ops__grade-segment.is-boy {
+  background: #1e40af;
+}
+.uc-kpi-ops__grade-segment.is-girl {
+  background: #0d9488;
+}
+.uc-kpi-ops__grade-benchmark-line {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  background: #dc2626;
+  z-index: 2;
+  opacity: 0.75;
+}
+.uc-kpi-ops__grade-bar-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.uc-kpi-ops__grade-bar-stat .stat-total {
+  font-weight: 700;
+  color: #0f172a;
+}
+.uc-kpi-ops__grade-bar-stat .stat-pct {
+  color: #64748b;
+  font-size: 11px;
+}
+
+/* 3. Ranked Horizontal Bar: Top Lý Do Rút Học */
+.uc-kpi-ops__withdraw-chart-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+}
+.uc-kpi-ops__withdraw-rank-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 9px 12px;
+  transition: border-color 0.15s ease;
+}
+.uc-kpi-ops__withdraw-rank-item:hover {
+  border-color: #cbd5e1;
+}
+.uc-kpi-ops__withdraw-rank-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.uc-kpi-ops__withdraw-rank-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #1e293b;
+}
+.uc-kpi-ops__withdraw-rank-name .rank-idx {
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 10.5px;
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+.uc-kpi-ops__withdraw-rank-stat {
+  font-size: 12px;
+  font-weight: 700;
+}
+.uc-kpi-ops__withdraw-rank-stat .rank-pct {
+  font-weight: 400;
+  color: #64748b;
+  margin-left: 4px;
+}
+.uc-kpi-ops__withdraw-bar-track {
+  background: #e2e8f0;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.uc-kpi-ops__withdraw-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+.uc-kpi-ops__withdraw-bar-fill.is-bus { background: #ef4444; }
+.uc-kpi-ops__withdraw-bar-fill.is-unknown { background: #8b5cf6; }
+.uc-kpi-ops__withdraw-bar-fill.is-econ { background: #f59e0b; }
+.uc-kpi-ops__withdraw-bar-fill.is-study { background: #3b82f6; }
+.uc-kpi-ops__withdraw-bar-fill.is-move { background: #94a3b8; }
+
+.uc-kpi-ops__withdraw-rank-bot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #64748b;
+}
+.can-intervene-badge {
+  font-size: 10.5px;
+  padding: 1px 7px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+.can-intervene-badge.is-urgent { background: #fee2e2; color: #b91c1c; }
+.can-intervene-badge.is-action { background: #fef3c7; color: #b45309; }
+.can-intervene-badge.is-investigate { background: #ede9fe; color: #6d28d9; }
+.can-intervene-badge.is-neutral { background: #f1f5f9; color: #475569; }
+
+/* 4. LMS Subject Progress Grid */
+.uc-kpi-ops__lms-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  padding: 12px 14px;
+}
+.uc-kpi-ops__lms-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.uc-kpi-ops__lms-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.uc-kpi-ops__lms-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.uc-kpi-ops__lms-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+.uc-kpi-ops__lms-card-pct {
+  font-size: 14px;
+  font-weight: 800;
+}
+.uc-kpi-ops__lms-stacked-bar {
+  display: flex;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.uc-kpi-ops__lms-seg.is-graded { background: #16a34a; }
+.uc-kpi-ops__lms-seg.is-submitted { background: #2563eb; }
+.uc-kpi-ops__lms-seg.is-pending { background: #cbd5e1; }
+.uc-kpi-ops__lms-card-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  font-size: 11px;
+  color: #64748b;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 6px;
+}
+.uc-kpi-ops__lms-card-meta b {
+  display: block;
+  font-size: 12px;
+  color: #1e293b;
+}
+
+/* 5. Interactive Risk Cards: Thay thế Ma Trận Rủi Ro (Tab HĐQT) */
+.uc-kpi-ops__risk-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.uc-kpi-ops__risk-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.uc-kpi-ops__risk-card.is-urgent {
+  border-left-color: #ef4444;
+  background: linear-gradient(180deg, #fffefe 0%, #fef2f2 100%);
+}
+.uc-kpi-ops__risk-card.is-action {
+  border-left-color: #f59e0b;
+  background: linear-gradient(180deg, #fffefe 0%, #fffbeb 100%);
+}
+.uc-kpi-ops__risk-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.uc-kpi-ops__risk-card-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.uc-kpi-ops__risk-card-meter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #64748b;
+}
+.uc-kpi-ops__risk-meter-bar {
+  flex: 1;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.uc-kpi-ops__risk-meter-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+.uc-kpi-ops__risk-card-fact {
+  font-size: 11.5px;
+  color: #334155;
+  line-height: 1.4;
+  background: rgba(255,255,255,0.7);
+  padding: 6px 8px;
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.uc-kpi-ops__risk-card-threat {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+/* ==========================================================
+   Fact Store Reconciliation & Audit Gatekeeper
+   ========================================================== */
+
+/* Reconciliation Header Strip (So Khớp KPI vs Fact Store Gốc) */
+.uc-kpi-ops__reconcile-strip {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1.5fr;
+  align-items: center;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+.uc-kpi-ops__reconcile-strip.is-matched {
+  background: linear-gradient(90deg, #f0fdf4 0%, #ffffff 100%);
+  border-color: #86efac;
+  border-left: 5px solid #16a34a;
+}
+.uc-kpi-ops__reconcile-strip.is-warn {
+  background: linear-gradient(90deg, #fffbeb 0%, #ffffff 100%);
+  border-color: #fde68a;
+  border-left: 5px solid #f59e0b;
+}
+.uc-kpi-ops__reconcile-strip.is-critical {
+  background: linear-gradient(90deg, #fef2f2 0%, #ffffff 100%);
+  border-color: #fca5a5;
+  border-left: 5px solid #ef4444;
+}
+.uc-kpi-ops__reconcile-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.uc-kpi-ops__reconcile-lbl {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  color: #64748b;
+}
+.uc-kpi-ops__reconcile-val {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.uc-kpi-ops__reconcile-sub {
+  font-size: 10.5px;
+  color: #64748b;
+}
+.uc-kpi-ops__reconcile-icon {
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.uc-kpi-ops__reconcile-col.is-verdict {
+  background: rgba(255,255,255,0.7);
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+.uc-kpi-ops__reconcile-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+}
+.uc-kpi-ops__reconcile-status .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.is-matched .uc-kpi-ops__reconcile-status { color: #15803d; }
+.is-matched .status-dot { background: #16a34a; }
+.is-warn .uc-kpi-ops__reconcile-status { color: #b45309; }
+.is-warn .status-dot { background: #f59e0b; }
+.is-critical .uc-kpi-ops__reconcile-status { color: #b91c1c; }
+.is-critical .status-dot { background: #ef4444; }
+
+.uc-kpi-ops__reconcile-finding {
+  font-size: 11px;
+  color: #334155;
+  line-height: 1.35;
+  margin-top: 3px;
+}
+
+/* Smart Audit Filter Bar */
+.uc-kpi-ops__audit-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: #f1f5f9;
+  border-radius: 4px;
+  padding: 6px 12px;
+  margin-bottom: 12px;
+}
+.uc-kpi-ops__audit-filter-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #475569;
+}
+.uc-kpi-ops__audit-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.uc-kpi-ops__audit-chip {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.uc-kpi-ops__audit-chip:hover {
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+.uc-kpi-ops__audit-chip.is-active {
+  background: #1B365D;
+  color: #ffffff;
+  border-color: #1B365D;
+}
+.uc-kpi-ops__audit-chip.is-pending.is-active {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+}
+.uc-kpi-ops__audit-chip.is-anomaly.is-active {
+  background: #d97706;
+  border-color: #d97706;
+  color: #ffffff;
+}
+
+/* ==========================================================
+   Executive Net Impact Matrix (Causal Dialog Compactness)
+   ========================================================== */
+.uc-kpi-ops__net-impact-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.uc-kpi-ops__impact-col {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.uc-kpi-ops__impact-head {
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.impact-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.impact-badge.is-vol { color: #0369a1; }
+.impact-badge.is-money { color: #15803d; }
+.impact-badge.is-action { color: #b45309; }
+.impact-title {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+.uc-kpi-ops__impact-body {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+.impact-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: #475569;
+}
+.impact-row b {
+  color: #0f172a;
+}
+.impact-row.is-highlight {
+  background: #f8fafc;
+  padding: 4px 6px;
+  border-radius: 4px;
+  border-left: 3px solid var(--accent);
 }

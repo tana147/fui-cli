@@ -5,12 +5,12 @@ INSERT INTO tblKPI_Correlations
 (PeriodKey, ChainGroup, CauseKpiCode, CauseKpiName, EffectKpiCode, EffectKpiName, RelationshipType, Description, QuantifiedImpact, RecommendedAction, ResponsibleRole, SortOrder)
 VALUES
 -- Chuỗi 1: Giao thông & Rút học (Linear Direct)
-('2026-09', N'Chuỗi 1: Tuyến xe bus - Rút hồ sơ - Thất thu tài chính', 'BUS01', N'Tuyến xe bus & Khoảng cách di chuyển', 'TS04', N'Học sinh rút học do nơi ở xa', 'DIRECT_IMPACT', 
+('2026-09', N'Mắt xích 1.1: Tuyến xe bus chưa phủ xa → 21 HS rút hồ sơ', 'BUS01', N'Tuyến xe bus & Khoảng cách di chuyển', 'TS04', N'Học sinh rút học do nơi ở xa', 'DIRECT_IMPACT', 
  N'Hạ tầng xe bus chưa phủ tuyến xa dẫn đến 21 HS rút hồ sơ (chiếm 39.6% tổng số ca rút).', 
  N'Thất thu học phí và phí xe bus ước tính 1.37 tỷ VNĐ/năm học.', 
  N'Mở thêm 2 tuyến xe bus đưa đón trọng điểm từ Long Khánh và Biên Hòa Đông.', N'Trưởng phòng Quản trị CSVC', 1),
 
-('2026-09', N'Chuỗi 1: Tuyến xe bus - Rút hồ sơ - Thất thu tài chính', 'TS04', N'Học sinh rút học do nơi ở xa', 'TC55', N'Thất thu doanh thu học phí & dịch vụ', 'FINANCIAL_LOSS', 
+('2026-09', N'Mắt xích 1.2: Rút học diện rộng → Thất thu 1.37 tỷ VNĐ', 'TS04', N'Học sinh rút học do nơi ở xa', 'TC55', N'Thất thu doanh thu học phí & dịch vụ', 'FINANCIAL_LOSS', 
  N'Mỗi học sinh rút học làm mất dòng tiền học phí và dịch vụ bán trú trung bình 65 triệu VNĐ/năm.', 
  N'Thiệt hại lũy kế 53 HS là 3.44 tỷ VNĐ nếu không tuyển bù.', 
  N'Phòng TVTS kích hoạt chiến dịch tuyển sinh bổ sung giữa kỳ.', N'Trưởng phòng Tuyển sinh', 2),
