@@ -6,3 +6,4 @@
 [tAPI/Frontend] callTapi() đã unwrap json.data -> Không truy cập res.data lần 2, dùng (res && res.data) ? res.data : res để tránh nuốt kết quả Array
 [Vue3/Computed] Fallback trong computed cơ sở gọi chéo computed cấp cao gây circular dependency -> Dùng raw constant fallback
 [Vue3/Template] Thẻ đóng lệch hoặc render crash làm trắng nội dung toàn component -> Kiểm tra bằng vue/compiler-sfc và test reactivity trước khi sync
+[tAPI/StoredProcedure] Tham số lọc trạng thái Status nhận giá trị 'ALL' hoặc chuỗi rỗng -> Luôn chuẩn hóa IF @Status = 'ALL' OR @Status = '' SET @Status = NULL

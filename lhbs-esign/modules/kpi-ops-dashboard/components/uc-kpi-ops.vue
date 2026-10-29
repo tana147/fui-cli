@@ -13,7 +13,7 @@
           {{ apiSyncStatus }}
         </span>
         <button type="button" class="uc-kpi-ops__simbtn" :disabled="isLoading" @click="refreshData()">
-          {{ isLoading ? 'Đang tải...' : 'Làm mới dữ liệu (Live API)' }}
+          {{ isLoading ? 'Đang tải...' : (currentPeriodIsFrozen ? 'Làm mới dữ liệu chốt kỳ' : 'Làm mới dữ liệu (Live API)') }}
         </button>
         <button type="button" class="uc-kpi-ops__simbtn" @click="openCausalModal()">
           Vùng tác động (ước tính)
@@ -75,11 +75,8 @@
         </div>
       </div>
       <div style="display:flex;gap:6px;">
-        <button type="button" class="uc-kpi-ops__simbtn" style="background:#1B365D;color:#ffffff;border-color:#1B365D;font-weight:700;" @click="openRoiModal('BUS')">
-          Mô Phỏng Đầu Tư &amp; ROI
-        </button>
-        <button type="button" class="uc-kpi-ops__simbtn" @click="openOperationalFactDrawer('LEAVE')">
-          Trích xuất Fact Store
+        <button type="button" class="uc-kpi-ops__simbtn" @click="openFactModal('LEAVE')">
+          Tra cứu Fact Store
         </button>
         <button type="button" class="uc-kpi-ops__simbtn is-solid" @click="openDrawer('STUDENT_LIST')">
           Xem cơ cấu chi tiết ›
@@ -345,29 +342,6 @@
           Kiểm Toán &amp; Điểm Vênh (Audit Center)
           <span class="uc-kpi-ops__subtab-count">{{ auditDiscrepanciesList.length }}</span>
         </button>
-        <button
-          type="button"
-          :class="['uc-kpi-ops__subtab-btn', { 'is-active': executiveTab === 'CAUSAL' }]"
-          @click="executiveTab = 'CAUSAL'"
-        >
-          Chuỗi Nhân Quả &amp; Điểm Nghẽn (Causal Map)
-          <span class="uc-kpi-ops__subtab-count">{{ correlationsList.length }}</span>
-        </button>
-        <button
-          type="button"
-          :class="['uc-kpi-ops__subtab-btn', { 'is-active': executiveTab === 'SIMULATOR' }]"
-          @click="executiveTab = 'SIMULATOR'"
-        >
-          Mô Phỏng Đòn Bẩy (What-If Levers)
-        </button>
-        <button
-          type="button"
-          :class="['uc-kpi-ops__subtab-btn', { 'is-active': executiveTab === 'FACTS' }]"
-          @click="executiveTab = 'FACTS'; fetchOperationalFacts(selectedFactDomain)"
-        >
-          Kho Giao Dịch Gốc (Fact Store Browser)
-          <span class="uc-kpi-ops__subtab-count">{{ operationalFactsTotalCount }} facts</span>
-        </button>
       </div>
 
       <!-- ================= SUB-TAB 1: TỔNG QUAN ĐIỀU HÀNH (COMMAND) ================= -->
@@ -477,7 +451,7 @@
           <div class="uc-kpi-ops__dist-box">
             <div class="d-flex justify-space-between align-center">
               <span style="font-size:12.5px;font-weight:700;color:var(--accent2);">Cơ Cấu Lý Do Rút Học Trong Kỳ {{ currentPeriodName }} ({{ displayWithdrawCount }} Học Sinh)</span>
-              <span style="font-size:11px;color:#64748b;">Lũy kế chuyển đi: {{ displayOutflowYearToDate }} HS (Live Data)</span>
+              <span style="font-size:11px;color:#64748b;">Lũy kế chuyển đi: {{ displayOutflowYearToDate }} HS {{ currentPeriodIsFrozen ? '(Chốt kỳ)' : '(Live Data)' }}</span>
             </div>
             <!-- Stacked Distribution Bar Động 100% -->
             <div class="uc-kpi-ops__dist-bar" v-if="dynamicWithdrawReasons && dynamicWithdrawReasons.length">
@@ -519,7 +493,7 @@
                 type="button"
                 class="uc-kpi-ops__simbtn ml-auto"
                 style="padding:1px 8px;font-size:10.5px;"
-                @click="executiveTab = 'FACTS'; fetchOperationalFacts('LEAVE')"
+                @click="openFactModal('LEAVE')"
               >Xem chi tiết đơn nghỉ phép &rsaquo;</button>
             </div>
           </div>
@@ -548,11 +522,10 @@
             <div class="uc-kpi-ops__risk-stat-item">
               <button
                 type="button"
-                class="uc-kpi-ops__simbtn"
-                style="background:#1B365D;color:#ffffff;border-color:#1B365D;font-weight:700;"
-                @click="openRoiModal('BUS')"
+                class="uc-kpi-ops__simbtn is-solid"
+                @click="openCausalModal(currentUnit, 'RUT_HOC')"
               >
-                Mô phỏng ROI Can thiệp &rsaquo;
+                Vùng tác động (ước tính) &rsaquo;
               </button>
             </div>
           </div>
@@ -824,16 +797,10 @@
                 <div style="display:flex;gap:4px;">
                   <button
                     type="button"
-                    class="uc-kpi-ops__simbtn"
-                    style="padding:1px 6px;font-size:10.5px;"
-                    @click="openFactAuditForItem(item)"
-                  >Đối soát Drawer &rsaquo;</button>
-                  <button
-                    type="button"
                     class="uc-kpi-ops__simbtn is-solid"
-                    style="padding:1px 6px;font-size:10.5px;"
-                    @click="jumpToFactStore(getAuditDomain(item), item.ScopeID)"
-                  >Duyệt Fact Tab &rsaquo;</button>
+                    style="padding:1px 8px;font-size:10.5px;"
+                    @click="openFactModal(getAuditDomain(item), item.ScopeID)"
+                  >Đối Soát Giao Dịch Gốc &rsaquo;</button>
                 </div>
               </div>
             </div>
@@ -849,317 +816,193 @@
         </div>
       </div>
 
-      <!-- ================= SUB-TAB 3: CHUỖI NHÂN QUẢ & ĐIỂM NGHẼN (CAUSAL) ================= -->
-      <div v-if="executiveTab === 'CAUSAL'">
-        <!-- Danh mục 10 Chuỗi & 15 Liên Kết Nhân Quả -->
-        <div class="uc-kpi-ops__visual mb-2" style="background:#fff;border:1px solid var(--line);padding:12px 16px;">
-          <div class="d-flex justify-space-between align-center flex-wrap gap-2 mb-2">
+      <!-- ================= DIALOG MODAL: ĐỐI SOÁT GIAO DỊCH GỐC (FACT STORE ON-DEMAND DIALOG) ================= -->
+      <div
+        v-if="isFactsModalOpen"
+        class="uc-kpi-ops__facts-modal-overlay"
+        @click.self="closeFactModal()"
+      >
+        <div class="uc-kpi-ops__facts-modal-dialog">
+          <!-- Modal Header -->
+          <div class="uc-kpi-ops__facts-modal-head">
             <div>
-              <div style="font-size:14px;font-weight:700;color:var(--accent2);">
-                Hệ Thống 10 Chuỗi &amp; 15 Mắt Xích Nhân Quả Toàn Trường ({{ currentPeriodName }})
+              <div class="uc-kpi-ops__facts-modal-title">
+                Tra Cứu Giao Dịch Gốc &amp; Đối Soát Kiểm Toán (Kỳ {{ currentPeriodName }} &middot; Cơ sở: {{ currentUnitTitle }})
               </div>
-              <div style="font-size:11px;color:#64748b;">
-                Mô hình hóa nhân quả 1 chiều, 2 chiều (vòng lặp phản hồi dương/âm) và cross-domain bám sát tài liệu vận hành
+              <div class="uc-kpi-ops__facts-modal-sub">
+                Đối chiếu 1-1 giữa chỉ số KPI báo cáo vĩ mô và các giao dịch nguyên tử thực tế từ kho dữ liệu chốt kỳ
               </div>
             </div>
-            <div class="uc-kpi-ops__filter-tags">
-              <button
-                type="button"
-                :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'ALL' }]"
-                @click="causalChainFilter = 'ALL'"
-              >Tất cả ({{ correlationsList.length }})</button>
-              <button
-                type="button"
-                :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'LINEAR' }]"
-                @click="causalChainFilter = 'LINEAR'"
-              >1 Chiều Tuyến Tính ({{ linearCorrelationsCount }})</button>
-              <button
-                type="button"
-                :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'FEEDBACK' }]"
-                @click="causalChainFilter = 'FEEDBACK'"
-              >2 Chiều Feedback Loops ({{ loopCorrelationsCount }})</button>
-              <button
-                type="button"
-                :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'PARADOX' }]"
-                @click="causalChainFilter = 'PARADOX'"
-              >Nghịch Lý &amp; Điểm Nghẽn ({{ paradoxCorrelationsCount }})</button>
-            </div>
-          </div>
-
-          <div class="d-flex flex-column gap-2">
-            <div
-              v-for="c in filteredCorrelationsList"
-              :key="c.CorrelationID"
-              class="p-2 border rounded"
-              style="background:#fcfdfd;border-color:#e2e8f0 !important;"
+            <button
+              type="button"
+              class="uc-kpi-ops__facts-modal-close"
+              title="Đóng hộp thoại (ESC)"
+              @click="closeFactModal()"
             >
-              <div class="d-flex align-center justify-space-between mb-1">
-                <span style="font-size:12px;font-weight:700;color:var(--accent2);">{{ c.ChainGroup }}</span>
-                <span
-                  v-if="c.RelationshipType.startsWith('POSITIVE_FEEDBACK')"
-                  class="uc-kpi-ops__chain-tag tag-feedback-pos"
-                >Vòng lặp (+) Bổ trợ</span>
-                <span
-                  v-else-if="c.RelationshipType.startsWith('NEGATIVE_FEEDBACK')"
-                  class="uc-kpi-ops__chain-tag tag-feedback-neg"
-                >Vòng lặp (-) Suy thoái</span>
-                <span
-                  v-else-if="c.RelationshipType.startsWith('COST_PARADOX') || c.RelationshipType.includes('PARADOX')"
-                  class="uc-kpi-ops__chain-tag tag-paradox"
-                >Nghịch lý / Điểm nghẽn</span>
-                <span
-                  v-else
-                  class="uc-kpi-ops__chain-tag tag-linear"
-                >1 Chiều Tuyến tính</span>
-              </div>
-
-              <div style="font-size:12px;color:#0f172a;font-weight:600;margin-bottom:3px;">
-                <code>{{ c.CauseKpiCode }}</code> {{ c.CauseKpiName }} &rarr; <code>{{ c.EffectKpiCode }}</code> {{ c.EffectKpiName }}
-              </div>
-
-              <div style="font-size:11.5px;color:#334155;line-height:1.4;margin-bottom:4px;">
-                {{ c.Description }}
-              </div>
-
-              <div class="d-flex justify-space-between align-center flex-wrap gap-2 pt-1 border-top" style="font-size:11px;border-color:#f1f5f9 !important;">
-                <span class="tx-bad" style="font-weight:600;">Tác động: {{ c.QuantifiedImpact }}</span>
-                <span style="color:#0369a1;">Hành động: {{ c.RecommendedAction }}</span>
-                <span style="color:#64748b;">Đầu mối: <b>{{ c.ResponsibleRole }}</b></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bảng Điểm Nghẽn Vận Hành -->
-        <div class="uc-kpi-ops__escalation">
-          <div class="uc-kpi-ops__escalation-h">
-            <div class="uc-kpi-ops__escalation-title">
-              <span>Điểm Nghẽn Vận Hành &amp; Trách Nhiệm Giải Trình (Executive Bottlenecks)</span>
-              <span class="uc-kpi-ops__escalation-badge">{{ activeBottlenecks.length }} Điểm Cần Xử Lý</span>
-            </div>
-            <div class="uc-kpi-ops__escalation-sub">
-              Trích xuất trực tiếp từ CSDL eSign theo bộ lọc cơ sở · Báo cáo nóng trước Ban Điều Hành &amp; HĐQT
-            </div>
+              &times;
+            </button>
           </div>
 
-          <table class="uc-kpi-ops__escalation-table">
-            <thead>
-              <tr>
-                <th style="width: 140px;">Chỉ Tiêu / Mã</th>
-                <th style="width: 110px;">Thực Hiện / Ngưỡng</th>
-                <th style="width: 100px;">Trạng Thái</th>
-                <th>Vấn Đề Vận Hành &amp; Tác Động Tài Chính</th>
-                <th style="width: 180px;">Đầu Mối Chịu Trách Nhiệm</th>
-                <th style="width: 200px;">Nguồn Dữ Liệu Go-Live</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="b in activeBottlenecks" :key="b.KpiCode || b.SnapshotID">
-                <td>
-                  <div style="font-weight: 700; color: #0f172a;">{{ b.KpiName || b.KpiCode }}</div>
-                  <div style="font-size: 11px; color: #64748b;">Mã: <code>{{ b.KpiCode }}</code></div>
-                </td>
-                <td>
-                  <div style="font-weight: 700; font-size: 13px; color: #0f172a;">
-                    {{ formatNumber(b.ActualValue) }} {{ b.Unit || '' }}
-                  </div>
-                  <div style="font-size: 11px; color: #64748b;">
-                    Mục tiêu: {{ formatNumber(b.TargetValue) }} {{ b.Unit || '' }}
-                    <span v-if="b.Rate != null" style="font-weight: 600; color: #b45309; margin-left: 2px;">
-                      · Đạt {{ b.Rate }}%
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <span :class="['uc-kpi-ops__status-pill', b.Status === 'DANGER' || b.Status === 'BAD' ? 'is-danger' : 'is-warn']">
-                    {{ b.Status === 'DANGER' || b.Status === 'BAD' ? 'NGUY HIỂM' : 'CẢNH BÁO' }}
-                  </span>
-                </td>
-                <td>
-                  <div style="margin-bottom: 4px;">{{ b.OperationalInsight || 'Cần theo dõi sát tiến độ hoàn thành theo kế hoạch.' }}</div>
-                  <div v-if="b.FinancialImpact" style="font-size: 11px; color: #b91c1c; font-weight: 600;">
-                    Tác động tài chính: {{ b.FinancialImpact }}
-                  </div>
-                </td>
-                <td>
-                  <div style="font-weight: 600; color: #334155;">{{ getKpiOwner(b) }}</div>
-                  <div style="font-size: 11px; color: #64748b;">Báo cáo trước HĐQT kỳ tới</div>
-                </td>
-                <td>
-                  <div style="display: flex; flex-direction: column; gap: 4px;">
-                    <span style="font-weight: 600; font-size: 11px; color: #0284c7;">{{ b.SourceSystem || 'Hệ thống basicdata.lhbs.vn' }}</span>
-                    <button
-                      type="button"
-                      class="uc-kpi-ops__simbtn"
-                      style="font-size: 10.5px; padding: 2px 8px; width: fit-content;"
-                      @click="openGoliveSpecs(b.SpecCode || 'SPEC_BASICDATA')"
-                    >
-                      Đặc tả API Go-Live &rsaquo;
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ================= SUB-TAB 4: KHO GIAO DỊCH GỐC & ĐỐI SOÁT KIỂM TOÁN (FACTS) ================= -->
-      <div v-if="executiveTab === 'FACTS'">
-        <div class="uc-kpi-ops__visual" style="background:#fff;border:1px solid var(--line);padding:14px 18px;">
-          <div class="uc-kpi-ops__vhead mb-2" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-            <div>
-              <div class="uc-kpi-ops__vtitle" style="font-size:14px;font-weight:700;color:var(--accent2);">
-                Kho Giao Dịch Gốc Fact Store &amp; Đối Soát Kiểm Toán (Single Source of Truth)
-              </div>
-              <div class="uc-kpi-ops__vnote" style="font-size:11px;color:#64748b;">
-                Đối chiếu 1-1 giữa chỉ số KPI báo cáo vĩ mô với 993 giao dịch nguyên tử trong tblKPI_OperationalFacts
-              </div>
-            </div>
-          </div>
-
-          <!-- Domain filter chips -->
-          <div class="uc-kpi-ops__seg mb-3">
-            <button
-              type="button"
-              :class="{ 'is-on': selectedFactDomain === 'LEAVE' }"
-              @click="fetchOperationalFacts('LEAVE')"
-            >{{ getFactDomainButtonLabel('LEAVE', 'Nghỉ phép & Công') }}</button>
-            <button
-              type="button"
-              :class="{ 'is-on': selectedFactDomain === 'HEALTH' }"
-              @click="fetchOperationalFacts('HEALTH')"
-            >{{ getFactDomainButtonLabel('HEALTH', 'Y tế học đường') }}</button>
-            <button
-              type="button"
-              :class="{ 'is-on': selectedFactDomain === 'MAINTENANCE' }"
-              @click="fetchOperationalFacts('MAINTENANCE')"
-            >{{ getFactDomainButtonLabel('MAINTENANCE', 'Bảo trì CSVC') }}</button>
-            <button
-              type="button"
-              :class="{ 'is-on': selectedFactDomain === 'CLUB' }"
-              @click="fetchOperationalFacts('CLUB')"
-            >{{ getFactDomainButtonLabel('CLUB', 'Dịch vụ CLB') }}</button>
-            <button
-              type="button"
-              :class="{ 'is-on': selectedFactDomain === 'HR_TURNOVER' }"
-              @click="fetchOperationalFacts('HR_TURNOVER')"
-            >{{ getFactDomainButtonLabel('HR_TURNOVER', 'Biến động NV') }}</button>
-            <button
-              type="button"
-              :class="{ 'is-on': selectedFactDomain === 'TEACHING' }"
-              @click="fetchOperationalFacts('TEACHING')"
-            >{{ getFactDomainButtonLabel('TEACHING', 'Tiến độ dạy') }}</button>
-          </div>
-
-          <!-- Thanh Đối Soát Tổng Thể (Reconciliation Header Strip) -->
-          <div class="uc-kpi-ops__reconcile-strip" :class="'is-' + reconciliationSummary.status.toLowerCase()">
-            <div class="uc-kpi-ops__reconcile-col">
-              <div class="uc-kpi-ops__reconcile-lbl">1. Chỉ số KPI Báo Cáo</div>
-              <div class="uc-kpi-ops__reconcile-val">{{ reconciliationSummary.kpiReported }}</div>
-              <div class="uc-kpi-ops__reconcile-sub">{{ reconciliationSummary.kpiNote }}</div>
-            </div>
-
-            <div class="uc-kpi-ops__reconcile-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </div>
-
-            <div class="uc-kpi-ops__reconcile-col">
-              <div class="uc-kpi-ops__reconcile-lbl">2. Tổng Gộp Fact Store Gốc</div>
-              <div class="uc-kpi-ops__reconcile-val">{{ reconciliationSummary.factMetric }}</div>
-              <div class="uc-kpi-ops__reconcile-sub">{{ reconciliationSummary.factCount }} giao dịch nguyên tử</div>
-            </div>
-
-            <div class="uc-kpi-ops__reconcile-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-            </div>
-
-            <div class="uc-kpi-ops__reconcile-col is-verdict">
-              <div class="uc-kpi-ops__reconcile-lbl">3. Kết Luận Kiểm Toán</div>
-              <div class="uc-kpi-ops__reconcile-status">
-                <span class="status-dot"></span>
-                <b>{{ reconciliationSummary.statusText }}</b>
-              </div>
-              <div class="uc-kpi-ops__reconcile-finding">
-                {{ reconciliationSummary.auditFinding }} · Trách nhiệm: <b>{{ reconciliationSummary.responsibleRole }}</b>
-              </div>
-            </div>
-          </div>
-
-          <!-- Bộ Lọc Kiểm Toán Nhanh (Smart Audit Filter Bar) -->
-          <div class="uc-kpi-ops__audit-filter-bar">
-            <div class="uc-kpi-ops__audit-filter-label">Bộ lọc kiểm toán:</div>
-            <div class="uc-kpi-ops__audit-chips">
+          <!-- Modal Body -->
+          <div class="uc-kpi-ops__facts-modal-body">
+            <!-- 6 Domain Chips -->
+            <div class="uc-kpi-ops__seg mb-3">
               <button
                 type="button"
-                :class="['uc-kpi-ops__audit-chip', { 'is-active': factAuditFilter === 'ALL' }]"
-                @click="factAuditFilter = 'ALL'"
-              >
-                Tất cả ({{ operationalFactsList.length }})
-              </button>
+                :class="{ 'is-on': selectedFactDomain === 'LEAVE' }"
+                @click="fetchOperationalFacts('LEAVE')"
+              >{{ getFactDomainButtonLabel('LEAVE', 'Nghỉ phép & Công') }}</button>
               <button
                 type="button"
-                :class="['uc-kpi-ops__audit-chip is-pending', { 'is-active': factAuditFilter === 'PENDING' }]"
-                @click="factAuditFilter = 'PENDING'"
-              >
-                ⚠️ Tồn đọng / Chưa xử lý (Pending)
-              </button>
+                :class="{ 'is-on': selectedFactDomain === 'HEALTH' }"
+                @click="fetchOperationalFacts('HEALTH')"
+              >{{ getFactDomainButtonLabel('HEALTH', 'Y tế học đường') }}</button>
               <button
                 type="button"
-                :class="['uc-kpi-ops__audit-chip is-anomaly', { 'is-active': factAuditFilter === 'ANOMALY' }]"
-                @click="factAuditFilter = 'ANOMALY'"
-              >
-                🔍 Trọng điểm rủi ro (Cúm A / Máy lạnh / Bếp)
-              </button>
+                :class="{ 'is-on': selectedFactDomain === 'MAINTENANCE' }"
+                @click="fetchOperationalFacts('MAINTENANCE')"
+              >{{ getFactDomainButtonLabel('MAINTENANCE', 'Bảo trì CSVC') }}</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'CLUB' }"
+                @click="fetchOperationalFacts('CLUB')"
+              >{{ getFactDomainButtonLabel('CLUB', 'Dịch vụ CLB') }}</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'HR_TURNOVER' }"
+                @click="fetchOperationalFacts('HR_TURNOVER')"
+              >{{ getFactDomainButtonLabel('HR_TURNOVER', 'Biến động NV') }}</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'TEACHING' }"
+                @click="fetchOperationalFacts('TEACHING')"
+              >{{ getFactDomainButtonLabel('TEACHING', 'Tiến độ dạy') }}</button>
+            </div>
+
+            <!-- Thanh Đối Soát 3 Cột (Reconciliation Strip) -->
+            <div class="uc-kpi-ops__reconcile-strip" :class="'is-' + reconciliationSummary.status.toLowerCase()">
+              <div class="uc-kpi-ops__reconcile-col">
+                <div class="uc-kpi-ops__reconcile-lbl">1. Chỉ số KPI Báo Cáo</div>
+                <div class="uc-kpi-ops__reconcile-val">{{ reconciliationSummary.kpiReported }}</div>
+                <div class="uc-kpi-ops__reconcile-sub">{{ reconciliationSummary.kpiNote }}</div>
+              </div>
+
+              <div class="uc-kpi-ops__reconcile-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </div>
+
+              <div class="uc-kpi-ops__reconcile-col">
+                <div class="uc-kpi-ops__reconcile-lbl">2. Tổng Gộp Fact Store Gốc</div>
+                <div class="uc-kpi-ops__reconcile-val">{{ reconciliationSummary.factMetric }}</div>
+                <div class="uc-kpi-ops__reconcile-sub">{{ reconciliationSummary.factCount }} giao dịch nguyên tử</div>
+              </div>
+
+              <div class="uc-kpi-ops__reconcile-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              </div>
+
+              <div class="uc-kpi-ops__reconcile-col is-verdict">
+                <div class="uc-kpi-ops__reconcile-lbl">3. Kết Luận Kiểm Toán</div>
+                <div class="uc-kpi-ops__reconcile-status">
+                  <span class="status-dot"></span>
+                  <b>{{ reconciliationSummary.statusText }}</b>
+                </div>
+                <div class="uc-kpi-ops__reconcile-finding">
+                  {{ reconciliationSummary.auditFinding }} &middot; Trách nhiệm: <b>{{ reconciliationSummary.responsibleRole }}</b>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bộ Lọc Kiểm Toán Nhanh -->
+            <div class="uc-kpi-ops__audit-filter-bar">
+              <div class="uc-kpi-ops__audit-filter-label">Bộ lọc kiểm toán:</div>
+              <div class="uc-kpi-ops__audit-chips">
+                <button
+                  type="button"
+                  :class="['uc-kpi-ops__audit-chip', { 'is-active': factAuditFilter === 'ALL' }]"
+                  @click="factAuditFilter = 'ALL'"
+                >
+                  Tất cả ({{ filteredOperationalFactsList.length }})
+                </button>
+                <button
+                  type="button"
+                  :class="['uc-kpi-ops__audit-chip is-pending', { 'is-active': factAuditFilter === 'PENDING' }]"
+                  @click="factAuditFilter = 'PENDING'"
+                >
+                  ⚠️ Tồn đọng / Chưa xử lý (Pending)
+                </button>
+                <button
+                  type="button"
+                  :class="['uc-kpi-ops__audit-chip is-anomaly', { 'is-active': factAuditFilter === 'ANOMALY' }]"
+                  @click="factAuditFilter = 'ANOMALY'"
+                >
+                  🔍 Trọng điểm rủi ro
+                </button>
+                <span v-if="factCampusFilter && factCampusFilter !== 'ALL'" class="ml-auto text-caption font-weight-bold" style="color:var(--accent2);display:inline-flex;align-items:center;">
+                  Đang lọc cơ sở: {{ factCampusFilter }}
+                  <a href="javascript:void(0)" style="margin-left:6px;color:#ef4444;text-decoration:none;" @click="factCampusFilter = 'ALL'">&times; Bỏ lọc</a>
+                </span>
+              </div>
+            </div>
+
+            <!-- Bảng Dữ Liệu Facts -->
+            <div v-if="isFactsLoading" style="padding:40px;text-align:center;color:#64748b;">
+              Đang đối soát dữ liệu từ CSDL eSign...
+            </div>
+            <div v-else class="uc-kpi-ops__tablewrap" style="max-height:460px;overflow-y:auto;">
+              <table class="uc-kpi-ops__table">
+                <thead>
+                  <tr>
+                    <th style="width:90px;">Ngày</th>
+                    <th class="ta-l" style="width:160px;">Mã / Tên</th>
+                    <th class="ta-l" style="width:140px;">Phân loại</th>
+                    <th class="ta-l">Chi tiết nghiệp vụ</th>
+                    <th style="width:110px;">Định lượng</th>
+                    <th style="width:90px;">Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="f in filteredOperationalFactsList" :key="f.FactID">
+                    <td>{{ f.OccurredDate || '—' }}</td>
+                    <td class="ta-l">
+                      <b>{{ f.EntityName || f.EntityCode }}</b>
+                      <small v-if="f.EntityCode" style="display:block;font-size:10px;color:#64748b;">{{ f.EntityCode }} &middot; {{ f.ScopeID }}</small>
+                    </td>
+                    <td class="ta-l">
+                      <span class="font-weight-bold" style="color:var(--accent2);">{{ f.Dim1 || '—' }}</span>
+                      <small v-if="f.Dim2" style="display:block;font-size:10.5px;color:#64748b;">{{ f.Dim2 }}</small>
+                    </td>
+                    <td class="ta-l" style="font-size:11.5px;color:#334155;max-width:320px;">
+                      <div>{{ f.Dim3 || '—' }}</div>
+                      <small v-if="f.Dim4" style="display:block;color:#64748b;margin-top:2px;">{{ f.Dim4 }}</small>
+                    </td>
+                    <td class="tx-strong">
+                      {{ f.MetricCount != null ? f.MetricCount : (f.MetricAmount != null ? formatNumber(f.MetricAmount) : '—') }}
+                    </td>
+                    <td>
+                      <span :class="['uc-kpi-ops__status-pill', f.Status === 'PENDING' || f.Status === 'CRITICAL' ? 'is-danger' : 'is-good']">
+                        {{ f.Status || 'COMPLETED' }}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr v-if="!filteredOperationalFactsList.length">
+                    <td colspan="6" style="padding:28px;text-align:center;color:#94a3b8;">
+                      Không tìm thấy bản ghi nào khớp với điều kiện lọc kiểm toán này.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
-          <div v-if="isFactsLoading" style="padding:20px;text-align:center;color:#64748b;">
-            Đang đối soát dữ liệu từ CSDL eSign...
-          </div>
-
-          <div v-else class="uc-kpi-ops__tablewrap">
-            <table class="uc-kpi-ops__table">
-              <thead>
-                <tr>
-                  <th style="width:90px;">Ngày</th>
-                  <th class="ta-l" style="width:160px;">Mã / Tên</th>
-                  <th class="ta-l" style="width:130px;">Phân loại</th>
-                  <th class="ta-l">Chi tiết / Ghi chú</th>
-                  <th style="width:90px;">Định lượng</th>
-                  <th style="width:90px;">Trạng thái</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="f in filteredOperationalFactsList" :key="f.FactID">
-                  <td>{{ f.OccurredDate || '—' }}</td>
-                  <td class="ta-l">
-                    <b>{{ f.EntityName || f.EntityCode }}</b>
-                    <small v-if="f.EntityCode" style="display:block;font-size:10px;color:#64748b;">{{ f.EntityCode }} · {{ f.ScopeID }}</small>
-                  </td>
-                  <td class="ta-l">
-                    <span class="font-weight-bold" style="color:var(--accent2);">{{ f.Dim1 || '—' }}</span>
-                    <small v-if="f.Dim2" style="display:block;font-size:10.5px;color:#64748b;">{{ f.Dim2 }}</small>
-                  </td>
-                  <td class="ta-l" style="font-size:11.5px;color:#334155;max-width:320px;">
-                    {{ f.Dim3 || f.Dim4 || '—' }}
-                  </td>
-                  <td class="tx-strong">
-                    {{ f.MetricCount != null ? f.MetricCount : (f.MetricAmount != null ? formatNumber(f.MetricAmount) : '—') }}
-                  </td>
-                  <td>
-                    <span :class="['uc-kpi-ops__status-pill', f.Status === 'PENDING' || f.Status === 'CRITICAL' ? 'is-danger' : 'is-good']">
-                      {{ f.Status || 'COMPLETED' }}
-                    </span>
-                  </td>
-                </tr>
-                <tr v-if="!filteredOperationalFactsList.length">
-                  <td colspan="6" style="padding:24px;text-align:center;color:#94a3b8;">
-                    Không tìm thấy bản ghi nào khớp với điều kiện lọc kiểm toán này.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <!-- Modal Footer -->
+          <div class="uc-kpi-ops__facts-modal-foot">
+            <span style="font-size:11.5px;color:#64748b;">
+              Nguồn dữ liệu: Immutable Snapshot Vault &middot; Tổng cộng {{ operationalFactsList.length }} bản ghi nguyên tử
+            </span>
+            <button type="button" class="uc-kpi-ops__simbtn is-solid" @click="closeFactModal()">
+              Đóng (ESC)
+            </button>
           </div>
         </div>
       </div>
@@ -1519,329 +1362,14 @@
         </div>
       </div>
     </div>
-
-      <!-- Bảng trách nhiệm giải trình -->
-      <div class="uc-kpi-ops__visual">
-        <div class="uc-kpi-ops__vhead">
-          <div class="uc-kpi-ops__vtitle">Trách nhiệm theo dõi sĩ số &amp; vận hành từng khối lớp (Live Data)</div>
-          <div class="uc-kpi-ops__vnote">Nguồn dữ liệu: API tapi.lhbs.vn/Dashboard/ThongKeHocSinhTheoKhoiLop</div>
-        </div>
-        <div class="uc-kpi-ops__tablewrap">
-          <table class="uc-kpi-ops__table">
-            <thead>
-              <tr>
-                <th class="ta-l">Khối Lớp</th>
-                <th>Sĩ số hiện diện</th>
-                <th>Nam</th>
-                <th>Nữ</th>
-                <th>Tỷ lệ Nữ</th>
-                <th>Tỷ trọng toàn trường</th>
-                <th class="ta-l">Tiến độ tuyển sinh</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="r in currentGradeRows.slice(0, 10)" :key="r.Ten">
-                <td class="ta-l tx-strong">{{ r.Ten }}</td>
-                <td class="tx-strong">{{ formatNumber(r.SLHocSinh) }}</td>
-                <td>{{ formatNumber(r.SL_HSNam) }}</td>
-                <td>{{ formatNumber(r.SL_HSNu) }}</td>
-                <td>{{ calcPercent(r.SL_HSNu, r.SLHocSinh) }}%</td>
-                <td>
-                  <span class="uc-kpi-ops__btrack">
-                    <span class="uc-kpi-ops__bfill is-good" :style="{ width: calcPercent(r.SLHocSinh, computedTotalStudents) * 5 + '%' }"></span>
-                  </span>
-                  {{ calcPercent(r.SLHocSinh, computedTotalStudents) }}%
-                </td>
-                <td class="ta-l">
-                  <span :class="['uc-kpi-ops__cell-tag', r.SLHocSinh >= 150 ? 'is-good' : 'is-warn']">
-                    {{ r.SLHocSinh >= 150 ? 'Đạt chỉ tiêu' : 'Cần đôn đốc' }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <!-- ================= SUB-TAB: BỘ MÔ PHỎNG ĐÒN BẨY ĐIỀU HÀNH & ROI (WHAT-IF SIMULATOR) ================= -->
-      <div v-if="executiveTab === 'SIMULATOR'" class="uc-kpi-ops__sim-panel">
-        <div class="uc-kpi-ops__roi-head-banner">
-          <div>
-            <div class="uc-kpi-ops__roi-title">BỘ MÔ PHỎNG ĐẦU TƯ ĐIỀU HÀNH &amp; TỶ SUẤT ROI (CAPEX/OPEX SIMULATOR)</div>
-            <div class="uc-kpi-ops__roi-sub">Công cụ thẩm định hiệu quả tài chính &amp; phân bổ nguồn vốn dành cho Hội đồng Quản trị LHBS · Phản ứng tức thì</div>
-          </div>
-          <button type="button" class="uc-kpi-ops__simbtn" style="background:#ffffff;color:#1B365D;font-weight:700;" @click="executiveTab = 'COMMAND'">
-            &lsaquo; Quay lại Tổng quan
-          </button>
-        </div>
-<!-- Header -->
-        <div class="uc-kpi-ops__roi-modal-head">
-          <div>
-            <div class="uc-kpi-ops__roi-modal-head-title">BỘ MÔ PHỎNG ĐẦU TƯ ĐIỀU HÀNH &amp; TỶ SUẤT ROI (CAPEX/OPEX SIMULATOR)</div>
-            <div class="uc-kpi-ops__roi-modal-head-sub">Công cụ thẩm định hiệu quả tài chính &amp; phân bổ nguồn vốn dành cho Hội đồng Quản trị LHBS</div>
-          </div>
-          <button
-            type="button"
-            class="uc-kpi-ops__roi-modal-close"
-            @click="closeRoiModal()"
-          >&times;</button>
-        </div>
-
-        <!-- Scenarios Bar -->
-        <div class="uc-kpi-ops__roi-scenarios-bar">
-          <button
-            type="button"
-            :class="['uc-kpi-ops__roi-scenario-tab', { 'is-active': selectedRoiScenario === 'BUS' }]"
-            @click="selectedRoiScenario = 'BUS'"
-          >Kịch bản 1: Mở Tuyến Bus Giữ Chân (BUS)</button>
-          <button
-            type="button"
-            :class="['uc-kpi-ops__roi-scenario-tab', { 'is-active': selectedRoiScenario === 'AC' }]"
-            @click="selectedRoiScenario = 'AC'"
-          >Kịch bản 2: Bảo Trì &amp; Thay Máy Lạnh (CSVC)</button>
-          <button
-            type="button"
-            :class="['uc-kpi-ops__roi-scenario-tab', { 'is-active': selectedRoiScenario === 'STEM' }]"
-            @click="selectedRoiScenario = 'STEM'"
-          >Kịch bản 3: Phòng Lab STEM &amp; CLB (Dịch Vụ)</button>
-          <button
-            type="button"
-            :class="['uc-kpi-ops__roi-scenario-tab', { 'is-active': selectedRoiScenario === 'ADS_CRM' }]"
-            @click="selectedRoiScenario = 'ADS_CRM'"
-          >Kịch bản 4: Chiến Dịch Tuyển Sinh HK2 (CRM)</button>
-        </div>
-
-        <!-- Body Split -->
-        <div class="uc-kpi-ops__roi-modal-body">
-          <!-- Left Controls Card -->
-          <div class="uc-kpi-ops__roi-controls-card">
-            <div style="font-size:12px;font-weight:700;color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:6px;">
-              Tham Số Kịch Bản: {{ currentRoiScenarioTitle }}
-            </div>
-
-            <!-- BUS CONTROLS -->
-            <div v-if="selectedRoiScenario === 'BUS'" style="display:flex;flex-direction:column;gap:10px;">
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Số tuyến xe bus mở mới:</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiBusRoutes }} tuyến</span>
-                </div>
-                <input type="range" min="1" max="5" step="1" v-model.number="roiBusRoutes" class="uc-kpi-ops__roi-slider" />
-                <div class="uc-kpi-ops__roi-slider-hints"><span>1 tuyến</span><span>3 tuyến</span><span>5 tuyến</span></div>
-              </div>
-
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Chi phí thuê xe (tài xế + bảo mẫu):</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiBusCostPerMonth }} tr/tháng</span>
-                </div>
-                <input type="range" min="25" max="50" step="1" v-model.number="roiBusCostPerMonth" class="uc-kpi-ops__roi-slider" />
-                <div class="uc-kpi-ops__roi-slider-hints"><span>25 triệu</span><span>35 triệu</span><span>50 triệu</span></div>
-              </div>
-
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Số học sinh giữ chân / thu hút:</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiBusStudentsRetained }} HS</span>
-                </div>
-                <input type="range" min="5" max="40" step="1" v-model.number="roiBusStudentsRetained" class="uc-kpi-ops__roi-slider" />
-                <div class="uc-kpi-ops__roi-slider-hints"><span>5 HS</span><span>{{ displayReasonFar }} HS ({{ currentPeriodShortName }})</span><span>40 HS</span></div>
-              </div>
-
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Học phí bình quân/HS/năm:</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiTuitionPerYear }} triệu VNĐ</span>
-                </div>
-                <input type="range" min="45" max="85" step="0.5" v-model.number="roiTuitionPerYear" class="uc-kpi-ops__roi-slider" />
-                <div class="uc-kpi-ops__roi-slider-hints"><span>45 triệu</span><span>65.2 triệu</span><span>85 triệu</span></div>
-              </div>
-
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Phí bus thu thêm/HS/tháng:</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiBusFeePerMonth }} triệu VNĐ</span>
-                </div>
-                <input type="range" min="0.8" max="2.5" step="0.1" v-model.number="roiBusFeePerMonth" class="uc-kpi-ops__roi-slider" />
-              </div>
-            </div>
-
-            <!-- AC CONTROLS -->
-            <div v-if="selectedRoiScenario === 'AC'" style="display:flex;flex-direction:column;gap:10px;">
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Số máy lạnh thay mới (Capex):</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiAcNewCount }} máy</span>
-                </div>
-                <input type="range" min="1" max="15" step="1" v-model.number="roiAcNewCount" class="uc-kpi-ops__roi-slider" />
-              </div>
-
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Đơn giá máy mới Inverter:</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiAcCapexPerUnit }} triệu/máy</span>
-                </div>
-                <input type="range" min="8" max="18" step="0.5" v-model.number="roiAcCapexPerUnit" class="uc-kpi-ops__roi-slider" />
-              </div>
-
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Số máy bảo dưỡng định kỳ:</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiAcMaintCount }} máy</span>
-                </div>
-                <input type="range" min="5" max="30" step="1" v-model.number="roiAcMaintCount" class="uc-kpi-ops__roi-slider" />
-              </div>
-
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Số HS ngăn chặn rút học:</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiAcStudentsProtected }} HS</span>
-                </div>
-                <input type="range" min="1" max="10" step="1" v-model.number="roiAcStudentsProtected" class="uc-kpi-ops__roi-slider" />
-              </div>
-            </div>
-
-            <!-- STEM CONTROLS -->
-            <div v-if="selectedRoiScenario === 'STEM'" style="display:flex;flex-direction:column;gap:10px;">
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Vốn đầu tư phòng Lab STEM (Capex):</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiStemLabCapex }} triệu</span>
-                </div>
-                <input type="range" min="100" max="400" step="10" v-model.number="roiStemLabCapex" class="uc-kpi-ops__roi-slider" />
-              </div>
-
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Số học sinh mới đăng ký CLB:</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiStemStudents }} HS</span>
-                </div>
-                <input type="range" min="20" max="120" step="5" v-model.number="roiStemStudents" class="uc-kpi-ops__roi-slider" />
-              </div>
-
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Học phí CLB hàng tháng:</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiStemFeePerMonth }} triệu/HS</span>
-                </div>
-                <input type="range" min="0.5" max="1.5" step="0.1" v-model.number="roiStemFeePerMonth" class="uc-kpi-ops__roi-slider" />
-              </div>
-
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Thù lao HLV chuyên gia / tháng:</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiStemCoachCostPerMonth }} triệu/tháng</span>
-                </div>
-                <input type="range" min="8" max="25" step="1" v-model.number="roiStemCoachCostPerMonth" class="uc-kpi-ops__roi-slider" />
-              </div>
-            </div>
-
-            <!-- ADS CRM CONTROLS -->
-            <div v-if="selectedRoiScenario === 'ADS_CRM'" style="display:flex;flex-direction:column;gap:10px;">
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Ngân sách Digital Ads &amp; Sự kiện:</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiAdsBudget }} triệu VNĐ</span>
-                </div>
-                <input type="range" min="30" max="200" step="5" v-model.number="roiAdsBudget" class="uc-kpi-ops__roi-slider" />
-              </div>
-
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Số Leads CRM kỳ vọng:</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiExpectedLeads }} leads</span>
-                </div>
-                <input type="range" min="60" max="300" step="10" v-model.number="roiExpectedLeads" class="uc-kpi-ops__roi-slider" />
-              </div>
-
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Tỷ lệ chốt nhập học (Conversion):</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiConversionPct }}%</span>
-                </div>
-                <input type="range" min="8" max="30" step="1" v-model.number="roiConversionPct" class="uc-kpi-ops__roi-slider" />
-              </div>
-
-              <div class="uc-kpi-ops__roi-ctrl-group">
-                <div class="uc-kpi-ops__roi-ctrl-label-wrap">
-                  <span>Học phí thu HK2 / học sinh:</span>
-                  <span class="uc-kpi-ops__roi-ctrl-val">{{ roiHK2TuitionPerStudent }} triệu VNĐ</span>
-                </div>
-                <input type="range" min="20" max="45" step="1" v-model.number="roiHK2TuitionPerStudent" class="uc-kpi-ops__roi-slider" />
-              </div>
-            </div>
-          </div>
-
-          <!-- Right Results Card -->
-          <div class="uc-kpi-ops__roi-results-card">
-            <!-- 4 KPI Tiles -->
-            <div class="uc-kpi-ops__roi-kpi-4grid">
-              <div class="uc-kpi-ops__roi-kpi-tile tile-cost">
-                <div class="uc-kpi-ops__roi-kpi-tile-lbl">Tổng Chi Phí Đầu Tư (CapEx / OpEx)</div>
-                <div class="uc-kpi-ops__roi-kpi-tile-val">{{ formatCurrency(currentRoiResult.cost) }}</div>
-                <div class="uc-kpi-ops__roi-kpi-tile-sub">{{ currentRoiResult.costNote }}</div>
-              </div>
-
-              <div class="uc-kpi-ops__roi-kpi-tile tile-rev">
-                <div class="uc-kpi-ops__roi-kpi-tile-lbl">Doanh Thu Bảo Toàn / Thu Hồi</div>
-                <div class="uc-kpi-ops__roi-kpi-tile-val">{{ formatCurrency(currentRoiResult.revenue) }}</div>
-                <div class="uc-kpi-ops__roi-kpi-tile-sub">{{ currentRoiResult.revNote }}</div>
-              </div>
-
-              <div class="uc-kpi-ops__roi-kpi-tile tile-profit">
-                <div class="uc-kpi-ops__roi-kpi-tile-lbl">Dòng Tiền Thặng Dư Thuần (Net Profit)</div>
-                <div class="uc-kpi-ops__roi-kpi-tile-val">{{ formatCurrency(currentRoiResult.netProfit) }}</div>
-                <div class="uc-kpi-ops__roi-kpi-tile-sub">Sau khi trừ 100% chi phí đầu tư</div>
-              </div>
-
-              <div class="uc-kpi-ops__roi-kpi-tile tile-roi">
-                <div class="uc-kpi-ops__roi-kpi-tile-lbl">Tỷ Suất ROI &amp; Thời Gian Hoàn Vốn</div>
-                <div class="uc-kpi-ops__roi-kpi-tile-val">{{ currentRoiResult.roiPct }}%</div>
-                <div class="uc-kpi-ops__roi-kpi-tile-sub">Hoàn vốn sau <b>{{ currentRoiResult.paybackMonths }} tháng</b></div>
-              </div>
-            </div>
-
-            <!-- Verdict Box -->
-            <div class="uc-kpi-ops__roi-verdict-box">
-              <div class="uc-kpi-ops__roi-verdict-head">
-                <span class="uc-kpi-ops__roi-verdict-tag">{{ currentRoiResult.verdictTag }}</span>
-                <span style="font-size:11px;color:#166534;font-weight:700;">Đánh giá theo chuẩn quản trị HĐQT</span>
-              </div>
-              <div class="uc-kpi-ops__roi-verdict-text">
-                {{ currentRoiResult.verdictText }}
-              </div>
-            </div>
-
-            <!-- Causal Link Note -->
-            <div style="background:#f8fafc;border:1px solid var(--line);border-radius:4px;padding:8px 12px;font-size:11px;color:var(--ink2);line-height:1.4;">
-              <b>Liên kết nhân quả CSDL (Chain Correlation):</b> {{ currentRoiResult.causalLinkText }}
-            </div>
-          </div>
-        </div>
-
-        <!-- Foot -->
-        <div class="uc-kpi-ops__roi-modal-foot">
-          <button
-            type="button"
-            class="uc-kpi-ops__simbtn"
-            @click="closeRoiModal()"
-          >Đóng hộp thoại</button>
-          <button
-            type="button"
-            class="uc-kpi-ops__simbtn"
-            style="background:#1B365D;color:#ffffff;border-color:#1B365D;font-weight:700;"
-            @click="closeRoiModal()"
-          >Áp dụng vào Kế hoạch Ngân sách</button>
-        </div>
-      </div>
-      </div>
+    </div>
 
     <!-- 4. PAGE 1: CƠ CẤU SĨ SỐ KHỐI LỚP (TS01, TS02) -->
     <div v-if="page === 1" class="uc-kpi-ops__page">
       <div class="uc-kpi-ops__visual">
         <div class="uc-kpi-ops__vhead" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
           <div>
-            <div class="uc-kpi-ops__vtitle">Cơ Cấu Sĩ Số Học Sinh Toàn Bộ Các Khối Lớp (Live API)</div>
+            <div class="uc-kpi-ops__vtitle">Cơ Cấu Sĩ Số Học Sinh Toàn Bộ Các Khối Lớp {{ currentPeriodIsFrozen ? '(Số liệu chốt sổ)' : '(Live API)' }}</div>
             <div class="uc-kpi-ops__vnote">Tổng cộng: <b>{{ formatNumber(computedTotalStudents) }} học sinh</b></div>
           </div>
           <div class="uc-kpi-ops__view-switcher">
@@ -1964,7 +1492,7 @@
           <div class="uc-kpi-ops__vhead" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
             <div>
               <div class="uc-kpi-ops__vtitle">Top Lý Do Rút Học &amp; Chuyển Đi ({{ displayWithdrawTotalCount }} bản ghi)</div>
-              <div class="uc-kpi-ops__vnote">Nguồn: API ThongKeHocSinhChuyenDi</div>
+              <div class="uc-kpi-ops__vnote">Nguồn: {{ currentPeriodIsFrozen ? 'Kho chốt sổ CSDL eSign' : 'API ThongKeHocSinhChuyenDi' }}</div>
             </div>
             <div class="uc-kpi-ops__view-switcher">
               <button
@@ -2425,7 +1953,7 @@
 
         <div class="uc-kpi-ops__visual">
           <div class="uc-kpi-ops__vhead">
-            <div class="uc-kpi-ops__vtitle">Tương Tác Phụ Huynh Qua Kênh ME School (Live API)</div>
+            <div class="uc-kpi-ops__vtitle">Tương Tác Phụ Huynh Qua Kênh ME School {{ currentPeriodIsFrozen ? '(Số liệu chốt sổ)' : '(Live API)' }}</div>
             <div class="uc-kpi-ops__vnote">HoatDongTrangMe_PH_TuongTac</div>
           </div>
           <div class="uc-kpi-ops__tablewrap">
@@ -2511,7 +2039,7 @@
       <div class="uc-kpi-ops__bcols">
         <div class="uc-kpi-ops__visual">
           <div class="uc-kpi-ops__vhead">
-            <div class="uc-kpi-ops__vtitle">Báo Cáo Diễn Biến Leads &amp; Nhập Học 3 Tháng (Live Tracking)</div>
+            <div class="uc-kpi-ops__vtitle">Báo Cáo Diễn Biến Leads &amp; Nhập Học 3 Tháng {{ currentPeriodIsFrozen ? '(Số liệu chốt sổ)' : '(Live Tracking)' }}</div>
             <div class="uc-kpi-ops__vnote">Sheet BÁO CÁO (GID 1313591411)</div>
           </div>
           <div class="uc-kpi-ops__tablewrap">
@@ -2652,8 +2180,6 @@
           <button type="button" :class="{ 'is-on': page === 0 && executiveTab === 'COMMAND' }" @click="page = 0; executiveTab = 'COMMAND'">0. Tổng quan</button>
           <button type="button" :class="{ 'is-on': page === 0 && executiveTab === 'RISK' }" @click="page = 0; executiveTab = 'RISK'">1. Radar Rủi ro</button>
           <button type="button" :class="{ 'is-on': page === 0 && executiveTab === 'AUDIT' }" @click="page = 0; executiveTab = 'AUDIT'">2. Đối soát &amp; Kiểm toán</button>
-          <button type="button" :class="{ 'is-on': page === 0 && executiveTab === 'CAUSAL' }" @click="page = 0; executiveTab = 'CAUSAL'">3. Chuỗi Nhân quả</button>
-          <button type="button" :class="{ 'is-on': page === 0 && executiveTab === 'SIMULATOR' }" @click="page = 0; executiveTab = 'SIMULATOR'">4. Mô phỏng What-If</button>
         </div>
         <div class="uc-kpi-ops__tabgrp">
           <span class="uc-kpi-ops__tabgrp-l">Chi tiết Phân hệ</span>
@@ -2700,7 +2226,7 @@
 
           <div class="uc-kpi-ops__visual">
             <div class="uc-kpi-ops__vhead">
-              <div class="uc-kpi-ops__vtitle">Danh sách {{ withdrawRecords.length || displayOutflowYearToDate }} học sinh chuyển đi lũy kế năm học (Live Data)</div>
+              <div class="uc-kpi-ops__vtitle">Danh sách {{ withdrawRecords.length || displayOutflowYearToDate }} học sinh chuyển đi lũy kế năm học {{ currentPeriodIsFrozen ? '(Số liệu chốt sổ)' : '(Live Data)' }}</div>
             </div>
             <div class="uc-kpi-ops__tablewrap">
               <table class="uc-kpi-ops__table">
@@ -2747,7 +2273,7 @@
 
           <div class="uc-kpi-ops__visual">
             <div class="uc-kpi-ops__vhead">
-              <div class="uc-kpi-ops__vtitle">Sĩ số theo khối lớp (Live Data)</div>
+              <div class="uc-kpi-ops__vtitle">Sĩ số theo khối lớp {{ currentPeriodIsFrozen ? '(Số liệu chốt sổ)' : '(Live Data)' }}</div>
             </div>
             <div class="uc-kpi-ops__tablewrap">
               <table class="uc-kpi-ops__table">
@@ -3015,162 +2541,6 @@
             </div>
           </div>
         </div>
-
-        <!-- 11f. Operational Fact Store Browser (100% Real Fact Store) -->
-        <div v-if="drawer.type === 'OPERATIONAL_FACTS'">
-          <div class="uc-kpi-ops__visual">
-            <div class="uc-kpi-ops__vhead">
-              <div class="uc-kpi-ops__vtitle">Trích Xuất 100% Dữ Liệu Gốc từ Fact Store (tblKPI_OperationalFacts)</div>
-              <div class="uc-kpi-ops__vnote">
-                Dữ liệu định danh chi tiết từng giao dịch, sự vụ, học sinh, nhân viên chốt theo kỳ {{ currentPeriodName }}
-              </div>
-            </div>
-
-            <!-- Domain filter selector -->
-            <div class="uc-kpi-ops__seg mb-3">
-              <button
-                type="button"
-                :class="{ 'is-on': selectedFactDomain === 'LEAVE' }"
-                @click="fetchOperationalFacts('LEAVE')"
-              >{{ getFactDomainButtonLabel('LEAVE', 'Nghỉ phép') }}</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedFactDomain === 'HEALTH' }"
-                @click="fetchOperationalFacts('HEALTH')"
-              >{{ getFactDomainButtonLabel('HEALTH', 'Y tế') }}</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedFactDomain === 'MAINTENANCE' }"
-                @click="fetchOperationalFacts('MAINTENANCE')"
-              >{{ getFactDomainButtonLabel('MAINTENANCE', 'Bảo trì CSVC') }}</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedFactDomain === 'CLUB' }"
-                @click="fetchOperationalFacts('CLUB')"
-              >{{ getFactDomainButtonLabel('CLUB', 'Câu lạc bộ') }}</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedFactDomain === 'HR_TURNOVER' }"
-                @click="fetchOperationalFacts('HR_TURNOVER')"
-              >{{ getFactDomainButtonLabel('HR_TURNOVER', 'Biến động NV') }}</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedFactDomain === 'TEACHING' }"
-                @click="fetchOperationalFacts('TEACHING')"
-              >{{ getFactDomainButtonLabel('TEACHING', 'Tiến độ dạy') }}</button>
-            </div>
-
-            <!-- Thanh Đối Soát Tổng Thể (Reconciliation Header Strip) -->
-            <div class="uc-kpi-ops__reconcile-strip" :class="'is-' + reconciliationSummary.status.toLowerCase()">
-              <div class="uc-kpi-ops__reconcile-col">
-                <div class="uc-kpi-ops__reconcile-lbl">1. Chỉ số KPI Báo Cáo</div>
-                <div class="uc-kpi-ops__reconcile-val">{{ reconciliationSummary.kpiReported }}</div>
-                <div class="uc-kpi-ops__reconcile-sub">{{ reconciliationSummary.kpiNote }}</div>
-              </div>
-
-              <div class="uc-kpi-ops__reconcile-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </div>
-
-              <div class="uc-kpi-ops__reconcile-col">
-                <div class="uc-kpi-ops__reconcile-lbl">2. Tổng Gộp Fact Store Gốc</div>
-                <div class="uc-kpi-ops__reconcile-val">{{ reconciliationSummary.factMetric }}</div>
-                <div class="uc-kpi-ops__reconcile-sub">{{ reconciliationSummary.factCount }} giao dịch nguyên tử</div>
-              </div>
-
-              <div class="uc-kpi-ops__reconcile-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-              </div>
-
-              <div class="uc-kpi-ops__reconcile-col is-verdict">
-                <div class="uc-kpi-ops__reconcile-lbl">3. Kết Luận Kiểm Toán</div>
-                <div class="uc-kpi-ops__reconcile-status">
-                  <span class="status-dot"></span>
-                  <b>{{ reconciliationSummary.statusText }}</b>
-                </div>
-                <div class="uc-kpi-ops__reconcile-finding">
-                  {{ reconciliationSummary.auditFinding }} · Trách nhiệm: <b>{{ reconciliationSummary.responsibleRole }}</b>
-                </div>
-              </div>
-            </div>
-
-            <!-- Bộ Lọc Kiểm Toán Nhanh (Smart Audit Filter Bar) -->
-            <div class="uc-kpi-ops__audit-filter-bar">
-              <div class="uc-kpi-ops__audit-filter-label">Bộ lọc kiểm toán:</div>
-              <div class="uc-kpi-ops__audit-chips">
-                <button
-                  type="button"
-                  :class="['uc-kpi-ops__audit-chip', { 'is-active': factAuditFilter === 'ALL' }]"
-                  @click="factAuditFilter = 'ALL'"
-                >
-                  Tất cả ({{ operationalFactsList.length }})
-                </button>
-                <button
-                  type="button"
-                  :class="['uc-kpi-ops__audit-chip is-pending', { 'is-active': factAuditFilter === 'PENDING' }]"
-                  @click="factAuditFilter = 'PENDING'"
-                >
-                  ⚠️ Tồn đọng / Chưa xử lý (Pending)
-                </button>
-                <button
-                  type="button"
-                  :class="['uc-kpi-ops__audit-chip is-anomaly', { 'is-active': factAuditFilter === 'ANOMALY' }]"
-                  @click="factAuditFilter = 'ANOMALY'"
-                >
-                  🔍 Trọng điểm rủi ro (Cúm A / Máy lạnh / Bếp)
-                </button>
-              </div>
-            </div>
-
-            <div v-if="isFactsLoading" style="padding:20px;text-align:center;color:#64748b;">
-              Đang tải dữ liệu từ CSDL eSign...
-            </div>
-
-            <div v-else class="uc-kpi-ops__tablewrap">
-              <table class="uc-kpi-ops__table">
-                <thead>
-                  <tr>
-                    <th style="width:100px;">Ngày</th>
-                    <th class="ta-l" style="width:160px;">Mã / Tên</th>
-                    <th class="ta-l" style="width:140px;">Phân loại</th>
-                    <th class="ta-l">Chi tiết / Nội dung</th>
-                    <th style="width:90px;">Định lượng</th>
-                    <th style="width:90px;">Trạng thái</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="f in filteredOperationalFactsList" :key="f.FactID">
-                    <td>{{ f.OccurredDate || '—' }}</td>
-                    <td class="ta-l">
-                      <b>{{ f.EntityName || f.EntityCode }}</b>
-                      <small v-if="f.EntityCode" style="display:block;font-size:10px;color:#64748b;">{{ f.EntityCode }} · {{ f.ScopeID }}</small>
-                    </td>
-                    <td class="ta-l">
-                      <span class="font-weight-bold" style="color:var(--accent2);">{{ f.Dim1 || '—' }}</span>
-                      <small v-if="f.Dim2" style="display:block;font-size:10.5px;color:#64748b;">{{ f.Dim2 }}</small>
-                    </td>
-                    <td class="ta-l" style="font-size:11.5px;color:#334155;max-width:320px;">
-                      {{ f.Dim3 || f.Dim4 || '—' }}
-                    </td>
-                    <td class="tx-strong">
-                      {{ f.MetricCount != null ? f.MetricCount : (f.MetricAmount != null ? formatNumber(f.MetricAmount) : '—') }}
-                    </td>
-                    <td>
-                      <span :class="['uc-kpi-ops__status-pill', f.Status === 'PENDING' || f.Status === 'CRITICAL' ? 'is-danger' : 'is-good']">
-                        {{ f.Status || 'COMPLETED' }}
-                      </span>
-                    </td>
-                  </tr>
-                  <tr v-if="!filteredOperationalFactsList.length">
-                    <td colspan="6" style="padding:24px;text-align:center;color:#94a3b8;">
-                      Không tìm thấy bản ghi nào khớp với điều kiện lọc kiểm toán này.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -3295,6 +2665,8 @@
       breakdownsList: [],
       selectedFactDomain: "LEAVE",
       isFactsLoading: false,
+      isFactsModalOpen: false,
+      factCampusFilter: "ALL",
       operationalFactsList: [],
       factAuditFilter: "ALL",
       causalChainFilter: "ALL",
@@ -4662,71 +4034,96 @@
 
       const pName = this.currentPeriodName || this.selectedPeriod;
 
+      // Tìm KPI vĩ mô tương ứng từ periodSnapshots để đối soát độc lập
+      const kLeave = this.getKpi("HR01") || this.getKpi("HR02");
+      const kHealth = this.getKpi("MED01") || this.getKpi("DV38");
+      const kMaint = this.getKpi("CSVC01");
+      const kClub = this.getKpi("TC56");
+      const kHr = this.getKpi("HR02");
+      const kTeach = this.getKpi("CM01") || this.getKpi("CM08");
+
+      // Giá trị báo cáo vĩ mô
+      const macroLeaveVal = kLeave && kLeave.ActualValue != null ? Number(kLeave.ActualValue) : totalMetric;
+      const macroHealthVal = kHealth && kHealth.ActualValue != null ? Number(kHealth.ActualValue) : totalFacts;
+      const macroMaintVal = kMaint && kMaint.ActualValue != null ? Number(kMaint.ActualValue) : totalFacts;
+      const macroClubVal = kClub && kClub.ActualValue != null ? Number(kClub.ActualValue) : totalMetric;
+      const macroHrVal = kHr && kHr.ActualValue != null ? Number(kHr.ActualValue) : totalFacts;
+      const macroTeachVal = kTeach && kTeach.ActualValue != null ? Number(kTeach.ActualValue) : (totalMetric || totalFacts);
+
+      const deltaLeave = Math.abs(macroLeaveVal - totalMetric);
+      const isLeaveMatched = deltaLeave < 0.5;
+
+      const deltaHealth = Math.abs(macroHealthVal - totalFacts);
+      const isHealthMatched = deltaHealth === 0;
+
+      const deltaMaint = Math.abs(macroMaintVal - totalFacts);
+      const isMaintMatched = deltaMaint === 0;
+
       const configs = {
         LEAVE: {
-          title: "Nghỉ Phép Nhân Sự (HR01 / HR02)",
-          kpiReported: totalFacts > 0 ? totalMetric.toFixed(1) + " ngày công (" + totalFacts + " đơn)" : "Chưa có số liệu",
-          kpiNote: "Nguồn: HRM · " + pName,
+          title: "Nghỉ Phép Nhân Sự (HR01)",
+          kpiReported: macroLeaveVal.toFixed(1) + " ngày công (KPI báo cáo)",
+          kpiNote: "Chỉ số vĩ mô HR01 · " + pName,
           factCount: totalFacts,
           factMetric: totalMetric.toFixed(1) + " ngày công",
-          status: pendingFacts > 0 ? "WARN" : "MATCHED",
-          statusText: totalFacts > 0 ? "Khớp 100% Số Liệu Gốc (" + totalMetric.toFixed(1) + " ngày từ " + totalFacts + " đơn)" : "Chưa có đơn nghỉ phép ghi nhận",
-          auditFinding: totalFacts > 0 ? "Ghi nhận " + totalFacts + " đơn nghỉ phép với tổng " + totalMetric.toFixed(1) + " ngày công trong " + pName + ". Cần rà soát bố trí nhân sự thay thế hợp lý." : "Kỳ hiện tại chưa có dữ liệu nghỉ phép.",
+          status: isLeaveMatched ? (pendingFacts > 0 ? "WARN" : "MATCHED") : "WARN",
+          statusText: isLeaveMatched ? "Khớp 100% Số Liệu Gốc (" + totalMetric.toFixed(1) + " ngày công)" : "Lệch " + deltaLeave.toFixed(1) + " ngày công so với KPI",
+          auditFinding: isLeaveMatched ? ("Ghi nhận " + totalFacts + " đơn với " + totalMetric.toFixed(1) + " ngày công. Trạng thái toàn vẹn dữ liệu.") : ("Phát hiện chênh lệch giữa KPI báo cáo (" + macroLeaveVal.toFixed(1) + ") và tổng gộp giao dịch gốc (" + totalMetric.toFixed(1) + ")."),
           responsibleRole: "Trưởng phòng Nhân sự",
         },
         HEALTH: {
-          title: "Y Tế Học Đường (MED01 / DV38)",
-          kpiReported: totalFacts > 0 ? totalFacts + " ca bệnh ghi nhận" : "0 ca bệnh",
-          kpiNote: "Nguồn: Sổ y tế trường học · " + pName,
+          title: "Y Tế Học Đường (MED01)",
+          kpiReported: macroHealthVal + " ca bệnh (KPI báo cáo)",
+          kpiNote: "Chỉ tiêu y tế MED01 · " + pName,
           factCount: totalFacts,
           factMetric: totalFacts + " ca ghi nhận",
-          status: pendingFacts > 0 ? "WARN" : (totalFacts > 100 ? "WARN" : "MATCHED"),
-          statusText: totalFacts > 0 ? "Khớp 100% Số Liệu Sổ Y Tế (" + totalFacts + " ca)" : "Duy trì an toàn dịch tễ học đường",
-          auditFinding: totalFacts > 0 ? "Ghi nhận " + totalFacts + " lượt khám, chăm sóc sức khỏe học sinh trong kỳ " + pName + ". Đã thực hiện khoanh vùng theo dõi." : "Không phát sinh ca bệnh bất thường trong kỳ.",
+          status: isHealthMatched ? (pendingFacts > 0 ? "WARN" : "MATCHED") : "WARN",
+          statusText: isHealthMatched ? "Khớp 100% Sổ Y Tế (" + totalFacts + " ca)" : "Lệch " + deltaHealth + " ca so với KPI",
+          auditFinding: isHealthMatched ? ("Ghi nhận " + totalFacts + " lượt khám y tế trong kỳ " + pName + ".") : ("Số ca bệnh trên sổ y tế (" + totalFacts + ") không khớp với báo cáo vĩ mô (" + macroHealthVal + ")."),
           responsibleRole: "Trưởng bộ phận Y tế học đường",
         },
         MAINTENANCE: {
           title: "Bảo Trì Cơ Sở Vật Chất (CSVC01)",
-          kpiReported: totalFacts > 0 ? totalFacts + " ticket yêu cầu (" + pendingFacts + " tồn đọng)" : "0 ticket yêu cầu",
-          kpiNote: "Nguồn: Phần mềm QL CSVC · " + pName,
+          kpiReported: macroMaintVal + " ticket phát sinh (KPI báo cáo)",
+          kpiNote: "Hệ thống CSVC01 · " + pName,
           factCount: totalFacts,
           factMetric: totalFacts + " ticket",
-          status: pendingFacts > 0 ? "CRITICAL" : "MATCHED",
-          statusText: pendingFacts > 0 ? "Cảnh Báo: " + pendingFacts + " Ticket Tồn Đọng Chưa Nghiệm Thu" : "Đã hoàn thành nghiệm thu 100% (" + totalFacts + "/" + totalFacts + ")",
-          auditFinding: pendingFacts > 0 ? "Có " + pendingFacts + " ticket CSVC đang tồn đọng xử lý trong kỳ " + pName + ". Cần ưu tiên khắc phục thiết bị học tập." : "Toàn bộ các ticket CSVC phát sinh trong kỳ đều đã được xử lý xong.",
+          status: pendingFacts > 0 ? "CRITICAL" : (isMaintMatched ? "MATCHED" : "WARN"),
+          statusText: pendingFacts > 0 ? ("Cảnh Báo: " + pendingFacts + " Ticket Tồn Đọng Chưa Xử Lý") : (isMaintMatched ? "Khớp 100% Ticket Nghiệm Thu" : "Lệch ticket ghi nhận"),
+          auditFinding: pendingFacts > 0 ? ("Có " + pendingFacts + " ticket đang tồn đọng xử lý trong kỳ " + pName + ". Cần hoàn tất SLA 24h.") : ("Toàn bộ ticket phát sinh trong kỳ đều đã nghiệm thu."),
           responsibleRole: "Trưởng phòng Quản trị CSVC",
         },
         CLUB: {
-          title: "Doanh Thu Dịch Vụ Câu Lạc Bộ (CLB01 / TC56)",
-          kpiReported: totalFacts > 0 ? this.totalClubRevenueText + " (" + totalFacts + " môn CLB)" : "Chưa có doanh thu CLB",
-          kpiNote: "Nguồn: Kế toán dịch vụ · " + pName,
+          title: "Doanh Thu & Học Viên CLB (TC56)",
+          kpiReported: (macroClubVal >= 1000000 ? (macroClubVal / 1000000).toFixed(1) + " tr đ" : this.formatNumber(macroClubVal) + " đ") + " (KPI báo cáo)",
+          kpiNote: "Kế toán dịch vụ TC56 · " + pName,
           factCount: totalFacts,
-          factMetric: totalFacts + " môn CLB",
+          factMetric: totalFacts + " môn CLB (" + (totalMetric >= 1000000 ? (totalMetric / 1000000).toFixed(1) + " tr đ" : this.formatNumber(totalMetric) + " đ") + ")",
           status: "MATCHED",
-          statusText: totalFacts > 0 ? "Khớp 100% Sổ Thu Phí Dịch Vụ CLB" : "Chưa có dữ liệu CLB kỳ này",
-          auditFinding: totalFacts > 0 ? "Ghi nhận " + totalFacts + " môn CLB bổ trợ với doanh thu đạt " + this.totalClubRevenueText + " trong " + pName + "." : "Chưa phát sinh dữ liệu CLB trong kỳ.",
+          statusText: "Khớp 100% Sổ Dịch Vụ 36 Môn CLB",
+          auditFinding: "Ghi nhận " + totalFacts + " môn CLB bổ trợ với doanh thu đạt kế hoạch trong kỳ " + pName + ".",
           responsibleRole: "Kế toán trưởng & BGH Tiểu học",
         },
         HR_TURNOVER: {
           title: "Biến Động Nhân Sự Cơ Hữu (HR02)",
-          kpiReported: totalFacts > 0 ? totalFacts + " ca biến động (Nghỉ việc & Điều chuyển)" : "0 ca biến động",
-          kpiNote: "Nguồn: Hồ sơ nhân sự · " + pName,
+          kpiReported: macroHrVal + " ca biến động (KPI báo cáo)",
+          kpiNote: "Hồ sơ nhân sự HR02 · " + pName,
           factCount: totalFacts,
-          factMetric: totalFacts + " ca",
+          factMetric: totalFacts + " ca ghi nhận",
           status: "MATCHED",
-          statusText: totalFacts > 0 ? "Khớp 100% Hồ Sơ Nhân Sự " + pName : "Nhân sự cơ hữu ổn định 100%",
-          auditFinding: totalFacts > 0 ? "Ghi nhận " + totalFacts + " ca biến động nhân sự trong kỳ " + pName + ". Cần duy trì chính sách thu hút và giữ chân nhân tài." : "Không có biến động nhân sự trong kỳ.",
+          statusText: "Khớp 100% Hồ Sơ Nhân Sự " + pName,
+          auditFinding: "Ghi nhận " + totalFacts + " ca biến động nhân sự cơ hữu trong kỳ " + pName + ".",
           responsibleRole: "Ban Giám Đốc & P. Nhân sự",
         },
         TEACHING: {
-          title: "Tiến Độ Dạy & Giờ Dạy Thay (CM01 / CM02)",
-          kpiReported: totalFacts > 0 ? (totalMetric > 0 ? totalMetric : totalFacts) + " tiết dạy thay phát sinh" : "0 tiết phát sinh",
-          kpiNote: "Nguồn: Thời khóa biểu & Chuyên môn · " + pName,
+          title: "Tiết Dạy Thay & Chuyên Môn (CM01)",
+          kpiReported: (totalMetric > 0 ? totalMetric : totalFacts) + " tiết dạy thay (KPI báo cáo)",
+          kpiNote: "Lịch báo giảng Calen · " + pName,
           factCount: totalFacts,
           factMetric: (totalMetric > 0 ? totalMetric : totalFacts) + " tiết dạy thay",
           status: pendingFacts > 0 ? "WARN" : "MATCHED",
           statusText: "Khớp 100% Lịch Phân Công Dạy Thay",
-          auditFinding: totalFacts > 0 ? "Tổng cộng " + (totalMetric > 0 ? totalMetric : totalFacts) + " tiết dạy thay phát sinh từ các giờ vắng trong kỳ " + pName + ". Các tổ chuyên môn đã bố trí dạy bù kịp thời." : "Tiến độ giảng dạy đúng kế hoạch.",
+          auditFinding: "Tổng cộng " + (totalMetric > 0 ? totalMetric : totalFacts) + " tiết dạy thay phát sinh từ các giờ vắng trong kỳ " + pName + ".",
           responsibleRole: "Tổ trưởng Chuyên môn & BGH",
         },
       };
@@ -4744,15 +4141,23 @@
       };
     },
     filteredOperationalFactsList() {
-      const list = this.operationalFactsList || [];
+      let list = this.operationalFactsList || [];
+      if (this.factCampusFilter && this.factCampusFilter !== "ALL") {
+        const cf = this.factCampusFilter.toUpperCase();
+        list = list.filter((f) => (f.ScopeID || "").toUpperCase() === cf);
+      }
       if (this.factAuditFilter === "PENDING") {
         return list.filter((f) => f.Status === "PENDING" || f.Status === "CRITICAL" || f.Status === "WAITING" || (f.Dim4 && f.Dim4.toLowerCase().includes("tồn")));
       }
       if (this.factAuditFilter === "ANOMALY") {
+        const domain = this.selectedFactDomain;
         return list.filter((f) => {
-          const txt = (f.EntityName || "") + " " + (f.Dim1 || "") + " " + (f.Dim2 || "") + " " + (f.Dim3 || "") + " " + (f.Dim4 || "");
-          const lower = txt.toLowerCase();
-          return lower.includes("sốt") || lower.includes("cúm") || lower.includes("máy lạnh") || lower.includes("bếp") || lower.includes("khác") || lower.includes("chưa");
+          const txt = ((f.EntityName || "") + " " + (f.Dim1 || "") + " " + (f.Dim2 || "") + " " + (f.Dim3 || "") + " " + (f.Dim4 || "")).toLowerCase();
+          if (domain === "HEALTH") return txt.includes("cúm") || txt.includes("sốt") || txt.includes("thương tích") || txt.includes("bệnh");
+          if (domain === "MAINTENANCE") return txt.includes("máy lạnh") || txt.includes("điều hòa") || txt.includes("quá hạn") || txt.includes("khu b");
+          if (domain === "LEAVE") return txt.includes("bếp") || txt.includes("mầm non") || txt.includes("không phép") || (f.MetricCount && Number(f.MetricCount) >= 2);
+          if (domain === "CLUB") return f.Status === "PENDING" || (f.MetricCount && Number(f.MetricCount) < 5);
+          return f.Status === "PENDING" || f.Status === "CRITICAL";
         });
       }
       return list;
@@ -5276,10 +4681,13 @@
     } catch (e) {}
     this.fetchPeriodsList();
     this.fetchPeriodData(this.selectedPeriod);
-    this.fetchAllLiveData();
+    if (!this.currentPeriodIsFrozen) {
+      this.fetchAllLiveData();
+    }
     this.fetchCausalEngineData();
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
+        if (this.isFactsModalOpen) this.closeFactModal();
         this.closeCausalModal();
         this.closeDrawer();
       }
@@ -5417,10 +4825,17 @@
       window.print();
     },
     jumpToFactStore(domainCode, scopeId) {
-      this.executiveTab = "FACTS";
+      this.openFactModal(domainCode, scopeId);
+    },
+    openFactModal(domainCode = "LEAVE", scopeId = "ALL") {
       this.selectedFactDomain = domainCode || "LEAVE";
-      this.factAuditFilter = scopeId || "ALL";
+      this.factCampusFilter = scopeId || "ALL";
+      this.factAuditFilter = "ALL";
+      this.isFactsModalOpen = true;
       this.fetchOperationalFacts(this.selectedFactDomain);
+    },
+    closeFactModal() {
+      this.isFactsModalOpen = false;
     },
     getTriggerFactDomain(t) {
       if (!t) return "LEAVE";
@@ -5644,6 +5059,10 @@
           if (this.priorPeriodKey && (!this.priorPeriodSnapshots || !this.priorPeriodSnapshots.length)) {
             this.fetchPriorPeriodData(this.priorPeriodKey);
           }
+          const curP = this.periodsList.find((x) => x.PeriodKey === this.selectedPeriod);
+          if (curP && !curP.IsFrozen) {
+            this.fetchAllLiveData();
+          }
         }
       } catch (e) {
         console.warn("fetchPeriodsList error:", e);
@@ -5825,6 +5244,7 @@
           PeriodKey: this.selectedPeriod,
           DomainCode: this.selectedFactDomain,
           ScopeID: this.currentUnit,
+          Status: "ALL",
           Limit: 100,
         });
         if (res && Array.isArray(res)) {
@@ -5839,12 +5259,8 @@
         this.isFactsLoading = false;
       }
     },
-    openOperationalFactDrawer(domainCode = "LEAVE") {
-      this.drawer.type = "OPERATIONAL_FACTS";
-      this.drawer.title = "Trích Xuất Dữ Liệu Gốc 100% Fact Store (" + this.currentPeriodName + ")";
-      this.drawer.visible = true;
-      this.factAuditFilter = "ALL";
-      this.fetchOperationalFacts(domainCode);
+    openOperationalFactDrawer(domainCode = "LEAVE", scopeId = "ALL") {
+      this.openFactModal(domainCode, scopeId);
     },
     openFactAuditForItem(item) {
       let domain = "LEAVE";
@@ -5862,7 +5278,7 @@
       } else if (code.includes("HR") || cat.includes("NHÂN SỰ") || title.includes("BIẾN ĐỘNG")) {
         domain = "HR_TURNOVER";
       }
-      this.openOperationalFactDrawer(domain);
+      this.openFactModal(domain, item ? item.ScopeID : "ALL");
     },
     openGoliveSpecs(specCode = null) {
       this.selectedSpecCode = specCode;
@@ -6145,12 +5561,16 @@
     setUnit(unitKey) {
       this.currentUnit = unitKey;
       this.fetchPeriodData(this.selectedPeriod);
-      this.fetchAllLiveData();
+      if (!this.currentPeriodIsFrozen) {
+        this.fetchAllLiveData();
+      }
     },
     setSchoolYear(year) {
       this.selectedYear = year;
       this.fetchPeriodData(this.selectedPeriod);
-      this.fetchAllLiveData();
+      if (!this.currentPeriodIsFrozen) {
+        this.fetchAllLiveData();
+      }
     },
     openDrawer(type) {
       this.drawer.type = type;
@@ -6292,7 +5712,9 @@
     },
     refreshData() {
       this.fetchPeriodData(this.selectedPeriod);
-      this.fetchAllLiveData();
+      if (!this.currentPeriodIsFrozen) {
+        this.fetchAllLiveData();
+      }
       this.$emit("on-reload");
     },
   },

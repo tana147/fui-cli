@@ -23,6 +23,9 @@ BEGIN
     IF @ScopeID IS NULL OR @ScopeID = ''
         SET @ScopeID = 'ALL';
 
+    IF @Status IS NULL OR @Status = '' OR @Status = 'ALL'
+        SET @Status = NULL;
+
     -- 1. ĐỊNH TUYẾN 1: NGHỈ PHÉP NHÂN SỰ (LEAVE)
     IF @DomainCode = 'LEAVE'
     BEGIN
@@ -161,6 +164,35 @@ BEGIN
             FROM tblKPI_Snap_LMS_Academics
             WHERE PeriodKey = @PeriodKey
               AND RecordType = 'DAY_THAY'
+              AND (@ScopeID = 'ALL' OR ScopeID = @ScopeID)
+            ORDER BY RecordID;
+            RETURN;
+        END;
+    END
+
+    -- 6. ĐỊNH TUYẾN 6: DỊCH VỤ CÂU LẠC BỘ (CLUB)
+    ELSE IF @DomainCode = 'CLUB'
+    BEGIN
+        IF EXISTS (SELECT 1 FROM sys.tables WHERE name = 'tblKPI_Snap_Finance_Services')
+        BEGIN
+            SELECT 
+                RecordID AS FactID,
+                PeriodKey,
+                ScopeID,
+                ItemCode AS EntityCode,
+                ItemName AS EntityName,
+                CategoryType AS Dim1,
+                CAST(StudentCount AS NVARCHAR(50)) + N' học sinh' AS Dim2,
+                N'Doanh thu KH: ' + FORMAT(PlanTargetRevenue, 'N0') + N' đ' AS Dim3,
+                N'Đạt: ' + CAST(PlanAchievedPct AS NVARCHAR(50)) + '%' AS Dim4,
+                StudentCount AS MetricCount,
+                NetRevenue AS MetricAmount,
+                CASE WHEN PlanAchievedPct >= 100 THEN 'COMPLETED' ELSE 'PENDING' END AS Status,
+                @PeriodKey AS OccurredDate,
+                'FTS' AS SourceSystem
+            FROM tblKPI_Snap_Finance_Services
+            WHERE PeriodKey = @PeriodKey
+              AND CategoryType = 'CLUB'
               AND (@ScopeID = 'ALL' OR ScopeID = @ScopeID)
             ORDER BY RecordID;
             RETURN;

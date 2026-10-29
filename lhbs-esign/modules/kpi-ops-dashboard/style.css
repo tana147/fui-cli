@@ -3744,6 +3744,82 @@
   opacity: 0.6;
 }
 
+/* ==============================================================================
+   FACTS MODAL / DIALOG (ON-DEMAND DRILL-DOWN)
+   ============================================================================== */
+.uc-kpi-ops__facts-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+.uc-kpi-ops__facts-modal-dialog {
+  background: #ffffff;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 1080px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.uc-kpi-ops__facts-modal-head {
+  padding: 14px 20px;
+  background: #1B365D;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.uc-kpi-ops__facts-modal-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #ffffff;
+}
+.uc-kpi-ops__facts-modal-sub {
+  font-size: 11px;
+  color: #93c5fd;
+  margin-top: 2px;
+}
+.uc-kpi-ops__facts-modal-close {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 6px;
+  line-height: 1;
+  opacity: 0.85;
+  transition: opacity 0.15s;
+}
+.uc-kpi-ops__facts-modal-close:hover {
+  opacity: 1;
+}
+.uc-kpi-ops__facts-modal-body {
+  padding: 16px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+.uc-kpi-ops__facts-modal-foot {
+  padding: 10px 20px;
+  background: #f8fafc;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 @media print {
   body {
     background: #ffffff !important;
@@ -3762,6 +3838,7 @@
   .uc-kpi-ops__drawer,
   .uc-kpi-ops__causal-spot,
   .uc-kpi-ops__roi-modal-overlay,
+  .uc-kpi-ops__facts-modal-overlay,
   .uc-kpi-ops__view-switcher,
   .uc-kpi-ops__bkpi-causal,
   .uc-kpi-ops__bkpi-i {
