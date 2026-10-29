@@ -121,36 +121,99 @@ BEGIN
       AND KpiCode = 'TS04' 
       AND (DonViID = @DonViID OR (DonViID = 'ALL' AND @DonViID = 'ALL'));
 
-    -- Fallback lý do rút học
+    -- Nạp lý do rút học động từ tblKPI_PeriodBreakdowns
     IF NOT EXISTS (SELECT 1 FROM #ContextVars WHERE VarKey = 'TS04.Reason.FAR')
-        INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('TS04.Reason.FAR', '21');
+    BEGIN
+        DECLARE @DynFar INT = ISNULL((SELECT SUM(ActualCount) FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND DimensionCode IN ('FAR', 'BUS') AND (@DonViID = 'ALL' OR DonViID = @DonViID)), 0);
+        INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('TS04.Reason.FAR', CAST(@DynFar AS NVARCHAR(20)));
+    END;
     IF NOT EXISTS (SELECT 1 FROM #ContextVars WHERE VarKey = 'TS04.Reason.BUS')
-        INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('TS04.Reason.BUS', '21');
+    BEGIN
+        DECLARE @DynBus INT = ISNULL((SELECT SUM(ActualCount) FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND DimensionCode = 'BUS' AND (@DonViID = 'ALL' OR DonViID = @DonViID)), 0);
+        INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('TS04.Reason.BUS', CAST(@DynBus AS NVARCHAR(20)));
+    END;
 
-    -- Bảo trì cơ sở vật chất
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('MAINT.AcRepairs', '18');
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('MAINT.PendingTickets', '4');
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('MAINT.TotalTickets', '79');
+    -- Bảo trì cơ sở vật chất (Truy vấn động từ tblKPI_Snap_Maintenance)
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'MAINT.AcRepairs', CAST(ISNULL(COUNT(*), 0) AS NVARCHAR(50))
+    FROM tblKPI_Snap_Maintenance 
+    WHERE PeriodKey = @PeriodKey AND (Location LIKE N'%lạnh%' OR Category LIKE N'%lạnh%' OR IssueDescription LIKE N'%lạnh%')
+      AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
 
-    -- Y tế học đường
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('HEALTH.Cases', '131');
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('HEALTH.FluA', '53');
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('DV38.OutbreakCases', '1');
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'MAINT.PendingTickets', CAST(ISNULL(COUNT(*), 0) AS NVARCHAR(50))
+    FROM tblKPI_Snap_Maintenance 
+    WHERE PeriodKey = @PeriodKey AND Status IN ('PENDING', 'RECORDED') AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
 
-    -- Nghỉ phép nhân sự
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('LEAVE.Days', '551');
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('LEAVE.Count', '470');
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('LEAVE.KitchenDays', '54');
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('LEAVE.KinderDays', '82.5');
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'MAINT.TotalTickets', CAST(ISNULL(COUNT(*), 0) AS NVARCHAR(50))
+    FROM tblKPI_Snap_Maintenance 
+    WHERE PeriodKey = @PeriodKey AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
 
-    -- Câu lạc bộ
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('CLUB.Revenue', '1611');
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('CLUB.Students', '596');
+    -- Y tế học đường (Truy vấn động từ tblKPI_Snap_Healthcare)
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'HEALTH.Cases', CAST(ISNULL(COUNT(*), 0) AS NVARCHAR(50))
+    FROM tblKPI_Snap_Healthcare 
+    WHERE PeriodKey = @PeriodKey AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
 
-    -- Tuyển sinh & CRM Leads
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('CRM.Leads', '161');
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('CRM.Conversion', '21');
-    INSERT INTO #ContextVars (VarKey, VarValue) VALUES ('CRM.ConvRate', '13.04');
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'HEALTH.FluA', CAST(ISNULL(COUNT(*), 0) AS NVARCHAR(50))
+    FROM tblKPI_Snap_Healthcare 
+    WHERE PeriodKey = @PeriodKey AND (DiseaseType LIKE N'%Cúm%' OR DiseaseType LIKE N'%Sốt%' OR DiseaseType LIKE N'%hô hấp%')
+      AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
+
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'DV38.OutbreakCases', CAST(ISNULL(SUM(CASE WHEN DiseaseType LIKE N'%dịch%' OR DiseaseType LIKE N'%Cúm%' THEN 1 ELSE 0 END), 0) AS NVARCHAR(50))
+    FROM tblKPI_Snap_Healthcare 
+    WHERE PeriodKey = @PeriodKey AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
+
+    -- Nghỉ phép nhân sự (Truy vấn động từ tblKPI_Snap_HRM_Leave)
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'LEAVE.Days', CAST(ISNULL(CAST(ROUND(SUM(LeaveDays), 0) AS INT), 0) AS NVARCHAR(50))
+    FROM tblKPI_Snap_HRM_Leave 
+    WHERE PeriodKey = @PeriodKey AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
+
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'LEAVE.Count', CAST(ISNULL(COUNT(*), 0) AS NVARCHAR(50))
+    FROM tblKPI_Snap_HRM_Leave 
+    WHERE PeriodKey = @PeriodKey AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
+
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'LEAVE.KitchenDays', CAST(ISNULL(CAST(ROUND(SUM(CASE WHEN Department LIKE N'%Bếp%' THEN LeaveDays ELSE 0 END), 0) AS INT), 0) AS NVARCHAR(50))
+    FROM tblKPI_Snap_HRM_Leave 
+    WHERE PeriodKey = @PeriodKey AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
+
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'LEAVE.KinderDays', CAST(ISNULL(CAST(ROUND(SUM(CASE WHEN ScopeID IN ('MNLK', 'MNTB', 'MNBH') OR Department LIKE N'%Mầm Non%' THEN LeaveDays ELSE 0 END), 0) AS INT), 0) AS NVARCHAR(50))
+    FROM tblKPI_Snap_HRM_Leave 
+    WHERE PeriodKey = @PeriodKey AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
+
+    -- Dịch vụ CLB & Ngoài giờ (Truy vấn động từ tblKPI_Snap_Finance_Services)
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'CLUB.Revenue', CAST(ISNULL(CAST(ROUND(SUM(NetRevenue) / 1000000.0, 0) AS INT), 0) AS NVARCHAR(50))
+    FROM tblKPI_Snap_Finance_Services 
+    WHERE PeriodKey = @PeriodKey AND ItemCode LIKE 'CLB_%' AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
+
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'CLUB.Students', CAST(ISNULL(SUM(StudentCount), 0) AS NVARCHAR(50))
+    FROM tblKPI_Snap_Finance_Services 
+    WHERE PeriodKey = @PeriodKey AND ItemCode LIKE 'CLB_%' AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
+
+    -- Tuyển sinh & CRM Pipeline (Truy vấn động từ tblKPI_Snap_CRM_Pipeline)
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'CRM.Leads', CAST(ISNULL(SUM(TotalLeads), 0) AS NVARCHAR(50))
+    FROM tblKPI_Snap_CRM_Pipeline 
+    WHERE PeriodKey = @PeriodKey AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
+
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'CRM.Conversion', CAST(ISNULL(SUM(EnrolledStudents), 0) AS NVARCHAR(50))
+    FROM tblKPI_Snap_CRM_Pipeline 
+    WHERE PeriodKey = @PeriodKey AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
+
+    INSERT INTO #ContextVars (VarKey, VarValue)
+    SELECT 'CRM.ConvRate', CAST(ROUND(ISNULL(SUM(EnrolledStudents) * 100.0 / NULLIF(SUM(TotalLeads), 0), 0), 2) AS NVARCHAR(50))
+    FROM tblKPI_Snap_CRM_Pipeline 
+    WHERE PeriodKey = @PeriodKey AND (@DonViID = 'ALL' OR ScopeID = @DonViID);
 
     -- 4.3. Nạp Tham số Nghiệp vụ từ tblKPI_Parameters (PARAM.*)
     INSERT INTO #ContextVars (VarKey, VarValue)

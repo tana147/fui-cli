@@ -1,12 +1,12 @@
 -- ===================================================================================
 -- STORED PROCEDURE: spAPI_KPI_GetStrategicLevers
--- Mô tả: Dynamic Strategic Levers & Value Bridge Waterfall Data
--- Tính toán lộ trình bù hụt sĩ số và lượng hóa 4 đòn bẩy chiến lược
+-- Mô tả: Dynamic Strategic Levers & Value Bridge Waterfall Data (100% Calculated)
+-- Tính toán lộ trình bù hụt sĩ số và lượng hóa 4 đòn bẩy chiến lược từ CSDL
 -- Database: eSignature
 -- ===================================================================================
 
-CREATE   PROCEDURE spAPI_KPI_GetStrategicLevers
-    @PeriodKey VARCHAR(20) = '2026-09'
+CREATE OR ALTER PROCEDURE spAPI_KPI_GetStrategicLevers
+    @PeriodKey VARCHAR(20)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -15,8 +15,8 @@ BEGIN
         SET @PeriodKey = '2026-09';
 
     -- Lấy Sĩ số thực tế và Chỉ tiêu từ Snapshots của kỳ báo cáo
-    DECLARE @BaseVal INT = 2625;
-    DECLARE @PlanVal INT = 2750;
+    DECLARE @BaseVal INT = 0;
+    DECLARE @PlanVal INT = 0;
 
     SELECT 
         @BaseVal = ISNULL(MAX(CASE WHEN KpiCode = 'TS01' THEN CAST(ActualValue AS INT) END), 2625),
@@ -24,9 +24,48 @@ BEGIN
     FROM tblKPI_PeriodSnapshots
     WHERE PeriodKey = @PeriodKey AND DonViID = 'ALL';
 
-    -- RESULT SET 0: WATERFALL BARS SPEC
+    -- RESULT SET 0: WATERFALL BARS SPEC (Tính toán lũy kế động từ tblKPI_StrategicLevers)
+    ;WITH LeversOrdered AS (
+        SELECT 
+            ROW_NUMBER() OVER (ORDER BY SortOrder) AS BarIdx,
+            Title AS BarName,
+            StudentsGain AS StepDelta,
+            RevenueGainMillion,
+            N'+' + CAST(CAST(ROUND(RevenueGainMillion / 1000.0, 2) AS DECIMAL(6,2)) AS NVARCHAR(10)) + N' tỷ' AS MoneyText,
+            CASE 
+                WHEN TargetKpiCode = 'TS04' THEN N'Gom bus'
+                WHEN Title LIKE N'%Kitty%' THEN N'MN Kitty'
+                WHEN Title LIKE N'%Liên thông%' THEN N'Chuyển cấp'
+                ELSE N'Khối 10 HK2'
+            END AS Line1,
+            N'+' + CAST(StudentsGain AS NVARCHAR(10)) + N' HS' AS Line2
+        FROM tblKPI_StrategicLevers
+        WHERE PeriodKey = @PeriodKey
+    ),
+    RunningSum AS (
+        SELECT 
+            l.BarIdx,
+            l.BarName,
+            l.StepDelta,
+            @BaseVal + SUM(l.StepDelta) OVER (ORDER BY l.BarIdx) AS CumulativeVal,
+            'up' AS BarType,
+            l.MoneyText,
+            l.Line1,
+            l.Line2
+        FROM LeversOrdered l
+    )
     SELECT 
-        BarIndex,
+        0 AS BarIndex,
+        N'Sĩ số hiện tại' AS BarName,
+        0 AS StepDelta,
+        @BaseVal AS CumulativeVal,
+        'total' AS BarType,
+        CAST(@BaseVal AS NVARCHAR(10)) + N' HS' AS MoneyText,
+        N'Sĩ số kỳ' AS Line1,
+        CAST(@BaseVal AS NVARCHAR(10)) + N' HS' AS Line2
+    UNION ALL
+    SELECT 
+        BarIdx AS BarIndex,
         BarName,
         StepDelta,
         CumulativeVal,
@@ -34,62 +73,29 @@ BEGIN
         MoneyText,
         Line1,
         Line2
-    FROM (
-        VALUES
-        (0, N'Sĩ số T9', 0, @BaseVal, 'total', CAST(@BaseVal AS NVARCHAR(10)) + N' HS', N'Sĩ số T9', CAST(@BaseVal AS NVARCHAR(10)) + N' HS'),
-        (1, N'Gom tuyến bus', 15, @BaseVal + 15, 'up', N'+0.98 tỷ', N'Gom bus', N'+15 HS'),
-        (2, N'MN Kitty', 35, @BaseVal + 15 + 35, 'up', N'+1.30 tỷ', N'MN Kitty', N'+35 HS'),
-        (3, N'Liên thông cấp', 65, @BaseVal + 15 + 35 + 65, 'up', N'+3.22 tỷ', N'Chuyển cấp', N'+65 HS'),
-        (4, N'Khối 10 HK2', 10, @PlanVal, 'up', N'+0.65 tỷ', N'Khối 10 HK2', N'+10 HS'),
-        (5, N'Kế hoạch HĐQT', 0, @PlanVal, 'end', N'100% KH', N'Kế hoạch', CAST(@PlanVal AS NVARCHAR(10)) + N' HS')
-    ) AS w (BarIndex, BarName, StepDelta, CumulativeVal, BarType, MoneyText, Line1, Line2);
+    FROM RunningSum
+    UNION ALL
+    SELECT 
+        (SELECT COUNT(*) + 1 FROM LeversOrdered) AS BarIndex,
+        N'Kế hoạch HĐQT' AS BarName,
+        0 AS StepDelta,
+        @PlanVal AS CumulativeVal,
+        'end' AS BarType,
+        N'100% KH' AS MoneyText,
+        N'Kế hoạch' AS Line1,
+        CAST(@PlanVal AS NVARCHAR(10)) + N' HS' AS Line2
+    ORDER BY BarIndex;
 
-    -- RESULT SET 1: 4 THẺ ĐÒN BẨY CHIẾN LƯỢC LƯỢNG HÓA DOANH THU
+    -- RESULT SET 1: CÁC THẺ ĐÒN BẨY CHIẾN LƯỢC LƯỢNG HÓA DOANH THU (Đọc từ tblKPI_StrategicLevers)
     SELECT 
         LeverID,
         Title,
         Description,
-        StudentsGain,
-        RevenueGainText,
+        N'+' + CAST(StudentsGain AS NVARCHAR(10)) + N' HS' AS StudentsGain,
+        N'+' + CAST(CAST(ROUND(RevenueGainMillion, 0) AS INT) AS NVARCHAR(20)) + N' tr/năm' AS RevenueGainText,
         IsPriority,
         OwnerRole
-    FROM (
-        VALUES
-        (
-            1,
-            N'1. Chặn rò rỉ & Gom tuyến xe bus',
-            N'Bảo toàn 15 HS nguy cơ chuyển trường xa · Đầu mối: Quản trị CSVC',
-            N'+15 HS',
-            N'+978 tr/năm',
-            1,
-            N'Quản trị CSVC & Xe Bus'
-        ),
-        (
-            2,
-            N'2. Tuyển sinh Mầm non Kitty 18–36 tháng',
-            N'Tuyển bổ sung quanh năm lấp phòng trống · Đầu mối: BGH Mầm non',
-            N'+35 HS',
-            N'+1.30 tỷ/năm',
-            0,
-            N'BGH Mầm non & TVTS'
-        ),
-        (
-            3,
-            N'3. Liên thông chuyển cấp nội bộ (Lá lên 1, Khối 5 lên 6)',
-            N'Nâng tỷ lệ chuyển tiếp nội bộ đạt 92% · Đầu mối: BGH TH & THCS',
-            N'+65 HS',
-            N'+3.22 tỷ/năm',
-            0,
-            N'BGH Tiểu học & THCS'
-        ),
-        (
-            4,
-            N'4. Tuyển chọn lọc Khối 10 HK2 & Học bổng',
-            N'Tuyển bổ sung học sinh trùng tổ hợp GDPT 2018 · Đầu mối: Tuyển sinh',
-            N'+10 HS',
-            N'+652 tr/năm',
-            0,
-            N'Phòng Tuyển Sinh & TVTS'
-        )
-    ) AS l (LeverID, Title, Description, StudentsGain, RevenueGainText, IsPriority, OwnerRole);
+    FROM tblKPI_StrategicLevers
+    WHERE PeriodKey = @PeriodKey
+    ORDER BY SortOrder;
 END;

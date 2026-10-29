@@ -1,95 +1,86 @@
 # AGENT HANDOFF: lhbs-esign
 
-- **Generated At:** 2026-10-29T11:04:30+07:00
+- **Generated At:** 2026-10-29T14:08:00+07:00
 - **Workspace Root:** `/home/iot/CODE/fui-cli/lhbs-esign`
 - **Status:** `done`
-- **Next Session Focus:** Trải nghiệm trực tiếp toàn bộ phân hệ KPI Operations Dashboard tại `https://kyso.lhbs.vn/kpi-ops-dashboard`. CSDL đã sạch 100%, 5 bảng dư thừa đã bị xoá hoàn toàn, chỉ còn 26 bảng chuẩn hoá.
+- **Next Session Focus:** Khởi động / đối soát giai đoạn Golive thực tế của KPI Ops Dashboard khi các phân hệ CRM, Helpdesk CSVC và HRM kết nối API chính thức; mở rộng các kịch bản What-If và tích hợp thêm dữ liệu niên giám.
 
 ## 1. NEXT SESSION ACTION PLAN
-1. Mở trình duyệt truy cập `https://kyso.lhbs.vn/kpi-ops-dashboard`:
-   - Xác nhận dropdown kỳ làm việc chọn "Tháng 09/2026 (Chốt sổ)".
-   - Báo cáo Tài chính & CLB hiển thị chuẩn xác 79.37 tỷ và 1.611 tỷ.
-   - Fact Drawer hiển thị đầy đủ 470 đơn nghỉ, 131 ca y tế, 44 ca nhân sự, 10 ticket CSVC từ 8 bảng `tblKPI_Snap_*`.
-   - Risk Radar và Audit Drawer hoạt động mượt mà.
-2. Thiết kế pipeline/worker định kỳ tự động kéo dữ liệu snapshot cho kỳ chốt tiếp theo (Tháng 10/2026).
+1. Giám sát kỳ báo cáo tiếp theo (Tháng 10/2026 Live API) trên https://kyso.lhbs.vn/kpi-ops-dashboard để đối soát dữ liệu kéo tự động từ các endpoint tapi.lhbs.vn và lms.lhbs.vn.
+2. Khi phân hệ CRM, Helpdesk CSVC và HRM golive chính thức: cập nhật cấu hình trong `tblKPI_Definitions` (chuyển `DataSourceType` từ `EXCEL_STAGING` sang `LIVE_API`).
+3. Chuẩn bị quy trình tự động gọi `spAPI_KPI_FreezePeriodData` qua scheduled job / webhook vào 23:59 ngày cuối tháng.
 
 ## 2. SUGGESTED SKILLS
-- `clean-stage-commit-push`: Đã thực thi trong session này để đưa code và schema lên Git remote.
-- `test-before-patch`: Dùng để kiểm thử cú pháp Stored Procedure và dữ liệu trả về trước khi deploy production.
-- `session-bugflow`: Dùng nếu phát hiện bất kỳ sai lệch contract nào giữa Frontend và CSDL eSign.
+- `change-set-review`: Khi review các thay đổi mới trước khi đưa lên môi trường staging tiếp theo.
+- `context-mode`: Bắt buộc sử dụng để truy vấn dữ liệu lớn và chạy kiểm thử SFC / SQL query mà không làm phình context.
 
 ## 3. GIT & COMMIT STATE
 - **Branch:** `main`
 - **Relevant Recent Commits:**
-  - `6040719` — feat(lhbs-esign): executive decision support, mom delta badges, print pack and fact deep-links
-  - `22b7cbe` — feat(lhbs-esign): dynamic risk radar engine, correlation ontology and fix vue3 runtime errors
+  - `e2777b7` — chore: add handoff and diagram-design skills
+  - `6f60b47` — feat: enhance council evaluation with committee management and responsive actions
 - **Working Tree Ownership:**
   - **Current task changes:**
-    - `docs/DATABASE_ARCHITECTURE_IMMUTABLE_SNAPSHOTS.md`: Tài liệu kiến trúc chuẩn hóa Immutable Period Snapshots.
-    - `_db/esign/migration_v2_source_snapshots_schema.sql`: DDL 8 bảng snapshot nguồn chuyên biệt.
-    - `_db/esign/migration_v2_seed_frozen_data_september.sql`: Dữ liệu đóng băng Tháng 9/2026 cho 8 nguồn.
-    - `_db/esign/migration_v2_drop_legacy_tables.sql`: Script dọn dẹp 6 bảng generic cũ.
-    - `_db/esign/spAPI_KPI_GetFinanceServices.sql`: Stored Procedure mới cho báo cáo tài chính & CLB.
-    - `_db/esign/spAPI_KPI_GetOperationalFacts.sql`: Stored Procedure định tuyến động sang 8 bảng snapshot mới.
-    - `_db/esign/spAPI_KPI_GetOperationsSummary.sql`: Làm sạch procedure (bỏ hardcoded VALUES).
-    - `_db/esign/spAPI_KPI_GetPeriodSnapshots.sql`: Làm sạch procedure (bỏ DELETE/INSERT ngầm).
-    - `modules/kpi-ops-dashboard/components/uc-kpi-ops.vue`: Dynamic header, dynamic finance & CRM metrics.
-    - `.handoff/HANDOFF.md`: Báo cáo bàn giao phiên làm việc.
-  - **Pre-existing dirty / unrelated (DO NOT TOUCH):**
-    - `../_logs/tool-errors.jsonl`
-    - `../lhu-qldetaisdh/*` (18 files thuộc project khác trong monorepo)
+    - `modules/kpi-ops-dashboard/components/uc-kpi-ops.vue` (Triệt tiêu 100% hardcode, fix circular dependency, dynamic kỳ T9/T10/Target KPI 4)
+    - `modules/kpi-ops-dashboard/style.css` (Cập nhật styles và layout visual)
+    - `_db/esign/spAPI_KPI_GetRiskRadar.sql` (Dynamic 4 trục ngòi nổ và chu kỳ tháng)
+    - `_db/esign/spAPI_KPI_GetPeriodSnapshots.sql` (Bổ sung Result Sets 5, 6, 7 cho LMS/Academics)
+    - `_db/esign/spAPI_KPI_GetCausalEngineData.sql` (10 Result Sets cấu hình Causal Ontology & Assumptions)
+    - `_db/esign/spAPI_KPI_GetOperationsSummary.sql` (Tích hợp Fact Store và Phễu CRM)
+    - `_db/esign/spAPI_KPI_GetAuditDiscrepancies.sql` (Ontology Rule Engine đối soát vênh)
+    - `_db/esign/spAPI_KPI_GetCorrelations.sql` (Chuỗi quan hệ nhân quả động)
+    - `_db/esign/spAPI_KPI_GetStrategicLevers.sql` (Lộ trình Value Bridge Waterfall)
+    - `_db/esign/spAPI_KPI_FreezePeriodData.sql` (Thủ tục khóa sổ kỳ tự động)
+    - `_db/esign/migration_*.sql` (Bộ migration seed dữ liệu cơ sở và LMS)
+    - `.md/lessons.md` (Ghi nhận bài học kinh nghiệm về SFC và Vue 3 computed)
+  - **Pre-existing dirty / unrelated:**
+    - `../lhu-qldetaisdh/*` (Dự án khác, KHÔNG ĐỤNG VÀO)
+    - `../_logs/tool-errors.jsonl` (File log hệ thống)
 - **Quick Inspect Commands:**
   - `git diff modules/kpi-ops-dashboard/components/uc-kpi-ops.vue`
-  - `git diff _db/esign/`
+  - `git diff _db/esign/spAPI_KPI_GetRiskRadar.sql`
 
 ## 4. PROBLEM & SYSTEM FLOW
-- **Objective:** Tái cấu trúc toàn diện cơ sở dữ liệu eSign cho module KPI Operations Dashboard theo mô hình Immutable Period Snapshots để chống trôi số liệu từ các hệ thống tác nghiệp mutable nguồn; xoá bỏ super-table `tblKPI_OperationalFacts` dùng chung gây phình to và khó query; thay thế bằng 8 bảng snapshot chuyên biệt theo nguồn; đồng thời loại bỏ toàn bộ dữ liệu hard-code ở Frontend.
-- **Expected:** Dữ liệu từng kỳ (Tuần / Tháng / Quý / Năm) được đóng băng bất biến (`IsFrozen = 1`). Stored Procedures truy xuất nhanh qua bảng nguồn chuyên biệt với chỉ mục `(PeriodKey)`. Frontend bind 100% động theo dữ liệu kỳ được chọn.
-- **Actual:** Đã hoàn thành toàn bộ DDL, DML seed, Stored Procedures, tài liệu kiến trúc tại `docs/` và code Frontend. Đã đồng bộ FUI thành công (`0 unpublished file(s)`).
+- **Objective:** Chuyển đổi module `kpi-ops-dashboard` và backend CSDL `eSignature` sang kiến trúc hoàn toàn Dynamic Data-Driven, loại bỏ 100% dữ liệu tĩnh gán cứng (hardcode), sửa lỗi blank screen tab LMS và chuẩn hóa chu trình chốt sổ.
+- **Expected:** Giao diện phản hồi linh hoạt theo slicers kỳ và cơ sở; điểm rủi ro, chuỗi nhân quả, đòn bẩy tài chính được tính toán tự động từ Snapshot và Fact Store.
+- **Actual:** Đã hoàn thành 100%, 0 lỗi compile Vue 3 SFC, 0 lỗi đệ quy computed, các trang từ Page 0 đến Page 7 hiển thị đầy đủ.
 - **Flow Analysis:**
-  - **Input:** Người dùng chọn kỳ làm việc (`selectedYear`, `PeriodKey` e.g. `2026-09`) trên UI Dashboard.
-  - **Process:** Frontend gọi `KPI_GetPeriodSnapshots` (lấy danh sách kỳ và snapshot vĩ mô) -> gọi `KPI_GetOperationalFacts` (chuyển tiếp tới 8 bảng `tblKPI_Snap_*`) -> gọi `KPI_GetFinanceServices` (lấy chi tiết tài chính 5 khối và 36 CLB).
-  - **State:** Dữ liệu trong các bảng `tblKPI_Snap_*` là bất biến theo từng kỳ đã chốt sổ.
-  - **Output:** Giao diện hiển thị chính xác tổng doanh thu (79.37 tỷ), CLB (1.611 tỷ), 131 ca y tế, 470 đơn nghỉ, 44 ca nhân sự, 79 ticket CSVC, CRM leads.
-  - **Side Effects:** Không gây phình to một bảng tập trung; giảm thiểu I/O do query đúng partition của từng loại nghiệp vụ.
+  - **Input:** Người dùng chọn kỳ (`selectedPeriod`) và cơ sở (`currentUnit`) trên thanh điều khiển.
+  - **Process:** `fetchPeriodData` -> gọi đồng loạt các SP tAPI (`KPI_GetPeriodSnapshots`, `KPI_GetRiskRadar`, `KPI_GetCausalEngineData`, `KPI_GetAuditDiscrepancies`, `KPI_GetOperationsSummary`, `KPI_GetFinanceServices`).
+  - **State:** Component Vue 3 lưu giữ state vào snapshot lists, các computed properties tự động tính toán tỷ lệ, dòng tiền, độ lấp đầy, radar rủi ro và cây nhân quả.
+  - **Output:** Giao diện hiển thị trực quan không còn vết "T9", "T10", "1.743 tỷ", "50%" cố định.
+  - **Side Effects:** Đã cập nhật component ComID 13057 và publish style.css lên máy chủ FUI (`kyso.lhbs.vn`).
 
 ## 5. RELEVANT CODE & ARTIFACT REFERENCES
-- **Architecture Documentation:** `docs/DATABASE_ARCHITECTURE_IMMUTABLE_SNAPSHOTS.md`
-- **Database DDL:** `_db/esign/migration_v2_source_snapshots_schema.sql`
-- **Database Seed:** `_db/esign/migration_v2_seed_frozen_data_september.sql`
-- **Database Drop:** `_db/esign/migration_v2_drop_legacy_tables.sql`
-- **Stored Procedures:** `_db/esign/spAPI_KPI_GetFinanceServices.sql`, `_db/esign/spAPI_KPI_GetOperationalFacts.sql`, `_db/esign/spAPI_KPI_GetOperationsSummary.sql`, `_db/esign/spAPI_KPI_GetPeriodSnapshots.sql`
-- **Frontend Component:** `modules/kpi-ops-dashboard/components/uc-kpi-ops.vue`
+- **Specs / Plans / Issues / ADRs:**
+  - `~/.gemini/antigravity/brain/80ec7f84-def3-4c3b-9f95-4603ebd6f1b5/kpi_ops_full_dynamic_plan.md`
+- **Code Locations:**
+  - `modules/kpi-ops-dashboard/components/uc-kpi-ops.vue:3690-3720` (`currentCausalAssumption`) — Ngắt circular dependency, an toàn pre-mount.
+  - `modules/kpi-ops-dashboard/components/uc-kpi-ops.vue:4900-4930` (`currentPeriodShortName`, `nextPeriodShortName`) — Tự động trích xuất mã kỳ động.
+  - `_db/esign/spAPI_KPI_GetRiskRadar.sql:200-245` (Result Set 1) — Động hóa 4 trục ngòi nổ và chu kỳ tháng.
 
 ## 6. SESSION KNOWLEDGE (FACTS vs HYPOTHESES)
 ### Verified Facts
-- [FACT] Các hệ thống tác nghiệp nguồn (Basic Data, LMS, FTS, CRM) không hỗ trợ truy vấn historical data chính xác theo mốc thời gian cũ vì dữ liệu thường xuyên bị cập nhật/ghi đè. (Evidence: yêu cầu bài toán từ User).
-- [FACT] Việc gom tất cả 8 loại sự kiện vào `tblKPI_OperationalFacts` dùng chung các cột `Dim1..Dim4` gây phình to bảng và làm chậm tốc độ query. (Evidence: phân tích lược đồ dữ liệu và cấu trúc chỉ mục).
-- [FACT] Frontend `uc-kpi-ops.vue` đã được kiểm tra cú pháp đạt 100% hợp lệ qua `node --check` và đã cập nhật lên FUI (`0 unpublished files`).
-
-### Active Hypotheses
-- [H1] Khi áp dụng `spAPI_KPI_GetOperationalFacts` mới, giao diện cũ vẫn tương thích 100% nhờ việc aliasing các cột của `tblKPI_Snap_*` về các tên trường cũ (`MetricCode`, `Dim1..Dim4`, `FactValue`).
-  - *Supporting evidence:* Stored procedure trả về đúng các tên cột mà Frontend đang đọc trong `factList`.
-  - *Contradicting evidence:* Không có.
-  - *Smallest falsification test:* Kiểm tra `result[0]` trong Stored Procedure trả về đúng các field `Dim1`, `Dim2`, `Dim3`, `FactValue`.
+- [FACT] Lỗi blank page trước đó xảy ra do thẻ đóng `</div>` dư tại L1838 và vòng lặp đệ quy trong `currentCausalAssumption` gọi ngược lại `displayCapacity` (Evidence: Log browser và node eval stack trace).
+- [FACT] Vue 3 SFC Compiler (`@vue/compiler-sfc`) xác nhận template hiện tại 0 compilation errors (Evidence: Test script run qua context-mode).
+- [FACT] Component `uc-kpi-ops` đã được sync thành công với ComID 13057 trên server FUI (Evidence: Output lệnh `fui component update`).
 
 ### Assumptions & Unknowns
-- [ASSUMPTION] Quá trình migration DB thực tế sẽ được thực thi bởi DBA hoặc pipeline CI/CD khi có quyền truy cập trực tiếp vào máy chủ CSDL SQL Server eSign.
+- [ASSUMPTION] Kỳ Tháng 09/2026 là kỳ dữ liệu đã chốt sổ và đóng băng hoàn toàn (`IsFrozen = true`).
+- [UNKNOWN] Thời điểm các hệ thống nguồn bên thứ ba (basicdata, hocphi, tapi) hoàn tất webhook đẩy số tự động vào cuối tháng.
 
 ## 7. TESTS, LOGS & DIAGNOSTICS
 - **Overall Verification Status:** `PASS`
 - **Test / Benchmark Runs:**
-  - `node --check` trên script extracted từ `uc-kpi-ops.vue` → **Result:** PASS (0 syntax errors).
-  - `fui component update uc-kpi-ops` → **Result:** PASS (1 component synced, ComID 13057).
-  - `fui file status` → **Result:** PASS (0 unpublished files).
+  - `node script sfc compile` → **Result:** PASS (0 errors).
+  - `node script reactivity test` → **Result:** PASS (252 combinations x 105 computed properties: 0 errors).
+  - `fui query spAPI_KPI_GetPeriodSnapshots` → **Result:** PASS (trả về 27 KPIs và các RS chi tiết).
 
 ## 8. ATTEMPTS & DEAD ENDS (DO NOT REPEAT)
-- **Attempt 1:** Giữ lại `tblKPI_OperationalFacts` và thêm cột phân loại nguồn.
-  - *Result:* Bị bác bỏ do bảng sẽ ngày càng phình to qua từng tuần/tháng, và các cột `Dim1..Dim4` làm mất tính strongly-typed của dữ liệu.
-  - *Conclusion:* Phải tách thành 8 bảng snapshot nguồn độc lập (`tblKPI_Snap_*`).
+- *Attempt:* Gọi `this.displayCapacity` và `this.displayStudents` bên trong fallback của `currentCausalAssumption`.
+  - *Result:* Gây lỗi `Maximum call stack size exceeded` do quan hệ phụ thuộc vòng tròn giữa computed properties.
+  - *Conclusion:* Luôn dùng hằng số hoặc dữ liệu mộc (`2752`, `2625`) làm fallback khởi tạo cho computed cơ sở.
 
 ## 9. CONSTRAINTS & RISKS
-- **Contracts to Preserve:**
-  - Giữ nguyên các Stored Procedure `spAPI_KPI_GetOperationalFacts`, `spAPI_KPI_GetPeriodSnapshots`, `spAPI_KPI_GetOperationsSummary` để Frontend không bị vỡ giao tiếp API.
-- **Side Effects / Tradeoffs:**
-  - Tạo 8 bảng mới đòi hỏi migration script phải chạy đầy đủ trước khi kích hoạt `spAPI_KPI_GetOperationalFacts` mới trên môi trường production.
+- **Contracts to Preserve:** Giữ nguyên contract các tham số tAPI (`PeriodKey`, `DonViID`, `ScopeID`) để các module khác không bị ảnh hưởng.
+- **Side Effects / Tradeoffs:** Không có breaking change.

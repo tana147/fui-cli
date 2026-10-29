@@ -17,6 +17,8 @@ BEGIN
         SET @PeriodKey = '2026-09';
     IF @ScopeID IS NULL OR @ScopeID = ''
         SET @ScopeID = 'ALL';
+    IF @Category IS NULL OR @Category = '' OR @Category = 'ALL'
+        SET @Category = NULL;
 
     -- 1. BẢNG TẠM CHỨA KẾT QUẢ
     CREATE TABLE #DiscrepanciesResult (
@@ -36,27 +38,33 @@ BEGIN
         CreatedAt DATETIME
     );
 
-    -- 2. THU THẬP BIẾN THỐNG KÊ TỪ FACT STORE & BREAKDOWNS
+    -- 2. THU THẬP BIẾN THỐNG KÊ TỪ FACT STORE & BREAKDOWNS (TRUY VẤN ĐỘNG 100%)
     -- Số lượng rút vì cự ly xa từ tblKPI_PeriodBreakdowns
-    DECLARE @FarWithdrawCount INT = 0;
-    SELECT @FarWithdrawCount = ISNULL(MAX(CASE WHEN DimensionCode IN ('FAR', 'BUS') THEN CAST(ActualCount AS INT) END), 0)
-    FROM tblKPI_PeriodBreakdowns
-    WHERE PeriodKey = @PeriodKey AND KpiCode = 'TS04';
-    IF @FarWithdrawCount = 0 SET @FarWithdrawCount = 21; -- Fallback an toàn nếu chưa chốt breakdown
+    DECLARE @FarWithdrawCount INT = ISNULL((
+        SELECT SUM(ActualCount) 
+        FROM tblKPI_PeriodBreakdowns 
+        WHERE PeriodKey = @PeriodKey AND KpiCode = 'TS04' AND DimensionCode IN ('FAR', 'BUS')
+          AND (@ScopeID = 'ALL' OR DonViID = @ScopeID)
+    ), 0);
+    DECLARE @TotalWithdrawCount INT = ISNULL((
+        SELECT SUM(ActualCount) 
+        FROM tblKPI_PeriodBreakdowns 
+        WHERE PeriodKey = @PeriodKey AND KpiCode = 'TS04'
+          AND (@ScopeID = 'ALL' OR DonViID = @ScopeID)
+    ), 0);
+    IF @TotalWithdrawCount = 0 SET @TotalWithdrawCount = 1;
 
     -- Thống kê sửa chữa CSVC từ tblKPI_Snap_Maintenance
     DECLARE @MaintTotalTickets INT = 0;
     DECLARE @MaintAcTotal INT = 0;
-    DECLARE @MaintAcPending INT = 4;
+    DECLARE @MaintAcPending INT = 0;
     SELECT 
         @MaintTotalTickets = ISNULL(COUNT(*), 0),
-        @MaintAcTotal = ISNULL(SUM(CASE WHEN IssueDescription LIKE N'%lạnh%' OR Category LIKE N'%lạnh%' THEN 1 ELSE 0 END), 0),
-        @MaintAcPending = ISNULL(SUM(CASE WHEN (IssueDescription LIKE N'%lạnh%' OR Category LIKE N'%lạnh%') AND Status = 'PENDING' THEN 1 ELSE 0 END), 0)
+        @MaintAcTotal = ISNULL(SUM(CASE WHEN IssueDescription LIKE N'%lạnh%' OR Category LIKE N'%lạnh%' OR Location LIKE N'%lạnh%' THEN 1 ELSE 0 END), 0),
+        @MaintAcPending = ISNULL(SUM(CASE WHEN Status IN ('PENDING', 'RECORDED') AND (IssueDescription LIKE N'%lạnh%' OR Category LIKE N'%Trọng Điểm%' OR Location LIKE N'%lạnh%') THEN 1 ELSE 0 END), 0)
     FROM tblKPI_Snap_Maintenance
-    WHERE PeriodKey = @PeriodKey;
-    IF @MaintTotalTickets = 0 SET @MaintTotalTickets = 63;
-    IF @MaintAcTotal = 0 SET @MaintAcTotal = 18;
-    IF @MaintAcPending = 0 SET @MaintAcPending = 4;
+    WHERE PeriodKey = @PeriodKey
+      AND (@ScopeID = 'ALL' OR ScopeID = @ScopeID);
 
     -- Biên lợi nhuận xe bus từ snapshot TC56
     DECLARE @BusMargin NUMERIC(6,2) = 12.6;
@@ -129,9 +137,9 @@ BEGIN
             N'Chênh lệch Sĩ số & Rút học cơ sở ' + s1.DonViID,
             N'Báo cáo vận hành: Sĩ số ' + CAST(CAST(s1.ActualValue AS INT) AS NVARCHAR(20)) + N'/' + CAST(CAST(s1.TargetValue AS INT) AS NVARCHAR(20)) + N' HS (Lấp đầy ' + CAST(s1.Rate AS NVARCHAR(20)) + N'%)',
             CAST(CAST(s1.ActualValue AS INT) AS NVARCHAR(20)) + N' HS (' + CAST(s1.Rate AS NVARCHAR(20)) + N'% lấp đầy)',
-            N'Báo cáo trường ' + s1.DonViID + N': Tỷ lệ rút học ' + CAST(ISNULL(s4.Rate, 61.0) AS NVARCHAR(20)) + N'% mâu thuẫn tái ghi danh',
-            N'122 HS (94.6% tái ghi danh)',
-            N'Cơ sở ' + s1.DonViID + N' có công suất lấp đầy đạt ' + CAST(s1.Rate AS NVARCHAR(20)) + N'%, mâu thuẫn trực tiếp với tỷ lệ tái ghi danh 94.6%. Cần thống nhất lại công thức tính mẫu số công suất giữa báo cáo vận hành và báo cáo trường.',
+            N'Báo cáo rút học cơ sở ' + s1.DonViID + N': ' + CAST(ISNULL(CAST(s4.ActualValue AS INT), 0) AS NVARCHAR(20)) + N' HS rút (Tỷ lệ ' + CAST(ISNULL(s4.Rate, 0) AS NVARCHAR(20)) + N'%)',
+            CAST(ISNULL(CAST(s4.ActualValue AS INT), 0) AS NVARCHAR(20)) + N' HS rút',
+            N'Cơ sở ' + s1.DonViID + N' có công suất lấp đầy chỉ đạt ' + CAST(s1.Rate AS NVARCHAR(20)) + N'%, đồng thời phát sinh ' + CAST(ISNULL(CAST(s4.ActualValue AS INT), 0) AS NVARCHAR(20)) + N' học sinh rút hồ sơ (tỷ lệ ' + CAST(ISNULL(s4.Rate, 0) AS NVARCHAR(20)) + N'%). Cần đối soát lại chỉ tiêu công suất và tỷ lệ tái ghi danh giữa báo cáo vận hành và báo cáo trường.',
             @BalanceOwner,
             'PENDING_VERIFY',
             GETDATE()

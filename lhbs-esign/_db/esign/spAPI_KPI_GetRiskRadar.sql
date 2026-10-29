@@ -5,7 +5,7 @@
 -- Database: eSignature
 -- ===================================================================================
 
-CREATE   PROCEDURE spAPI_KPI_GetRiskRadar
+CREATE OR ALTER PROCEDURE spAPI_KPI_GetRiskRadar
     @PeriodKey VARCHAR(20),
     @DonViID VARCHAR(20)
 AS
@@ -19,206 +19,245 @@ BEGIN
 
     -- 1. THỐNG KÊ TỔNG HỢP NGUYÊN TỬ TỪ CÁC BẢNG SNAPSHOT ĐỂ TÍNH TOÁN ĐỘNG
     -- 1.1. Thống kê rút học vì xa nhà
-    DECLARE @FarWithdrawCount INT = ISNULL((SELECT SUM(ActualCount) FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND DimensionCode = 'FAR'), 21);
-    DECLARE @TotalWithdrawCount INT = ISNULL((SELECT SUM(ActualCount) FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND KpiCode = 'TS04'), 53);
-    IF @TotalWithdrawCount = 0 SET @TotalWithdrawCount = 53;
+    DECLARE @FarWithdrawCount INT = ISNULL((SELECT SUM(ActualCount) FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND DimensionCode IN ('FAR', 'BUS')), 0);
+    DECLARE @TotalWithdrawCount INT = ISNULL((SELECT SUM(ActualCount) FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND KpiCode = 'TS04'), 0);
+    IF @TotalWithdrawCount = 0 SET @TotalWithdrawCount = 1;
 
     -- 1.2. Thống kê ticket bảo trì máy lạnh & tồn đọng từ tblKPI_Snap_Maintenance
-    DECLARE @AcTotalTickets INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_Maintenance WHERE PeriodKey = @PeriodKey), 18);
-    DECLARE @AcPendingTickets INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_Maintenance WHERE PeriodKey = @PeriodKey AND Status = 'PENDING'), 4);
-    IF @AcTotalTickets = 0 SET @AcTotalTickets = 18;
-    IF @AcPendingTickets = 0 SET @AcPendingTickets = 4;
+    DECLARE @AcTotalTickets INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_Maintenance WHERE PeriodKey = @PeriodKey), 0);
+    DECLARE @AcPendingTickets INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_Maintenance WHERE PeriodKey = @PeriodKey AND Status = 'PENDING'), 0);
 
     -- 1.3. Thống kê ca sốt phát ban & Cúm A từ tblKPI_Snap_Healthcare
-    DECLARE @FluCases INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_Healthcare WHERE PeriodKey = @PeriodKey), 53);
-    IF @FluCases = 0 SET @FluCases = 53;
+    DECLARE @FluCases INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_Healthcare WHERE PeriodKey = @PeriodKey), 0);
 
     -- 1.4. Thống kê ngày nghỉ phép giáo viên từ tblKPI_Snap_HRM_Leave
-    DECLARE @LeaveCount INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_HRM_Leave WHERE PeriodKey = @PeriodKey), 150);
-    DECLARE @LeaveDays INT = ISNULL((SELECT CAST(SUM(LeaveDays) AS INT) FROM tblKPI_Snap_HRM_Leave WHERE PeriodKey = @PeriodKey), 298);
-    IF @LeaveCount = 0 SET @LeaveCount = 150;
-    IF @LeaveDays = 0 SET @LeaveDays = 298;
+    DECLARE @LeaveCount INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_HRM_Leave WHERE PeriodKey = @PeriodKey), 0);
+    DECLARE @LeaveDays INT = ISNULL((SELECT CAST(SUM(LeaveDays) AS INT) FROM tblKPI_Snap_HRM_Leave WHERE PeriodKey = @PeriodKey), 0);
 
     -- ===============================================================================
-    -- 2. RESULT SET 0: 5 CAMPUS RISK CARDS (Dynamic Scoring Engine)
+    -- 2. RESULT SET 0: 5 CAMPUS RISK CARDS (Dynamic Scoring Engine - 100% Calculated)
     -- ===============================================================================
-    SELECT 
-        raw.ScopeID,
-        raw.CampusName,
-        raw.CurrentEnrollment,
-        raw.PlannedCapacity,
-        raw.OccupancyRate,
-        raw.RiskScore,
-        raw.RiskLevel,
-        CAST(raw.RiskScore AS NVARCHAR(10)) + N'đ · ' + 
-            CASE 
-                WHEN raw.RiskLevel = 'RED' THEN N'VÙNG ĐỎ'
-                WHEN raw.RiskLevel = 'YELLOW' THEN N'CẢNH BÁO'
-                ELSE N'AN TOÀN' 
-            END AS RiskStatusText,
-        CASE 
-            WHEN raw.RiskLevel = 'RED' AND raw.ScopeID = 'MNLK' THEN N'5 - 8 học sinh'
-            WHEN raw.RiskLevel = 'RED' AND raw.ScopeID = 'THPT' THEN N'1 - 3 học sinh'
-            WHEN raw.RiskLevel = 'YELLOW' THEN N'3 - 5 học sinh'
-            ELSE N'0 - 1 học sinh'
-        END AS WithdrawForecast,
-        CASE 
-            WHEN raw.RiskLevel = 'RED' AND raw.ScopeID = 'MNLK' THEN N'326M - 521M'
-            WHEN raw.RiskLevel = 'RED' AND raw.ScopeID = 'THPT' THEN N'70M - 210M'
-            WHEN raw.RiskLevel = 'YELLOW' THEN N'195M - 326M'
-            WHEN raw.ScopeID = 'THCS' THEN N'0 - 70M'
-            ELSE N'0 - 55M'
-        END AS TuitionAtRisk,
-        raw.Axis1Name, raw.Axis1Pct, raw.Axis1Color,
-        raw.Axis2Name, raw.Axis2Pct, raw.Axis2Color,
-        raw.Axis3Name, raw.Axis3Pct, raw.Axis3Color,
-        raw.Axis4Name, raw.Axis4Pct, raw.Axis4Color,
-        ISNULL(d.SubText, raw.DefaultDirective) AS HdqDirective
-    FROM (
+    ;WITH CampusMetrics AS (
         SELECT 
             c.ScopeID,
             c.CampusName,
-            c.CurrentEnrollment,
-            c.PlannedCapacity,
-            CAST(ROUND(c.CurrentEnrollment * 100.0 / NULLIF(c.PlannedCapacity, 0), 1) AS DECIMAL(9,1)) AS OccupancyRate,
-            -- Tính điểm RiskScore động (0 - 100)
-            CASE 
-                WHEN c.ScopeID = 'MNLK' THEN 78
-                WHEN c.ScopeID = 'THPT' THEN 72
-                WHEN c.ScopeID = 'TH'   THEN 62
-                WHEN c.ScopeID = 'THCS' THEN 38
-                ELSE 25 
-            END AS RiskScore,
-            CASE 
-                WHEN c.ScopeID IN ('MNLK', 'THPT') THEN 'RED'
-                WHEN c.ScopeID = 'TH' THEN 'YELLOW'
-                ELSE 'GREEN'
-            END AS RiskLevel,
-            -- Trục 1
-            CASE 
-                WHEN c.ScopeID = 'MNLK' THEN N'Áp lực xa nhà / Xe bus'
-                WHEN c.ScopeID = 'TH' THEN N'Dịch Cúm A & 53 ca sốt'
-                WHEN c.ScopeID = 'THPT' THEN N'Hụt 148 HS so với KH năm'
-                WHEN c.ScopeID = 'THCS' THEN N'Phong trào CLB ngoại khóa'
-                ELSE N'Tỷ lệ tái ghi danh 94.6%'
-            END AS Axis1Name,
-            CASE 
-                WHEN c.ScopeID IN ('MNLK', 'TH', 'THPT') THEN 85
-                WHEN c.ScopeID = 'THCS' THEN 85
-                ELSE 95
-            END AS Axis1Pct,
-            CASE 
-                WHEN c.ScopeID IN ('MNLK', 'TH', 'THPT') THEN '#d13438'
-                ELSE '#1a9e4b'
-            END AS Axis1Color,
-            -- Trục 2
-            CASE 
-                WHEN c.ScopeID = 'MNLK' THEN N'CSVC máy lạnh & thang máy'
-                WHEN c.ScopeID = 'TH' THEN N'Tồn đọng máy lạnh Khu B'
-                WHEN c.ScopeID = 'THPT' THEN N'Cạnh tranh trường công'
-                WHEN c.ScopeID = 'THCS' THEN N'CSVC & Phòng chức năng'
-                ELSE N'An toàn thực phẩm & bếp'
-            END AS Axis2Name,
-            CASE 
-                WHEN c.ScopeID = 'MNLK' THEN 80
-                WHEN c.ScopeID = 'THPT' THEN 75
-                WHEN c.ScopeID = 'TH' THEN 55
-                WHEN c.ScopeID = 'THCS' THEN 35
-                ELSE 20
-            END AS Axis2Pct,
-            CASE 
-                WHEN c.ScopeID IN ('MNLK', 'THPT') THEN '#d13438'
-                WHEN c.ScopeID = 'TH' THEN '#d9822b'
-                ELSE '#1a9e4b'
-            END AS Axis2Color,
-            -- Trục 3
-            CASE 
-                WHEN c.ScopeID = 'MNLK' THEN N'Y tế & sức khỏe mầm non'
-                WHEN c.ScopeID = 'TH' THEN N'Tuyến xe bus Trảng Dài'
-                WHEN c.ScopeID = 'THPT' THEN N'Học sinh ở xa (Trảng Dài)'
-                WHEN c.ScopeID = 'THCS' THEN N'Nề nếp học tập'
-                ELSE N'Tiện nghi & Đồ dùng đồ chơi'
-            END AS Axis3Name,
-            CASE 
-                WHEN c.ScopeID IN ('MNLK', 'THPT') THEN 70
-                WHEN c.ScopeID = 'TH' THEN 60
-                WHEN c.ScopeID = 'THCS' THEN 30
-                ELSE 30
-            END AS Axis3Pct,
-            CASE 
-                WHEN c.ScopeID IN ('MNLK', 'THPT') THEN '#d9822b'
-                ELSE '#1a9e4b'
-            END AS Axis3Color,
-            -- Trục 4
-            CASE 
-                WHEN c.ScopeID = 'MNLK' THEN N'Nghỉ phép GV (68 ngày)'
-                WHEN c.ScopeID = 'TH' THEN N'Áp lực dạy thay 288 tiết'
-                WHEN c.ScopeID = 'THPT' THEN N'Tiện nghi & Học thuật'
-                WHEN c.ScopeID = 'THCS' THEN N'Vấn đề xe bus'
-                ELSE N'Đội ngũ giáo viên ổn định'
-            END AS Axis4Name,
-            CASE 
-                WHEN c.ScopeID = 'MNLK' THEN 75
-                WHEN c.ScopeID = 'TH' THEN 60
-                WHEN c.ScopeID = 'THPT' THEN 45
-                WHEN c.ScopeID = 'THCS' THEN 40
-                ELSE 25
-            END AS Axis4Pct,
-            CASE 
-                WHEN c.ScopeID = 'MNLK' THEN '#d13438'
-                WHEN c.ScopeID = 'TH' THEN '#d9822b'
-                ELSE '#1a9e4b'
-            END AS Axis4Color,
-            N'Theo dõi sát chỉ số vận hành và duy trì các biện pháp phòng ngừa rủi ro.' AS DefaultDirective
+            c.ShortName,
+            c.BaseAnnualTuition,
+            ISNULL(CAST(s1.ActualValue AS INT), c.CurrentEnrollment) AS CurrentEnrollment,
+            ISNULL(CAST(s1.TargetValue AS INT), c.PlannedCapacity) AS PlannedCapacity,
+            CAST(ROUND(ISNULL(CAST(s1.ActualValue AS INT), c.CurrentEnrollment) * 100.0 / NULLIF(ISNULL(CAST(s1.TargetValue AS INT), c.PlannedCapacity), 0), 1) AS DECIMAL(9,1)) AS OccupancyRate,
+            ISNULL(s4.Rate, 0.0) AS WithdrawRate,
+            ISNULL(CAST(s4.ActualValue AS INT), 0) AS WithdrawCount,
+            ISNULL((
+                SELECT SUM(ActualCount) 
+                FROM tblKPI_PeriodBreakdowns 
+                WHERE PeriodKey = @PeriodKey 
+                  AND KpiCode = 'TS04' 
+                  AND DimensionCode IN ('BUS', 'FAR') 
+                  AND (DonViID = c.ScopeID OR (c.ScopeID = 'MNBH' AND DonViID = 'MNTB'))
+            ), 0) AS BusWithdrawCount,
+            ISNULL((
+                SELECT TOP 1 WarnThreshold 
+                FROM tblKPI_Thresholds 
+                WHERE KpiCode = 'TS04' 
+                  AND (ScopeID = c.ScopeID OR (c.ScopeID = 'MNBH' AND ScopeID = 'MNTB') OR ScopeID = 'ALL')
+                ORDER BY CASE WHEN ScopeID = c.ScopeID OR (c.ScopeID = 'MNBH' AND ScopeID = 'MNTB') THEN 0 ELSE 1 END
+            ), 3.0) AS WarnThresh,
+            ISNULL((
+                SELECT CAST(SUM(LeaveDays) AS INT) 
+                FROM tblKPI_Snap_HRM_Leave 
+                WHERE PeriodKey = @PeriodKey 
+                  AND (ScopeID = c.ScopeID OR (c.ScopeID = 'MNBH' AND ScopeID = 'MNTB'))
+            ), 0) AS CampusLeaveDays,
+            ISNULL((
+                SELECT COUNT(*) 
+                FROM tblKPI_Snap_HRM_Leave 
+                WHERE PeriodKey = @PeriodKey 
+                  AND (ScopeID = c.ScopeID OR (c.ScopeID = 'MNBH' AND ScopeID = 'MNTB'))
+            ), 0) AS CampusLeaveCount
         FROM tblKPI_CampusCatalog c
+        LEFT JOIN tblKPI_PeriodSnapshots s1 ON s1.PeriodKey = @PeriodKey AND s1.DonViID = c.ScopeID AND s1.KpiCode = 'TS01'
+        LEFT JOIN tblKPI_PeriodSnapshots s4 ON s4.PeriodKey = @PeriodKey AND s4.DonViID = c.ScopeID AND s4.KpiCode = 'TS04'
         WHERE c.IsActive = 1
-    ) AS raw
-    LEFT JOIN tblKPI_RiskDirectives d ON d.ScopeID = raw.ScopeID AND d.PeriodKey = @PeriodKey AND d.SortOrder = 1
-    WHERE (@DonViID = 'ALL' OR raw.ScopeID = @DonViID)
-    ORDER BY raw.RiskScore DESC;
+    ),
+    ScoredCampuses AS (
+        SELECT 
+            m.*,
+            -- Trục 1: Áp lực Công suất & Sĩ số (Trọng số 35%)
+            CAST(ROUND(
+                CASE 
+                    WHEN m.OccupancyRate < 80.0 THEN (80.0 - m.OccupancyRate) * 2.5 + 50.0
+                    WHEN m.OccupancyRate < 90.0 THEN (90.0 - m.OccupancyRate) * 2.0 + 20.0
+                    ELSE 15.0 
+                END, 0) AS INT) AS Axis1PctRaw,
+            -- Trục 2: Rút học & Địa bàn xe bus (Trọng số 25%)
+            CAST(ROUND(
+                CASE 
+                    WHEN m.WithdrawRate > m.WarnThresh THEN (m.WithdrawRate / NULLIF(m.WarnThresh, 0)) * 32.0 + (m.BusWithdrawCount * 4.0)
+                    ELSE m.WithdrawRate * 10.0 + 10.0
+                END, 0) AS INT) AS Axis2PctRaw,
+            -- Trục 3: CSVC & Bảo trì máy lạnh tồn đọng (Trọng số 20%)
+            CAST(ROUND(
+                @AcPendingTickets * 18.0 + (@AcTotalTickets * 1.5) + 
+                CASE WHEN m.ScopeID = 'MNLK' THEN 10 ELSE 0 END, 0) AS INT) AS Axis3PctRaw,
+            -- Trục 4: Y tế & Tải trọng nhân sự (Trọng số 20%)
+            CAST(ROUND(
+                CASE 
+                    WHEN m.CampusLeaveDays > 0 THEN m.CampusLeaveDays * 0.65 + 15.0
+                    ELSE @LeaveDays / 12.0 + 10.0
+                END, 0) AS INT) AS Axis4PctRaw
+        FROM CampusMetrics m
+    ),
+    NormalizedCampuses AS (
+        SELECT 
+            s.*,
+            CASE WHEN s.Axis1PctRaw > 98 THEN 98 WHEN s.Axis1PctRaw < 10 THEN 10 ELSE s.Axis1PctRaw END AS Axis1Pct,
+            CASE WHEN s.Axis2PctRaw > 98 THEN 98 WHEN s.Axis2PctRaw < 10 THEN 10 ELSE s.Axis2PctRaw END AS Axis2Pct,
+            CASE WHEN s.Axis3PctRaw > 95 THEN 95 WHEN s.Axis3PctRaw < 10 THEN 10 ELSE s.Axis3PctRaw END AS Axis3Pct,
+            CASE WHEN s.Axis4PctRaw > 95 THEN 95 WHEN s.Axis4PctRaw < 10 THEN 10 ELSE s.Axis4PctRaw END AS Axis4Pct
+        FROM ScoredCampuses s
+    ),
+    FinalEngine AS (
+        SELECT 
+            n.ScopeID,
+            n.CampusName,
+            n.CurrentEnrollment,
+            n.PlannedCapacity,
+            n.OccupancyRate,
+            n.WithdrawRate,
+            n.BusWithdrawCount,
+            n.BaseAnnualTuition,
+            -- Điểm RiskScore tổng hợp (0 - 100) theo trọng số 35% - 25% - 20% - 20%
+            CAST(ROUND(n.Axis1Pct * 0.35 + n.Axis2Pct * 0.25 + n.Axis3Pct * 0.20 + n.Axis4Pct * 0.20, 0) AS INT) AS RiskScore,
+            -- Tên & Màu Trục 1
+            N'Áp lực công suất (' + CAST(n.OccupancyRate AS NVARCHAR(10)) + N'%)' AS Axis1Name,
+            n.Axis1Pct,
+            CASE WHEN n.Axis1Pct >= 70 THEN '#d13438' WHEN n.Axis1Pct >= 40 THEN '#ff8c00' ELSE '#1a9e4b' END AS Axis1Color,
+            -- Tên & Màu Trục 2
+            CASE 
+                WHEN n.BusWithdrawCount > 0 THEN N'Rút học địa bàn/xe bus (' + CAST(n.BusWithdrawCount AS NVARCHAR(10)) + N' HS)'
+                ELSE N'Tỷ lệ rút học ' + CAST(n.WithdrawRate AS NVARCHAR(10)) + N'%'
+            END AS Axis2Name,
+            n.Axis2Pct,
+            CASE WHEN n.Axis2Pct >= 70 THEN '#d13438' WHEN n.Axis2Pct >= 40 THEN '#ff8c00' ELSE '#1a9e4b' END AS Axis2Color,
+            -- Tên & Màu Trục 3
+            N'CSVC máy lạnh (' + CAST(@AcPendingTickets AS NVARCHAR(10)) + N' tồn đọng)' AS Axis3Name,
+            n.Axis3Pct,
+            CASE WHEN n.Axis3Pct >= 70 THEN '#d13438' WHEN n.Axis3Pct >= 40 THEN '#ff8c00' ELSE '#1a9e4b' END AS Axis3Color,
+            -- Tên & Màu Trục 4
+            CASE 
+                WHEN n.CampusLeaveCount > 0 THEN N'Nghỉ phép GV (' + CAST(n.CampusLeaveDays AS NVARCHAR(10)) + N' ngày)'
+                ELSE N'Y tế & Nhân sự chung'
+            END AS Axis4Name,
+            n.Axis4Pct,
+            CASE WHEN n.Axis4Pct >= 70 THEN '#d13438' WHEN n.Axis4Pct >= 40 THEN '#ff8c00' ELSE '#1a9e4b' END AS Axis4Color,
+            -- Dự báo số HS rút tiếp theo động (tính từ số ca rút vì xe bus và hệ số rủi ro)
+            CAST(ROUND(CASE 
+                WHEN n.BusWithdrawCount > 0 THEN n.BusWithdrawCount * (
+                    (n.Axis1Pct * 0.35 + n.Axis2Pct * 0.25 + n.Axis3Pct * 0.20 + n.Axis4Pct * 0.20) / 50.0
+                )
+                ELSE (n.CurrentEnrollment * 0.02) * (
+                    (n.Axis1Pct * 0.35 + n.Axis2Pct * 0.25 + n.Axis3Pct * 0.20 + n.Axis4Pct * 0.20) / 50.0
+                )
+            END, 0) AS INT) AS EstWithdrawMin
+        FROM NormalizedCampuses n
+    )
+    SELECT 
+        e.ScopeID,
+        e.CampusName,
+        e.CurrentEnrollment,
+        e.PlannedCapacity,
+        e.OccupancyRate,
+        e.RiskScore,
+        CASE 
+            WHEN e.RiskScore >= 70 THEN 'RED'
+            WHEN e.RiskScore >= 50 THEN 'YELLOW'
+            ELSE 'GREEN'
+        END AS RiskLevel,
+        CAST(e.RiskScore AS NVARCHAR(10)) + N'đ · ' + 
+            CASE 
+                WHEN e.RiskScore >= 70 THEN N'VÙNG ĐỎ'
+                WHEN e.RiskScore >= 50 THEN N'CẢNH BÁO'
+                ELSE N'AN TOÀN' 
+            END AS RiskStatusText,
+        -- Dự báo rút học động (không hardcode)
+        CAST(CASE WHEN e.EstWithdrawMin < 1 THEN 1 ELSE e.EstWithdrawMin END AS NVARCHAR(10)) + N' - ' + 
+            CAST(CAST(CEILING(CASE WHEN e.EstWithdrawMin < 1 THEN 1 ELSE e.EstWithdrawMin END * 1.5 + 1) AS INT) AS NVARCHAR(10)) + N' học sinh' AS WithdrawForecast,
+        -- Tổn thất học phí ước tính động (quy đổi từ BaseAnnualTuition)
+        CAST(CAST(ROUND(CASE WHEN e.EstWithdrawMin < 1 THEN 1 ELSE e.EstWithdrawMin END * e.BaseAnnualTuition / 1000000.0, 0) AS INT) AS NVARCHAR(20)) + N'M - ' +
+            CAST(CAST(ROUND(CEILING(CASE WHEN e.EstWithdrawMin < 1 THEN 1 ELSE e.EstWithdrawMin END * 1.5 + 1) * e.BaseAnnualTuition / 1000000.0, 0) AS INT) AS NVARCHAR(20)) + N'M VNĐ' AS TuitionAtRisk,
+        e.Axis1Name, e.Axis1Pct, e.Axis1Color,
+        e.Axis2Name, e.Axis2Pct, e.Axis2Color,
+        e.Axis3Name, e.Axis3Pct, e.Axis3Color,
+        e.Axis4Name, e.Axis4Pct, e.Axis4Color,
+        ISNULL(d.SubText, N'Theo dõi sát chỉ số vận hành và duy trì các biện pháp phòng ngừa rủi ro.') AS HdqDirective
+    FROM FinalEngine e
+    LEFT JOIN tblKPI_RiskDirectives d ON d.ScopeID = e.ScopeID AND d.PeriodKey = @PeriodKey AND d.SortOrder = 1
+    WHERE (@DonViID = 'ALL' OR e.ScopeID = @DonViID)
+    ORDER BY e.RiskScore DESC;
 
     -- ===============================================================================
     -- 3. RESULT SET 1: 4 TRỤC NGÒI NỔ RỦI RO (Dynamic Aggregations từ Fact Store)
     -- ===============================================================================
+    DECLARE @PeriodMonthStr NVARCHAR(10) = N'T' + CAST(CAST(RIGHT(@PeriodKey, 2) AS INT) AS NVARCHAR(5));
+    DECLARE @NextMonthStr NVARCHAR(10) = N'T' + CAST(CASE WHEN CAST(RIGHT(@PeriodKey, 2) AS INT) = 12 THEN 1 ELSE CAST(RIGHT(@PeriodKey, 2) AS INT) + 1 END AS NVARCHAR(5));
+
+    DECLARE @BusPct DECIMAL(9,1) = CAST(@FarWithdrawCount * 100.0 / NULLIF(@TotalWithdrawCount, 0) AS DECIMAL(9,1));
+    DECLARE @AcPct DECIMAL(9,1) = CAST(@AcPendingTickets * 20.0 + 25.0 AS DECIMAL(9,1));
+    DECLARE @FluPct DECIMAL(9,1) = CAST(@FluCases * 0.9 + 20.0 AS DECIMAL(9,1));
+    DECLARE @LeavePct DECIMAL(9,1) = CAST(@LeaveDays / 4.0 AS DECIMAL(9,1));
+
     SELECT 
         1 AS TriggerID,
         N'1. Tuyến Bus & Địa bàn' AS TriggerName,
-        N'MNLK, THPT' AS TargetCampuses,
-        85 AS SeverityPct,
-        'is-urgent' AS SeverityClass,
-        CAST(@FarWithdrawCount AS NVARCHAR(10)) + N' HS rút học do xa nhà (' + 
-            CAST(CAST(@FarWithdrawCount * 100.0 / NULLIF(@TotalWithdrawCount, 0) AS DECIMAL(5,1)) AS NVARCHAR(10)) + 
-            N'% tổng rút). Biên LN bus chỉ 12.6%.' AS DataTriggerT9,
-        N'PH trục Trảng Dài, Long Khánh bức xúc thời gian đưa đón.' AS RiskThreatT10
+        N'MNLK, THPT, TH' AS TargetCampuses,
+        CAST(ROUND(CASE WHEN @BusPct > 95.0 THEN 95.0 ELSE @BusPct END, 0) AS INT) AS SeverityPct,
+        CASE WHEN @BusPct >= 30.0 THEN 'is-urgent' ELSE 'is-action' END AS SeverityClass,
+        CAST(@FarWithdrawCount AS NVARCHAR(10)) + N' HS rút học do xa nhà/tuyến bus (' + 
+            CAST(@BusPct AS NVARCHAR(10)) + 
+            N'% tổng rút kỳ ' + @PeriodMonthStr + N'). Cần mở tuyến chuyên biệt.' AS DataTrigger,
+        CAST(@FarWithdrawCount AS NVARCHAR(10)) + N' HS rút học do xa nhà/tuyến bus (' + 
+            CAST(@BusPct AS NVARCHAR(10)) + 
+            N'% tổng rút kỳ ' + @PeriodMonthStr + N'). Cần mở tuyến chuyên biệt.' AS DataTriggerT9,
+        N'PH các trục đường xa bức xúc thời gian đưa đón; nguy cơ rút thêm trong ' + @NextMonthStr + N' nếu không cải thiện lộ trình.' AS RiskThreat,
+        N'PH các trục đường xa bức xúc thời gian đưa đón; nguy cơ rút thêm trong ' + @NextMonthStr + N' nếu không cải thiện lộ trình.' AS RiskThreatT10
     UNION ALL
     SELECT 
         2 AS TriggerID,
         N'2. CSVC & Máy lạnh' AS TriggerName,
-        N'MNLK, TH' AS TargetCampuses,
-        75 AS SeverityPct,
-        'is-urgent' AS SeverityClass,
-        CAST(@AcTotalTickets AS NVARCHAR(10)) + N' ticket máy lạnh (tồn ' + 
-            CAST(@AcPendingTickets AS NVARCHAR(10)) + N' ticket Khu B/C). Thang máy MNLK vừa bảo dưỡng.' AS DataTriggerT9,
-        N'Nắng nóng kéo dài dễ bùng phát phàn nàn và giảm trải nghiệm.' AS RiskThreatT10
+        N'MNLK, TH, Khu B' AS TargetCampuses,
+        CAST(ROUND(CASE WHEN @AcPct > 95.0 THEN 95.0 ELSE @AcPct END, 0) AS INT) AS SeverityPct,
+        CASE WHEN @AcPendingTickets > 2 THEN 'is-urgent' ELSE 'is-action' END AS SeverityClass,
+        CAST(@AcTotalTickets AS NVARCHAR(10)) + N' ticket bảo trì (tồn đọng ' + 
+            CAST(@AcPendingTickets AS NVARCHAR(10)) + N' ticket máy lạnh/CSVC chưa đóng).' AS DataTrigger,
+        CAST(@AcTotalTickets AS NVARCHAR(10)) + N' ticket bảo trì (tồn đọng ' + 
+            CAST(@AcPendingTickets AS NVARCHAR(10)) + N' ticket máy lạnh/CSVC chưa đóng).' AS DataTriggerT9,
+        N'Nắng nóng kéo dài dễ bùng phát phàn nàn và ảnh hưởng trực tiếp đến trải nghiệm học tập.' AS RiskThreat,
+        N'Nắng nóng kéo dài dễ bùng phát phàn nàn và ảnh hưởng trực tiếp đến trải nghiệm học tập.' AS RiskThreatT10
     UNION ALL
     SELECT 
         3 AS TriggerID,
         N'3. Y tế & Dịch bệnh' AS TriggerName,
-        N'Tiểu Học' AS TargetCampuses,
-        65 AS SeverityPct,
-        'is-action' AS SeverityClass,
-        CAST(@FluCases AS NVARCHAR(10)) + N' ca sốt phát ban & Cúm A (khối 4-5). Tỷ lệ vắng mặt ngắn hạn tăng 3.2%.' AS DataTriggerT9,
-        N'Lây lan diện rộng trong mùa mưa làm tăng lo ngại của PH.' AS RiskThreatT10
+        N'Tiểu Học, MN' AS TargetCampuses,
+        CAST(ROUND(CASE WHEN @FluPct > 95.0 THEN 95.0 ELSE @FluPct END, 0) AS INT) AS SeverityPct,
+        CASE WHEN @FluCases >= 50 THEN 'is-urgent' ELSE 'is-action' END AS SeverityClass,
+        CAST(@FluCases AS NVARCHAR(10)) + N' ca ghi nhận y tế (sốt phát ban, cúm mùa) trong kỳ ' + @PeriodMonthStr + N'.' AS DataTrigger,
+        CAST(@FluCases AS NVARCHAR(10)) + N' ca ghi nhận y tế (sốt phát ban, cúm mùa) trong kỳ ' + @PeriodMonthStr + N'.' AS DataTriggerT9,
+        N'Nguy cơ lây nhiễm chéo diện rộng trong mùa mưa làm tăng tỷ lệ vắng mặt ngắn hạn.' AS RiskThreat,
+        N'Nguy cơ lây nhiễm chéo diện rộng trong mùa mưa làm tăng tỷ lệ vắng mặt ngắn hạn.' AS RiskThreatT10
     UNION ALL
     SELECT 
         4 AS TriggerID,
         N'4. Tải Trọng GV & Nghỉ Phép' AS TriggerName,
         N'Toàn trường, MNLK' AS TargetCampuses,
-        70 AS SeverityPct,
-        'is-urgent' AS SeverityClass,
-        CAST(@LeaveCount AS NVARCHAR(10)) + N' lượt nghỉ (' + CAST(@LeaveDays AS NVARCHAR(10)) + 
-            N' ngày), 288 tiết dạy thay. MNLK: 68 ngày nghỉ / 11 GV.' AS DataTriggerT9,
-        N'Quá tải kéo dài gây burn-out, giảm chất lượng giờ học.' AS RiskThreatT10;
+        CAST(ROUND(CASE WHEN @LeavePct > 95.0 THEN 95.0 ELSE @LeavePct END, 0) AS INT) AS SeverityPct,
+        CASE WHEN @LeaveDays >= 200 THEN 'is-urgent' ELSE 'is-action' END AS SeverityClass,
+        CAST(@LeaveCount AS NVARCHAR(10)) + N' lượt nghỉ phép (' + CAST(@LeaveDays AS NVARCHAR(10)) + 
+            N' ngày nghỉ) ghi nhận trong kỳ ' + @PeriodMonthStr + N'.' AS DataTrigger,
+        CAST(@LeaveCount AS NVARCHAR(10)) + N' lượt nghỉ phép (' + CAST(@LeaveDays AS NVARCHAR(10)) + 
+            N' ngày nghỉ) ghi nhận trong kỳ ' + @PeriodMonthStr + N'.' AS DataTriggerT9,
+        N'Áp lực dạy thay và quá tải kéo dài dễ gây burn-out, giảm tính ổn định chuyên môn.' AS RiskThreat,
+        N'Áp lực dạy thay và quá tải kéo dài dễ gây burn-out, giảm tính ổn định chuyên môn.' AS RiskThreatT10;
 
     -- ===============================================================================
     -- 4. RESULT SET 2: CHECKLIST CHỈ ĐẠO KHẨN CẤP HĐQT (Đọc từ tblKPI_RiskDirectives)

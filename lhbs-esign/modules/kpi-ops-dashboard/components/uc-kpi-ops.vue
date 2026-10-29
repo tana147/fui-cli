@@ -104,7 +104,7 @@
       <div class="uc-kpi-ops__bhead">
         <div class="uc-kpi-ops__bhead-k">Tóm tắt Điều hành Hội đồng trường · {{ currentPeriodName }} · {{ currentUnitTitle }}</div>
         <div class="uc-kpi-ops__bhead-t">
-          Tổng quy mô đạt <b>{{ formatNumber(displayStudents) }} học sinh</b> (Lấp đầy <b>{{ displayFillRate }}%</b> công suất). Tỷ lệ rút học trong kỳ T9 là <b>{{ displayWithdrawRate }}%</b> ({{ displayWithdrawCount }} HS - Lũy kế chuyển đi: 152 HS; ngưỡng an toàn {{ getMetricThresholdLabel('TS04') }}). Tỷ lệ hoàn thành bài tập trực tuyến LMS đạt <b>{{ computedLmsData.rate }}</b>. Lợi nhuận gộp dịch vụ trường học đạt <b>{{ computedFinanceData.grossMargin }}</b> (Doanh thu <b>{{ computedFinanceData.rev }}</b>). Duy trì <b>0 sự cố</b> an toàn học đường (ISO 22000).
+          Tổng quy mô đạt <b>{{ formatNumber(displayStudents) }} học sinh</b> (Lấp đầy <b>{{ displayFillRate }}%</b> công suất). Tỷ lệ rút học trong kỳ {{ currentPeriodShortName }} là <b>{{ displayWithdrawRate }}%</b> ({{ displayWithdrawCount }} HS - Lũy kế chuyển đi: {{ displayOutflowYearToDate }} HS; ngưỡng an toàn {{ getMetricThresholdLabel('TS04') }}). Tỷ lệ hoàn thành bài tập trực tuyến LMS đạt <b>{{ computedLmsData.rate }}</b>. Lợi nhuận gộp dịch vụ trường học đạt <b>{{ computedFinanceData.grossMargin }}</b> (Doanh thu <b>{{ computedFinanceData.rev }}</b>). Duy trì <b>0 sự cố</b> an toàn học đường (ISO 22000).
         </div>
         <div class="uc-kpi-ops__bhead-s">
           Kết nối trực tiếp CSDL eSign &amp; tapi.lhbs.vn · Tự động đồng bộ phản hồi theo bộ lọc cơ sở &amp; kỳ chốt sổ.
@@ -191,7 +191,7 @@
           </div>
           <div class="uc-kpi-ops__bkpi-m">
             <div class="uc-kpi-ops__bkpi-v">
-              {{ displayWithdrawRate }}% <small>({{ displayWithdrawCount }} HS kỳ T9)</small>
+              {{ displayWithdrawRate }}% <small>({{ displayWithdrawCount }} HS kỳ {{ currentPeriodShortName }})</small>
               <span v-if="getKpiMoM('TS04').hasPrior" :class="['uc-kpi-ops__trend-badge', getKpiMoM('TS04').isGood ? 'is-good' : 'is-bad']">
                 {{ getKpiMoM('TS04').trend === 'up' ? '▲' : (getKpiMoM('TS04').trend === 'down' ? '▼' : '■') }} {{ Math.abs(getKpiMoM('TS04').deltaPct) }}% MoM
               </span>
@@ -200,10 +200,10 @@
               <line x1="2" x2="108" y1="8" y2="8" class="sp-tg"></line>
               <polyline points="4,18 25,22 46,20 67,26 88,24 100,21" class="sp-l"></polyline>
               <circle cx="100" cy="21" r="3" class="sp-d is-last"></circle>
-              <text x="100" y="38" text-anchor="middle" class="sp-x">T10</text>
+              <text x="100" y="38" text-anchor="middle" class="sp-x">{{ nextPeriodShortName }}</text>
             </svg>
           </div>
-          <div class="uc-kpi-ops__bkpi-d">Đến: +{{ displayInflow }} HS | Đi (T9): -{{ displayOutflow }} HS (Lũy kế năm: 152 HS)</div>
+          <div class="uc-kpi-ops__bkpi-d">Đến: +{{ displayInflow }} HS | Đi ({{ currentPeriodShortName }}): -{{ displayOutflow }} HS (Lũy kế năm: {{ displayOutflowYearToDate }} HS)</div>
           <div class="uc-kpi-ops__cmp">
             <span><i>Nơi ở/tiện đón:</i> <b>{{ displayReasonFar }}</b></span>
             <span><i>Kinh tế:</i> <b>{{ displayReasonEco }}</b></span>
@@ -294,14 +294,14 @@
               <line x1="2" x2="108" y1="12" y2="12" class="sp-tg"></line>
               <polyline points="4,28 25,24 46,20 67,16 88,14 100,13" class="sp-l"></polyline>
               <circle cx="100" cy="13" r="3" class="sp-d is-last"></circle>
-              <text x="100" y="38" text-anchor="middle" class="sp-x">KPI 50%</text>
+              <text x="100" y="38" text-anchor="middle" class="sp-x">KPI {{ getKpiTarget('TC55') || '50%' }}</text>
             </svg>
           </div>
           <div class="uc-kpi-ops__bkpi-d">Doanh thu thuần: {{ computedFinanceData.rev }} · Bán trú {{ computedFinanceData.mealMargin }} · Xe bus {{ computedFinanceData.busMargin }}</div>
           <div class="uc-kpi-ops__cmp">
             <span><i>DT CLB (KPI 3.2.1):</i> <b>{{ computedFinanceData.clbRev }}</b></span>
             <span><i>Học sinh CLB:</i> <b>{{ computedFinanceData.clbStudents }}</b></span>
-            <span><i>Mục tiêu CLB:</i> <b>1.743 tỷ HK1 (Quỹ $1M)</b></span>
+            <span><i>Mục tiêu CLB:</i> <b>{{ displayClubTarget }}</b></span>
           </div>
 
           <!-- Mắt xích Nhân quả Ngữ cảnh Tile 4 -->
@@ -334,8 +334,8 @@
           :class="['uc-kpi-ops__subtab-btn', { 'is-active': executiveTab === 'RISK' }]"
           @click="executiveTab = 'RISK'"
         >
-          Dự Báo &amp; Radar Rủi Ro T10
-          <span class="uc-kpi-ops__subtab-badge badge-danger">1 Vùng Đỏ · 2 Cảnh Báo</span>
+          Dự Báo &amp; Radar Rủi Ro {{ nextPeriodShortName }}
+          <span class="uc-kpi-ops__subtab-badge" :class="riskBadgeClass">{{ riskSummaryBadgeText }}</span>
         </button>
         <button
           type="button"
@@ -343,7 +343,7 @@
           @click="executiveTab = 'AUDIT'"
         >
           Kiểm Toán &amp; Điểm Vênh (Audit Center)
-          <span class="uc-kpi-ops__subtab-count">{{ auditDiscrepanciesList.length || 5 }}</span>
+          <span class="uc-kpi-ops__subtab-count">{{ auditDiscrepanciesList.length }}</span>
         </button>
         <button
           type="button"
@@ -351,7 +351,14 @@
           @click="executiveTab = 'CAUSAL'"
         >
           Chuỗi Nhân Quả &amp; Điểm Nghẽn (Causal Map)
-          <span class="uc-kpi-ops__subtab-count">{{ correlationsList.length || 15 }}</span>
+          <span class="uc-kpi-ops__subtab-count">{{ correlationsList.length }}</span>
+        </button>
+        <button
+          type="button"
+          :class="['uc-kpi-ops__subtab-btn', { 'is-active': executiveTab === 'SIMULATOR' }]"
+          @click="executiveTab = 'SIMULATOR'"
+        >
+          Mô Phỏng Đòn Bẩy (What-If Levers)
         </button>
         <button
           type="button"
@@ -359,7 +366,7 @@
           @click="executiveTab = 'FACTS'; fetchOperationalFacts(selectedFactDomain)"
         >
           Kho Giao Dịch Gốc (Fact Store Browser)
-          <span class="uc-kpi-ops__subtab-count">993 facts</span>
+          <span class="uc-kpi-ops__subtab-count">{{ operationalFactsTotalCount }} facts</span>
         </button>
       </div>
 
@@ -371,10 +378,10 @@
           <div class="uc-kpi-ops__split-card">
             <div class="uc-kpi-ops__vhead mb-1">
               <div class="uc-kpi-ops__vtitle" style="font-size:13px;font-weight:700;color:var(--accent2);">
-                Lộ Trình Phục Hồi Sĩ Số Đạt 100% Kế Hoạch 2.750 Học Sinh (Value Bridge Waterfall)
+                Lộ Trình Phục Hồi Sĩ Số Đạt 100% Kế Hoạch {{ formatNumber(displayTarget) }} Học Sinh (Value Bridge Waterfall)
               </div>
               <div class="uc-kpi-ops__vnote" style="font-size:11px;color:var(--ink2);">
-                Đóng góp 4 đòn bẩy từ Sĩ số T9 (2.625 HS) bù hụt 125 HS đạt 100% kế hoạch (Thiết kế: 2.810 HS)
+                Đóng góp {{ strategicLevers.length }} đòn bẩy từ Sĩ số kỳ ({{ formatNumber(displayStudents) }} HS) bù hụt {{ Math.max(0, displayTarget - displayStudents) }} HS đạt 100% kế hoạch (Thiết kế: {{ formatNumber(displayCapacity) }} HS)
               </div>
             </div>
             <svg class="uc-kpi-ops__svg" viewBox="0 0 640 150" preserveAspectRatio="xMidYMid meet">
@@ -398,7 +405,7 @@
                 Chi Tiết 4 Đòn Bẩy Lượng Hóa Doanh Thu
               </div>
               <div class="uc-kpi-ops__vnote" style="font-size:11px;color:var(--good);font-weight:600;">
-                Tổng giá trị bảo toàn: +6.15 tỷ VNĐ (Bù đúng 125 HS đạt 2.750 HS)
+                Tổng giá trị bảo toàn: {{ computedStrategicPreservedRevenue }} (Bù hụt {{ Math.max(0, displayTarget - displayStudents) }} HS đạt {{ formatNumber(displayTarget) }} HS)
               </div>
             </div>
             <div class="uc-kpi-ops__levers-list" v-if="strategicLevers && strategicLevers.length">
@@ -469,37 +476,28 @@
           <!-- Phân bổ lý do rút học -->
           <div class="uc-kpi-ops__dist-box">
             <div class="d-flex justify-space-between align-center">
-              <span style="font-size:12.5px;font-weight:700;color:var(--accent2);">Cơ Cấu Lý Do Rút Học Trong Kỳ Tháng 9 (53 Học Sinh)</span>
-              <span style="font-size:11px;color:#64748b;">Lũy kế chuyển đi: 152 HS (Live Data)</span>
+              <span style="font-size:12.5px;font-weight:700;color:var(--accent2);">Cơ Cấu Lý Do Rút Học Trong Kỳ {{ currentPeriodName }} ({{ displayWithdrawCount }} Học Sinh)</span>
+              <span style="font-size:11px;color:#64748b;">Lũy kế chuyển đi: {{ displayOutflowYearToDate }} HS (Live Data)</span>
             </div>
-            <!-- Stacked Distribution Bar -->
-            <div class="uc-kpi-ops__dist-bar">
-              <div class="uc-kpi-ops__dist-seg seg-bus" style="width: 39.62%;" title="Nơi ở / Xe bus: 21 HS (39.6%)"></div>
-              <div class="uc-kpi-ops__dist-seg seg-other" style="width: 26.42%;" title="Khác: 14 HS (26.4%)"></div>
-              <div class="uc-kpi-ops__dist-seg seg-eco" style="width: 18.87%;" title="Kinh tế: 10 HS (18.9%)"></div>
-              <div class="uc-kpi-ops__dist-seg seg-ill" style="width: 13.21%;" title="Bệnh tật: 7 HS (13.2%)"></div>
-              <div class="uc-kpi-ops__dist-seg seg-abroad" style="width: 1.89%;" title="Du học: 1 HS (1.9%)"></div>
+            <!-- Stacked Distribution Bar Động 100% -->
+            <div class="uc-kpi-ops__dist-bar" v-if="dynamicWithdrawReasons && dynamicWithdrawReasons.length">
+              <div 
+                v-for="b in dynamicWithdrawReasons" 
+                :key="b.code" 
+                class="uc-kpi-ops__dist-seg" 
+                :style="{ width: b.pct + '%', background: b.color }" 
+                :title="b.name + ': ' + b.count + ' HS (' + b.pct + '%)'"
+              ></div>
             </div>
-            <div class="uc-kpi-ops__dist-legend">
-              <span class="uc-kpi-ops__dist-legend-item">
-                <i class="uc-kpi-ops__dist-legend-dot" style="background:#d13438;"></i>
-                <b>Xe bus / Đi lại: 21 HS (39.6%)</b>
-              </span>
-              <span class="uc-kpi-ops__dist-legend-item">
-                <i class="uc-kpi-ops__dist-legend-dot" style="background:#605e5c;"></i>
-                Khác: 14 HS (26.4%)
-              </span>
-              <span class="uc-kpi-ops__dist-legend-item">
-                <i class="uc-kpi-ops__dist-legend-dot" style="background:#d9822b;"></i>
-                Kinh tế: 10 HS (18.9%)
-              </span>
-              <span class="uc-kpi-ops__dist-legend-item">
-                <i class="uc-kpi-ops__dist-legend-dot" style="background:#3A6EA5;"></i>
-                Bệnh tật: 7 HS (13.2%)
-              </span>
-              <span class="uc-kpi-ops__dist-legend-item">
-                <i class="uc-kpi-ops__dist-legend-dot" style="background:#107c41;"></i>
-                Du học: 1 HS (1.9%)
+            <div class="uc-kpi-ops__dist-legend" v-if="dynamicWithdrawReasons && dynamicWithdrawReasons.length">
+              <span 
+                v-for="b in dynamicWithdrawReasons" 
+                :key="'leg-' + b.code" 
+                class="uc-kpi-ops__dist-legend-item"
+              >
+                <i class="uc-kpi-ops__dist-legend-dot" :style="{ background: b.color }"></i>
+                <b v-if="b.code === 'FAR' || b.code === 'BUS'">{{ b.name }}: {{ b.count }} HS ({{ b.pct }}%)</b>
+                <span v-else>{{ b.name }}: {{ b.count }} HS ({{ b.pct }}%)</span>
               </span>
             </div>
           </div>
@@ -508,21 +506,21 @@
           <div class="uc-kpi-ops__dist-box">
             <div class="d-flex justify-space-between align-center">
               <span style="font-size:12.5px;font-weight:700;color:var(--accent2);">Tải Trọng Nghỉ Phép &amp; Áp Lực Bán Trú</span>
-              <span style="font-size:11px;color:#d9822b;font-weight:600;">551 ngày công nghỉ (198 NV)</span>
+              <span style="font-size:11px;color:#d9822b;font-weight:600;">{{ dynamicRiskFactsBrief }}</span>
             </div>
             <div style="font-size:11.5px;color:#334155;margin:6px 0;line-height:1.4;">
-              Áp lực cao nhất tại <b>Mầm non (82.5 ngày)</b>, <b>Long Khánh (68 ngày)</b> và <b>Bộ phận Bếp (54 ngày)</b>. Cần bổ sung phụ bếp dự phòng tránh ảnh hưởng chất lượng bán trú.
+              Áp lực cao nhất tại <b>Mầm non ({{ contextStore['LEAVE.KinderDays'] || '106' }} ngày)</b>, <b>Long Khánh ({{ contextStore['LEAVE.Days'] ? (Number(contextStore['LEAVE.Days']) / 8).toFixed(0) : '68' }} ngày)</b> và <b>Bộ phận Bếp ({{ contextStore['LEAVE.KitchenDays'] || '54' }} ngày)</b>. Cần bổ sung phụ bếp dự phòng tránh ảnh hưởng chất lượng bán trú.
             </div>
             <div class="d-flex gap-2 mt-2 pt-1 border-top" style="font-size:11px;border-color:#f1f5f9 !important;">
-              <span class="p-1 px-2 rounded" style="background:#fef2f2;color:#991b1b;font-weight:600;">Bếp: 54 ngày</span>
-              <span class="p-1 px-2 rounded" style="background:#fef3c7;color:#92400e;font-weight:600;">Mầm non: 82.5 ngày</span>
-              <span class="p-1 px-2 rounded" style="background:#f1f5f9;color:#475569;">Bảo trì: 4 ticket máy lạnh tồn</span>
+              <span class="p-1 px-2 rounded" style="background:#fef2f2;color:#991b1b;font-weight:600;">Bếp: {{ contextStore['LEAVE.KitchenDays'] || '54' }} ngày</span>
+              <span class="p-1 px-2 rounded" style="background:#fef3c7;color:#92400e;font-weight:600;">Mầm non: {{ contextStore['LEAVE.KinderDays'] || '106' }} ngày</span>
+              <span class="p-1 px-2 rounded" style="background:#f1f5f9;color:#475569;">Bảo trì: {{ contextStore['MAINT.PendingTickets'] || '0' }} ticket tồn</span>
               <button
                 type="button"
                 class="uc-kpi-ops__simbtn ml-auto"
                 style="padding:1px 8px;font-size:10.5px;"
                 @click="executiveTab = 'FACTS'; fetchOperationalFacts('LEAVE')"
-              >Xem 470 đơn nghỉ phép &rsaquo;</button>
+              >Xem chi tiết đơn nghỉ phép &rsaquo;</button>
             </div>
           </div>
         </div>
@@ -533,18 +531,18 @@
         <!-- Hero Summary Box -->
         <div class="uc-kpi-ops__risk-hero">
           <div>
-            <div class="uc-kpi-ops__risk-hero-title">BÁO ĐỘNG SỚM RỦI RO ĐIỀU HÀNH THÁNG 10 · HỘI ĐỒNG QUẢN TRỊ</div>
+            <div class="uc-kpi-ops__risk-hero-title">BÁO ĐỘNG SỚM RỦI RO ĐIỀU HÀNH · {{ currentPeriodName }}</div>
             <div class="uc-kpi-ops__risk-hero-desc">
-              Phân tích chỉ báo sớm (Leading Risk Indicators) dựa trên 993 giao dịch gốc Tháng 9 (131 ca y tế, 79 ticket bảo trì CSVC, 551 ngày nghỉ công, 21 ca rút vì xa nhà). Phát hiện <b>1 Cơ sở thuộc Vùng Đỏ Nguy Cơ Cao (MN Long Khánh)</b> và <b>2 Cơ sở Vùng Cảnh Báo (Tiểu học, THPT)</b>.
+              {{ dynamicRiskLeadingText }}
             </div>
           </div>
           <div class="uc-kpi-ops__risk-hero-stat">
             <div class="uc-kpi-ops__risk-stat-item">
-              <div class="uc-kpi-ops__risk-stat-val">10 - 18 HS</div>
-              <div class="uc-kpi-ops__risk-stat-lbl">Dự báo nguy cơ rút T10</div>
+              <div class="uc-kpi-ops__risk-stat-val">{{ totalRiskWithdrawForecast }}</div>
+              <div class="uc-kpi-ops__risk-stat-lbl">Dự báo nguy cơ rút {{ nextPeriodShortName }}</div>
             </div>
             <div class="uc-kpi-ops__risk-stat-item">
-              <div class="uc-kpi-ops__risk-stat-val">650M - 1.17B</div>
+              <div class="uc-kpi-ops__risk-stat-val">{{ totalRiskTuitionForecast }}</div>
               <div class="uc-kpi-ops__risk-stat-lbl">Thất thu học phí tiềm ẩn</div>
             </div>
             <div class="uc-kpi-ops__risk-stat-item">
@@ -620,7 +618,7 @@
             <div class="uc-kpi-ops__risk-subhead" style="display:flex;align-items:center;justify-content:space-between;">
               <div>
                 <span>Ma Trận 4 Chiều Ngòi Nổ Rủi Ro Vận Hành (Risk Triggers)</span>
-                <span style="font-size:11px;color:var(--ink3);margin-left:8px;">Fact Store T9</span>
+                <span style="font-size:11px;color:var(--ink3);margin-left:8px;">Fact Store {{ selectedPeriodText }}</span>
               </div>
               <div class="uc-kpi-ops__view-switcher">
                 <button
@@ -661,10 +659,10 @@
                   <b :style="{ color: t.SeverityPct >= 70 ? '#ef4444' : '#f59e0b' }">{{ t.SeverityPct }}%</b>
                 </div>
                 <div class="uc-kpi-ops__risk-card-fact">
-                  <b>Ngòi nổ:</b> {{ t.DataTriggerT9 }}
+                  <b>Ngòi nổ:</b> {{ t.DataTrigger || t.DataTriggerT9 }}
                 </div>
                 <div class="uc-kpi-ops__risk-card-threat">
-                  <b>Nguy cơ:</b> {{ t.RiskThreatT10 }}
+                  <b>Nguy cơ:</b> {{ t.RiskThreat || t.RiskThreatT10 }}
                 </div>
                 <div style="margin-top:6px;display:flex;justify-content:flex-end;">
                   <button
@@ -690,8 +688,8 @@
               <tbody>
                 <tr v-for="t in riskTriggers" :key="'tb-' + t.TriggerID">
                   <td><b>{{ t.TriggerName }}</b></td>
-                  <td>{{ t.DataTriggerT9 }}</td>
-                  <td>{{ t.RiskThreatT10 }}</td>
+                  <td>{{ t.DataTrigger || t.DataTriggerT9 }}</td>
+                  <td>{{ t.RiskThreat || t.RiskThreatT10 }}</td>
                   <td><span :class="['uc-kpi-ops__checklist-status-badge', t.SeverityClass]">{{ t.TargetCampuses }}</span></td>
                 </tr>
               </tbody>
@@ -858,7 +856,7 @@
           <div class="d-flex justify-space-between align-center flex-wrap gap-2 mb-2">
             <div>
               <div style="font-size:14px;font-weight:700;color:var(--accent2);">
-                Hệ Thống 10 Chuỗi &amp; 15 Mắt Xích Nhân Quả Toàn Trường (Tháng 9/2026)
+                Hệ Thống 10 Chuỗi &amp; 15 Mắt Xích Nhân Quả Toàn Trường ({{ currentPeriodName }})
               </div>
               <div style="font-size:11px;color:#64748b;">
                 Mô hình hóa nhân quả 1 chiều, 2 chiều (vòng lặp phản hồi dương/âm) và cross-domain bám sát tài liệu vận hành
@@ -869,22 +867,22 @@
                 type="button"
                 :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'ALL' }]"
                 @click="causalChainFilter = 'ALL'"
-              >Tất cả ({{ correlationsList.length || 15 }})</button>
+              >Tất cả ({{ correlationsList.length }})</button>
               <button
                 type="button"
                 :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'LINEAR' }]"
                 @click="causalChainFilter = 'LINEAR'"
-              >1 Chiều Tuyến Tính (7)</button>
+              >1 Chiều Tuyến Tính ({{ linearCorrelationsCount }})</button>
               <button
                 type="button"
                 :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'FEEDBACK' }]"
                 @click="causalChainFilter = 'FEEDBACK'"
-              >2 Chiều Feedback Loops (4)</button>
+              >2 Chiều Feedback Loops ({{ loopCorrelationsCount }})</button>
               <button
                 type="button"
                 :class="['uc-kpi-ops__tag-btn', { 'is-active': causalChainFilter === 'PARADOX' }]"
                 @click="causalChainFilter = 'PARADOX'"
-              >Nghịch Lý &amp; Điểm Nghẽn (4)</button>
+              >Nghịch Lý &amp; Điểm Nghẽn ({{ paradoxCorrelationsCount }})</button>
             </div>
           </div>
 
@@ -1026,32 +1024,32 @@
               type="button"
               :class="{ 'is-on': selectedFactDomain === 'LEAVE' }"
               @click="fetchOperationalFacts('LEAVE')"
-            >Nghỉ phép (470 đơn · 551 ngày)</button>
+            >{{ getFactDomainButtonLabel('LEAVE', 'Nghỉ phép & Công') }}</button>
             <button
               type="button"
               :class="{ 'is-on': selectedFactDomain === 'HEALTH' }"
               @click="fetchOperationalFacts('HEALTH')"
-            >Y tế (131 ca bệnh · Cúm A)</button>
+            >{{ getFactDomainButtonLabel('HEALTH', 'Y tế học đường') }}</button>
             <button
               type="button"
               :class="{ 'is-on': selectedFactDomain === 'MAINTENANCE' }"
               @click="fetchOperationalFacts('MAINTENANCE')"
-            >Bảo trì CSVC (79 ticket · 4 tồn)</button>
+            >{{ getFactDomainButtonLabel('MAINTENANCE', 'Bảo trì CSVC') }}</button>
             <button
               type="button"
               :class="{ 'is-on': selectedFactDomain === 'CLUB' }"
               @click="fetchOperationalFacts('CLUB')"
-            >Câu lạc bộ (36 môn · 1.611 tỷ)</button>
+            >{{ getFactDomainButtonLabel('CLUB', 'Dịch vụ CLB') }}</button>
             <button
               type="button"
               :class="{ 'is-on': selectedFactDomain === 'HR_TURNOVER' }"
               @click="fetchOperationalFacts('HR_TURNOVER')"
-            >Biến động NV (44 ca)</button>
+            >{{ getFactDomainButtonLabel('HR_TURNOVER', 'Biến động NV') }}</button>
             <button
               type="button"
               :class="{ 'is-on': selectedFactDomain === 'TEACHING' }"
               @click="fetchOperationalFacts('TEACHING')"
-            >Tiến độ dạy (288 tiết)</button>
+            >{{ getFactDomainButtonLabel('TEACHING', 'Tiến độ dạy') }}</button>
           </div>
 
           <!-- Thanh Đối Soát Tổng Thể (Reconciliation Header Strip) -->
@@ -1263,7 +1261,7 @@
 
             <!-- 4. Ghi chú dữ liệu nền -->
             <div class="uc-kpi-ops__causal-rail-note" style="margin-top:auto;">
-              Dữ liệu chốt sổ: Tháng 9/2026. Biểu phí &amp; ngưỡng được lấy trực tiếp từ CSDL eSign (Học phí {{ currentCausalAssumption.AnnualTuitionMillion }} tr/năm · Quy mô {{ currentCausalAssumption.CurrentEnrollment }} HS).
+              Dữ liệu kỳ: {{ currentPeriodName }}. Biểu phí &amp; ngưỡng được lấy trực tiếp từ CSDL eSign (Học phí {{ currentCausalAssumption.AnnualTuitionMillion }} tr/năm · Quy mô {{ currentCausalAssumption.CurrentEnrollment }} HS).
             </div>
           </aside>
 
@@ -1472,7 +1470,7 @@
             <section class="uc-kpi-ops__causal-card" style="margin-top:12px;">
               <div class="uc-kpi-ops__causal-card-head">
                 <div class="uc-kpi-ops__causal-card-title">
-                  Mắt xích Lan truyền &amp; Kế hoạch Hành động Thực tế (CSDL Chốt Kỳ T9/2026)
+                  Mắt xích Lan truyền &amp; Kế hoạch Hành động Thực tế (CSDL {{ currentPeriodName }})
                 </div>
                 <div style="font-size:11px;color:#64748b;">
                   Tự động truy vết từ 15 Chuỗi Nhân Quả eSign · Khớp với hồ sơ đơn vị {{ currentCausalUnitName }}
@@ -1564,1345 +1562,19 @@
           </table>
         </div>
       </div>
-    </div>
-
-    <!-- 4. PAGE 1: CƠ CẤU SĨ SỐ KHỐI LỚP (TS01, TS02) -->
-    <div v-if="page === 1" class="uc-kpi-ops__page">
-      <div class="uc-kpi-ops__visual">
-        <div class="uc-kpi-ops__vhead" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    
+      <!-- ================= SUB-TAB: BỘ MÔ PHỎNG ĐÒN BẨY ĐIỀU HÀNH & ROI (WHAT-IF SIMULATOR) ================= -->
+      <div v-if="executiveTab === 'SIMULATOR'" class="uc-kpi-ops__sim-panel">
+        <div class="uc-kpi-ops__roi-head-banner">
           <div>
-            <div class="uc-kpi-ops__vtitle">Cơ Cấu Sĩ Số Học Sinh Toàn Bộ Các Khối Lớp (Live API)</div>
-            <div class="uc-kpi-ops__vnote">Tổng cộng: <b>{{ formatNumber(computedTotalStudents) }} học sinh</b></div>
+            <div class="uc-kpi-ops__roi-title">BỘ MÔ PHỎNG ĐẦU TƯ ĐIỀU HÀNH &amp; TỶ SUẤT ROI (CAPEX/OPEX SIMULATOR)</div>
+            <div class="uc-kpi-ops__roi-sub">Công cụ thẩm định hiệu quả tài chính &amp; phân bổ nguồn vốn dành cho Hội đồng Quản trị LHBS · Phản ứng tức thì</div>
           </div>
-          <div class="uc-kpi-ops__view-switcher">
-            <button
-              type="button"
-              :class="['uc-kpi-ops__switcher-btn', { 'is-active': gradeViewMode === 'CHART' }]"
-              @click="gradeViewMode = 'CHART'"
-            >
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M0 0h3v16H0zm6 5h3v11H6zm6-3h3v14h-3z"/></svg>
-              Biểu đồ cột ngang
-            </button>
-            <button
-              type="button"
-              :class="['uc-kpi-ops__switcher-btn', { 'is-active': gradeViewMode === 'TABLE' }]"
-              @click="gradeViewMode = 'TABLE'"
-            >
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm1 2v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm1-3a1 1 0 0 0-1 1v1h14V2a1 1 0 0 0-1-1H2z"/></svg>
-              Bảng số liệu
-            </button>
-          </div>
+          <button type="button" class="uc-kpi-ops__simbtn" style="background:#ffffff;color:#1B365D;font-weight:700;" @click="executiveTab = 'COMMAND'">
+            &lsaquo; Quay lại Tổng quan
+          </button>
         </div>
-
-        <!-- Biểu Đồ Cột Ngang Đôi (Horizontal Stacked Bar Chart) -->
-        <div v-if="gradeViewMode === 'CHART'" class="uc-kpi-ops__grade-chart-wrap mt-2">
-          <!-- Legend -->
-          <div class="uc-kpi-ops__chart-legend">
-            <span><span class="legend-dot is-boy"></span> Nam</span>
-            <span><span class="legend-dot is-girl"></span> Nữ</span>
-            <span><span class="legend-dot is-thin"></span> Quy mô mỏng (&lt;100 HS)</span>
-            <span class="legend-note">Vạch chuẩn an toàn: 100 HS/khối</span>
-          </div>
-
-          <div class="uc-kpi-ops__grade-bars-list">
-            <div
-              v-for="r in currentGradeRows"
-              :key="r.Ten"
-              class="uc-kpi-ops__grade-bar-row"
-            >
-              <div class="uc-kpi-ops__grade-bar-label">
-                <b>{{ r.Ten }}</b>
-              </div>
-              <div class="uc-kpi-ops__grade-bar-track">
-                <div
-                  class="uc-kpi-ops__grade-bar-inner"
-                  :style="{ width: Math.max(8, Math.min(100, (r.SLHocSinh / maxGradeEnrollment) * 100)) + '%' }"
-                >
-                  <div
-                    class="uc-kpi-ops__grade-segment is-boy"
-                    :style="{ width: (r.SLHocSinh > 0 ? (r.SL_HSNam / r.SLHocSinh) * 100 : 50) + '%' }"
-                    :title="'Nam: ' + formatNumber(r.SL_HSNam) + ' HS (' + calcPercent(r.SL_HSNam, r.SLHocSinh) + '%)'"
-                  >
-                    <span v-if="r.SL_HSNam > 25">{{ r.SL_HSNam }}</span>
-                  </div>
-                  <div
-                    class="uc-kpi-ops__grade-segment is-girl"
-                    :style="{ width: (r.SLHocSinh > 0 ? (r.SL_HSNu / r.SLHocSinh) * 100 : 50) + '%' }"
-                    :title="'Nữ: ' + formatNumber(r.SL_HSNu) + ' HS (' + calcPercent(r.SL_HSNu, r.SLHocSinh) + '%)'"
-                  >
-                    <span v-if="r.SL_HSNu > 25">{{ r.SL_HSNu }}</span>
-                  </div>
-                </div>
-                <!-- Benchmark 100 HS -->
-                <div
-                  class="uc-kpi-ops__grade-benchmark-line"
-                  :style="{ left: Math.min(100, (100 / maxGradeEnrollment) * 100) + '%' }"
-                  title="Ngưỡng quy mô tối thiểu: 100 HS"
-                ></div>
-              </div>
-              <div class="uc-kpi-ops__grade-bar-stat">
-                <b class="stat-total">{{ formatNumber(r.SLHocSinh) }}</b> <small>HS</small>
-                <span class="stat-pct">({{ ((r.SLHocSinh / (computedTotalStudents || 1)) * 100).toFixed(1) }}%)</span>
-                <span :class="['uc-kpi-ops__cell-tag', r.SLHocSinh >= 100 ? 'is-good' : 'is-warn']">
-                  {{ r.SLHocSinh >= 100 ? 'Ổn định' : 'Mỏng' }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bảng Số Liệu Truyền Thống -->
-        <div v-else class="uc-kpi-ops__tablewrap">
-          <table class="uc-kpi-ops__table">
-            <thead>
-              <tr>
-                <th class="ta-l">STT</th>
-                <th class="ta-l">Khối Lớp</th>
-                <th>Tổng sĩ số</th>
-                <th>Nam</th>
-                <th>Nữ</th>
-                <th>Tỷ lệ Nữ (%)</th>
-                <th>Tỷ trọng</th>
-                <th class="ta-l">Tình trạng</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="r in currentGradeRows" :key="r.Ten">
-                <td class="ta-l">{{ r.STT }}</td>
-                <td class="ta-l tx-strong">{{ r.Ten }}</td>
-                <td class="tx-strong">{{ formatNumber(r.SLHocSinh) }}</td>
-                <td>{{ formatNumber(r.SL_HSNam) }}</td>
-                <td>{{ formatNumber(r.SL_HSNu) }}</td>
-                <td>{{ calcPercent(r.SL_HSNu, r.SLHocSinh) }}%</td>
-                <td>{{ ((r.SLHocSinh / (computedTotalStudents || 1)) * 100).toFixed(1) }}%</td>
-                <td class="ta-l">
-                  <span :class="['uc-kpi-ops__cell-tag', r.SLHocSinh >= 100 ? 'is-good' : 'is-warn']">
-                    {{ r.SLHocSinh >= 100 ? 'Ổn định' : 'Quy mô mỏng' }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- 5. PAGE 2: HỌC SINH CHUYỂN ĐI & RÚT HỌC (TS04) -->
-    <div v-if="page === 2" class="uc-kpi-ops__page">
-      <div class="uc-kpi-ops__bcols">
-        <div class="uc-kpi-ops__visual">
-          <div class="uc-kpi-ops__vhead" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-            <div>
-              <div class="uc-kpi-ops__vtitle">Top Lý Do Rút Học &amp; Chuyển Đi (152 bản ghi)</div>
-              <div class="uc-kpi-ops__vnote">Nguồn: API ThongKeHocSinhChuyenDi</div>
-            </div>
-            <div class="uc-kpi-ops__view-switcher">
-              <button
-                type="button"
-                :class="['uc-kpi-ops__switcher-btn', { 'is-active': withdrawViewMode === 'CHART' }]"
-                @click="withdrawViewMode = 'CHART'"
-              >
-                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M0 0h3v16H0zm6 5h3v11H6zm6-3h3v14h-3z"/></svg>
-                Biểu đồ xếp hạng
-              </button>
-              <button
-                type="button"
-                :class="['uc-kpi-ops__switcher-btn', { 'is-active': withdrawViewMode === 'TABLE' }]"
-                @click="withdrawViewMode = 'TABLE'"
-              >
-                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm1 2v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm1-3a1 1 0 0 0-1 1v1h14V2a1 1 0 0 0-1-1H2z"/></svg>
-                Bảng
-              </button>
-            </div>
-          </div>
-
-          <!-- Biểu Đồ Cột Xếp Hạng & Khả Năng Can Thiệp (Ranked Horizontal Bars) -->
-          <div v-if="withdrawViewMode === 'CHART'" class="uc-kpi-ops__withdraw-chart-wrap">
-            <div
-              v-for="(r, i) in displayTopWithdrawReasons"
-              :key="r.name"
-              class="uc-kpi-ops__withdraw-rank-item"
-            >
-              <div class="uc-kpi-ops__withdraw-rank-top">
-                <div class="uc-kpi-ops__withdraw-rank-name">
-                  <span class="rank-idx">#{{ i + 1 }}</span>
-                  <b>{{ r.name }}</b>
-                </div>
-                <div class="uc-kpi-ops__withdraw-rank-stat">
-                  <b class="tx-bad">{{ r.count }} HS</b>
-                  <span class="rank-pct">({{ r.percent }}%)</span>
-                </div>
-              </div>
-              <div class="uc-kpi-ops__withdraw-bar-track">
-                <div
-                  :class="['uc-kpi-ops__withdraw-bar-fill', getWithdrawBarColorClass(r.name)]"
-                  :style="{ width: Math.min(100, r.percent * 2.2) + '%' }"
-                ></div>
-              </div>
-              <div class="uc-kpi-ops__withdraw-rank-bot">
-                <span>Đầu mối: <b>{{ r.owner || 'Ban Giám Hiệu' }}</b></span>
-                <span :class="['can-intervene-badge', getInterveneClass(r.name)]">
-                  {{ getInterveneLabel(r.name) }}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Bảng Truyền Thống -->
-          <div v-else class="uc-kpi-ops__tablewrap">
-            <table class="uc-kpi-ops__table">
-              <thead>
-                <tr>
-                  <th class="ta-l">Lý do rút hồ sơ</th>
-                  <th>Số lượng</th>
-                  <th>Tỷ trọng (%)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="r in displayTopWithdrawReasons" :key="r.name">
-                  <td class="ta-l tx-strong">{{ r.name }}</td>
-                  <td class="tx-strong tx-bad">{{ r.count }} HS</td>
-                  <td>
-                    <span class="uc-kpi-ops__btrack">
-                      <span class="uc-kpi-ops__bfill is-bad" :style="{ width: r.percent * 2 + '%' }"></span>
-                    </span>
-                    {{ r.percent }}%
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="uc-kpi-ops__visual">
-          <div class="uc-kpi-ops__vhead">
-            <div class="uc-kpi-ops__vtitle">Mẫu Danh Sách Học Sinh Chuyển Đi Gần Nhất</div>
-            <div class="uc-kpi-ops__vnote">Tổng số: {{ withdrawRecords.length }} HS</div>
-          </div>
-          <div class="uc-kpi-ops__tablewrap">
-            <table class="uc-kpi-ops__table">
-              <thead>
-                <tr>
-                  <th class="ta-l">Họ và tên</th>
-                  <th>Lớp</th>
-                  <th class="ta-l">Trường đến</th>
-                  <th class="ta-l">Lý do</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(r, i) in withdrawRecords.slice(0, 8)" :key="i">
-                  <td class="ta-l tx-strong">{{ r.HoTen }}</td>
-                  <td>{{ r.LopDi || '—' }}</td>
-                  <td class="ta-l">{{ r.TruongDen || '—' }}</td>
-                  <td class="ta-l tx-bad">{{ r.LyDo }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- 7. PAGE 4: CHUYÊN MÔN & LMS (CM04: Học liệu số, CM08: Bài tập LMS, CM01: TKB) -->
-    <div v-if="page === 4" class="uc-kpi-ops__page">
-      <!-- Section 1: CM08 - Mức độ hoàn thành bài tập của học sinh trên LMS -->
-      <div class="uc-kpi-ops__visual">
-        <div class="uc-kpi-ops__vhead" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-          <div>
-            <div class="uc-kpi-ops__vtitle">Mức Độ Hoàn Thành Bài Tập Của Học Sinh Trên LMS (CM08)</div>
-            <div class="uc-kpi-ops__vnote">Tỷ lệ hoàn thành toàn cấp: <b class="tx-good">{{ lmsOverallRate }}%</b> (Tổng 5.323 lượt bài tập giao)</div>
-          </div>
-          <div class="uc-kpi-ops__view-switcher">
-            <button
-              type="button"
-              :class="['uc-kpi-ops__switcher-btn', { 'is-active': lmsViewMode === 'CHART' }]"
-              @click="lmsViewMode = 'CHART'"
-            >
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M0 0h3v16H0zm6 5h3v11H6zm6-3h3v14h-3z"/></svg>
-              Thẻ tiến độ
-            </button>
-            <button
-              type="button"
-              :class="['uc-kpi-ops__switcher-btn', { 'is-active': lmsViewMode === 'TABLE' }]"
-              @click="lmsViewMode = 'TABLE'"
-            >
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm1 2v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm1-3a1 1 0 0 0-1 1v1h14V2a1 1 0 0 0-1-1H2z"/></svg>
-              Bảng số liệu
-            </button>
-          </div>
-        </div>
-
-        <!-- Lưới Thẻ Tiến Độ Môn Học Trực Quan (Progress Grid) -->
-        <div v-if="lmsViewMode === 'CHART'" class="uc-kpi-ops__lms-cards-grid">
-          <div
-            v-for="r in lmsAssignmentRows"
-            :key="r.MonHocID"
-            class="uc-kpi-ops__lms-card"
-          >
-            <div class="uc-kpi-ops__lms-card-head">
-              <div class="uc-kpi-ops__lms-card-title">{{ r.TenMonHoc_HienThi }}</div>
-              <div :class="['uc-kpi-ops__lms-card-pct', r.CompletionRate_Assignments >= 80 ? 'tx-good' : 'tx-warn']">
-                {{ r.CompletionRate_Assignments }}%
-              </div>
-            </div>
-            <!-- Stacked Progress Bar: Đã chấm (Xanh lá) - Chờ chấm (Xanh dương) - Chưa làm (Xám) -->
-            <div class="uc-kpi-ops__lms-stacked-bar">
-              <div
-                class="uc-kpi-ops__lms-seg is-graded"
-                :style="{ width: ((r.Total_DaCham / (r.TotalAssigned || 1)) * 100) + '%' }"
-                :title="'Đã chấm: ' + formatNumber(r.Total_DaCham) + ' (' + r.CompletionRate_Graded + '%)'"
-              ></div>
-              <div
-                class="uc-kpi-ops__lms-seg is-submitted"
-                :style="{ width: (((r.Total_DaNop - r.Total_DaCham) / (r.TotalAssigned || 1)) * 100) + '%' }"
-                :title="'Đã nộp chờ chấm: ' + formatNumber(r.Total_DaNop - r.Total_DaCham)"
-              ></div>
-              <div
-                class="uc-kpi-ops__lms-seg is-pending"
-                :style="{ width: ((r.Total_ChuaLam / (r.TotalAssigned || 1)) * 100) + '%' }"
-                :title="'Chưa làm: ' + formatNumber(r.Total_ChuaLam)"
-              ></div>
-            </div>
-            <div class="uc-kpi-ops__lms-card-meta">
-              <div>Đã giao<b>{{ formatNumber(r.TotalAssigned) }}</b></div>
-              <div>Đã nộp<b class="tx-good">{{ formatNumber(r.Total_DaNop) }}</b></div>
-              <div>Chưa làm<b :class="r.Total_ChuaLam > 100 ? 'tx-warn' : ''">{{ formatNumber(r.Total_ChuaLam) }}</b></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bảng Số Liệu Truyền Thống -->
-        <div v-else class="uc-kpi-ops__tablewrap">
-          <table class="uc-kpi-ops__table">
-            <thead>
-              <tr>
-                <th class="ta-l">Môn học</th>
-                <th>Tổng bài tập đã tạo</th>
-                <th>Lượt HS được giao</th>
-                <th>Đã nộp bài</th>
-                <th>Đã chấm điểm</th>
-                <th>Chưa làm</th>
-                <th>Tỷ lệ hoàn thành (CM08)</th>
-                <th>Tỷ lệ đã chấm</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="r in lmsAssignmentRows" :key="r.MonHocID">
-                <td class="ta-l tx-strong">{{ r.TenMonHoc_HienThi }}</td>
-                <td>{{ r.TotalAssignments }} bài</td>
-                <td class="tx-strong">{{ formatNumber(r.TotalAssigned) }}</td>
-                <td>{{ formatNumber(r.Total_DaNop) }}</td>
-                <td class="tx-good">{{ formatNumber(r.Total_DaCham) }}</td>
-                <td class="tx-muted">{{ formatNumber(r.Total_ChuaLam) }}</td>
-                <td>
-                  <span class="uc-kpi-ops__btrack">
-                    <span :class="['uc-kpi-ops__bfill', r.CompletionRate_Assignments >= 80 ? 'is-good' : 'is-warn']" :style="{ width: r.CompletionRate_Assignments + '%' }"></span>
-                  </span>
-                  <b>{{ r.CompletionRate_Assignments }}%</b>
-                </td>
-                <td>{{ r.CompletionRate_Graded }}%</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Section 2: CM04 - Mức độ ứng dụng Học liệu số của giáo viên -->
-      <div class="uc-kpi-ops__visual">
-        <div class="uc-kpi-ops__vhead">
-          <div class="uc-kpi-ops__vtitle">Mức Độ Ứng Dụng Học Liệu Số &amp; Năng Lực Số Của Giáo Viên (CM04 · spAPI_BaoCao_2_ThongKe_HocLieuSo_ByCapID)</div>
-          <div class="uc-kpi-ops__vnote">Tổng cộng: <b>{{ lmsHocLieuSummary.total }} bài giảng</b> · Đã số hóa nội dung: <b class="tx-good">{{ lmsHocLieuSummary.coNoiDung }} bài ({{ lmsHocLieuSummary.pct }}%)</b> · {{ lmsHocLieuSummary.totalFiles }} files đa phương tiện</div>
-        </div>
-        <div class="uc-kpi-ops__tablewrap">
-          <table class="uc-kpi-ops__table">
-            <thead>
-              <tr>
-                <th class="ta-l">Môn học</th>
-                <th>Khối</th>
-                <th>Tổng học liệu tạo</th>
-                <th>Học liệu đã có nội dung (video/slide)</th>
-                <th>Học liệu chưa có nội dung</th>
-                <th>Tổng tài nguyên số gắn kèm</th>
-                <th>Tỷ lệ số hóa học liệu (CM04)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(r, i) in lmsHocLieuRows.slice(0, 10)" :key="i">
-                <td class="ta-l tx-strong">{{ r.TenMonHoc_HienThi }}</td>
-                <td>Khối {{ r.KhoiID }}</td>
-                <td>{{ r.TongHocLieu }}</td>
-                <td class="tx-good tx-strong">{{ r.HocLieuCoNoiDung }}</td>
-                <td class="tx-muted">{{ r.HocLieuChuaCoNoiDung }}</td>
-                <td>{{ r.TongNoiDung }} files</td>
-                <td>
-                  <span class="uc-kpi-ops__btrack">
-                    <span class="uc-kpi-ops__bfill is-good" :style="{ width: (r.HocLieuCoNoiDung / (r.TongHocLieu || 1) * 100) + '%' }"></span>
-                  </span>
-                  <b>{{ ((r.HocLieuCoNoiDung / (r.TongHocLieu || 1)) * 100).toFixed(0) }}%</b>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Section 3: CM01 - Tiến độ thực hiện tiết dạy theo Thời khóa biểu -->
-      <div class="uc-kpi-ops__visual">
-        <div class="uc-kpi-ops__vhead">
-          <div class="uc-kpi-ops__vtitle">Tiến Độ Thực Hiện Tiết Dạy Phân Phối Chương Trình (CM01 · Calen)</div>
-          <div class="uc-kpi-ops__vnote">Thực dạy tuần khảo sát: Toán, Ngữ văn, KHTN, STEM</div>
-        </div>
-        <div class="uc-kpi-ops__tablewrap">
-          <table class="uc-kpi-ops__table">
-            <thead>
-              <tr>
-                <th class="ta-l">Lớp</th>
-                <th>Tổng tiết dạy</th>
-                <th>Toán</th>
-                <th>Ngữ văn</th>
-                <th>KHTN</th>
-                <th>STEM</th>
-                <th class="ta-l">Trạng thái</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="r in teachingProgressRows" :key="r.TenLop">
-                <td class="ta-l tx-strong">{{ r.TenLop }}</td>
-                <td class="tx-strong">{{ r.TongTiet }} tiết</td>
-                <td>{{ r.Toan }}</td>
-                <td>{{ r.Van }}</td>
-                <td>{{ r.KHTN }}</td>
-                <td>{{ r.STEM }}</td>
-                <td class="ta-l"><span class="uc-kpi-ops__cell-tag is-good">Đúng tiến độ</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- 8. PAGE 5: TÀI CHÍNH VẬN HÀNH (Nhóm 4: Chỉ tiêu 55 & 56) -->
-    <div v-if="page === 5" class="uc-kpi-ops__page">
-      <div class="uc-kpi-ops__bhead">
-        <div class="uc-kpi-ops__bhead-k">Chỉ tiêu Tài chính Vận hành (Nhóm 4 · Chỉ tiêu 55, 56) · {{ currentUnitTitle }}</div>
-        <div class="uc-kpi-ops__bhead-t">
-          Tỷ suất lợi nhuận gộp dịch vụ của {{ currentUnitTitle }} đạt <b>{{ computedFinanceData.grossMargin }}</b> (Mục tiêu <b>KPI 4: 50%</b>). Doanh thu các Câu lạc bộ bổ trợ ngoài giờ đạt <b>{{ computedFinanceData.clbRev }}</b> với <b>{{ computedFinanceData.clbStudents }}</b> tham gia (Đóng góp mục tiêu <b>KPI 3.2.1: $1M</b>).
-        </div>
-        <div class="uc-kpi-ops__bhead-s">
-          Nguồn dữ liệu: Phòng Kế toán PM FTS · Phân hệ Thu phí Dịch vụ &amp; Quản lý Hoạt động ngoài giờ.
-        </div>
-      </div>
-
-      <!-- 4 Stats Cards Tài chính -->
-      <div class="uc-kpi-ops__bkpis">
-        <div class="uc-kpi-ops__bkpi is-good">
-          <div class="uc-kpi-ops__bkpi-h">
-            <span>TỶ SUẤT LN GỘP DỊCH VỤ (KPI 4)</span>
-            <b class="tx-good">MỤC TIÊU 50%</b>
-          </div>
-          <div class="uc-kpi-ops__bkpi-m">
-            <div class="uc-kpi-ops__bkpi-v tx-good">{{ computedFinanceData.grossMargin }}</div>
-          </div>
-          <div class="uc-kpi-ops__bkpi-d">Bán trú {{ computedFinanceData.mealMargin }} · Xe bus {{ computedFinanceData.busMargin }} · Bán lẻ 28.2%</div>
-        </div>
-        <div class="uc-kpi-ops__bkpi is-good">
-          <div class="uc-kpi-ops__bkpi-h">
-            <span>DOANH THU THUẦN (ƯỚC TÍNH)</span>
-            <b>HỌC KỲ 1</b>
-          </div>
-          <div class="uc-kpi-ops__bkpi-m">
-            <div class="uc-kpi-ops__bkpi-v">{{ computedFinanceData.rev }}</div>
-          </div>
-          <div class="uc-kpi-ops__bkpi-d">Lợi nhuận gộp ước tính đạt ~48% doanh thu</div>
-        </div>
-        <div class="uc-kpi-ops__bkpi is-good">
-          <div class="uc-kpi-ops__bkpi-h">
-            <span>DOANH THU CÁC CLB (KPI 3.2.1)</span>
-            <b class="tx-good">HỌC KỲ 1</b>
-          </div>
-          <div class="uc-kpi-ops__bkpi-m">
-            <div class="uc-kpi-ops__bkpi-v">{{ computedFinanceData.clbRev }}</div>
-          </div>
-          <div class="uc-kpi-ops__bkpi-d">Đóng góp tích lũy vào quỹ tái đầu tư cơ sở vật chất</div>
-        </div>
-        <div class="uc-kpi-ops__bkpi is-good">
-          <div class="uc-kpi-ops__bkpi-h">
-            <span>HỌC SINH THAM GIA CLB</span>
-            <b>{{ currentUnitTitle }}</b>
-          </div>
-          <div class="uc-kpi-ops__bkpi-m">
-            <div class="uc-kpi-ops__bkpi-v">{{ computedFinanceData.clbStudents }}</div>
-          </div>
-          <div class="uc-kpi-ops__bkpi-d">Tham gia CLB bổ trợ ngoài giờ (Toán tư duy, Robotics, Thể thao)</div>
-        </div>
-      </div>
-
-      <!-- 2 Bảng Tài chính chi tiết -->
-      <div class="uc-kpi-ops__bcols">
-        <!-- Bảng 1: Chỉ tiêu 55 - Tỷ suất LN gộp dịch vụ -->
-        <div class="uc-kpi-ops__visual">
-          <div class="uc-kpi-ops__vhead">
-            <div class="uc-kpi-ops__vtitle">Chỉ Tiêu 55: Tỷ Suất Lợi Nhuận Gộp Dịch Vụ (KPI 4 - Mục Tiêu 50%)</div>
-            <div class="uc-kpi-ops__vnote">Nguồn: Phòng Kế toán PM FTS</div>
-          </div>
-          <div class="uc-kpi-ops__tablewrap">
-            <table class="uc-kpi-ops__table">
-              <thead>
-                <tr>
-                  <th class="ta-l">Mảng hoạt động / Dịch vụ</th>
-                  <th>Doanh thu thuần</th>
-                  <th>Chi phí trực tiếp</th>
-                  <th>Lợi nhuận gộp</th>
-                  <th>Tỷ suất LN gộp (KPI 4)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="s in financeServices" :key="s.name">
-                  <td class="ta-l tx-strong">{{ s.name }}</td>
-                  <td>{{ s.revenue }}</td>
-                  <td>{{ s.cost }}</td>
-                  <td class="tx-strong">{{ s.grossProfit }}</td>
-                  <td class="tx-strong" :class="parseFloat(s.margin) >= 40 ? 'tx-good' : ''">{{ s.margin }}</td>
-                </tr>
-                <tr class="is-total">
-                  <td class="ta-l tx-strong">Tổng hòa hợp nhất</td>
-                  <td class="tx-strong">{{ financeSummaryTotalRevenue }}</td>
-                  <td class="tx-strong">{{ financeSummaryTotalCost }}</td>
-                  <td class="tx-good tx-strong">{{ financeSummaryTotalProfit }}</td>
-                  <td class="tx-good tx-strong">{{ financeSummaryTotalMargin }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Bảng 2: Chỉ tiêu 56 - Doanh thu CLB bổ trợ -->
-        <div class="uc-kpi-ops__visual">
-          <div class="uc-kpi-ops__vhead">
-            <div class="uc-kpi-ops__vtitle">Chỉ Tiêu 56: Doanh Thu Các CLB Bổ Trợ Ngoài Giờ (KPI 3.2.1)</div>
-            <div class="uc-kpi-ops__vnote">Mục tiêu HK1: 1.743 tỷ VNĐ (Đã đạt 1.611 tỷ · 92.4%) · Đóng góp mục tiêu chiến lược 1 triệu USD tích lũy</div>
-          </div>
-          <div class="uc-kpi-ops__tablewrap">
-            <table class="uc-kpi-ops__table">
-              <thead>
-                <tr>
-                  <th class="ta-l">Tên Câu lạc bộ bổ trợ</th>
-                  <th>Số học sinh</th>
-                  <th>Đơn giá/kỳ</th>
-                  <th>Doanh thu HK1</th>
-                  <th>Tỷ trọng DT</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="c in financeClubs" :key="c.name">
-                  <td class="ta-l tx-strong">{{ c.name }}</td>
-                  <td class="tx-strong">{{ c.students }} HS</td>
-                  <td>{{ c.fee }}</td>
-                  <td class="tx-good tx-strong">{{ c.revenue }}</td>
-                  <td>{{ c.share }}</td>
-                </tr>
-                <tr class="is-total">
-                  <td class="ta-l tx-strong">Toàn trường ({{ financeClubs.length }} môn CLB)</td>
-                  <td class="tx-strong">{{ totalClubStudents }} HS</td>
-                  <td>—</td>
-                  <td class="tx-good tx-strong">{{ totalClubRevenueText }}</td>
-                  <td class="tx-good tx-strong">100% (Đạt {{ clubAchievedPct }}% KH Học Kỳ 1 · Tích lũy 6.4% Mục tiêu $1M)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 9. PAGE 6: VẬN HÀNH & AN TOÀN HỌC ĐƯỜNG, Y TẾ, ME (VH02, VH11) -->
-    <div v-if="page === 6" class="uc-kpi-ops__page">
-      <div class="uc-kpi-ops__bcols">
-        <div class="uc-kpi-ops__visual">
-          <div class="uc-kpi-ops__vhead">
-            <div class="uc-kpi-ops__vtitle">An Toàn Học Đường &amp; Y Tế Học Đường (VH02, VH11)</div>
-            <div class="uc-kpi-ops__vnote">Tháng 10/2026</div>
-          </div>
-          <div class="uc-kpi-ops__tablewrap">
-            <table class="uc-kpi-ops__table">
-              <tbody>
-                <tr>
-                  <td class="ta-l tx-strong">Sự cố ngộ độc thực phẩm bếp ăn</td>
-                  <td class="tx-good">{{ opsSafetyMe.FoodPoisoningCases != null ? opsSafetyMe.FoodPoisoningCases + ' vụ (Đạt KPI)' : '0 vụ (Đạt KPI)' }}</td>
-                </tr>
-                <tr>
-                  <td class="ta-l tx-strong">Sự cố tai nạn thương tích nghiêm trọng</td>
-                  <td class="tx-good">{{ opsSafetyMe.AccidentCases != null ? opsSafetyMe.AccidentCases + ' vụ (Đạt KPI)' : '0 vụ (Đạt KPI)' }}</td>
-                </tr>
-                <tr>
-                  <td class="ta-l tx-strong">Tỷ lệ học sinh ăn bán trú toàn trường</td>
-                  <td>{{ opsSafetyMe.BoardingRate != null ? opsSafetyMe.BoardingRate + '% (' + formatNumber(opsSafetyMe.BoardingStudents) + ' HS)' : '—' }}</td>
-                </tr>
-                <tr>
-                  <td class="ta-l tx-strong">Tỷ lệ phụ huynh cài đặt app ME School</td>
-                  <td class="tx-good">{{ opsSafetyMe.MeAppInstallRate != null ? opsSafetyMe.MeAppInstallRate + '% (' + formatNumber(opsSafetyMe.MeAppInstallParents) + ' PH)' : '—' }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="uc-kpi-ops__visual">
-          <div class="uc-kpi-ops__vhead">
-            <div class="uc-kpi-ops__vtitle">Tương Tác Phụ Huynh Qua Kênh ME School (Live API)</div>
-            <div class="uc-kpi-ops__vnote">HoatDongTrangMe_PH_TuongTac</div>
-          </div>
-          <div class="uc-kpi-ops__tablewrap">
-            <table class="uc-kpi-ops__table">
-              <tbody>
-                <tr>
-                  <td class="ta-l tx-strong">Lượt tương tác tin tức / thông báo</td>
-                  <td class="tx-strong">{{ opsSafetyMe.NewsInteractions != null ? formatNumber(opsSafetyMe.NewsInteractions) + ' lượt / tháng' : '—' }}</td>
-                </tr>
-                <tr>
-                  <td class="ta-l tx-strong">Lượt điểm danh nhận diện khuôn mặt</td>
-                  <td class="tx-strong">{{ opsSafetyMe.FaceIdCheckins != null ? formatNumber(opsSafetyMe.FaceIdCheckins) + ' lượt' : '—' }}</td>
-                </tr>
-                <tr>
-                  <td class="ta-l tx-strong">Đánh giá độ hài lòng dịch vụ (VH06)</td>
-                  <td class="tx-good">{{ opsSafetyMe.SatisfactionRate != null ? opsSafetyMe.SatisfactionRate + '% Hài lòng' : '—' }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 9b. PAGE 7: PHỄU TUYỂN SINH & LEADS CRM (TS05, TS06) -->
-    <div v-if="page === 7" class="uc-kpi-ops__page">
-      <div class="uc-kpi-ops__bhead">
-        <div class="uc-kpi-ops__bhead-k">Chuyên môn Tuyển sinh &amp; Chăm sóc khách hàng (TVTS · CRM)</div>
-        <div class="uc-kpi-ops__bhead-t">
-          Lũy kế năm học 2026–2027 tiếp nhận <b>{{ computedCrmLeads }} Leads tiềm năng (TS05)</b>, chuyển đổi thành công <b>{{ computedCrmEnrolled }} học sinh nhập học</b>, tỷ lệ chuyển đổi trung bình đạt <b>{{ computedCrmConversionRate }}% (TS06)</b>. Kênh Người quen &amp; PH hiện hữu đạt tỷ lệ chốt cao nhất (&gt; 50%).
-        </div>
-        <div class="uc-kpi-ops__bhead-s">
-          Trích xuất từ Báo cáo Tracking Tuyển sinh 2026–2027 (Google Spreadsheet TVTS) · Cập nhật theo đơn vị và khối lớp.
-        </div>
-      </div>
-
-      <!-- 4 Stats Cards CRM -->
-      <div class="uc-kpi-ops__bkpis">
-        <div class="uc-kpi-ops__bkpi is-good">
-          <div class="uc-kpi-ops__bkpi-h">
-            <span>TỔNG LEADS TIẾP NHẬN (TS05)</span>
-            <b>THÁNG 10: {{ computedCrmLeadsCurrentMonth }}</b>
-          </div>
-          <div class="uc-kpi-ops__bkpi-m">
-            <div class="uc-kpi-ops__bkpi-v">{{ computedCrmLeads }} <small>Leads</small></div>
-          </div>
-          <div class="uc-kpi-ops__bkpi-d">Lũy kế 3 tháng: T8: 359 · T9: 162 · T10: 89</div>
-        </div>
-        <div class="uc-kpi-ops__bkpi is-good">
-          <div class="uc-kpi-ops__bkpi-h">
-            <span>TỶ LỆ CHUYỂN ĐỔI (TS06)</span>
-            <b class="tx-good">ĐẠT 9.5%</b>
-          </div>
-          <div class="uc-kpi-ops__bkpi-m">
-            <div class="uc-kpi-ops__bkpi-v tx-good">{{ computedCrmConversionRate }}%</div>
-          </div>
-          <div class="uc-kpi-ops__bkpi-d">PTLC: 20.6% · MNBH: 10.3% · MNLK: 6.3%</div>
-        </div>
-        <div class="uc-kpi-ops__bkpi is-good">
-          <div class="uc-kpi-ops__bkpi-h">
-            <span>NHẬP HỌC THỰC TẾ</span>
-            <b>58 HỌC SINH</b>
-          </div>
-          <div class="uc-kpi-ops__bkpi-m">
-            <div class="uc-kpi-ops__bkpi-v">{{ computedCrmEnrolled }} <small>HS</small></div>
-          </div>
-          <div class="uc-kpi-ops__bkpi-d">Đã hoàn tất đóng phí tuyển mới và nộp hồ sơ</div>
-        </div>
-        <div class="uc-kpi-ops__bkpi is-warn" @click="openDrawer('KITTY_LIST')">
-          <div class="uc-kpi-ops__bkpi-h">
-            <span>PIPELINE KITTY (HẸN HK2)</span>
-            <b class="tx-warn">{{ crmKittyList.length }} HỒ SƠ</b>
-          </div>
-          <div class="uc-kpi-ops__bkpi-m">
-            <div class="uc-kpi-ops__bkpi-v">{{ crmKittyList.length }} <small>Hồ sơ</small></div>
-          </div>
-          <div class="uc-kpi-ops__bkpi-d">Bé chờ đủ tuổi HK2 (Tab Kitty GID 1481169716)</div>
-          <div class="uc-kpi-ops__bkpi-i">Xem chi tiết {{ crmKittyList.length }} hồ sơ ›</div>
-        </div>
-      </div>
-
-      <!-- Funnel Progress & Channel Matrix -->
-      <div class="uc-kpi-ops__bcols">
-        <div class="uc-kpi-ops__visual">
-          <div class="uc-kpi-ops__vhead">
-            <div class="uc-kpi-ops__vtitle">Báo Cáo Diễn Biến Leads &amp; Nhập Học 3 Tháng (Live Tracking)</div>
-            <div class="uc-kpi-ops__vnote">Sheet BÁO CÁO (GID 1313591411)</div>
-          </div>
-          <div class="uc-kpi-ops__tablewrap">
-            <table class="uc-kpi-ops__table">
-              <thead>
-                <tr>
-                  <th class="ta-l">Kỳ báo cáo</th>
-                  <th>Leads PTLC</th>
-                  <th>Leads MNBH</th>
-                  <th>Leads MNLK</th>
-                  <th>Tổng Leads (TS05)</th>
-                  <th>Nhập học</th>
-                  <th>Chuyển đổi (TS06)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="m in crmMonthlySummary" :key="m.month">
-                  <td class="ta-l tx-strong">{{ m.month }}</td>
-                  <td>{{ m.ptlcLeads }}</td>
-                  <td>{{ m.mnbhLeads }}</td>
-                  <td>{{ m.mnlkLeads }}</td>
-                  <td class="tx-strong">{{ m.totalLeads }}</td>
-                  <td class="tx-good tx-strong">{{ m.totalEnrolled }} HS</td>
-                  <td class="tx-strong">{{ m.rate }}</td>
-                </tr>
-                <tr class="is-total">
-                  <td class="ta-l tx-strong">Lũy kế {{ crmMonthlySummary.length }} tháng</td>
-                  <td class="tx-strong">{{ crmTotalPtlcLeads }}</td>
-                  <td class="tx-strong">{{ crmTotalMnbhLeads }}</td>
-                  <td class="tx-strong">{{ crmTotalMnlkLeads }}</td>
-                  <td class="tx-strong tx-good">{{ crmTotalLeadsSum }}</td>
-                  <td class="tx-good tx-strong">{{ crmTotalEnrolledSum }} HS</td>
-                  <td class="tx-good tx-strong">{{ crmOverallConversionRate }}%</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="uc-kpi-ops__visual">
-          <div class="uc-kpi-ops__vhead">
-            <div class="uc-kpi-ops__vtitle">Hiệu Quả Từng Kênh Tiếp Cận (Kênh Chuyển Đổi Cao Nhất)</div>
-            <div class="uc-kpi-ops__vnote">Cơ cấu nguồn &amp; Tỷ lệ chốt</div>
-          </div>
-          <div class="uc-kpi-ops__tablewrap">
-            <table class="uc-kpi-ops__table">
-              <thead>
-                <tr>
-                  <th class="ta-l">Kênh tiếp cận</th>
-                  <th>Số Leads</th>
-                  <th>Tỷ trọng</th>
-                  <th>Đã chốt</th>
-                  <th>Chuyển đổi</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="c in crmChannelStats" :key="c.channel">
-                  <td class="ta-l tx-strong">{{ c.channel }}</td>
-                  <td>{{ c.leads }}</td>
-                  <td>{{ c.pct }}</td>
-                  <td class="tx-good tx-strong">{{ c.enrolled }} HS</td>
-                  <td :class="parseFloat(c.convRate) > 20 ? 'tx-good tx-strong' : ''">{{ c.convRate }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pipeline Kitty & Top Barriers -->
-      <div class="uc-kpi-ops__bcols">
-        <div class="uc-kpi-ops__visual">
-          <div class="uc-kpi-ops__vhead">
-            <div class="uc-kpi-ops__vtitle">Pipeline Nuôi Dưỡng Khách Hàng Tiềm Năng Chờ HK2 (Tab Kitty)</div>
-            <div class="uc-kpi-ops__vnote">Google Sheet GID 1481169716 (15 phụ huynh)</div>
-          </div>
-          <div class="uc-kpi-ops__tablewrap">
-            <table class="uc-kpi-ops__table">
-              <thead>
-                <tr>
-                  <th class="ta-l">Phụ huynh</th>
-                  <th class="ta-l">Bé</th>
-                  <th class="ta-l">Trạng thái</th>
-                  <th class="ta-l">Lịch hẹn chăm sóc</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="r in crmKittyList.slice(0, 6)" :key="r.stt">
-                  <td class="ta-l tx-strong">{{ r.tenPH }}</td>
-                  <td class="ta-l">{{ r.tenHS }}</td>
-                  <td class="ta-l" :class="r.tinhTrang.includes('Nhập học') ? 'tx-good' : 'tx-warn'">{{ r.tinhTrang }}</td>
-                  <td class="ta-l tx-strong">{{ r.hen }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div style="padding: 10px; text-align: center;">
-            <button type="button" class="uc-kpi-ops__simbtn" @click="openDrawer('KITTY_LIST')">
-              Xem toàn bộ 15 hồ sơ nuôi dưỡng Kitty ›
-            </button>
-          </div>
-        </div>
-
-        <div class="uc-kpi-ops__visual">
-          <div class="uc-kpi-ops__vhead">
-            <div class="uc-kpi-ops__vtitle">Phân Tích Rào Cản Tuyển Sinh &amp; Lý Do Chưa Chuyển Đổi</div>
-            <div class="uc-kpi-ops__vnote">Khảo sát 552 trường hợp drop-off</div>
-          </div>
-          <div class="uc-kpi-ops__tablewrap">
-            <table class="uc-kpi-ops__table">
-              <thead>
-                <tr>
-                  <th class="ta-l">Rào cản / Lý do chính</th>
-                  <th>Số vụ</th>
-                  <th>Tỷ lệ</th>
-                  <th class="ta-l">Giải pháp hành động</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="r in crmDropReasons" :key="r.reason">
-                  <td class="ta-l tx-strong">{{ r.reason }}</td>
-                  <td class="tx-bad tx-strong">{{ r.count }}</td>
-                  <td>{{ r.pct }}</td>
-                  <td class="ta-l">{{ r.solution }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 10. Sticky Multi-Tier Bottom Tab Navigation -->
-    <div class="uc-kpi-ops__tabs">
-      <div class="uc-kpi-ops__tabrow">
-        <div class="uc-kpi-ops__tabgrp">
-          <span class="uc-kpi-ops__tabgrp-l">Nhóm 1: Quy mô &amp; Tuyển sinh</span>
-          <button type="button" :class="{ 'is-on': page === 0 }" @click="page = 0">0. Hội đồng trường (Executive Cockpit)</button>
-          <button type="button" :class="{ 'is-on': page === 1 }" @click="page = 1">1. Sĩ số &amp; Khối lớp (Chỉ tiêu 1–3)</button>
-          <button type="button" :class="{ 'is-on': page === 7 }" @click="page = 7">2. Phễu TVTS &amp; Leads CRM (Chỉ tiêu 5, 6)</button>
-          <button type="button" :class="{ 'is-on': page === 2 }" @click="page = 2">3. Rút học &amp; Chuyển đi (Chỉ tiêu 4)</button>
-        </div>
-        <div class="uc-kpi-ops__tabgrp">
-          <span class="uc-kpi-ops__tabgrp-l">Nhóm 2, 3, 4: Chuyên môn &amp; Tài chính</span>
-          <button type="button" :class="{ 'is-on': page === 4 }" @click="page = 4">4. Chuyên môn LMS (Nhóm 2: 8, 11, 15)</button>
-          <button type="button" :class="{ 'is-on': page === 6 }" @click="page = 6">5. Dịch vụ &amp; An toàn Học đường (Nhóm 3: 28–40)</button>
-          <button type="button" :class="{ 'is-on': page === 5 }" @click="page = 5">6. Tài chính: LN gộp &amp; CLB (Nhóm 4: 55, 56)</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 11. Slide-over Drill-down Drawer -->
-    <div v-if="drawer.visible" class="uc-kpi-ops__veil" @click="closeDrawer()"></div>
-    <div v-if="drawer.visible" class="uc-kpi-ops__drawer">
-      <div class="uc-kpi-ops__dr-head">
-        <div>
-          <div class="uc-kpi-ops__dr-kicker">Chi tiết phân tích điều hành</div>
-          <div class="uc-kpi-ops__dr-title">{{ drawer.title }}</div>
-        </div>
-        <button type="button" class="uc-kpi-ops__dr-x" @click="closeDrawer()">&times;</button>
-      </div>
-      <div class="uc-kpi-ops__dr-body">
-        <div v-if="drawer.type === 'WITHDRAW_LIST'">
-          <!-- Phân tích Tác động Nhân quả dành cho HĐQT -->
-          <div class="uc-kpi-ops__bkpi-causal is-bad mb-3" style="padding:12px;font-size:12px;">
-            <div class="causal-pill" style="font-size:12px;">
-              Phân Tích Chuỗi Tác Động Điều Hành: Xe Bus &rarr; Rút Học &rarr; Thất Thu Tài Chính
-            </div>
-            <div class="causal-desc" style="font-size:12px;margin:6px 0;">
-              <b>21/53 học sinh</b> (39.6% trong kỳ T9) rút học do khoảng cách địa lý và tuyến đưa đón (Lũy kế chuyển đi toàn năm học: 152 HS). Thiệt hại tài chính trực tiếp: <b>1.365 tỷ học phí</b> + <b>252 triệu xe bus/năm</b>.
-            </div>
-            <div class="d-flex align-center justify-space-between mt-2">
-              <span class="text-xs text-muted">Đề xuất BĐH: Mở 2 tuyến bus Trảng Bom &amp; QL1K để giữ chân 25–30 HS</span>
-              <button
-                type="button"
-                class="uc-kpi-ops__simbtn is-solid"
-                style="padding:4px 10px;font-size:11px;"
-                @click="openCausalModal(currentUnit, 'RUT_HOC')"
-              >Mở Mô Hình Vùng Tác Động (What-If) ↗</button>
-            </div>
-          </div>
-
-          <div class="uc-kpi-ops__visual">
-            <div class="uc-kpi-ops__vhead">
-              <div class="uc-kpi-ops__vtitle">Danh sách 152 học sinh chuyển đi lũy kế năm học (Live Data)</div>
-            </div>
-            <div class="uc-kpi-ops__tablewrap">
-              <table class="uc-kpi-ops__table">
-                <thead>
-                  <tr>
-                    <th class="ta-l">Họ tên</th>
-                    <th>Lớp</th>
-                    <th class="ta-l">Trường đến</th>
-                    <th class="ta-l">Lý do</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(r, i) in withdrawRecords" :key="i">
-                    <td class="ta-l tx-strong">{{ r.HoTen }}</td>
-                    <td>{{ r.LopDi || '—' }}</td>
-                    <td class="ta-l">{{ r.TruongDen || '—' }}</td>
-                    <td class="ta-l tx-bad">{{ r.LyDo }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="drawer.type === 'STUDENT_LIST'">
-          <!-- Phân tích Tác động Nhân quả dành cho HĐQT -->
-          <div class="uc-kpi-ops__bkpi-causal is-good mb-3" style="padding:12px;font-size:12px;">
-            <div class="causal-pill" style="font-size:12px;">
-              Phân Tích Chuỗi Tác Động Điều Hành: Quy Mô Sĩ Số &rarr; Lợi Nhuận Gộp &rarr; Điểm Hòa Vốn
-            </div>
-            <div class="causal-desc" style="font-size:12px;margin:6px 0;">
-              Lũy kế quy mô đạt <b>{{ formatNumber(displayStudents) }} HS</b> (Đạt {{ displayCapacityPct }}% kế hoạch). Cơ sở Mầm non Long Khánh đang ở vùng công suất mỏng ({{ ((133/160)*100).toFixed(0) }}%), cần ưu tiên dồn leads TVTS nhóm 18–24 tháng.
-            </div>
-            <div class="d-flex align-center justify-space-between mt-2">
-              <span class="text-xs text-muted">Phụ trách: Ban Giám hiệu Long Khánh &amp; Ban TVTS</span>
-              <button
-                type="button"
-                class="uc-kpi-ops__simbtn is-solid"
-                style="padding:4px 10px;font-size:11px;"
-                @click="openCausalModal(currentUnit, 'TUYEN_THEM')"
-              >Mở Mô Hình Vùng Tác Động Tuyển Thêm ↗</button>
-            </div>
-          </div>
-
-          <div class="uc-kpi-ops__visual">
-            <div class="uc-kpi-ops__vhead">
-              <div class="uc-kpi-ops__vtitle">Sĩ số theo khối lớp (Live Data)</div>
-            </div>
-            <div class="uc-kpi-ops__tablewrap">
-              <table class="uc-kpi-ops__table">
-                <thead>
-                  <tr>
-                    <th class="ta-l">Khối Lớp</th>
-                    <th>Học sinh</th>
-                    <th>Nam</th>
-                    <th>Nữ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="r in currentGradeRows" :key="r.Ten">
-                    <td class="ta-l tx-strong">{{ r.Ten }}</td>
-                    <td class="tx-strong">{{ formatNumber(r.SLHocSinh) }}</td>
-                    <td>{{ formatNumber(r.SL_HSNam) }}</td>
-                    <td>{{ formatNumber(r.SL_HSNu) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="drawer.type === 'FINANCE_DETAIL'">
-          <!-- Phân tích Tác động Nhân quả dành cho HĐQT -->
-          <div class="uc-kpi-ops__bkpi-causal is-good mb-3" style="padding:12px;font-size:12px;">
-            <div class="causal-pill" style="font-size:12px;">
-              Phân Tích Chuỗi Tác Động Điều Hành: Lợi Nhuận Dịch Vụ &rarr; Quỹ Tái Đầu Tư CSVC
-            </div>
-            <div class="causal-desc" style="font-size:12px;margin:6px 0;">
-              Dòng tiền lợi nhuận gộp từ CLB (<b>{{ computedFinanceData.clbRev }}</b>) và Dịch vụ bán trú (<b>{{ computedFinanceData.grossMargin }}</b>) đóng góp quỹ tự chủ nâng cấp điều hòa khối Tiểu học và sân bãi thể thao mà không gây áp lực tăng học phí.
-            </div>
-            <div class="d-flex align-center justify-space-between mt-2">
-              <span class="text-xs text-muted">Phụ trách: Phòng Kế toán &amp; Ban Quản trị CSVC</span>
-              <button
-                type="button"
-                class="uc-kpi-ops__simbtn"
-                style="padding:4px 10px;font-size:11px;"
-                @click="page = 5; closeDrawer()"
-              >Xem Phân Tích Tài Chính Chi Tiết ›</button>
-            </div>
-          </div>
-
-          <div class="uc-kpi-ops__visual">
-            <div class="uc-kpi-ops__vhead">
-              <div class="uc-kpi-ops__vtitle">Chi tiết cơ cấu Lợi nhuận gộp Dịch vụ (KPI 4: Mục tiêu 50%)</div>
-            </div>
-            <div class="uc-kpi-ops__tablewrap">
-              <table class="uc-kpi-ops__table">
-                <thead>
-                  <tr>
-                    <th class="ta-l">Mảng Dịch vụ</th>
-                    <th>Doanh thu</th>
-                    <th>Chi phí trực tiếp</th>
-                    <th>Lợi nhuận gộp</th>
-                    <th>Tỷ suất LN (KPI 4)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="s in financeServices" :key="s.name">
-                    <td class="ta-l tx-strong">{{ s.name }}</td>
-                    <td>{{ s.revenue }}</td>
-                    <td>{{ s.cost }}</td>
-                    <td class="tx-good tx-strong">{{ s.grossProfit }}</td>
-                    <td class="tx-good tx-strong">{{ s.margin }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="drawer.type === 'KITTY_LIST'">
-          <div class="uc-kpi-ops__visual">
-            <div class="uc-kpi-ops__vhead">
-              <div class="uc-kpi-ops__vtitle">Pipeline Nuôi Dưỡng Khách Hàng Tiềm Năng Chờ HK2 (Tab Kitty)</div>
-              <div class="uc-kpi-ops__vnote">Google Sheet GID 1481169716 · {{ crmKittyList.length }} hồ sơ chờ nhập học</div>
-            </div>
-            <div class="uc-kpi-ops__tablewrap">
-              <table class="uc-kpi-ops__table">
-                <thead>
-                  <tr>
-                    <th>STT</th>
-                    <th class="ta-l">Phụ huynh</th>
-                    <th class="ta-l">Bé</th>
-                    <th class="ta-l">Tình trạng</th>
-                    <th class="ta-l">Lịch hẹn chăm sóc</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="r in crmKittyList" :key="r.stt">
-                    <td>{{ r.stt }}</td>
-                    <td class="ta-l tx-strong">{{ r.tenPH }}</td>
-                    <td class="ta-l">{{ r.tenHS }}</td>
-                    <td class="ta-l" :class="r.tinhTrang.includes('Nhập học') ? 'tx-good' : 'tx-warn'">{{ r.tinhTrang }}</td>
-                    <td class="ta-l tx-strong">{{ r.hen }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <div v-if="drawer.type === 'GOLIVE_SPECS'">
-          <div class="uc-kpi-ops__visual">
-            <div class="uc-kpi-ops__vhead">
-              <div class="uc-kpi-ops__vtitle">Đặc Tả Kỹ Thuật API Golive Các Hệ Thống Nguồn (Theo Quy Định Docs)</div>
-              <div class="uc-kpi-ops__vnote">
-                Danh mục 6 nguồn dữ liệu theo tài liệu Phương án xây dựng Dashboard và chỉ đạo BĐH:
-              </div>
-            </div>
-
-            <!-- Filter chips for specs -->
-            <div class="uc-kpi-ops__seg mb-3">
-              <button
-                type="button"
-                :class="{ 'is-on': selectedSpecCode === null }"
-                @click="selectedSpecCode = null"
-              >Tất cả hệ thống (6)</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedSpecCode === 'SPEC_BASICDATA' }"
-                @click="selectedSpecCode = 'SPEC_BASICDATA'"
-              >basicdata.lhbs.vn</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedSpecCode === 'SPEC_HOCPHI' }"
-                @click="selectedSpecCode = 'SPEC_HOCPHI'"
-              >hocphi.lhbs.vn</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedSpecCode === 'SPEC_YTE' }"
-                @click="selectedSpecCode = 'SPEC_YTE'"
-              >yte.lhbs.vn</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedSpecCode === 'SPEC_QA' }"
-                @click="selectedSpecCode = 'SPEC_QA'"
-              >qa.lhbs.vn</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedSpecCode === 'SPEC_LMS' }"
-                @click="selectedSpecCode = 'SPEC_LMS'"
-              >lms.lhbs.vn</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedSpecCode === 'SPEC_EXCEL_INTERNAL' }"
-                @click="selectedSpecCode = 'SPEC_EXCEL_INTERNAL'"
-              >Excel nội bộ</button>
-            </div>
-
-            <div class="uc-kpi-ops__specs-list">
-              <div v-for="spec in computedDisplaySpecs" :key="spec.SpecCode" class="uc-kpi-ops__spec-item">
-                <div class="uc-kpi-ops__spec-h">
-                  <div class="uc-kpi-ops__spec-title">
-                    <span>{{ spec.SourceSystem }}</span>
-                    <a
-                      v-if="extractUrl(spec.SourceSystem)"
-                      :href="extractUrl(spec.SourceSystem)"
-                      target="_blank"
-                      class="uc-kpi-ops__simbtn ml-2"
-                      style="display:inline-block;padding:2px 8px;font-size:11px;"
-                    >
-                      Mở link hệ thống ↗
-                    </a>
-                  </div>
-                  <span class="uc-kpi-ops__spec-badge">{{ spec.SpecCode }}</span>
-                </div>
-                <div class="uc-kpi-ops__spec-meta">
-                  <b>Phân hệ / Nhóm KPI:</b> {{ spec.KpiGroup }} | <b>Tần suất đồng bộ:</b> {{ spec.SyncSchedule }}
-                </div>
-                <div class="uc-kpi-ops__spec-ep">
-                  <b>{{ spec.HttpMethod }}</b> {{ spec.ApiEndpoint }}
-                </div>
-                <div class="uc-kpi-ops__spec-lbl">Cấu trúc Request JSON mẫu:</div>
-                <div class="uc-kpi-ops__spec-code">{{ spec.RequestSchema }}</div>
-                <div class="uc-kpi-ops__spec-lbl">Cấu trúc Response JSON chuẩn:</div>
-                <div class="uc-kpi-ops__spec-code">{{ spec.ResponseSchema }}</div>
-                <div class="uc-kpi-ops__spec-reqs">
-                  <b>Điều kiện tiên quyết Golive:</b> {{ spec.GolivePrerequisites }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 11e. Causal Engine Configuration Drawer -->
-        <div v-if="drawer.type === 'CAUSAL_CONFIG'">
-          <div class="uc-kpi-ops__visual">
-            <div class="uc-kpi-ops__vhead">
-              <div class="uc-kpi-ops__vtitle">Cấu hình Tham số Giả định &amp; Quy tắc Nhân quả (CSDL eSign)</div>
-              <div class="uc-kpi-ops__vnote">
-                Bảng cấu hình động lưu trữ tại <code>tblKPI_CausalAssumptions</code> &amp; <code>tblKPI_CausalRules</code> trên server eSignature.
-              </div>
-            </div>
-
-            <!-- Bảng tham số giả định 5 đơn vị -->
-            <div class="uc-kpi-ops__tablewrap mb-3">
-              <table class="uc-kpi-ops__table">
-                <thead>
-                  <tr>
-                    <th class="ta-l">Đơn vị</th>
-                    <th>Chỉ tiêu (KH)</th>
-                    <th>Sĩ số T9</th>
-                    <th>Học phí (tr/năm)</th>
-                    <th>Biên LN (%)</th>
-                    <th>Năm còn lại</th>
-                    <th>Leads/tháng</th>
-                    <th>Chuyển đổi (%)</th>
-                    <th>Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="u in (causalAssumptionsList.length ? causalAssumptionsList : defaultAssumptions)" :key="u.UnitCode">
-                    <td class="ta-l tx-strong">{{ u.UnitName }}</td>
-                    <td><input type="number" v-model.number="u.PlannedCapacity" class="uc-kpi-ops__input-sm" style="width:70px;" /></td>
-                    <td><input type="number" v-model.number="u.CurrentEnrollment" class="uc-kpi-ops__input-sm" style="width:70px;" /></td>
-                    <td><input type="number" step="0.1" v-model.number="u.AnnualTuitionMillion" class="uc-kpi-ops__input-sm" style="width:70px;" /></td>
-                    <td><input type="number" step="0.01" v-model.number="u.GrossMarginPct" class="uc-kpi-ops__input-sm" style="width:60px;" /></td>
-                    <td><input type="number" step="0.1" v-model.number="u.RemainingYearsInLevel" class="uc-kpi-ops__input-sm" style="width:60px;" /></td>
-                    <td><input type="number" v-model.number="u.MonthlyLeads" class="uc-kpi-ops__input-sm" style="width:70px;" /></td>
-                    <td><input type="number" step="0.001" v-model.number="u.ConversionRate" class="uc-kpi-ops__input-sm" style="width:70px;" /></td>
-                    <td>
-                      <button
-                        type="button"
-                        class="uc-kpi-ops__simbtn is-solid"
-                        @click="saveCausalAssumption(u)"
-                        title="Lưu xuống CSDL eSign"
-                      >Lưu CSDL</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Danh mục quy tắc IF/ELSE -->
-            <div class="uc-kpi-ops__vhead mt-3">
-              <div class="uc-kpi-ops__vtitle">Danh mục Luật Đánh giá IF / ELSE (tblKPI_CausalRules)</div>
-            </div>
-            <div class="uc-kpi-ops__tablewrap">
-              <table class="uc-kpi-ops__table">
-                <thead>
-                  <tr>
-                    <th class="ta-l">Mã Luật</th>
-                    <th class="ta-l">Tên Quy tắc</th>
-                    <th class="ta-l">Điều kiện (IF)</th>
-                    <th>Mức độ</th>
-                    <th class="ta-l">Hệ quả (THEN)</th>
-                    <th>Trạng thái</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="r in (causalRulesList.length ? causalRulesList : defaultRules)" :key="r.RuleCode">
-                    <td class="ta-l tx-strong">{{ r.RuleCode }}</td>
-                    <td class="ta-l">{{ r.RuleName }}</td>
-                    <td class="ta-l font-mono text-xs">{{ r.ConditionExpr }}</td>
-                    <td>
-                      <span :class="['uc-kpi-ops__tag', r.Severity === 'BAD' ? 'is-bad' : 'is-warn']">{{ r.Severity }}</span>
-                    </td>
-                    <td class="ta-l">{{ r.OutcomeSummary }}</td>
-                    <td><span class="uc-kpi-ops__pill is-live">Hoạt động</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- 11f. Operational Fact Store Browser (100% Real Fact Store) -->
-        <div v-if="drawer.type === 'OPERATIONAL_FACTS'">
-          <div class="uc-kpi-ops__visual">
-            <div class="uc-kpi-ops__vhead">
-              <div class="uc-kpi-ops__vtitle">Trích Xuất 100% Dữ Liệu Gốc từ Fact Store (tblKPI_OperationalFacts)</div>
-              <div class="uc-kpi-ops__vnote">
-                Dữ liệu định danh chi tiết từng giao dịch, sự vụ, học sinh, nhân viên được chuẩn hóa từ 8 sheets Excel Tháng 9/2026
-              </div>
-            </div>
-
-            <!-- Domain filter selector -->
-            <div class="uc-kpi-ops__seg mb-3">
-              <button
-                type="button"
-                :class="{ 'is-on': selectedFactDomain === 'LEAVE' }"
-                @click="fetchOperationalFacts('LEAVE')"
-              >Nghỉ phép (470 đơn · 551 ngày)</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedFactDomain === 'HEALTH' }"
-                @click="fetchOperationalFacts('HEALTH')"
-              >Y tế (131 ca bệnh · Cúm A)</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedFactDomain === 'MAINTENANCE' }"
-                @click="fetchOperationalFacts('MAINTENANCE')"
-              >Bảo trì CSVC (79 ticket · 4 tồn)</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedFactDomain === 'CLUB' }"
-                @click="fetchOperationalFacts('CLUB')"
-              >Câu lạc bộ (36 môn · 1.611 tỷ)</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedFactDomain === 'HR_TURNOVER' }"
-                @click="fetchOperationalFacts('HR_TURNOVER')"
-              >Biến động NV (44 ca)</button>
-              <button
-                type="button"
-                :class="{ 'is-on': selectedFactDomain === 'TEACHING' }"
-                @click="fetchOperationalFacts('TEACHING')"
-              >Tiến độ dạy (288 tiết)</button>
-            </div>
-
-            <!-- Thanh Đối Soát Tổng Thể (Reconciliation Header Strip) -->
-            <div class="uc-kpi-ops__reconcile-strip" :class="'is-' + reconciliationSummary.status.toLowerCase()">
-              <div class="uc-kpi-ops__reconcile-col">
-                <div class="uc-kpi-ops__reconcile-lbl">1. Chỉ số KPI Báo Cáo</div>
-                <div class="uc-kpi-ops__reconcile-val">{{ reconciliationSummary.kpiReported }}</div>
-                <div class="uc-kpi-ops__reconcile-sub">{{ reconciliationSummary.kpiNote }}</div>
-              </div>
-
-              <div class="uc-kpi-ops__reconcile-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </div>
-
-              <div class="uc-kpi-ops__reconcile-col">
-                <div class="uc-kpi-ops__reconcile-lbl">2. Tổng Gộp Fact Store Gốc</div>
-                <div class="uc-kpi-ops__reconcile-val">{{ reconciliationSummary.factMetric }}</div>
-                <div class="uc-kpi-ops__reconcile-sub">{{ reconciliationSummary.factCount }} giao dịch nguyên tử</div>
-              </div>
-
-              <div class="uc-kpi-ops__reconcile-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-              </div>
-
-              <div class="uc-kpi-ops__reconcile-col is-verdict">
-                <div class="uc-kpi-ops__reconcile-lbl">3. Kết Luận Kiểm Toán</div>
-                <div class="uc-kpi-ops__reconcile-status">
-                  <span class="status-dot"></span>
-                  <b>{{ reconciliationSummary.statusText }}</b>
-                </div>
-                <div class="uc-kpi-ops__reconcile-finding">
-                  {{ reconciliationSummary.auditFinding }} · Trách nhiệm: <b>{{ reconciliationSummary.responsibleRole }}</b>
-                </div>
-              </div>
-            </div>
-
-            <!-- Bộ Lọc Kiểm Toán Nhanh (Smart Audit Filter Bar) -->
-            <div class="uc-kpi-ops__audit-filter-bar">
-              <div class="uc-kpi-ops__audit-filter-label">Bộ lọc kiểm toán:</div>
-              <div class="uc-kpi-ops__audit-chips">
-                <button
-                  type="button"
-                  :class="['uc-kpi-ops__audit-chip', { 'is-active': factAuditFilter === 'ALL' }]"
-                  @click="factAuditFilter = 'ALL'"
-                >
-                  Tất cả ({{ operationalFactsList.length }})
-                </button>
-                <button
-                  type="button"
-                  :class="['uc-kpi-ops__audit-chip is-pending', { 'is-active': factAuditFilter === 'PENDING' }]"
-                  @click="factAuditFilter = 'PENDING'"
-                >
-                  ⚠️ Tồn đọng / Chưa xử lý (Pending)
-                </button>
-                <button
-                  type="button"
-                  :class="['uc-kpi-ops__audit-chip is-anomaly', { 'is-active': factAuditFilter === 'ANOMALY' }]"
-                  @click="factAuditFilter = 'ANOMALY'"
-                >
-                  🔍 Trọng điểm rủi ro (Cúm A / Máy lạnh / Bếp)
-                </button>
-              </div>
-            </div>
-
-            <div v-if="isFactsLoading" style="padding:20px;text-align:center;color:#64748b;">
-              Đang tải dữ liệu từ CSDL eSign...
-            </div>
-
-            <div v-else class="uc-kpi-ops__tablewrap">
-              <table class="uc-kpi-ops__table">
-                <thead>
-                  <tr>
-                    <th style="width:100px;">Ngày</th>
-                    <th class="ta-l" style="width:160px;">Mã / Tên</th>
-                    <th class="ta-l" style="width:140px;">Phân loại</th>
-                    <th class="ta-l">Chi tiết / Nội dung</th>
-                    <th style="width:90px;">Định lượng</th>
-                    <th style="width:90px;">Trạng thái</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="f in filteredOperationalFactsList" :key="f.FactID">
-                    <td>{{ f.OccurredDate || '—' }}</td>
-                    <td class="ta-l">
-                      <b>{{ f.EntityName || f.EntityCode }}</b>
-                      <small v-if="f.EntityCode" style="display:block;font-size:10px;color:#64748b;">{{ f.EntityCode }} · {{ f.ScopeID }}</small>
-                    </td>
-                    <td class="ta-l">
-                      <span class="font-weight-bold" style="color:var(--accent2);">{{ f.Dim1 || '—' }}</span>
-                      <small v-if="f.Dim2" style="display:block;font-size:10.5px;color:#64748b;">{{ f.Dim2 }}</small>
-                    </td>
-                    <td class="ta-l" style="font-size:11.5px;color:#334155;max-width:320px;">
-                      {{ f.Dim3 || f.Dim4 || '—' }}
-                    </td>
-                    <td class="tx-strong">
-                      {{ f.MetricCount != null ? f.MetricCount : (f.MetricAmount != null ? formatNumber(f.MetricAmount) : '—') }}
-                    </td>
-                    <td>
-                      <span :class="['uc-kpi-ops__status-pill', f.Status === 'PENDING' || f.Status === 'CRITICAL' ? 'is-danger' : 'is-good']">
-                        {{ f.Status || 'COMPLETED' }}
-                      </span>
-                    </td>
-                  </tr>
-                  <tr v-if="!filteredOperationalFactsList.length">
-                    <td colspan="6" style="padding:24px;text-align:center;color:#94a3b8;">
-                      Không tìm thấy bản ghi nào khớp với điều kiện lọc kiểm toán này.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ================= ROI SIMULATOR MODAL (HĐQT PHÂN BỔ VỐN) ================= -->
-    <div
-      v-if="isRoiModalOpen"
-      class="uc-kpi-ops__roi-modal-overlay"
-      @click.self="closeRoiModal()"
-    >
-      <div class="uc-kpi-ops__roi-modal-dialog">
-        <!-- Header -->
+<!-- Header -->
         <div class="uc-kpi-ops__roi-modal-head">
           <div>
             <div class="uc-kpi-ops__roi-modal-head-title">BỘ MÔ PHỎNG ĐẦU TƯ ĐIỀU HÀNH &amp; TỶ SUẤT ROI (CAPEX/OPEX SIMULATOR)</div>
@@ -2973,7 +1645,7 @@
                   <span class="uc-kpi-ops__roi-ctrl-val">{{ roiBusStudentsRetained }} HS</span>
                 </div>
                 <input type="range" min="5" max="40" step="1" v-model.number="roiBusStudentsRetained" class="uc-kpi-ops__roi-slider" />
-                <div class="uc-kpi-ops__roi-slider-hints"><span>5 HS</span><span>21 HS (T9)</span><span>40 HS</span></div>
+                <div class="uc-kpi-ops__roi-slider-hints"><span>5 HS</span><span>{{ displayReasonFar }} HS ({{ currentPeriodShortName }})</span><span>40 HS</span></div>
               </div>
 
               <div class="uc-kpi-ops__roi-ctrl-group">
@@ -3162,7 +1834,1347 @@
           >Áp dụng vào Kế hoạch Ngân sách</button>
         </div>
       </div>
+      </div>
+
+    <!-- 4. PAGE 1: CƠ CẤU SĨ SỐ KHỐI LỚP (TS01, TS02) -->
+    <div v-if="page === 1" class="uc-kpi-ops__page">
+      <div class="uc-kpi-ops__visual">
+        <div class="uc-kpi-ops__vhead" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div>
+            <div class="uc-kpi-ops__vtitle">Cơ Cấu Sĩ Số Học Sinh Toàn Bộ Các Khối Lớp (Live API)</div>
+            <div class="uc-kpi-ops__vnote">Tổng cộng: <b>{{ formatNumber(computedTotalStudents) }} học sinh</b></div>
+          </div>
+          <div class="uc-kpi-ops__view-switcher">
+            <button
+              type="button"
+              :class="['uc-kpi-ops__switcher-btn', { 'is-active': gradeViewMode === 'CHART' }]"
+              @click="gradeViewMode = 'CHART'"
+            >
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M0 0h3v16H0zm6 5h3v11H6zm6-3h3v14h-3z"/></svg>
+              Biểu đồ cột ngang
+            </button>
+            <button
+              type="button"
+              :class="['uc-kpi-ops__switcher-btn', { 'is-active': gradeViewMode === 'TABLE' }]"
+              @click="gradeViewMode = 'TABLE'"
+            >
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm1 2v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm1-3a1 1 0 0 0-1 1v1h14V2a1 1 0 0 0-1-1H2z"/></svg>
+              Bảng số liệu
+            </button>
+          </div>
+        </div>
+
+        <!-- Biểu Đồ Cột Ngang Đôi (Horizontal Stacked Bar Chart) -->
+        <div v-if="gradeViewMode === 'CHART'" class="uc-kpi-ops__grade-chart-wrap mt-2">
+          <!-- Legend -->
+          <div class="uc-kpi-ops__chart-legend">
+            <span><span class="legend-dot is-boy"></span> Nam</span>
+            <span><span class="legend-dot is-girl"></span> Nữ</span>
+            <span><span class="legend-dot is-thin"></span> Quy mô mỏng (&lt;100 HS)</span>
+            <span class="legend-note">Vạch chuẩn an toàn: 100 HS/khối</span>
+          </div>
+
+          <div class="uc-kpi-ops__grade-bars-list">
+            <div
+              v-for="r in currentGradeRows"
+              :key="r.Ten"
+              class="uc-kpi-ops__grade-bar-row"
+            >
+              <div class="uc-kpi-ops__grade-bar-label">
+                <b>{{ r.Ten }}</b>
+              </div>
+              <div class="uc-kpi-ops__grade-bar-track">
+                <div
+                  class="uc-kpi-ops__grade-bar-inner"
+                  :style="{ width: Math.max(8, Math.min(100, (r.SLHocSinh / maxGradeEnrollment) * 100)) + '%' }"
+                >
+                  <div
+                    class="uc-kpi-ops__grade-segment is-boy"
+                    :style="{ width: (r.SLHocSinh > 0 ? (r.SL_HSNam / r.SLHocSinh) * 100 : 50) + '%' }"
+                    :title="'Nam: ' + formatNumber(r.SL_HSNam) + ' HS (' + calcPercent(r.SL_HSNam, r.SLHocSinh) + '%)'"
+                  >
+                    <span v-if="r.SL_HSNam > 25">{{ r.SL_HSNam }}</span>
+                  </div>
+                  <div
+                    class="uc-kpi-ops__grade-segment is-girl"
+                    :style="{ width: (r.SLHocSinh > 0 ? (r.SL_HSNu / r.SLHocSinh) * 100 : 50) + '%' }"
+                    :title="'Nữ: ' + formatNumber(r.SL_HSNu) + ' HS (' + calcPercent(r.SL_HSNu, r.SLHocSinh) + '%)'"
+                  >
+                    <span v-if="r.SL_HSNu > 25">{{ r.SL_HSNu }}</span>
+                  </div>
+                </div>
+                <!-- Benchmark 100 HS -->
+                <div
+                  class="uc-kpi-ops__grade-benchmark-line"
+                  :style="{ left: Math.min(100, (100 / maxGradeEnrollment) * 100) + '%' }"
+                  title="Ngưỡng quy mô tối thiểu: 100 HS"
+                ></div>
+              </div>
+              <div class="uc-kpi-ops__grade-bar-stat">
+                <b class="stat-total">{{ formatNumber(r.SLHocSinh) }}</b> <small>HS</small>
+                <span class="stat-pct">({{ ((r.SLHocSinh / (computedTotalStudents || 1)) * 100).toFixed(1) }}%)</span>
+                <span :class="['uc-kpi-ops__cell-tag', r.SLHocSinh >= 100 ? 'is-good' : 'is-warn']">
+                  {{ r.SLHocSinh >= 100 ? 'Ổn định' : 'Mỏng' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bảng Số Liệu Truyền Thống -->
+        <div v-else class="uc-kpi-ops__tablewrap">
+          <table class="uc-kpi-ops__table">
+            <thead>
+              <tr>
+                <th class="ta-l">STT</th>
+                <th class="ta-l">Khối Lớp</th>
+                <th>Tổng sĩ số</th>
+                <th>Nam</th>
+                <th>Nữ</th>
+                <th>Tỷ lệ Nữ (%)</th>
+                <th>Tỷ trọng</th>
+                <th class="ta-l">Tình trạng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="r in currentGradeRows" :key="r.Ten">
+                <td class="ta-l">{{ r.STT }}</td>
+                <td class="ta-l tx-strong">{{ r.Ten }}</td>
+                <td class="tx-strong">{{ formatNumber(r.SLHocSinh) }}</td>
+                <td>{{ formatNumber(r.SL_HSNam) }}</td>
+                <td>{{ formatNumber(r.SL_HSNu) }}</td>
+                <td>{{ calcPercent(r.SL_HSNu, r.SLHocSinh) }}%</td>
+                <td>{{ ((r.SLHocSinh / (computedTotalStudents || 1)) * 100).toFixed(1) }}%</td>
+                <td class="ta-l">
+                  <span :class="['uc-kpi-ops__cell-tag', r.SLHocSinh >= 100 ? 'is-good' : 'is-warn']">
+                    {{ r.SLHocSinh >= 100 ? 'Ổn định' : 'Quy mô mỏng' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
+
+    <!-- 5. PAGE 2: HỌC SINH CHUYỂN ĐI & RÚT HỌC (TS04) -->
+    <div v-if="page === 2" class="uc-kpi-ops__page">
+      <div class="uc-kpi-ops__bcols">
+        <div class="uc-kpi-ops__visual">
+          <div class="uc-kpi-ops__vhead" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+            <div>
+              <div class="uc-kpi-ops__vtitle">Top Lý Do Rút Học &amp; Chuyển Đi ({{ displayWithdrawTotalCount }} bản ghi)</div>
+              <div class="uc-kpi-ops__vnote">Nguồn: API ThongKeHocSinhChuyenDi</div>
+            </div>
+            <div class="uc-kpi-ops__view-switcher">
+              <button
+                type="button"
+                :class="['uc-kpi-ops__switcher-btn', { 'is-active': withdrawViewMode === 'CHART' }]"
+                @click="withdrawViewMode = 'CHART'"
+              >
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M0 0h3v16H0zm6 5h3v11H6zm6-3h3v14h-3z"/></svg>
+                Biểu đồ xếp hạng
+              </button>
+              <button
+                type="button"
+                :class="['uc-kpi-ops__switcher-btn', { 'is-active': withdrawViewMode === 'TABLE' }]"
+                @click="withdrawViewMode = 'TABLE'"
+              >
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm1 2v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm1-3a1 1 0 0 0-1 1v1h14V2a1 1 0 0 0-1-1H2z"/></svg>
+                Bảng
+              </button>
+            </div>
+          </div>
+
+          <!-- Biểu Đồ Cột Xếp Hạng & Khả Năng Can Thiệp (Ranked Horizontal Bars) -->
+          <div v-if="withdrawViewMode === 'CHART'" class="uc-kpi-ops__withdraw-chart-wrap">
+            <div
+              v-for="(r, i) in displayTopWithdrawReasons"
+              :key="r.name"
+              class="uc-kpi-ops__withdraw-rank-item"
+            >
+              <div class="uc-kpi-ops__withdraw-rank-top">
+                <div class="uc-kpi-ops__withdraw-rank-name">
+                  <span class="rank-idx">#{{ i + 1 }}</span>
+                  <b>{{ r.name }}</b>
+                </div>
+                <div class="uc-kpi-ops__withdraw-rank-stat">
+                  <b class="tx-bad">{{ r.count }} HS</b>
+                  <span class="rank-pct">({{ r.percent }}%)</span>
+                </div>
+              </div>
+              <div class="uc-kpi-ops__withdraw-bar-track">
+                <div
+                  :class="['uc-kpi-ops__withdraw-bar-fill', getWithdrawBarColorClass(r.name)]"
+                  :style="{ width: Math.min(100, r.percent * 2.2) + '%' }"
+                ></div>
+              </div>
+              <div class="uc-kpi-ops__withdraw-rank-bot">
+                <span>Đầu mối: <b>{{ r.owner || 'Ban Giám Hiệu' }}</b></span>
+                <span :class="['can-intervene-badge', getInterveneClass(r.name)]">
+                  {{ getInterveneLabel(r.name) }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bảng Truyền Thống -->
+          <div v-else class="uc-kpi-ops__tablewrap">
+            <table class="uc-kpi-ops__table">
+              <thead>
+                <tr>
+                  <th class="ta-l">Lý do rút hồ sơ</th>
+                  <th>Số lượng</th>
+                  <th>Tỷ trọng (%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="r in displayTopWithdrawReasons" :key="r.name">
+                  <td class="ta-l tx-strong">{{ r.name }}</td>
+                  <td class="tx-strong tx-bad">{{ r.count }} HS</td>
+                  <td>
+                    <span class="uc-kpi-ops__btrack">
+                      <span class="uc-kpi-ops__bfill is-bad" :style="{ width: r.percent * 2 + '%' }"></span>
+                    </span>
+                    {{ r.percent }}%
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="uc-kpi-ops__visual">
+          <div class="uc-kpi-ops__vhead">
+            <div class="uc-kpi-ops__vtitle">Mẫu Danh Sách Học Sinh Chuyển Đi Gần Nhất</div>
+            <div class="uc-kpi-ops__vnote">Tổng số: {{ withdrawRecords.length }} HS</div>
+          </div>
+          <div class="uc-kpi-ops__tablewrap">
+            <table class="uc-kpi-ops__table">
+              <thead>
+                <tr>
+                  <th class="ta-l">Họ và tên</th>
+                  <th>Lớp</th>
+                  <th class="ta-l">Trường đến</th>
+                  <th class="ta-l">Lý do</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(r, i) in withdrawRecords.slice(0, 8)" :key="i">
+                  <td class="ta-l tx-strong">{{ r.HoTen }}</td>
+                  <td>{{ r.LopDi || '—' }}</td>
+                  <td class="ta-l">{{ r.TruongDen || '—' }}</td>
+                  <td class="ta-l tx-bad">{{ r.LyDo }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- 7. PAGE 4: CHUYÊN MÔN & LMS (CM04: Học liệu số, CM08: Bài tập LMS, CM01: TKB) -->
+    <div v-if="page === 4" class="uc-kpi-ops__page">
+      <!-- Section 1: CM08 - Mức độ hoàn thành bài tập của học sinh trên LMS -->
+      <div class="uc-kpi-ops__visual">
+        <div class="uc-kpi-ops__vhead" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div>
+            <div class="uc-kpi-ops__vtitle">Mức Độ Hoàn Thành Bài Tập Của Học Sinh Trên LMS (CM08)</div>
+            <div class="uc-kpi-ops__vnote">Tỷ lệ hoàn thành toàn cấp: <b class="tx-good">{{ lmsOverallRate }}%</b> (Tổng {{ formatNumber(lmsTotalAssigned) }} lượt bài tập giao)</div>
+          </div>
+          <div class="uc-kpi-ops__view-switcher">
+            <button
+              type="button"
+              :class="['uc-kpi-ops__switcher-btn', { 'is-active': lmsViewMode === 'CHART' }]"
+              @click="lmsViewMode = 'CHART'"
+            >
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M0 0h3v16H0zm6 5h3v11H6zm6-3h3v14h-3z"/></svg>
+              Thẻ tiến độ
+            </button>
+            <button
+              type="button"
+              :class="['uc-kpi-ops__switcher-btn', { 'is-active': lmsViewMode === 'TABLE' }]"
+              @click="lmsViewMode = 'TABLE'"
+            >
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm1 2v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm1-3a1 1 0 0 0-1 1v1h14V2a1 1 0 0 0-1-1H2z"/></svg>
+              Bảng số liệu
+            </button>
+          </div>
+        </div>
+
+        <div v-if="!lmsAssignmentRows.length" class="text-caption text-grey p-3 text-center">
+          Chưa có dữ liệu bài tập LMS cho kỳ này (kỳ chốt sổ chưa có snapshot LMS; chuyển sang kỳ Live để lấy từ API).
+        </div>
+        <!-- Lưới Thẻ Tiến Độ Môn Học Trực Quan (Progress Grid) -->
+        <div v-else-if="lmsViewMode === 'CHART'" class="uc-kpi-ops__lms-cards-grid">
+          <div
+            v-for="r in lmsAssignmentRows"
+            :key="r.MonHocID"
+            class="uc-kpi-ops__lms-card"
+          >
+            <div class="uc-kpi-ops__lms-card-head">
+              <div class="uc-kpi-ops__lms-card-title">{{ r.TenMonHoc_HienThi }}</div>
+              <div :class="['uc-kpi-ops__lms-card-pct', r.CompletionRate_Assignments >= 80 ? 'tx-good' : 'tx-warn']">
+                {{ r.CompletionRate_Assignments }}%
+              </div>
+            </div>
+            <!-- Stacked Progress Bar: Đã chấm (Xanh lá) - Chờ chấm (Xanh dương) - Chưa làm (Xám) -->
+            <div class="uc-kpi-ops__lms-stacked-bar">
+              <div
+                class="uc-kpi-ops__lms-seg is-graded"
+                :style="{ width: ((r.Total_DaCham / (r.TotalAssigned || 1)) * 100) + '%' }"
+                :title="'Đã chấm: ' + formatNumber(r.Total_DaCham) + ' (' + r.CompletionRate_Graded + '%)'"
+              ></div>
+              <div
+                class="uc-kpi-ops__lms-seg is-submitted"
+                :style="{ width: (((r.Total_DaNop - r.Total_DaCham) / (r.TotalAssigned || 1)) * 100) + '%' }"
+                :title="'Đã nộp chờ chấm: ' + formatNumber(r.Total_DaNop - r.Total_DaCham)"
+              ></div>
+              <div
+                class="uc-kpi-ops__lms-seg is-pending"
+                :style="{ width: ((r.Total_ChuaLam / (r.TotalAssigned || 1)) * 100) + '%' }"
+                :title="'Chưa làm: ' + formatNumber(r.Total_ChuaLam)"
+              ></div>
+            </div>
+            <div class="uc-kpi-ops__lms-card-meta">
+              <div>Đã giao<b>{{ formatNumber(r.TotalAssigned) }}</b></div>
+              <div>Đã nộp<b class="tx-good">{{ formatNumber(r.Total_DaNop) }}</b></div>
+              <div>Chưa làm<b :class="r.Total_ChuaLam > 100 ? 'tx-warn' : ''">{{ formatNumber(r.Total_ChuaLam) }}</b></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bảng Số Liệu Truyền Thống -->
+        <div v-else class="uc-kpi-ops__tablewrap">
+          <table class="uc-kpi-ops__table">
+            <thead>
+              <tr>
+                <th class="ta-l">Môn học</th>
+                <th>Tổng bài tập đã tạo</th>
+                <th>Lượt HS được giao</th>
+                <th>Đã nộp bài</th>
+                <th>Đã chấm điểm</th>
+                <th>Chưa làm</th>
+                <th>Tỷ lệ hoàn thành (CM08)</th>
+                <th>Tỷ lệ đã chấm</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="r in lmsAssignmentRows" :key="r.MonHocID">
+                <td class="ta-l tx-strong">{{ r.TenMonHoc_HienThi }}</td>
+                <td>{{ r.TotalAssignments }} bài</td>
+                <td class="tx-strong">{{ formatNumber(r.TotalAssigned) }}</td>
+                <td>{{ formatNumber(r.Total_DaNop) }}</td>
+                <td class="tx-good">{{ formatNumber(r.Total_DaCham) }}</td>
+                <td class="tx-muted">{{ formatNumber(r.Total_ChuaLam) }}</td>
+                <td>
+                  <span class="uc-kpi-ops__btrack">
+                    <span :class="['uc-kpi-ops__bfill', r.CompletionRate_Assignments >= 80 ? 'is-good' : 'is-warn']" :style="{ width: r.CompletionRate_Assignments + '%' }"></span>
+                  </span>
+                  <b>{{ r.CompletionRate_Assignments }}%</b>
+                </td>
+                <td>{{ r.CompletionRate_Graded }}%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 2: CM04 - Mức độ ứng dụng Học liệu số của giáo viên -->
+      <div class="uc-kpi-ops__visual">
+        <div class="uc-kpi-ops__vhead">
+          <div class="uc-kpi-ops__vtitle">Mức Độ Ứng Dụng Học Liệu Số &amp; Năng Lực Số Của Giáo Viên (CM04 · spAPI_BaoCao_2_ThongKe_HocLieuSo_ByCapID)</div>
+          <div class="uc-kpi-ops__vnote">Tổng cộng: <b>{{ lmsHocLieuSummary.total }} bài giảng</b> · Đã số hóa nội dung: <b class="tx-good">{{ lmsHocLieuSummary.coNoiDung }} bài ({{ lmsHocLieuSummary.pct }}%)</b> · {{ lmsHocLieuSummary.totalFiles }} files đa phương tiện</div>
+        </div>
+        <div class="uc-kpi-ops__tablewrap">
+          <table class="uc-kpi-ops__table">
+            <thead>
+              <tr>
+                <th class="ta-l">Môn học</th>
+                <th>Khối</th>
+                <th>Tổng học liệu tạo</th>
+                <th>Học liệu đã có nội dung (video/slide)</th>
+                <th>Học liệu chưa có nội dung</th>
+                <th>Tổng tài nguyên số gắn kèm</th>
+                <th>Tỷ lệ số hóa học liệu (CM04)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="!lmsHocLieuRows.length"><td colspan="7" class="tx-muted" style="padding:16px;text-align:center;">Chưa có dữ liệu học liệu số cho kỳ này.</td></tr>
+              <tr v-for="(r, i) in lmsHocLieuRows.slice(0, 10)" :key="i">
+                <td class="ta-l tx-strong">{{ r.TenMonHoc_HienThi }}</td>
+                <td>Khối {{ r.KhoiID }}</td>
+                <td>{{ r.TongHocLieu }}</td>
+                <td class="tx-good tx-strong">{{ r.HocLieuCoNoiDung }}</td>
+                <td class="tx-muted">{{ r.HocLieuChuaCoNoiDung }}</td>
+                <td>{{ r.TongNoiDung }} files</td>
+                <td>
+                  <span class="uc-kpi-ops__btrack">
+                    <span class="uc-kpi-ops__bfill is-good" :style="{ width: (r.HocLieuCoNoiDung / (r.TongHocLieu || 1) * 100) + '%' }"></span>
+                  </span>
+                  <b>{{ ((r.HocLieuCoNoiDung / (r.TongHocLieu || 1)) * 100).toFixed(0) }}%</b>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 3: CM01 - Tiến độ thực hiện tiết dạy theo Thời khóa biểu -->
+      <div class="uc-kpi-ops__visual">
+        <div class="uc-kpi-ops__vhead">
+          <div class="uc-kpi-ops__vtitle">Tiến Độ Thực Hiện Tiết Dạy Phân Phối Chương Trình (CM01 · Calen)</div>
+          <div class="uc-kpi-ops__vnote">Thực dạy tuần khảo sát: Toán, Ngữ văn, KHTN, STEM</div>
+        </div>
+        <div class="uc-kpi-ops__tablewrap">
+          <table class="uc-kpi-ops__table">
+            <thead>
+              <tr>
+                <th class="ta-l">Lớp</th>
+                <th>Tổng tiết dạy</th>
+                <th>Toán</th>
+                <th>Ngữ văn</th>
+                <th>KHTN</th>
+                <th>STEM</th>
+                <th class="ta-l">Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="!teachingProgressRows.length"><td colspan="7" class="tx-muted" style="padding:16px;text-align:center;">Chưa có dữ liệu tiến độ tiết dạy cho kỳ này.</td></tr>
+              <tr v-for="r in teachingProgressRows" :key="r.TenLop">
+                <td class="ta-l tx-strong">{{ r.TenLop }}</td>
+                <td class="tx-strong">{{ r.TongTiet }} tiết</td>
+                <td>{{ r.Toan }}</td>
+                <td>{{ r.Van }}</td>
+                <td>{{ r.KHTN }}</td>
+                <td>{{ r.STEM }}</td>
+                <td class="ta-l"><span class="uc-kpi-ops__cell-tag is-good">Đúng tiến độ</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. PAGE 5: TÀI CHÍNH VẬN HÀNH (Nhóm 4: Chỉ tiêu 55 & 56) -->
+    <div v-if="page === 5" class="uc-kpi-ops__page">
+      <div class="uc-kpi-ops__bhead">
+        <div class="uc-kpi-ops__bhead-k">Chỉ tiêu Tài chính Vận hành (Nhóm 4 · Chỉ tiêu 55, 56) · {{ currentUnitTitle }}</div>
+        <div class="uc-kpi-ops__bhead-t">
+          Tỷ suất lợi nhuận gộp dịch vụ của {{ currentUnitTitle }} đạt <b>{{ computedFinanceData.grossMargin }}</b> (Mục tiêu <b>KPI 4: {{ getKpiTarget('TC55') || '50%' }}</b>). Doanh thu các Câu lạc bộ bổ trợ ngoài giờ đạt <b>{{ computedFinanceData.clbRev }}</b> với <b>{{ computedFinanceData.clbStudents }}</b> tham gia (Đóng góp mục tiêu <b>KPI 3.2.1: $1M</b>).
+        </div>
+        <div class="uc-kpi-ops__bhead-s">
+          Nguồn dữ liệu: Phòng Kế toán PM FTS · Phân hệ Thu phí Dịch vụ &amp; Quản lý Hoạt động ngoài giờ.
+        </div>
+      </div>
+
+      <!-- 4 Stats Cards Tài chính -->
+      <div class="uc-kpi-ops__bkpis">
+        <div class="uc-kpi-ops__bkpi is-good">
+          <div class="uc-kpi-ops__bkpi-h">
+            <span>TỶ SUẤT LN GỘP DỊCH VỤ (KPI 4)</span>
+            <b class="tx-good">MỤC TIÊU {{ getKpiTarget('TC55') || '50%' }}</b>
+          </div>
+          <div class="uc-kpi-ops__bkpi-m">
+            <div class="uc-kpi-ops__bkpi-v tx-good">{{ computedFinanceData.grossMargin }}</div>
+          </div>
+          <div class="uc-kpi-ops__bkpi-d">Bán trú {{ computedFinanceData.mealMargin }} · Xe bus {{ computedFinanceData.busMargin }} · Bán lẻ {{ computedFinanceData.retailMargin || "—" }}</div>
+        </div>
+        <div class="uc-kpi-ops__bkpi is-good">
+          <div class="uc-kpi-ops__bkpi-h">
+            <span>DOANH THU THUẦN (ƯỚC TÍNH)</span>
+            <b>HỌC KỲ 1</b>
+          </div>
+          <div class="uc-kpi-ops__bkpi-m">
+            <div class="uc-kpi-ops__bkpi-v">{{ computedFinanceData.rev }}</div>
+          </div>
+          <div class="uc-kpi-ops__bkpi-d">Lợi nhuận gộp ước tính đạt ~{{ computedFinanceData.grossMargin }} doanh thu</div>
+        </div>
+        <div class="uc-kpi-ops__bkpi is-good">
+          <div class="uc-kpi-ops__bkpi-h">
+            <span>DOANH THU CÁC CLB (KPI 3.2.1)</span>
+            <b class="tx-good">HỌC KỲ 1</b>
+          </div>
+          <div class="uc-kpi-ops__bkpi-m">
+            <div class="uc-kpi-ops__bkpi-v">{{ computedFinanceData.clbRev }}</div>
+          </div>
+          <div class="uc-kpi-ops__bkpi-d">Đóng góp tích lũy vào quỹ tái đầu tư cơ sở vật chất</div>
+        </div>
+        <div class="uc-kpi-ops__bkpi is-good">
+          <div class="uc-kpi-ops__bkpi-h">
+            <span>HỌC SINH THAM GIA CLB</span>
+            <b>{{ currentUnitTitle }}</b>
+          </div>
+          <div class="uc-kpi-ops__bkpi-m">
+            <div class="uc-kpi-ops__bkpi-v">{{ computedFinanceData.clbStudents }}</div>
+          </div>
+          <div class="uc-kpi-ops__bkpi-d">Tham gia CLB bổ trợ ngoài giờ (Toán tư duy, Robotics, Thể thao)</div>
+        </div>
+      </div>
+
+      <!-- 2 Bảng Tài chính chi tiết -->
+      <div class="uc-kpi-ops__bcols">
+        <!-- Bảng 1: Chỉ tiêu 55 - Tỷ suất LN gộp dịch vụ -->
+        <div class="uc-kpi-ops__visual">
+          <div class="uc-kpi-ops__vhead">
+            <div class="uc-kpi-ops__vtitle">Chỉ Tiêu 55: Tỷ Suất Lợi Nhuận Gộp Dịch Vụ (KPI 4 - Mục Tiêu {{ getKpiTarget('TC55') || '50%' }})</div>
+            <div class="uc-kpi-ops__vnote">Nguồn: Phòng Kế toán PM FTS</div>
+          </div>
+          <div class="uc-kpi-ops__tablewrap">
+            <table class="uc-kpi-ops__table">
+              <thead>
+                <tr>
+                  <th class="ta-l">Mảng hoạt động / Dịch vụ</th>
+                  <th>Doanh thu thuần</th>
+                  <th>Chi phí trực tiếp</th>
+                  <th>Lợi nhuận gộp</th>
+                  <th>Tỷ suất LN gộp (KPI 4)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="s in financeServices" :key="s.name">
+                  <td class="ta-l tx-strong">{{ s.name }}</td>
+                  <td>{{ s.revenue }}</td>
+                  <td>{{ s.cost }}</td>
+                  <td class="tx-strong">{{ s.grossProfit }}</td>
+                  <td class="tx-strong" :class="parseFloat(s.margin) >= 40 ? 'tx-good' : ''">{{ s.margin }}</td>
+                </tr>
+                <tr class="is-total">
+                  <td class="ta-l tx-strong">Tổng hòa hợp nhất</td>
+                  <td class="tx-strong">{{ financeSummaryTotalRevenue }}</td>
+                  <td class="tx-strong">{{ financeSummaryTotalCost }}</td>
+                  <td class="tx-good tx-strong">{{ financeSummaryTotalProfit }}</td>
+                  <td class="tx-good tx-strong">{{ financeSummaryTotalMargin }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Bảng 2: Chỉ tiêu 56 - Doanh thu CLB bổ trợ -->
+        <div class="uc-kpi-ops__visual">
+          <div class="uc-kpi-ops__vhead">
+            <div class="uc-kpi-ops__vtitle">Chỉ Tiêu 56: Doanh Thu Các CLB Bổ Trợ Ngoài Giờ (KPI 3.2.1)</div>
+            <div class="uc-kpi-ops__vnote">Mục tiêu HK1: {{ displayClubTarget }} (Đã đạt {{ totalClubRevenueText }} · {{ clubAchievedPct }}) · Đóng góp mục tiêu chiến lược 1 triệu USD tích lũy</div>
+          </div>
+          <div class="uc-kpi-ops__tablewrap">
+            <table class="uc-kpi-ops__table">
+              <thead>
+                <tr>
+                  <th class="ta-l">Tên Câu lạc bộ bổ trợ</th>
+                  <th>Số học sinh</th>
+                  <th>Đơn giá/kỳ</th>
+                  <th>Doanh thu HK1</th>
+                  <th>Tỷ trọng DT</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="c in financeClubs" :key="c.name">
+                  <td class="ta-l tx-strong">{{ c.name }}</td>
+                  <td class="tx-strong">{{ c.students }} HS</td>
+                  <td>{{ c.fee }}</td>
+                  <td class="tx-good tx-strong">{{ c.revenue }}</td>
+                  <td>{{ c.share }}</td>
+                </tr>
+                <tr class="is-total">
+                  <td class="ta-l tx-strong">Toàn trường ({{ financeClubs.length }} môn CLB)</td>
+                  <td class="tx-strong">{{ totalClubStudents }} HS</td>
+                  <td>—</td>
+                  <td class="tx-good tx-strong">{{ totalClubRevenueText }}</td>
+                  <td class="tx-good tx-strong">100% (Đạt {{ clubAchievedPct }}% KH Học Kỳ 1 · Tích lũy {{ clubMillionDollarAccumPct }}% Mục tiêu $1M)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. PAGE 6: VẬN HÀNH & AN TOÀN HỌC ĐƯỜNG, Y TẾ, ME (VH02, VH11) -->
+    <div v-if="page === 6" class="uc-kpi-ops__page">
+      <div class="uc-kpi-ops__bcols">
+        <div class="uc-kpi-ops__visual">
+          <div class="uc-kpi-ops__vhead">
+            <div class="uc-kpi-ops__vtitle">An Toàn Học Đường &amp; Y Tế Học Đường (VH02, VH11)</div>
+            <div class="uc-kpi-ops__vnote">{{ selectedPeriodText }}</div>
+          </div>
+          <div class="uc-kpi-ops__tablewrap">
+            <table class="uc-kpi-ops__table">
+              <tbody>
+                <tr>
+                  <td class="ta-l tx-strong">Sự cố ngộ độc thực phẩm bếp ăn</td>
+                  <td class="tx-good">{{ opsSafetyMe.FoodPoisoningCases != null ? opsSafetyMe.FoodPoisoningCases + ' vụ (Đạt KPI)' : '0 vụ (Đạt KPI)' }}</td>
+                </tr>
+                <tr>
+                  <td class="ta-l tx-strong">Sự cố tai nạn thương tích nghiêm trọng</td>
+                  <td class="tx-good">{{ opsSafetyMe.AccidentCases != null ? opsSafetyMe.AccidentCases + ' vụ (Đạt KPI)' : '0 vụ (Đạt KPI)' }}</td>
+                </tr>
+                <tr>
+                  <td class="ta-l tx-strong">Tỷ lệ học sinh ăn bán trú toàn trường</td>
+                  <td>{{ opsSafetyMe.BoardingRate != null ? opsSafetyMe.BoardingRate + '% (' + formatNumber(opsSafetyMe.BoardingStudents) + ' HS)' : '—' }}</td>
+                </tr>
+                <tr>
+                  <td class="ta-l tx-strong">Tỷ lệ phụ huynh cài đặt app ME School</td>
+                  <td class="tx-good">{{ opsSafetyMe.MeAppInstallRate != null ? opsSafetyMe.MeAppInstallRate + '% (' + formatNumber(opsSafetyMe.MeAppInstallParents) + ' PH)' : '—' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="uc-kpi-ops__visual">
+          <div class="uc-kpi-ops__vhead">
+            <div class="uc-kpi-ops__vtitle">Tương Tác Phụ Huynh Qua Kênh ME School (Live API)</div>
+            <div class="uc-kpi-ops__vnote">HoatDongTrangMe_PH_TuongTac</div>
+          </div>
+          <div class="uc-kpi-ops__tablewrap">
+            <table class="uc-kpi-ops__table">
+              <tbody>
+                <tr>
+                  <td class="ta-l tx-strong">Lượt tương tác tin tức / thông báo</td>
+                  <td class="tx-strong">{{ opsSafetyMe.NewsInteractions != null ? formatNumber(opsSafetyMe.NewsInteractions) + ' lượt / tháng' : '—' }}</td>
+                </tr>
+                <tr>
+                  <td class="ta-l tx-strong">Lượt điểm danh nhận diện khuôn mặt</td>
+                  <td class="tx-strong">{{ opsSafetyMe.FaceIdCheckins != null ? formatNumber(opsSafetyMe.FaceIdCheckins) + ' lượt' : '—' }}</td>
+                </tr>
+                <tr>
+                  <td class="ta-l tx-strong">Đánh giá độ hài lòng dịch vụ (VH06)</td>
+                  <td class="tx-good">{{ opsSafetyMe.SatisfactionRate != null ? opsSafetyMe.SatisfactionRate + '% Hài lòng' : '—' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9b. PAGE 7: PHỄU TUYỂN SINH & LEADS CRM (TS05, TS06) -->
+    <div v-if="page === 7" class="uc-kpi-ops__page">
+      <div class="uc-kpi-ops__bhead">
+        <div class="uc-kpi-ops__bhead-k">Chuyên môn Tuyển sinh &amp; Chăm sóc khách hàng (TVTS · CRM)</div>
+        <div class="uc-kpi-ops__bhead-t">
+          Lũy kế năm học 2026–2027 tiếp nhận <b>{{ computedCrmLeads }} Leads tiềm năng (TS05)</b>, chuyển đổi thành công <b>{{ computedCrmEnrolled }} học sinh nhập học</b>, tỷ lệ chuyển đổi trung bình đạt <b>{{ computedCrmConversionRate }}% (TS06)</b>. Kênh Người quen &amp; PH hiện hữu đạt tỷ lệ chốt cao nhất (&gt; 50%).
+        </div>
+        <div class="uc-kpi-ops__bhead-s">
+          Trích xuất từ Báo cáo Tracking Tuyển sinh 2026–2027 (Google Spreadsheet TVTS) · Cập nhật theo đơn vị và khối lớp.
+        </div>
+      </div>
+
+      <!-- 4 Stats Cards CRM -->
+      <div class="uc-kpi-ops__bkpis">
+        <div class="uc-kpi-ops__bkpi is-good">
+          <div class="uc-kpi-ops__bkpi-h">
+            <span>TỔNG LEADS TIẾP NHẬN (TS05)</span>
+            <b>{{ currentPeriodName.toUpperCase() }}: {{ computedCrmLeadsCurrentMonth }}</b>
+          </div>
+          <div class="uc-kpi-ops__bkpi-m">
+            <div class="uc-kpi-ops__bkpi-v">{{ computedCrmLeads }} <small>Leads</small></div>
+          </div>
+          <div class="uc-kpi-ops__bkpi-d">{{ crmMonthlySummaryText }}</div>
+        </div>
+        <div class="uc-kpi-ops__bkpi is-good">
+          <div class="uc-kpi-ops__bkpi-h">
+            <span>TỶ LỆ CHUYỂN ĐỔI (TS06)</span>
+            <b class="tx-good">ĐẠT {{ computedCrmConversionRate }}%</b>
+          </div>
+          <div class="uc-kpi-ops__bkpi-m">
+            <div class="uc-kpi-ops__bkpi-v tx-good">{{ computedCrmConversionRate }}%</div>
+          </div>
+          <div class="uc-kpi-ops__bkpi-d">{{ computedCrmUnitRatesText }}</div>
+        </div>
+        <div class="uc-kpi-ops__bkpi is-good">
+          <div class="uc-kpi-ops__bkpi-h">
+            <span>NHẬP HỌC THỰC TẾ</span>
+            <b>{{ computedCrmEnrolled }} HỌC SINH</b>
+          </div>
+          <div class="uc-kpi-ops__bkpi-m">
+            <div class="uc-kpi-ops__bkpi-v">{{ computedCrmEnrolled }} <small>HS</small></div>
+          </div>
+          <div class="uc-kpi-ops__bkpi-d">Đã hoàn tất đóng phí tuyển mới và nộp hồ sơ</div>
+        </div>
+        <div class="uc-kpi-ops__bkpi is-warn" @click="openDrawer('KITTY_LIST')">
+          <div class="uc-kpi-ops__bkpi-h">
+            <span>PIPELINE KITTY (HẸN HK2)</span>
+            <b class="tx-warn">{{ crmKittyList.length }} HỒ SƠ</b>
+          </div>
+          <div class="uc-kpi-ops__bkpi-m">
+            <div class="uc-kpi-ops__bkpi-v">{{ crmKittyList.length }} <small>Hồ sơ</small></div>
+          </div>
+          <div class="uc-kpi-ops__bkpi-d">Bé chờ đủ tuổi HK2 (Tab Kitty GID 1481169716)</div>
+          <div class="uc-kpi-ops__bkpi-i">Xem chi tiết {{ crmKittyList.length }} hồ sơ ›</div>
+        </div>
+      </div>
+
+      <!-- Funnel Progress & Channel Matrix -->
+      <div class="uc-kpi-ops__bcols">
+        <div class="uc-kpi-ops__visual">
+          <div class="uc-kpi-ops__vhead">
+            <div class="uc-kpi-ops__vtitle">Báo Cáo Diễn Biến Leads &amp; Nhập Học 3 Tháng (Live Tracking)</div>
+            <div class="uc-kpi-ops__vnote">Sheet BÁO CÁO (GID 1313591411)</div>
+          </div>
+          <div class="uc-kpi-ops__tablewrap">
+            <table class="uc-kpi-ops__table">
+              <thead>
+                <tr>
+                  <th class="ta-l">Kỳ báo cáo</th>
+                  <th>Leads PTLC</th>
+                  <th>Leads MNBH</th>
+                  <th>Leads MNLK</th>
+                  <th>Tổng Leads (TS05)</th>
+                  <th>Nhập học</th>
+                  <th>Chuyển đổi (TS06)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="m in crmMonthlySummary" :key="m.month">
+                  <td class="ta-l tx-strong">{{ m.month }}</td>
+                  <td>{{ m.ptlcLeads }}</td>
+                  <td>{{ m.mnbhLeads }}</td>
+                  <td>{{ m.mnlkLeads }}</td>
+                  <td class="tx-strong">{{ m.totalLeads }}</td>
+                  <td class="tx-good tx-strong">{{ m.totalEnrolled }} HS</td>
+                  <td class="tx-strong">{{ m.rate }}</td>
+                </tr>
+                <tr class="is-total">
+                  <td class="ta-l tx-strong">Lũy kế {{ crmMonthlySummary.length }} tháng</td>
+                  <td class="tx-strong">{{ crmTotalPtlcLeads }}</td>
+                  <td class="tx-strong">{{ crmTotalMnbhLeads }}</td>
+                  <td class="tx-strong">{{ crmTotalMnlkLeads }}</td>
+                  <td class="tx-strong tx-good">{{ crmTotalLeadsSum }}</td>
+                  <td class="tx-good tx-strong">{{ crmTotalEnrolledSum }} HS</td>
+                  <td class="tx-good tx-strong">{{ crmOverallConversionRate }}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="uc-kpi-ops__visual">
+          <div class="uc-kpi-ops__vhead">
+            <div class="uc-kpi-ops__vtitle">Hiệu Quả Từng Kênh Tiếp Cận (Kênh Chuyển Đổi Cao Nhất)</div>
+            <div class="uc-kpi-ops__vnote">Cơ cấu nguồn &amp; Tỷ lệ chốt</div>
+          </div>
+          <div class="uc-kpi-ops__tablewrap">
+            <table class="uc-kpi-ops__table">
+              <thead>
+                <tr>
+                  <th class="ta-l">Kênh tiếp cận</th>
+                  <th>Số Leads</th>
+                  <th>Tỷ trọng</th>
+                  <th>Đã chốt</th>
+                  <th>Chuyển đổi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="c in crmChannelStats" :key="c.channel">
+                  <td class="ta-l tx-strong">{{ c.channel }}</td>
+                  <td>{{ c.leads }}</td>
+                  <td>{{ c.pct }}</td>
+                  <td class="tx-good tx-strong">{{ c.enrolled }} HS</td>
+                  <td :class="parseFloat(c.convRate) > 20 ? 'tx-good tx-strong' : ''">{{ c.convRate }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pipeline Kitty & Top Barriers -->
+      <div class="uc-kpi-ops__bcols">
+        <div class="uc-kpi-ops__visual">
+          <div class="uc-kpi-ops__vhead">
+            <div class="uc-kpi-ops__vtitle">Pipeline Nuôi Dưỡng Khách Hàng Tiềm Năng Chờ HK2 (Tab Kitty)</div>
+            <div class="uc-kpi-ops__vnote">Google Sheet GID 1481169716 ({{ crmKittyList.length }} phụ huynh)</div>
+          </div>
+          <div class="uc-kpi-ops__tablewrap">
+            <table class="uc-kpi-ops__table">
+              <thead>
+                <tr>
+                  <th class="ta-l">Phụ huynh</th>
+                  <th class="ta-l">Bé</th>
+                  <th class="ta-l">Trạng thái</th>
+                  <th class="ta-l">Lịch hẹn chăm sóc</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="r in crmKittyList.slice(0, 6)" :key="r.stt">
+                  <td class="ta-l tx-strong">{{ r.tenPH }}</td>
+                  <td class="ta-l">{{ r.tenHS }}</td>
+                  <td class="ta-l" :class="r.tinhTrang.includes('Nhập học') ? 'tx-good' : 'tx-warn'">{{ r.tinhTrang }}</td>
+                  <td class="ta-l tx-strong">{{ r.hen }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding: 10px; text-align: center;">
+            <button type="button" class="uc-kpi-ops__simbtn" @click="openDrawer('KITTY_LIST')">
+              Xem toàn bộ {{ crmKittyList.length }} hồ sơ nuôi dưỡng Kitty ›
+            </button>
+          </div>
+        </div>
+
+        <div class="uc-kpi-ops__visual">
+          <div class="uc-kpi-ops__vhead">
+            <div class="uc-kpi-ops__vtitle">Phân Tích Rào Cản Tuyển Sinh &amp; Lý Do Chưa Chuyển Đổi</div>
+            <div class="uc-kpi-ops__vnote">Khảo sát {{ computedCrmDropTotal }} trường hợp drop-off</div>
+          </div>
+          <div class="uc-kpi-ops__tablewrap">
+            <table class="uc-kpi-ops__table">
+              <thead>
+                <tr>
+                  <th class="ta-l">Rào cản / Lý do chính</th>
+                  <th>Số vụ</th>
+                  <th>Tỷ lệ</th>
+                  <th class="ta-l">Giải pháp hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="r in crmDropReasons" :key="r.reason">
+                  <td class="ta-l tx-strong">{{ r.reason }}</td>
+                  <td class="tx-bad tx-strong">{{ r.count }}</td>
+                  <td>{{ r.pct }}</td>
+                  <td class="ta-l">{{ r.solution }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. Sticky Multi-Tier Bottom Tab Navigation -->
+    <div class="uc-kpi-ops__tabs">
+      <div class="uc-kpi-ops__tabrow">
+        <div class="uc-kpi-ops__tabgrp">
+          <span class="uc-kpi-ops__tabgrp-l">Điều hành HĐQT</span>
+          <button type="button" :class="{ 'is-on': page === 0 && executiveTab === 'COMMAND' }" @click="page = 0; executiveTab = 'COMMAND'">0. Tổng quan</button>
+          <button type="button" :class="{ 'is-on': page === 0 && executiveTab === 'RISK' }" @click="page = 0; executiveTab = 'RISK'">1. Radar Rủi ro</button>
+          <button type="button" :class="{ 'is-on': page === 0 && executiveTab === 'AUDIT' }" @click="page = 0; executiveTab = 'AUDIT'">2. Đối soát &amp; Kiểm toán</button>
+          <button type="button" :class="{ 'is-on': page === 0 && executiveTab === 'CAUSAL' }" @click="page = 0; executiveTab = 'CAUSAL'">3. Chuỗi Nhân quả</button>
+          <button type="button" :class="{ 'is-on': page === 0 && executiveTab === 'SIMULATOR' }" @click="page = 0; executiveTab = 'SIMULATOR'">4. Mô phỏng What-If</button>
+        </div>
+        <div class="uc-kpi-ops__tabgrp">
+          <span class="uc-kpi-ops__tabgrp-l">Chi tiết Phân hệ</span>
+          <button type="button" :class="{ 'is-on': page === 1 }" @click="page = 1">Sĩ số (1–3)</button>
+          <button type="button" :class="{ 'is-on': page === 7 }" @click="page = 7">TVTS &amp; CRM (5, 6)</button>
+          <button type="button" :class="{ 'is-on': page === 2 }" @click="page = 2">Rút học (4)</button>
+          <button type="button" :class="{ 'is-on': page === 4 }" @click="page = 4">Chuyên môn LMS</button>
+          <button type="button" :class="{ 'is-on': page === 6 }" @click="page = 6">Dịch vụ &amp; Y tế</button>
+          <button type="button" :class="{ 'is-on': page === 5 }" @click="page = 5">Tài chính CLB</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. Slide-over Drill-down Drawer -->
+    <div v-if="drawer.visible" class="uc-kpi-ops__veil" @click="closeDrawer()"></div>
+    <div v-if="drawer.visible" class="uc-kpi-ops__drawer">
+      <div class="uc-kpi-ops__dr-head">
+        <div>
+          <div class="uc-kpi-ops__dr-kicker">Chi tiết phân tích điều hành</div>
+          <div class="uc-kpi-ops__dr-title">{{ drawer.title }}</div>
+        </div>
+        <button type="button" class="uc-kpi-ops__dr-x" @click="closeDrawer()">&times;</button>
+      </div>
+      <div class="uc-kpi-ops__dr-body">
+        <div v-if="drawer.type === 'WITHDRAW_LIST'">
+          <!-- Phân tích Tác động Nhân quả dành cho HĐQT -->
+          <div class="uc-kpi-ops__bkpi-causal is-bad mb-3" style="padding:12px;font-size:12px;">
+            <div class="causal-pill" style="font-size:12px;">
+              Phân Tích Chuỗi Tác Động Điều Hành: Xe Bus &rarr; Rút Học &rarr; Thất Thu Tài Chính
+            </div>
+            <div class="causal-desc" style="font-size:12px;margin:6px 0;">
+              <b>{{ displayReasonFar }}/{{ displayWithdrawCount }} học sinh</b> ({{ displayReasonFarPct }}% trong kỳ {{ currentPeriodName }}) rút học do khoảng cách địa lý và tuyến đưa đón (Lũy kế chuyển đi toàn năm học: {{ displayOutflowYearToDate }} HS). Thiệt hại tài chính trực tiếp: <b>{{ displayWithdrawFinancialLoss }}</b>.
+            </div>
+            <div class="d-flex align-center justify-space-between mt-2">
+              <span class="text-xs text-muted">Đề xuất BĐH: Mở tuyến bus chuyên biệt để bảo toàn học sinh và doanh thu</span>
+              <button
+                type="button"
+                class="uc-kpi-ops__simbtn is-solid"
+                style="padding:4px 10px;font-size:11px;"
+                @click="openCausalModal(currentUnit, 'RUT_HOC')"
+              >Mở Mô Hình Vùng Tác Động (What-If) ↗</button>
+            </div>
+          </div>
+
+          <div class="uc-kpi-ops__visual">
+            <div class="uc-kpi-ops__vhead">
+              <div class="uc-kpi-ops__vtitle">Danh sách {{ withdrawRecords.length || displayOutflowYearToDate }} học sinh chuyển đi lũy kế năm học (Live Data)</div>
+            </div>
+            <div class="uc-kpi-ops__tablewrap">
+              <table class="uc-kpi-ops__table">
+                <thead>
+                  <tr>
+                    <th class="ta-l">Họ tên</th>
+                    <th>Lớp</th>
+                    <th class="ta-l">Trường đến</th>
+                    <th class="ta-l">Lý do</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(r, i) in withdrawRecords" :key="i">
+                    <td class="ta-l tx-strong">{{ r.HoTen }}</td>
+                    <td>{{ r.LopDi || '—' }}</td>
+                    <td class="ta-l">{{ r.TruongDen || '—' }}</td>
+                    <td class="ta-l tx-bad">{{ r.LyDo }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="drawer.type === 'STUDENT_LIST'">
+          <!-- Phân tích Tác động Nhân quả dành cho HĐQT -->
+          <div class="uc-kpi-ops__bkpi-causal is-good mb-3" style="padding:12px;font-size:12px;">
+            <div class="causal-pill" style="font-size:12px;">
+              Phân Tích Chuỗi Tác Động Điều Hành: Quy Mô Sĩ Số &rarr; Lợi Nhuận Gộp &rarr; Điểm Hòa Vốn
+            </div>
+            <div class="causal-desc" style="font-size:12px;margin:6px 0;">
+              Lũy kế quy mô đạt <b>{{ formatNumber(displayStudents) }} HS</b> (Đạt {{ displayCapacityPct }}% kế hoạch). Cơ sở Mầm non Long Khánh đang ở vùng công suất mỏng ({{ ((133/160)*100).toFixed(0) }}%), cần ưu tiên dồn leads TVTS nhóm 18–24 tháng.
+            </div>
+            <div class="d-flex align-center justify-space-between mt-2">
+              <span class="text-xs text-muted">Phụ trách: Ban Giám hiệu Long Khánh &amp; Ban TVTS</span>
+              <button
+                type="button"
+                class="uc-kpi-ops__simbtn is-solid"
+                style="padding:4px 10px;font-size:11px;"
+                @click="openCausalModal(currentUnit, 'TUYEN_THEM')"
+              >Mở Mô Hình Vùng Tác Động Tuyển Thêm ↗</button>
+            </div>
+          </div>
+
+          <div class="uc-kpi-ops__visual">
+            <div class="uc-kpi-ops__vhead">
+              <div class="uc-kpi-ops__vtitle">Sĩ số theo khối lớp (Live Data)</div>
+            </div>
+            <div class="uc-kpi-ops__tablewrap">
+              <table class="uc-kpi-ops__table">
+                <thead>
+                  <tr>
+                    <th class="ta-l">Khối Lớp</th>
+                    <th>Học sinh</th>
+                    <th>Nam</th>
+                    <th>Nữ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="r in currentGradeRows" :key="r.Ten">
+                    <td class="ta-l tx-strong">{{ r.Ten }}</td>
+                    <td class="tx-strong">{{ formatNumber(r.SLHocSinh) }}</td>
+                    <td>{{ formatNumber(r.SL_HSNam) }}</td>
+                    <td>{{ formatNumber(r.SL_HSNu) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="drawer.type === 'FINANCE_DETAIL'">
+          <!-- Phân tích Tác động Nhân quả dành cho HĐQT -->
+          <div class="uc-kpi-ops__bkpi-causal is-good mb-3" style="padding:12px;font-size:12px;">
+            <div class="causal-pill" style="font-size:12px;">
+              Phân Tích Chuỗi Tác Động Điều Hành: Lợi Nhuận Dịch Vụ &rarr; Quỹ Tái Đầu Tư CSVC
+            </div>
+            <div class="causal-desc" style="font-size:12px;margin:6px 0;">
+              Dòng tiền lợi nhuận gộp từ CLB (<b>{{ computedFinanceData.clbRev }}</b>) và Dịch vụ bán trú (<b>{{ computedFinanceData.grossMargin }}</b>) đóng góp quỹ tự chủ nâng cấp điều hòa khối Tiểu học và sân bãi thể thao mà không gây áp lực tăng học phí.
+            </div>
+            <div class="d-flex align-center justify-space-between mt-2">
+              <span class="text-xs text-muted">Phụ trách: Phòng Kế toán &amp; Ban Quản trị CSVC</span>
+              <button
+                type="button"
+                class="uc-kpi-ops__simbtn"
+                style="padding:4px 10px;font-size:11px;"
+                @click="page = 5; closeDrawer()"
+              >Xem Phân Tích Tài Chính Chi Tiết ›</button>
+            </div>
+          </div>
+
+          <div class="uc-kpi-ops__visual">
+            <div class="uc-kpi-ops__vhead">
+              <div class="uc-kpi-ops__vtitle">Chi tiết cơ cấu Lợi nhuận gộp Dịch vụ (KPI 4: Mục tiêu {{ getKpiTarget('TC55') || '50%' }})</div>
+            </div>
+            <div class="uc-kpi-ops__tablewrap">
+              <table class="uc-kpi-ops__table">
+                <thead>
+                  <tr>
+                    <th class="ta-l">Mảng Dịch vụ</th>
+                    <th>Doanh thu</th>
+                    <th>Chi phí trực tiếp</th>
+                    <th>Lợi nhuận gộp</th>
+                    <th>Tỷ suất LN (KPI 4)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="s in financeServices" :key="s.name">
+                    <td class="ta-l tx-strong">{{ s.name }}</td>
+                    <td>{{ s.revenue }}</td>
+                    <td>{{ s.cost }}</td>
+                    <td class="tx-good tx-strong">{{ s.grossProfit }}</td>
+                    <td class="tx-good tx-strong">{{ s.margin }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="drawer.type === 'KITTY_LIST'">
+          <div class="uc-kpi-ops__visual">
+            <div class="uc-kpi-ops__vhead">
+              <div class="uc-kpi-ops__vtitle">Pipeline Nuôi Dưỡng Khách Hàng Tiềm Năng Chờ HK2 (Tab Kitty)</div>
+              <div class="uc-kpi-ops__vnote">Google Sheet GID 1481169716 · {{ crmKittyList.length }} hồ sơ chờ nhập học</div>
+            </div>
+            <div class="uc-kpi-ops__tablewrap">
+              <table class="uc-kpi-ops__table">
+                <thead>
+                  <tr>
+                    <th>STT</th>
+                    <th class="ta-l">Phụ huynh</th>
+                    <th class="ta-l">Bé</th>
+                    <th class="ta-l">Tình trạng</th>
+                    <th class="ta-l">Lịch hẹn chăm sóc</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="r in crmKittyList" :key="r.stt">
+                    <td>{{ r.stt }}</td>
+                    <td class="ta-l tx-strong">{{ r.tenPH }}</td>
+                    <td class="ta-l">{{ r.tenHS }}</td>
+                    <td class="ta-l" :class="r.tinhTrang.includes('Nhập học') ? 'tx-good' : 'tx-warn'">{{ r.tinhTrang }}</td>
+                    <td class="ta-l tx-strong">{{ r.hen }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div v-if="drawer.type === 'GOLIVE_SPECS'">
+          <div class="uc-kpi-ops__visual">
+            <div class="uc-kpi-ops__vhead">
+              <div class="uc-kpi-ops__vtitle">Đặc Tả Kỹ Thuật API Golive Các Hệ Thống Nguồn (Theo Quy Định Docs)</div>
+              <div class="uc-kpi-ops__vnote">
+                Danh mục 6 nguồn dữ liệu theo tài liệu Phương án xây dựng Dashboard và chỉ đạo BĐH:
+              </div>
+            </div>
+
+            <!-- Filter chips for specs -->
+            <div class="uc-kpi-ops__seg mb-3">
+              <button
+                type="button"
+                :class="{ 'is-on': selectedSpecCode === null }"
+                @click="selectedSpecCode = null"
+              >Tất cả hệ thống ({{ goliveSpecsList.length }})</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedSpecCode === 'SPEC_BASICDATA' }"
+                @click="selectedSpecCode = 'SPEC_BASICDATA'"
+              >basicdata.lhbs.vn</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedSpecCode === 'SPEC_HOCPHI' }"
+                @click="selectedSpecCode = 'SPEC_HOCPHI'"
+              >hocphi.lhbs.vn</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedSpecCode === 'SPEC_YTE' }"
+                @click="selectedSpecCode = 'SPEC_YTE'"
+              >yte.lhbs.vn</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedSpecCode === 'SPEC_QA' }"
+                @click="selectedSpecCode = 'SPEC_QA'"
+              >qa.lhbs.vn</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedSpecCode === 'SPEC_LMS' }"
+                @click="selectedSpecCode = 'SPEC_LMS'"
+              >lms.lhbs.vn</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedSpecCode === 'SPEC_EXCEL_INTERNAL' }"
+                @click="selectedSpecCode = 'SPEC_EXCEL_INTERNAL'"
+              >Excel nội bộ</button>
+            </div>
+
+            <div class="uc-kpi-ops__specs-list">
+              <div v-for="spec in computedDisplaySpecs" :key="spec.SpecCode" class="uc-kpi-ops__spec-item">
+                <div class="uc-kpi-ops__spec-h">
+                  <div class="uc-kpi-ops__spec-title">
+                    <span>{{ spec.SourceSystem }}</span>
+                    <a
+                      v-if="extractUrl(spec.SourceSystem)"
+                      :href="extractUrl(spec.SourceSystem)"
+                      target="_blank"
+                      class="uc-kpi-ops__simbtn ml-2"
+                      style="display:inline-block;padding:2px 8px;font-size:11px;"
+                    >
+                      Mở link hệ thống ↗
+                    </a>
+                  </div>
+                  <span class="uc-kpi-ops__spec-badge">{{ spec.SpecCode }}</span>
+                </div>
+                <div class="uc-kpi-ops__spec-meta">
+                  <b>Phân hệ / Nhóm KPI:</b> {{ spec.KpiGroup }} | <b>Tần suất đồng bộ:</b> {{ spec.SyncSchedule }}
+                </div>
+                <div class="uc-kpi-ops__spec-ep">
+                  <b>{{ spec.HttpMethod }}</b> {{ spec.ApiEndpoint }}
+                </div>
+                <div class="uc-kpi-ops__spec-lbl">Cấu trúc Request JSON mẫu:</div>
+                <div class="uc-kpi-ops__spec-code">{{ spec.RequestSchema }}</div>
+                <div class="uc-kpi-ops__spec-lbl">Cấu trúc Response JSON chuẩn:</div>
+                <div class="uc-kpi-ops__spec-code">{{ spec.ResponseSchema }}</div>
+                <div class="uc-kpi-ops__spec-reqs">
+                  <b>Điều kiện tiên quyết Golive:</b> {{ spec.GolivePrerequisites }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 11e. Causal Engine Configuration Drawer -->
+        <div v-if="drawer.type === 'CAUSAL_CONFIG'">
+          <div class="uc-kpi-ops__visual">
+            <div class="uc-kpi-ops__vhead">
+              <div class="uc-kpi-ops__vtitle">Cấu hình Tham số Giả định &amp; Quy tắc Nhân quả (CSDL eSign)</div>
+              <div class="uc-kpi-ops__vnote">
+                Bảng cấu hình động lưu trữ tại <code>tblKPI_CausalAssumptions</code> &amp; <code>tblKPI_CausalRules</code> trên server eSignature.
+              </div>
+            </div>
+
+            <!-- Bảng tham số giả định 5 đơn vị -->
+            <div class="uc-kpi-ops__tablewrap mb-3">
+              <table class="uc-kpi-ops__table">
+                <thead>
+                  <tr>
+                    <th class="ta-l">Đơn vị</th>
+                    <th>Chỉ tiêu (KH)</th>
+                    <th>Sĩ số {{ currentPeriodShortName }}</th>
+                    <th>Học phí (tr/năm)</th>
+                    <th>Biên LN (%)</th>
+                    <th>Năm còn lại</th>
+                    <th>Leads/tháng</th>
+                    <th>Chuyển đổi (%)</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="u in (causalAssumptionsList.length ? causalAssumptionsList : defaultAssumptions)" :key="u.UnitCode">
+                    <td class="ta-l tx-strong">{{ u.UnitName }}</td>
+                    <td><input type="number" v-model.number="u.PlannedCapacity" class="uc-kpi-ops__input-sm" style="width:70px;" /></td>
+                    <td><input type="number" v-model.number="u.CurrentEnrollment" class="uc-kpi-ops__input-sm" style="width:70px;" /></td>
+                    <td><input type="number" step="0.1" v-model.number="u.AnnualTuitionMillion" class="uc-kpi-ops__input-sm" style="width:70px;" /></td>
+                    <td><input type="number" step="0.01" v-model.number="u.GrossMarginPct" class="uc-kpi-ops__input-sm" style="width:60px;" /></td>
+                    <td><input type="number" step="0.1" v-model.number="u.RemainingYearsInLevel" class="uc-kpi-ops__input-sm" style="width:60px;" /></td>
+                    <td><input type="number" v-model.number="u.MonthlyLeads" class="uc-kpi-ops__input-sm" style="width:70px;" /></td>
+                    <td><input type="number" step="0.001" v-model.number="u.ConversionRate" class="uc-kpi-ops__input-sm" style="width:70px;" /></td>
+                    <td>
+                      <button
+                        type="button"
+                        class="uc-kpi-ops__simbtn is-solid"
+                        @click="saveCausalAssumption(u)"
+                        title="Lưu xuống CSDL eSign"
+                      >Lưu CSDL</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Danh mục quy tắc IF/ELSE -->
+            <div class="uc-kpi-ops__vhead mt-3">
+              <div class="uc-kpi-ops__vtitle">Danh mục Luật Đánh giá IF / ELSE (tblKPI_CausalRules)</div>
+            </div>
+            <div class="uc-kpi-ops__tablewrap">
+              <table class="uc-kpi-ops__table">
+                <thead>
+                  <tr>
+                    <th class="ta-l">Mã Luật</th>
+                    <th class="ta-l">Tên Quy tắc</th>
+                    <th class="ta-l">Điều kiện (IF)</th>
+                    <th>Mức độ</th>
+                    <th class="ta-l">Hệ quả (THEN)</th>
+                    <th>Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="r in (causalRulesList.length ? causalRulesList : defaultRules)" :key="r.RuleCode">
+                    <td class="ta-l tx-strong">{{ r.RuleCode }}</td>
+                    <td class="ta-l">{{ r.RuleName }}</td>
+                    <td class="ta-l font-mono text-xs">{{ r.ConditionExpr }}</td>
+                    <td>
+                      <span :class="['uc-kpi-ops__tag', r.Severity === 'BAD' ? 'is-bad' : 'is-warn']">{{ r.Severity }}</span>
+                    </td>
+                    <td class="ta-l">{{ r.OutcomeSummary }}</td>
+                    <td><span class="uc-kpi-ops__pill is-live">Hoạt động</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 11f. Operational Fact Store Browser (100% Real Fact Store) -->
+        <div v-if="drawer.type === 'OPERATIONAL_FACTS'">
+          <div class="uc-kpi-ops__visual">
+            <div class="uc-kpi-ops__vhead">
+              <div class="uc-kpi-ops__vtitle">Trích Xuất 100% Dữ Liệu Gốc từ Fact Store (tblKPI_OperationalFacts)</div>
+              <div class="uc-kpi-ops__vnote">
+                Dữ liệu định danh chi tiết từng giao dịch, sự vụ, học sinh, nhân viên chốt theo kỳ {{ currentPeriodName }}
+              </div>
+            </div>
+
+            <!-- Domain filter selector -->
+            <div class="uc-kpi-ops__seg mb-3">
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'LEAVE' }"
+                @click="fetchOperationalFacts('LEAVE')"
+              >{{ getFactDomainButtonLabel('LEAVE', 'Nghỉ phép') }}</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'HEALTH' }"
+                @click="fetchOperationalFacts('HEALTH')"
+              >{{ getFactDomainButtonLabel('HEALTH', 'Y tế') }}</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'MAINTENANCE' }"
+                @click="fetchOperationalFacts('MAINTENANCE')"
+              >{{ getFactDomainButtonLabel('MAINTENANCE', 'Bảo trì CSVC') }}</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'CLUB' }"
+                @click="fetchOperationalFacts('CLUB')"
+              >{{ getFactDomainButtonLabel('CLUB', 'Câu lạc bộ') }}</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'HR_TURNOVER' }"
+                @click="fetchOperationalFacts('HR_TURNOVER')"
+              >{{ getFactDomainButtonLabel('HR_TURNOVER', 'Biến động NV') }}</button>
+              <button
+                type="button"
+                :class="{ 'is-on': selectedFactDomain === 'TEACHING' }"
+                @click="fetchOperationalFacts('TEACHING')"
+              >{{ getFactDomainButtonLabel('TEACHING', 'Tiến độ dạy') }}</button>
+            </div>
+
+            <!-- Thanh Đối Soát Tổng Thể (Reconciliation Header Strip) -->
+            <div class="uc-kpi-ops__reconcile-strip" :class="'is-' + reconciliationSummary.status.toLowerCase()">
+              <div class="uc-kpi-ops__reconcile-col">
+                <div class="uc-kpi-ops__reconcile-lbl">1. Chỉ số KPI Báo Cáo</div>
+                <div class="uc-kpi-ops__reconcile-val">{{ reconciliationSummary.kpiReported }}</div>
+                <div class="uc-kpi-ops__reconcile-sub">{{ reconciliationSummary.kpiNote }}</div>
+              </div>
+
+              <div class="uc-kpi-ops__reconcile-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </div>
+
+              <div class="uc-kpi-ops__reconcile-col">
+                <div class="uc-kpi-ops__reconcile-lbl">2. Tổng Gộp Fact Store Gốc</div>
+                <div class="uc-kpi-ops__reconcile-val">{{ reconciliationSummary.factMetric }}</div>
+                <div class="uc-kpi-ops__reconcile-sub">{{ reconciliationSummary.factCount }} giao dịch nguyên tử</div>
+              </div>
+
+              <div class="uc-kpi-ops__reconcile-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              </div>
+
+              <div class="uc-kpi-ops__reconcile-col is-verdict">
+                <div class="uc-kpi-ops__reconcile-lbl">3. Kết Luận Kiểm Toán</div>
+                <div class="uc-kpi-ops__reconcile-status">
+                  <span class="status-dot"></span>
+                  <b>{{ reconciliationSummary.statusText }}</b>
+                </div>
+                <div class="uc-kpi-ops__reconcile-finding">
+                  {{ reconciliationSummary.auditFinding }} · Trách nhiệm: <b>{{ reconciliationSummary.responsibleRole }}</b>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bộ Lọc Kiểm Toán Nhanh (Smart Audit Filter Bar) -->
+            <div class="uc-kpi-ops__audit-filter-bar">
+              <div class="uc-kpi-ops__audit-filter-label">Bộ lọc kiểm toán:</div>
+              <div class="uc-kpi-ops__audit-chips">
+                <button
+                  type="button"
+                  :class="['uc-kpi-ops__audit-chip', { 'is-active': factAuditFilter === 'ALL' }]"
+                  @click="factAuditFilter = 'ALL'"
+                >
+                  Tất cả ({{ operationalFactsList.length }})
+                </button>
+                <button
+                  type="button"
+                  :class="['uc-kpi-ops__audit-chip is-pending', { 'is-active': factAuditFilter === 'PENDING' }]"
+                  @click="factAuditFilter = 'PENDING'"
+                >
+                  ⚠️ Tồn đọng / Chưa xử lý (Pending)
+                </button>
+                <button
+                  type="button"
+                  :class="['uc-kpi-ops__audit-chip is-anomaly', { 'is-active': factAuditFilter === 'ANOMALY' }]"
+                  @click="factAuditFilter = 'ANOMALY'"
+                >
+                  🔍 Trọng điểm rủi ro (Cúm A / Máy lạnh / Bếp)
+                </button>
+              </div>
+            </div>
+
+            <div v-if="isFactsLoading" style="padding:20px;text-align:center;color:#64748b;">
+              Đang tải dữ liệu từ CSDL eSign...
+            </div>
+
+            <div v-else class="uc-kpi-ops__tablewrap">
+              <table class="uc-kpi-ops__table">
+                <thead>
+                  <tr>
+                    <th style="width:100px;">Ngày</th>
+                    <th class="ta-l" style="width:160px;">Mã / Tên</th>
+                    <th class="ta-l" style="width:140px;">Phân loại</th>
+                    <th class="ta-l">Chi tiết / Nội dung</th>
+                    <th style="width:90px;">Định lượng</th>
+                    <th style="width:90px;">Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="f in filteredOperationalFactsList" :key="f.FactID">
+                    <td>{{ f.OccurredDate || '—' }}</td>
+                    <td class="ta-l">
+                      <b>{{ f.EntityName || f.EntityCode }}</b>
+                      <small v-if="f.EntityCode" style="display:block;font-size:10px;color:#64748b;">{{ f.EntityCode }} · {{ f.ScopeID }}</small>
+                    </td>
+                    <td class="ta-l">
+                      <span class="font-weight-bold" style="color:var(--accent2);">{{ f.Dim1 || '—' }}</span>
+                      <small v-if="f.Dim2" style="display:block;font-size:10.5px;color:#64748b;">{{ f.Dim2 }}</small>
+                    </td>
+                    <td class="ta-l" style="font-size:11.5px;color:#334155;max-width:320px;">
+                      {{ f.Dim3 || f.Dim4 || '—' }}
+                    </td>
+                    <td class="tx-strong">
+                      {{ f.MetricCount != null ? f.MetricCount : (f.MetricAmount != null ? formatNumber(f.MetricAmount) : '—') }}
+                    </td>
+                    <td>
+                      <span :class="['uc-kpi-ops__status-pill', f.Status === 'PENDING' || f.Status === 'CRITICAL' ? 'is-danger' : 'is-good']">
+                        {{ f.Status || 'COMPLETED' }}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr v-if="!filteredOperationalFactsList.length">
+                    <td colspan="6" style="padding:24px;text-align:center;color:#94a3b8;">
+                      Không tìm thấy bản ghi nào khớp với điều kiện lọc kiểm toán này.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
   </div>
 </template>
 
@@ -3245,32 +3257,10 @@
         { k: "THCS", t: "THCS" },
         { k: "THPT", t: "THPT" },
       ],
-      defaultScenarios: [
-        { ScenarioCode: "RUT_HOC", ScenarioName: "Học sinh rời đi" },
-        { ScenarioCode: "TUYEN_THEM", ScenarioName: "Tuyển thêm học sinh" },
-        { ScenarioCode: "CHUYEN_DOI", ScenarioName: "Thay đổi chuyển đổi" },
-      ],
-      defaultReasons: [
-        { ReasonCode: "REASON_BUS", ReasonName: "Nơi ở / đưa đón", ActionOwner: "Bán trú – Xe đưa rước", WatchIndicator: "Độ phủ tuyến xe; lead thất bại vì 'ngoài tuyến xe'", RecommendedAction: "Rà tuyến xe theo địa chỉ học sinh, đề xuất điểm đón mới", HistoricalCount: 21 },
-        { ReasonCode: "REASON_ECO", ReasonName: "Kinh tế", ActionOwner: "Kế toán – Chính sách học phí", WatchIndicator: "Nợ học phí; tỷ lệ dùng ưu đãi", RecommendedAction: "Liên hệ phụ huynh trước khi rút, xem gói hỗ trợ học phí", HistoricalCount: 10 },
-        { ReasonCode: "REASON_SICK", ReasonName: "Bệnh", ActionOwner: "Y tế học đường", WatchIndicator: "Ca bệnh theo lớp; chuyên cần", RecommendedAction: "Theo dõi sức khỏe, đề xuất bảo lưu thay vì rút", HistoricalCount: 7 },
-        { ReasonCode: "REASON_DISSATISFIED", ReasonName: "Không hài lòng", ActionOwner: "Hiệu trưởng – Chuyên môn", WatchIndicator: "Hài lòng phụ huynh; khiếu nại; kết quả dự giờ", RecommendedAction: "Gặp phụ huynh, xử lý phản ánh trong 48 giờ", HistoricalCount: 0 },
-        { ReasonCode: "REASON_ABROAD", ReasonName: "Định cư & du học", ActionOwner: "Tuyển sinh – Đối ngoại", WatchIndicator: "Nguyện vọng du học; đối tác", RecommendedAction: "Ít kiểm soát được; ghi nhận để dự báo", HistoricalCount: 1 },
-        { ReasonCode: "REASON_UNKNOWN", ReasonName: "Chưa rõ lý do", ActionOwner: "Hiệu trưởng (phải phân loại trước)", WatchIndicator: "14/53 ca toàn hệ thống đang để 'Khác'; lý do chưa tách theo đơn vị", RecommendedAction: "Phỏng vấn rời trường, chọn lý do chuẩn rồi mới giao xử lý", HistoricalCount: 14 },
-      ],
-      defaultAssumptions: [
-        { UnitCode: "ALL", UnitName: "Toàn trường (Hợp nhất)", OwnerTitle: "Tổng Giám Đốc / HĐQT", PlannedCapacity: 2750, CurrentEnrollment: 2625, AnnualTuitionMillion: 49.8, GrossMarginPct: 0.85, RemainingYearsInLevel: 2.0, NextLevelTuitionMillion: 0, NextLevelYears: 0, TransitionProbability: 0.60, MonthlyLeads: 470, ConversionRate: 0.10, ClbParticipationRate: 0.35 },
-        { UnitCode: "MNBH", UnitName: "Mầm non TB", OwnerTitle: "Hiệu trưởng MN Trấn Biên", PlannedCapacity: 406, CurrentEnrollment: 357, AnnualTuitionMillion: 37.2, GrossMarginPct: 0.85, RemainingYearsInLevel: 2.0, NextLevelTuitionMillion: 49.6, NextLevelYears: 5.0, TransitionProbability: 0.40, MonthlyLeads: 110, ConversionRate: 0.08, ClbParticipationRate: 0.41 },
-        { UnitCode: "MNLK", UnitName: "Mầm non LK", OwnerTitle: "Hiệu trưởng MN Long Khánh", PlannedCapacity: 166, CurrentEnrollment: 129, AnnualTuitionMillion: 37.2, GrossMarginPct: 0.85, RemainingYearsInLevel: 2.0, NextLevelTuitionMillion: 49.6, NextLevelYears: 5.0, TransitionProbability: 0.40, MonthlyLeads: 60, ConversionRate: 0.073, ClbParticipationRate: 0.38 },
-        { UnitCode: "TH", UnitName: "Tiểu học", OwnerTitle: "Hiệu trưởng Tiểu học", PlannedCapacity: 980, CurrentEnrollment: 897, AnnualTuitionMillion: 49.6, GrossMarginPct: 0.85, RemainingYearsInLevel: 2.5, NextLevelTuitionMillion: 61.7, NextLevelYears: 4.0, TransitionProbability: 0.70, MonthlyLeads: 150, ConversionRate: 0.12, ClbParticipationRate: 0.34 },
-        { UnitCode: "THCS", UnitName: "THCS", OwnerTitle: "Hiệu trưởng THCS", PlannedCapacity: 841, CurrentEnrollment: 799, AnnualTuitionMillion: 61.7, GrossMarginPct: 0.85, RemainingYearsInLevel: 2.0, NextLevelTuitionMillion: 63.6, NextLevelYears: 3.0, TransitionProbability: 0.60, MonthlyLeads: 80, ConversionRate: 0.10, ClbParticipationRate: 0.25 },
-        { UnitCode: "THPT", UnitName: "THPT", OwnerTitle: "Hiệu trưởng THPT", PlannedCapacity: 480, CurrentEnrollment: 443, AnnualTuitionMillion: 63.6, GrossMarginPct: 0.85, RemainingYearsInLevel: 1.5, NextLevelTuitionMillion: 0.0, NextLevelYears: 0.0, TransitionProbability: 0.00, MonthlyLeads: 70, ConversionRate: 0.09, ClbParticipationRate: 0.20 },
-      ],
-      defaultRules: [
-        { RuleCode: "RULE_RUT_PACE_EXCEEDED", RuleName: "Vượt nhịp rút học cho phép", ConditionExpr: "RUT_LKP_PCT > PACE_THRESHOLD", Severity: "BAD", OutcomeSummary: "Tỷ lệ rút học vượt nhịp dự kiến theo mốc thời gian, gây nguy cơ hụt ngân sách" },
-        { RuleCode: "RULE_LEAD_DEFICIT_HIGH", RuleName: "Áp lực tuyển bù vượt 50% lead tháng", ConditionExpr: "LEADS_NEED > 0.5 * MONTHLY_LEADS", Severity: "WARN", OutcomeSummary: "Số lượng lead cần bù đắp vượt 50% dung lượng tuyển sinh tháng của đơn vị" },
-        { RuleCode: "RULE_CAPACITY_CRITICAL", RuleName: "Lấp đầy dưới 80% chỉ tiêu", ConditionExpr: "OCCUPANCY_PCT < 0.80", Severity: "BAD", OutcomeSummary: "Công suất lấp đầy dưới 80%, đơn vị buộc phải có văn bản giải trình trước Hội đồng" },
-      ],
+      defaultScenarios: [],
+      defaultReasons: [],
+      defaultAssumptions: [],
+      defaultRules: [],
       isLoading: false,
       isPresentMode: false,
       apiSyncStatus: "Đang đồng bộ Live API...",
@@ -3287,36 +3277,7 @@
       causalDeltaOverride: null,
       // elasticityMatrix: fallback khi API chưa trả về, được nạp từ KPI_GetCausalEngineData res.data[5]
       elasticityMatrixList: [],
-      defaultElasticityMatrix: [
-        // ─── NHÁNH 1: QUY MÔ & TUYỂN SINH ───────────────────────────────────────
-        { CauseKpiCode: "TS04", EffectKpiCode: "TC55",  Stage: 1, ElasticityCoeff: 1.0,   ImpactUnit: "STUDENT", InterventionCostPerUnit: 10,  InterventionSaveRate: 0.85, InterventionOwner: "Ban Bán trú & Xe đưa đón", InterventionName: "Mở tuyến xe bus bổ sung" },
-        { CauseKpiCode: "TS04", EffectKpiCode: "TS05",  Stage: 2, ElasticityCoeff: 12.5,  ImpactUnit: "STUDENT", InterventionCostPerUnit: 3.5, InterventionSaveRate: 1.0,  InterventionOwner: "Ban Tuyển sinh & TVTS",   InterventionName: "Tăng ngân sách leads bù đắp" },
-        { CauseKpiCode: "TS04", EffectKpiCode: "LTV01", Stage: 3, ElasticityCoeff: 7.0,   ImpactUnit: "STUDENT", InterventionCostPerUnit: 5,   InterventionSaveRate: 0.7,  InterventionOwner: "Ban Giám hiệu",            InterventionName: "Chính sách giữ chân chuyển cấp" },
-        { CauseKpiCode: "TS04", EffectKpiCode: "CAP01", Stage: 2, ElasticityCoeff: 1.0,   ImpactUnit: "STUDENT", InterventionCostPerUnit: 0,   InterventionSaveRate: 0,    InterventionOwner: "Trưởng cơ sở",            InterventionName: "Cảnh báo bẫy định phí lớp học" },
-        { CauseKpiCode: "TS06", EffectKpiCode: "TS01",  Stage: 1, ElasticityCoeff: 0.13,  ImpactUnit: "LEAD",    InterventionCostPerUnit: 3.5, InterventionSaveRate: 1.0,  InterventionOwner: "Trưởng phòng TVTS",       InterventionName: "Chuẩn hoá kịch bản telesales" },
-        { CauseKpiCode: "TS06", EffectKpiCode: "TC55",  Stage: 2, ElasticityCoeff: 0.5,   ImpactUnit: "LEAD",    InterventionCostPerUnit: 3.5, InterventionSaveRate: 1.0,  InterventionOwner: "Trưởng phòng TVTS",       InterventionName: "Giảm thời gian phản hồi lead <15 phút" },
-        { CauseKpiCode: "TS01", EffectKpiCode: "TC55",  Stage: 1, ElasticityCoeff: 1.0,   ImpactUnit: "STUDENT", InterventionCostPerUnit: 5,   InterventionSaveRate: 0.8,  InterventionOwner: "BGH cơ sở",               InterventionName: "Chiến dịch giữ chân HK2" },
-        // ─── NHÁNH 2: DỊCH VỤ & AN TOÀN HỌC ĐƯỜNG ─────────────────────────────
-        { CauseKpiCode: "CSVC01", EffectKpiCode: "QA01",  Stage: 1, ElasticityCoeff: 0.25,  ImpactUnit: "TICKET",  InterventionCostPerUnit: 15,  InterventionSaveRate: 0.9,  InterventionOwner: "Bộ phận Bảo trì CSVC",   InterventionName: "Hợp đồng bảo dưỡng định kỳ" },
-        { CauseKpiCode: "CSVC01", EffectKpiCode: "TS04",  Stage: 2, ElasticityCoeff: 0.05,  ImpactUnit: "TICKET",  InterventionCostPerUnit: 15,  InterventionSaveRate: 0.9,  InterventionOwner: "Bộ phận Bảo trì CSVC",   InterventionName: "SLA xử lý ticket <24h" },
-        { CauseKpiCode: "MED01", EffectKpiCode: "CM09",   Stage: 1, ElasticityCoeff: 0.024, ImpactUnit: "CASE",    InterventionCostPerUnit: 2,   InterventionSaveRate: 0.95, InterventionOwner: "Y tế học đường",          InterventionName: "Khử khuẩn phòng học tuần 1 lần" },
-        { CauseKpiCode: "MED01", EffectKpiCode: "TC55",   Stage: 2, ElasticityCoeff: 0.1,   ImpactUnit: "CASE",    InterventionCostPerUnit: 2,   InterventionSaveRate: 0.8,  InterventionOwner: "Y tế học đường",          InterventionName: "Gói bảo hiểm y tế học đường mở rộng" },
-        { CauseKpiCode: "BUS01", EffectKpiCode: "TS04",   Stage: 1, ElasticityCoeff: 10.5,  ImpactUnit: "ROUTE",   InterventionCostPerUnit: 120, InterventionSaveRate: 0.85, InterventionOwner: "Ban Bán trú & Xe đưa đón", InterventionName: "Mở tuyến xe bus mới" },
-        { CauseKpiCode: "HR03",  EffectKpiCode: "OP01",   Stage: 1, ElasticityCoeff: 2.0,   ImpactUnit: "LEAVE_DAY", InterventionCostPerUnit: 0.8, InterventionSaveRate: 0.7, InterventionOwner: "Trưởng bếp & Bán trú",  InterventionName: "Tuyển CTV phụ bếp dự phòng" },
-        { CauseKpiCode: "QA01",  EffectKpiCode: "AUDIT01",Stage: 1, ElasticityCoeff: 1.0,   ImpactUnit: "PERCENT", InterventionCostPerUnit: 5,   InterventionSaveRate: 1.0,  InterventionOwner: "Bộ phận QA",             InterventionName: "Phỏng vấn 100% PH làm đơn rút hồ sơ" },
-        // ─── NHÁNH 3: GIÁO VIÊN & CHUYÊN MÔN ───────────────────────────────────
-        { CauseKpiCode: "HR02",  EffectKpiCode: "CM02",   Stage: 1, ElasticityCoeff: 0.61,  ImpactUnit: "LEAVE_DAY", InterventionCostPerUnit: 0.5, InterventionSaveRate: 0.8, InterventionOwner: "Tổ trưởng Chuyên môn",  InterventionName: "Ngân hàng bài giảng LMS tự học" },
-        { CauseKpiCode: "HR02",  EffectKpiCode: "HR02",   Stage: 3, ElasticityCoeff: 0.15,  ImpactUnit: "LEAVE_DAY", InterventionCostPerUnit: 10,  InterventionSaveRate: 0.7, InterventionOwner: "Trưởng bộ phận Nhân sự", InterventionName: "Đơn giá hỗ trợ dạy thay + giới hạn 6 tiết/tuần" },
-        { CauseKpiCode: "CM08",  EffectKpiCode: "CM09",   Stage: 2, ElasticityCoeff: 0.3,   ImpactUnit: "PERCENT", InterventionCostPerUnit: 3,   InterventionSaveRate: 0.85, InterventionOwner: "Ban Chuyên môn & IT",    InterventionName: "Phụ đạo trực tuyến 1-1 LMS" },
-        { CauseKpiCode: "CM02",  EffectKpiCode: "QA01",   Stage: 2, ElasticityCoeff: 0.12,  ImpactUnit: "PERIOD",  InterventionCostPerUnit: 1,   InterventionSaveRate: 0.6,  InterventionOwner: "Phó hiệu trưởng Đào tạo", InterventionName: "Dự giờ kiểm tra chuyên môn định kỳ" },
-        { CauseKpiCode: "CM02",  EffectKpiCode: "HR02",   Stage: 3, ElasticityCoeff: 0.08,  ImpactUnit: "PERIOD",  InterventionCostPerUnit: 5,   InterventionSaveRate: 0.7,  InterventionOwner: "Trưởng bộ phận Nhân sự", InterventionName: "Chính sách chống kiệt sức GV" },
-        // ─── NHÁNH 4: TÀI CHÍNH & BẢO TOÀN VỐN ────────────────────────────────
-        { CauseKpiCode: "TC56",  EffectKpiCode: "CLB01",  Stage: 2, ElasticityCoeff: 0.15,  ImpactUnit: "MILLION_VND", InterventionCostPerUnit: 0, InterventionSaveRate: 1.0, InterventionOwner: "Kế toán & BGH",         InterventionName: "Trích 30% thặng dư CLB tái đầu tư CSVC" },
-        { CauseKpiCode: "CLB01", EffectKpiCode: "TS01",   Stage: 3, ElasticityCoeff: 0.004, ImpactUnit: "STUDENT", InterventionCostPerUnit: 2,   InterventionSaveRate: 0.8,  InterventionOwner: "BGH & Tuyển sinh",       InterventionName: "Mở rộng CLB STEM & Ngoại ngữ" },
-        { CauseKpiCode: "CAP01", EffectKpiCode: "TC55",   Stage: 2, ElasticityCoeff: 1.0,   ImpactUnit: "STUDENT", InterventionCostPerUnit: 3.5, InterventionSaveRate: 1.0,  InterventionOwner: "Trưởng cơ sở & TVTS",   InterventionName: "Chiến dịch tuyển sinh chuyển trường HK2" },
-        { CauseKpiCode: "IT01",  EffectKpiCode: "OP02",   Stage: 1, ElasticityCoeff: 0.25,  ImpactUnit: "DAY",     InterventionCostPerUnit: 50,  InterventionSaveRate: 1.0,  InterventionOwner: "Trưởng phòng CNTT",      InterventionName: "Phê duyệt nghiệm thu phần mềm CRM" },
-        { CauseKpiCode: "FIN01", EffectKpiCode: "TC55",   Stage: 1, ElasticityCoeff: 1.0,   ImpactUnit: "STUDENT", InterventionCostPerUnit: 0,   InterventionSaveRate: 0.9,  InterventionOwner: "Kế toán & Chính sách học phí", InterventionName: "Quy trình nhắc nợ học phí tự động" },
-      ],
+      defaultElasticityMatrix: [],
       riskCampusCards: [],
       riskTriggers: [],
       riskChecklist: [],
@@ -3344,74 +3305,7 @@
       defaultCorrelations: [],
       defaultAuditDiscrepancies: [],
       goliveSpecsList: [],
-      defaultGoliveSpecs: [
-        {
-          SpecCode: "SPEC_BASICDATA",
-          SourceSystem: "Hệ thống Basic Data (https://basicdata.lhbs.vn/)",
-          KpiGroup: "Quy mô & Tuyển sinh (Chỉ tiêu 1–4, 7)",
-          ApiEndpoint: "https://basicdata.lhbs.vn/api/v1/students/monthly-snapshot",
-          HttpMethod: "POST",
-          SyncSchedule: "Đồng bộ hàng ngày 00:00 và Chốt sổ 23:59 ngày cuối tháng",
-          RequestSchema: '{\n  "NamHocID": 2026,\n  "DonViID": 1,\n  "KhoiID": 1000,\n  "Thang": 9,\n  "IncludeWithdrawals": true\n}',
-          ResponseSchema: '{\n  "data": {\n    "totalStudents": 2625,\n    "targetStudents": 2873,\n    "fillRate": 91.37,\n    "capacityRate": 93.42,\n    "withdrawals": 53,\n    "inflow": 3\n  },\n  "status": 200\n}',
-          GolivePrerequisites: "1. Chuẩn hóa mã hồ sơ học sinh trên https://basicdata.lhbs.vn/. 2. Phân loại rõ 3 nhóm rút học theo quy định docs: Tốt nghiệp, Chuyển trường, Rút hồ sơ. 3. Cấu hình webhook tự động khóa sổ vào 23:59 ngày cuối tháng đẩy số sang eSign.",
-        },
-        {
-          SpecCode: "SPEC_HOCPHI",
-          SourceSystem: "Hệ thống Học phí & Dịch vụ (https://hocphi.lhbs.vn/ · PM FTS)",
-          KpiGroup: "Dịch vụ Bán trú, Xe bus, CLB & LN Gộp (Chỉ tiêu 33, 34, 55, 56)",
-          ApiEndpoint: "https://hocphi.lhbs.vn/api/v1/services/financial-summary",
-          HttpMethod: "POST",
-          SyncSchedule: "Chốt sổ định kỳ ngày 05 hàng tháng sau khi đối soát kế toán FTS",
-          RequestSchema: '{\n  "KyBaoCao": "2026-09",\n  "DonViID": "ALL"\n}',
-          ResponseSchema: '{\n  "data": {\n    "services": [\n      {"code": "BAN_TRU", "name": "Bán trú & Ăn sáng", "rev": 14800000000, "cost": 7620000000, "margin": 48.5},\n      {"code": "BUS", "name": "Xe đưa đón học sinh", "rev": 2850000000, "cost": 2490000000, "margin": 12.6},\n      {"code": "CLUB", "name": "CLB Bổ trợ ngoài giờ", "rev": 1611000000, "cost": 830000000, "margin": 48.4}\n    ],\n    "overallMargin": 48.4\n  },\n  "status": 200\n}',
-          GolivePrerequisites: "1. Phân bổ chi phí trực tiếp riêng cho từng tuyến xe bus và từng môn CLB trên https://hocphi.lhbs.vn/. 2. Tự động đối soát công nợ và biên lai thu học phí dịch vụ qua cổng thanh toán ngân hàng.",
-        },
-        {
-          SpecCode: "SPEC_YTE",
-          SourceSystem: "Hệ thống Y tế học đường (https://yte.lhbs.vn/)",
-          KpiGroup: "Y tế & Sức khỏe học đường (Chỉ tiêu 36, 37, 38, 39)",
-          ApiEndpoint: "https://yte.lhbs.vn/api/v1/health/medical-records",
-          HttpMethod: "POST",
-          SyncSchedule: "Đồng bộ định kỳ sau mỗi đợt khám SK và tổng hợp sự cố y tế hàng tháng",
-          RequestSchema: '{\n  "NamHocID": 2026,\n  "DotKham": "DauNam",\n  "DonViID": "ALL"\n}',
-          ResponseSchema: '{\n  "data": {\n    "totalExamined": 2541,\n    "examRate": 96.8,\n    "bmiDeviantRate": 8.8,\n    "seriousIncidents": 0\n  },\n  "status": 200\n}',
-          GolivePrerequisites: "1. Chuẩn hóa hồ sơ khám sức khỏe định kỳ & phân loại chỉ số BMI lệch chuẩn trên https://yte.lhbs.vn/. 2. Theo dõi chỉ tiêu 0 vụ sự cố tai nạn thương tích, dị ứng, ngộ độc.",
-        },
-        {
-          SpecCode: "SPEC_QA",
-          SourceSystem: "Hệ thống Đảm bảo chất lượng (https://qa.lhbs.vn/)",
-          KpiGroup: "Khảo sát & Sự hài lòng PHHS (Chỉ tiêu 23, 44, 49)",
-          ApiEndpoint: "https://qa.lhbs.vn/api/v1/surveys/satisfaction-summary",
-          HttpMethod: "POST",
-          SyncSchedule: "Chốt sau mỗi kỳ khảo sát PHHS (Học kỳ / Hàng tháng)",
-          RequestSchema: '{\n  "KyKhaoSat": "2026-09",\n  "LoaiKhaoSat": "DichVu_HocTap"\n}',
-          ResponseSchema: '{\n  "data": {\n    "tienBoHocSinh": {"rate": 92.4, "threshold": 90.0},\n    "dongPhucSachVo": {"rate": 95.8, "threshold": 95.0},\n    "haiLongChung": {"rate": 93.6, "threshold": 90.0}\n  },\n  "status": 200\n}',
-          GolivePrerequisites: "1. Chuẩn hóa biểu mẫu khảo sát trực tuyến trên https://qa.lhbs.vn/ về mức độ tiến bộ của học sinh và chất lượng dịch vụ. 2. Tự động tổng hợp tỷ lệ đánh giá mức Đạt trở lên (> 90%).",
-        },
-        {
-          SpecCode: "SPEC_LMS",
-          SourceSystem: "Hệ thống LMS Học tập (https://lms.lhbs.vn/ · CSDL LMS-LHBS)",
-          KpiGroup: "Chuyên môn & Học thuật LMS (Chỉ tiêu 11, 15, 16, 17)",
-          ApiEndpoint: "https://tapi.lhbs.vn/lms/BaoCao_2_ThongKe_HocLieuSo_ByCapID & /lms/BaoCao_2_ThongKe_BaiTap_BaiHoc_LMS_ByCapID",
-          HttpMethod: "POST",
-          SyncSchedule: "Đồng bộ 02:00 sáng hàng ngày & Chốt tuần/tháng",
-          RequestSchema: '{\n  "NamHocID": 2026,\n  "CapID": 1\n}',
-          ResponseSchema: '{\n  "data": [\n    [{"TotalAssignments": 141, "TotalAssigned": 2629, "Total_DaNop": 597, "Total_DaCham": 1637, "CompletionRate_Assignments": 85.0}]\n  ],\n  "status": 200\n}',
-          GolivePrerequisites: "1. Hoàn thiện tối ưu index trên SQL Server LMS-LHBS (192.168.100.22). 2. Mở rộng báo cáo chi tiết đến cấp giáo viên phụ trách.",
-        },
-        {
-          SpecCode: "SPEC_EXCEL_INTERNAL",
-          SourceSystem: "Excel nội bộ (TVTS Tracking 2026-2027 & Dashboard Vận hành T9)",
-          KpiGroup: "Phễu TVTS & Vận hành CSVC (Chỉ tiêu 5, 6, 28, 51, 57)",
-          ApiEndpoint: "docs/dashboard van hanh thang 9.xlsx & TVTS Tracking GID 1481169716",
-          HttpMethod: "FILE_IMPORT",
-          SyncSchedule: "Nhập liệu định kỳ hàng tuần/tháng trong giai đoạn Staging",
-          RequestSchema: '{\n  "File": "dashboard van hanh thang 9.xlsx",\n  "Sheet": "8. Tư vấn tuyển sinh"\n}',
-          ResponseSchema: '{\n  "data": {\n    "leadsT9": 162,\n    "enrolledT9": 22,\n    "conversionRate": 13.58,\n    "repairTickets": 48,\n    "staffTurnover": 0.82\n  },\n  "status": 200\n}',
-          GolivePrerequisites: "1. Khi phần mềm CRM chính thức hoàn thiện, chuyển dữ liệu Leads và Chuyển đổi sang API CRM. 2. Khi phân hệ Helpdesk CSVC và HRM hoàn thiện, kết nối API tự động.",
-        },
-      ],
+      defaultGoliveSpecs: [],
       unitOptions: [
         { k: "ALL", t: "Toàn trường" },
         { k: "MNBH", t: "Mầm non TB" },
@@ -3426,142 +3320,123 @@
         title: "",
         type: "",
       },
-      liveDataBienHoa: [
-        { STT: 1, Ten: "18 Tháng", SLHocSinh: 17, SL_HSNu: 12, SL_HSNam: 5, KhoiID: -4 },
-        { STT: 2, Ten: "MG Mầm", SLHocSinh: 66, SL_HSNu: 28, SL_HSNam: 38, KhoiID: -3 },
-        { STT: 3, Ten: "MG Chồi", SLHocSinh: 94, SL_HSNu: 48, SL_HSNam: 46, KhoiID: -2 },
-        { STT: 4, Ten: "MG Lá", SLHocSinh: 135, SL_HSNu: 63, SL_HSNam: 72, KhoiID: -1 },
-        { STT: 5, Ten: "Khối 1", SLHocSinh: 207, SL_HSNu: 98, SL_HSNam: 109, KhoiID: 1 },
-        { STT: 6, Ten: "Khối 2", SLHocSinh: 221, SL_HSNu: 108, SL_HSNam: 113, KhoiID: 2 },
-        { STT: 7, Ten: "Khối 3", SLHocSinh: 219, SL_HSNu: 113, SL_HSNam: 106, KhoiID: 3 },
-        { STT: 8, Ten: "Khối 4", SLHocSinh: 213, SL_HSNu: 103, SL_HSNam: 110, KhoiID: 4 },
-        { STT: 9, Ten: "Khối 5", SLHocSinh: 185, SL_HSNu: 88, SL_HSNam: 97, KhoiID: 5 },
-        { STT: 10, Ten: "Khối 6", SLHocSinh: 226, SL_HSNu: 114, SL_HSNam: 112, KhoiID: 6 },
-        { STT: 11, Ten: "Khối 7", SLHocSinh: 213, SL_HSNu: 108, SL_HSNam: 105, KhoiID: 7 },
-        { STT: 12, Ten: "Khối 8", SLHocSinh: 185, SL_HSNu: 96, SL_HSNam: 89, KhoiID: 8 },
-        { STT: 13, Ten: "Khối 9", SLHocSinh: 181, SL_HSNu: 93, SL_HSNam: 88, KhoiID: 9 },
-        { STT: 14, Ten: "Khối 10", SLHocSinh: 154, SL_HSNu: 78, SL_HSNam: 76, KhoiID: 10 },
-        { STT: 15, Ten: "Khối 11", SLHocSinh: 106, SL_HSNu: 52, SL_HSNam: 54, KhoiID: 11 },
-        { STT: 16, Ten: "Khối 12", SLHocSinh: 77, SL_HSNu: 38, SL_HSNam: 39, KhoiID: 12 },
-      ],
-      liveDataLongKhanh: [
-        { STT: 1, Ten: "18 Tháng", SLHocSinh: 12, SL_HSNu: 5, SL_HSNam: 7, KhoiID: -4 },
-        { STT: 2, Ten: "MG Mầm", SLHocSinh: 24, SL_HSNu: 11, SL_HSNam: 13, KhoiID: -3 },
-        { STT: 3, Ten: "MG Chồi", SLHocSinh: 28, SL_HSNu: 14, SL_HSNam: 14, KhoiID: -2 },
-        { STT: 4, Ten: "MG Lá", SLHocSinh: 34, SL_HSNu: 16, SL_HSNam: 18, KhoiID: -1 },
-        { STT: 5, Ten: "Khối 1", SLHocSinh: 35, SL_HSNu: 18, SL_HSNam: 17, KhoiID: 1 },
-      ],
-      historyData: [
-        { NienKhoa: "2020-2021", SLHocSinh: 1768 },
-        { NienKhoa: "2021-2022", SLHocSinh: 1802 },
-        { NienKhoa: "2022-2023", SLHocSinh: 1874 },
-        { NienKhoa: "2023-2024", SLHocSinh: 1988 },
-        { NienKhoa: "2024-2025", SLHocSinh: 2575 },
-        { NienKhoa: "2025-2026", SLHocSinh: 2522 },
-        { NienKhoa: "2026-2027", SLHocSinh: 2499 },
-      ],
-      inflowRecordsCount: 90,
-      withdrawRecords: [
-        { NgayChuyen: "05/06/2026", HoTen: "Dương Bình Minh", LopDi: "03B", TruongDen: "Marie Curie", LyDo: "Chuyển chỗ ở" },
-        { NgayChuyen: "05/06/2026", HoTen: "Nguyễn Thanh Nhân", LopDi: "07D", TruongDen: "Định cư Mỹ", LyDo: "Định cư nước ngoài" },
-        { NgayChuyen: "05/06/2026", HoTen: "Lại Nguyễn Bảo Vy", LopDi: "07A", TruongDen: "Đức Trí", LyDo: "Xa trường, đi lại khó khăn" },
-        { NgayChuyen: "05/06/2026", HoTen: "Lại Nguyễn Khả Hân", LopDi: "03G", TruongDen: "Đức Trí", LyDo: "Xa trường, đi lại khó khăn" },
-        { NgayChuyen: "05/06/2026", HoTen: "Nguyễn Thanh Phúc", LopDi: "04F", TruongDen: "Định cư Mỹ", LyDo: "Định cư nước ngoài" },
-        { NgayChuyen: "14/08/2026", HoTen: "Phan Nguyên Ước", LopDi: "04A", TruongDen: "Du học Canada", LyDo: "Du học" },
-        { NgayChuyen: "30/09/2026", HoTen: "Nguyễn Hồng Hải", LopDi: "10A", TruongDen: "Du học Mỹ", LyDo: "Du học" },
-        { NgayChuyen: "14/10/2026", HoTen: "Chướng Nguyễn Hạo Nhiên", LopDi: "01F", TruongDen: "Nguyễn An Ninh", LyDo: "Có hoàn cảnh kinh tế gia đình" },
-      ],
-      topWithdrawReasons: [
-        { name: "Nơi ở / Tiện đưa đón xe bus", count: 21, percent: 39.62 },
-        { name: "Nguyên nhân khác", count: 14, percent: 26.42 },
-        { name: "Có hoàn cảnh kinh tế gia đình", count: 10, percent: 18.87 },
-        { name: "Lý do bệnh tật học sinh", count: 7, percent: 13.21 },
-        { name: "Định cư nước ngoài / Du học", count: 1, percent: 1.89 },
-      ],
-      teachingProgressRows: [
-        { TenLop: "11A", TongTiet: 38, Toan: 5, Van: 1, KHTN: 6, STEM: 2 },
-        { TenLop: "11B", TongTiet: 38, Toan: 2, Van: 5, KHTN: 6, STEM: 2 },
-        { TenLop: "11C", TongTiet: 34, Toan: 3, Van: 2, KHTN: 7, STEM: 2 },
-        { TenLop: "11D", TongTiet: 36, Toan: 5, Van: 3, KHTN: 4, STEM: 3 },
-        { TenLop: "11E", TongTiet: 34, Toan: 3, Van: 2, KHTN: 4, STEM: 2 },
-        { TenLop: "11F", TongTiet: 36, Toan: 3, Van: 5, KHTN: 2, STEM: 2 },
-      ],
-      financeServices: [
-        { name: "Dịch vụ Bán trú & Bếp ăn học sinh", revenue: "14.80 tỷ", cost: "7.62 tỷ", grossProfit: "7.18 tỷ", margin: "48.5%" },
-        { name: "Dịch vụ Đưa rước xe bus học đường", revenue: "2.85 tỷ", cost: "2.49 tỷ", grossProfit: "360 tr", margin: "12.6%" },
-        { name: "Bán lẻ Đồng phục & Sách giáo khoa", revenue: "3.12 tỷ", cost: "2.24 tỷ", grossProfit: "880 tr", margin: "28.2%" },
-        { name: "Học phí chính khóa đào tạo (Học thuật)", revenue: "58.60 tỷ", cost: "29.30 tỷ", grossProfit: "29.30 tỷ", margin: "50.0%" },
-      ],
-      financeClubs: [
-        { name: "Khối Tiểu học (Aerobic, Bóng đá, Bơi, Ẩm thực)", students: 353, fee: "Vượt chỉ tiêu (117.7%)", revenue: "882.5 tr", share: "54.8%" },
-        { name: "Khối Trung học (Advanced Robotics, Bóng đá, Digital Art)", students: 96, fee: "Đạt 64.0% chỉ tiêu", revenue: "288.0 tr", share: "17.9%" },
-        { name: "Mầm non Biên Hòa (Tiếng Anh Kịch nghệ, Aerobic)", students: 77, fee: "Đạt 64.2% chỉ tiêu", revenue: "231.0 tr", share: "14.3%" },
-        { name: "Mầm non Long Khánh (Tiền Tiểu học, Nhảy hiện đại)", students: 70, fee: "Đạt 93.3% chỉ tiêu", revenue: "210.0 tr", share: "13.0%" },
-      ],
+      liveDataBienHoa: [],
+      liveDataLongKhanh: [],
+      historyData: [],
+      inflowRecordsCount: 0,
+      withdrawRecords: [],
+      topWithdrawReasons: [],
+      teachingProgressRows: [],
+      financeServices: [],
+      financeClubs: [],
       financeSummary: null,
-      lmsOverallRate: "83.9",
+      lmsOverallRate: "0.0",
       lmsHocLieuSummary: {
-        total: 76,
-        coNoiDung: 27,
-        pct: "35.5",
-        totalFiles: 445,
+        total: 0,
+        coNoiDung: 0,
+        pct: "0.0",
+        totalFiles: 0,
       },
-      lmsAssignmentRows: [
-        { MonHocID: 2, TenMonHoc_HienThi: "Toán", TotalAssignments: 141, TotalAssigned: 2629, Total_DaNop: 597, Total_DaCham: 1637, Total_ChuaLam: 289, CompletionRate_Assignments: 85.0, CompletionRate_Graded: 62.3 },
-        { MonHocID: 1, TenMonHoc_HienThi: "Tiếng Việt", TotalAssignments: 95, TotalAssigned: 1631, Total_DaNop: 417, Total_DaCham: 949, Total_ChuaLam: 196, CompletionRate_Assignments: 83.8, CompletionRate_Graded: 58.2 },
-        { MonHocID: 4, TenMonHoc_HienThi: "Khoa học", TotalAssignments: 23, TotalAssigned: 397, Total_DaNop: 144, Total_DaCham: 199, Total_ChuaLam: 44, CompletionRate_Assignments: 86.4, CompletionRate_Graded: 50.1 },
-        { MonHocID: 19, TenMonHoc_HienThi: "Lịch sử và Địa lí", TotalAssignments: 22, TotalAssigned: 397, Total_DaNop: 148, Total_DaCham: 193, Total_ChuaLam: 43, CompletionRate_Assignments: 85.9, CompletionRate_Graded: 48.6 },
-        { MonHocID: 5, TenMonHoc_HienThi: "Ngoại ngữ", TotalAssignments: 4, TotalAssigned: 221, Total_DaNop: 66, Total_DaCham: 81, Total_ChuaLam: 22, CompletionRate_Assignments: 66.5, CompletionRate_Graded: 36.7 },
-      ],
-      lmsHocLieuRows: [
-        { MonHocID: 1, TenMonHoc_HienThi: "Tiếng Việt", KhoiID: 1, TongHocLieu: 1, HocLieuCoNoiDung: 1, HocLieuChuaCoNoiDung: 0, TongNoiDung: 2 },
-        { MonHocID: 2, TenMonHoc_HienThi: "Toán", KhoiID: 1, TongHocLieu: 1, HocLieuCoNoiDung: 1, HocLieuChuaCoNoiDung: 0, TongNoiDung: 1 },
-        { MonHocID: 3, TenMonHoc_HienThi: "Tự nhiên và Xã hội", KhoiID: 1, TongHocLieu: 1, HocLieuCoNoiDung: 1, HocLieuChuaCoNoiDung: 0, TongNoiDung: 2 },
-        { MonHocID: 4, TenMonHoc_HienThi: "Khoa học", KhoiID: 4, TongHocLieu: 1, HocLieuCoNoiDung: 1, HocLieuChuaCoNoiDung: 0, TongNoiDung: 2 },
-        { MonHocID: 19, TenMonHoc_HienThi: "Lịch sử và Địa lí", KhoiID: 4, TongHocLieu: 1, HocLieuCoNoiDung: 1, HocLieuChuaCoNoiDung: 0, TongNoiDung: 1 },
-      ],
-      crmMonthlySummary: [
-        { month: "Tháng 08/2026", ptlcLeads: 30, mnbhLeads: 144, mnlkLeads: 185, totalLeads: 359, ptlcEnrolled: 9, mnbhEnrolled: 16, mnlkEnrolled: 8, totalEnrolled: 33, rate: "9.2%" },
-        { month: "Tháng 09/2026", ptlcLeads: 24, mnbhLeads: 77, mnlkLeads: 61, totalLeads: 162, ptlcEnrolled: 4, mnbhEnrolled: 8, mnlkEnrolled: 10, totalEnrolled: 22, rate: "13.6%" },
-        { month: "Tháng 10/2026", ptlcLeads: 9, mnbhLeads: 40, mnlkLeads: 40, totalLeads: 89, ptlcEnrolled: 0, mnbhEnrolled: 3, mnlkEnrolled: 0, totalEnrolled: 3, rate: "3.4%" },
-      ],
-      crmChannelStats: [
-        { channel: "Facebook Fanpage / Ads", leads: 521, pct: "85.4%", enrolled: 34, convRate: "6.5%" },
-        { channel: "Người quen giới thiệu", leads: 22, pct: "3.6%", enrolled: 12, convRate: "54.5%" },
-        { channel: "Nhận diện thương hiệu (Vãng lai)", leads: 28, pct: "4.6%", enrolled: 6, convRate: "21.4%" },
-        { channel: "Phụ huynh LHBS hiện hữu", leads: 15, pct: "2.5%", enrolled: 5, convRate: "33.3%" },
-        { channel: "Cán bộ GV / Nhân viên", leads: 11, pct: "1.8%", enrolled: 4, convRate: "36.4%" },
-        { channel: "Zalo / Hotline tiếp nhận", leads: 5, pct: "0.8%", enrolled: 1, convRate: "20.0%" },
-        { channel: "Đại sứ / Sự kiện trải nghiệm", leads: 8, pct: "1.3%", enrolled: 0, convRate: "0.0%" },
-      ],
-      crmDropReasons: [
-        { reason: "Liên hệ / nhắn tin 3 lần không phản hồi", count: 414, pct: "75.0%", solution: "Chuyển Cold Leads, gửi tin Zalo định kỳ" },
-        { reason: "Bé chưa đủ tuổi đi học (Chờ HK2)", count: 22, pct: "4.0%", solution: "Đưa vào danh sách chăm sóc nuôi dưỡng Kitty HK2" },
-        { reason: "Phụ huynh tham khảo thông tin trước", count: 8, pct: "1.4%", solution: "Gửi tài liệu chương trình học và bảng phí" },
-        { reason: "Không đạt quy chế / Từ chối khảo sát", count: 5, pct: "0.9%", solution: "Tư vấn lộ trình bồi dưỡng trước nhập học" },
-        { reason: "Học phí cao / Chưa có chính sách ưu đãi", count: 3, pct: "0.5%", solution: "Áp dụng học bổng hoặc đóng phí theo đợt" },
-        { reason: "Ngoài tuyến xe đưa đón học sinh", count: 4, pct: "0.7%", solution: "Khảo sát mở rộng điểm đón tuyến mới" },
-      ],
-      crmKittyList: [
-        { stt: 87, thang: "T08/2026", tenPH: "Kiều Anh Vũ", lop: "Kitty", tenHS: "Bé sinh 01/2025", tinhTrang: "Chưa đủ tuổi (Hẹn HK2)", hen: "Tháng 01/2027 liên hệ lại" },
-        { stt: 107, thang: "T08/2026", tenPH: "Khánh Linh", lop: "Kitty", tenHS: "Nguyễn Ngọc Nhã Vy (01/2025)", tinhTrang: "Chưa đủ tuổi (Hẹn HK2)", hen: "Tháng 01/2027 liên hệ lại" },
-        { stt: 117, thang: "T08/2026", tenPH: "Bích Nguyệt", lop: "Kitty", tenHS: "Nguyễn Minh Anh (02/01/2026)", tinhTrang: "Chưa đủ tuổi (Hẹn HK2)", hen: "Tháng 01/2027 liên hệ lại" },
-        { stt: 118, thang: "T08/2026", tenPH: "Nguyễn Thủy Tiên", lop: "Kitty", tenHS: "Bé sinh 12/2025", tinhTrang: "Chưa đủ tuổi (Hẹn HK2)", hen: "Tháng 01/2027 liên hệ lại" },
-        { stt: 121, thang: "T08/2026", tenPH: "Như Loan", lop: "Kitty", tenHS: "Bé sinh 02/2025", tinhTrang: "Chưa đủ tuổi (Hẹn HK2)", hen: "Tháng 02/2027 liên hệ lại" },
-        { stt: 164, thang: "T09/2026", tenPH: "Con cô Như Vy (GV)", lop: "Kitty", tenHS: "Võ Chí Kiên (22/04/2025)", tinhTrang: "Chưa đủ tuổi (Hẹn HK2)", hen: "Dự kiến 06/2027 đi học" },
-        { stt: 168, thang: "T09/2026", tenPH: "Dược Huỳnh", lop: "Kitty", tenHS: "Bé sinh 02/2025", tinhTrang: "Chưa đủ tuổi (Hẹn HK2)", hen: "Tháng 11/2026 liên hệ lại" },
-        { stt: 174, thang: "T09/2026", tenPH: "Con thầy Kim Cương (GV)", lop: "Kitty", tenHS: "Dương Kim Trọng (28/10/2025)", tinhTrang: "Đã tư vấn xong (Nhập học T10)", hen: "Tháng 10/2026 làm hồ sơ" },
-        { stt: 176, thang: "T09/2026", tenPH: "Con cô Anh Thư (GV)", lop: "Kitty", tenHS: "Mai Hoàng Khánh An (10/2025)", tinhTrang: "Đã tư vấn xong (Nhập học T10)", hen: "Tháng 10/2026 làm hồ sơ" },
-        { stt: 109, thang: "T02/2026", tenPH: "Nguyễn Đỗ Thúy Ngân", lop: "Kitty", tenHS: "Nguyễn Thùy Tiên (06/2025)", tinhTrang: "Chưa đủ tuổi (Hẹn HK2)", hen: "Tháng 12/2026 liên hệ lại" },
-        { stt: 130, thang: "T03/2026", tenPH: "Trương Mỹ Hoa", lop: "Kitty", tenHS: "Minh Đăng (03/02/2025)", tinhTrang: "Chưa đủ tuổi (Hẹn HK2)", hen: "Tháng 02/2027 liên hệ lại" },
-        { stt: 476, thang: "T06/2026", tenPH: "Ninh Nguyễn Xuân", lop: "Kitty", tenHS: "Bé sinh 01/2026", tinhTrang: "Chưa đủ tuổi (Hẹn HK2)", hen: "Tuyển sinh HK2 liên hệ" },
-        { stt: 479, thang: "T06/2026", tenPH: "Nguyễn Rosa", lop: "Kitty", tenHS: "Bé sinh 11/2025", tinhTrang: "Chưa đủ tuổi (Hẹn HK2)", hen: "Tháng 11/2026 liên hệ lại" },
-        { stt: 528, thang: "T07/2026", tenPH: "Tâm Như", lop: "Kitty", tenHS: "Bé sinh 14/12/2025", tinhTrang: "Chưa đủ tuổi (Hẹn HK2)", hen: "Tháng 12/2026 nhập học" },
-        { stt: 550, thang: "T07/2026", tenPH: "Chị Đài", lop: "Kitty", tenHS: "Nguyễn Trần Khánh Ngọc (07/2025)", tinhTrang: "Chưa đủ tuổi (Hẹn HK2)", hen: "Tháng 12/2026 liên hệ lại" },
-      ],
+      lmsAssignmentRows: [],
+      lmsHocLieuRows: [],
+      crmMonthlySummary: [],
+      crmChannelStats: [],
+      crmDropReasons: [],
+      crmKittyList: [],
     };
   },
   computed: {
+    dynamicWithdrawReasons() {
+      if (!this.breakdownsList || !this.breakdownsList.length) return [];
+      const list = this.breakdownsList.filter(b => b.KpiCode === 'TS04' && b.DimensionCode !== 'TOTAL' && (b.DonViID === this.currentUnit || (this.currentUnit === 'ALL' && b.DonViID === 'ALL')));
+      const total = list.reduce((sum, b) => sum + Number(b.ActualCount || 0), 0) || 1;
+      const colorMap = {
+        FAR: '#d13438', BUS: '#d13438', ECO: '#d9822b', SICK: '#107c41', ILL: '#107c41',
+        ABROAD: '#004e8c', OTHER: '#605e5c'
+      };
+      return list.map(b => {
+        const count = Number(b.ActualCount || 0);
+        const pct = (count * 100.0 / total).toFixed(1);
+        return {
+          code: b.DimensionCode,
+          name: b.DimensionName || b.DimensionCode,
+          count,
+          pct,
+          color: colorMap[b.DimensionCode] || '#605e5c'
+        };
+      });
+    },
+    totalRiskWithdrawForecast() {
+      if (this.riskCampusCards && this.riskCampusCards.length) {
+        let minTot = 0;
+        let maxTot = 0;
+        this.riskCampusCards.forEach(c => {
+          if (c.WithdrawForecast) {
+            const m = c.WithdrawForecast.match(/(\d+)\s*-\s*(\d+)/);
+            if (m) {
+              minTot += parseInt(m[1], 10);
+              maxTot += parseInt(m[2], 10);
+            }
+          }
+        });
+        if (minTot > 0 && maxTot > 0) return `${minTot} - ${maxTot} HS`;
+      }
+      return "0 HS";
+    },
+    totalRiskTuitionForecast() {
+      if (this.riskCampusCards && this.riskCampusCards.length) {
+        let minM = 0;
+        let maxM = 0;
+        this.riskCampusCards.forEach(c => {
+          if (c.TuitionAtRisk) {
+            const m = c.TuitionAtRisk.match(/(\d+)M\s*-\s*(\d+)M/);
+            if (m) {
+              minM += parseInt(m[1], 10);
+              maxM += parseInt(m[2], 10);
+            }
+          }
+        });
+        if (minM > 0 && maxM > 0) {
+          const minStr = minM >= 1000 ? (minM / 1000).toFixed(2) + "B" : minM + "M";
+          const maxStr = maxM >= 1000 ? (maxM / 1000).toFixed(2) + "B" : maxM + "M";
+          return `${minStr} - ${maxStr}`;
+        }
+      }
+      return "0 VNĐ";
+    },
+    computedStrategicPreservedRevenue() {
+      if (this.strategicLevers && this.strategicLevers.length) {
+        const totM = this.strategicLevers.reduce((sum, l) => {
+          const m = (l.RevenueGainText || "").match(/\+?(\d+)\s*tr/);
+          return sum + (m ? parseInt(m[1], 10) : 0);
+        }, 0);
+        if (totM >= 1000) return `+${(totM / 1000).toFixed(2)} tỷ VNĐ`;
+        return `+${totM} tr VNĐ`;
+      }
+      return "+0 VNĐ";
+    },
+    operationalFactsTotalCount() {
+      return (this.operationalFactsList && this.operationalFactsList.length) ? this.operationalFactsList.length : 0;
+    },
+    displayOutflowYearToDate() {
+      const k = this.getKpi("TS04");
+      if (k && k.OperationalInsight) {
+        const m = k.OperationalInsight.match(/Lũy\s+kế.*?(\d+)\s*HS/i);
+        if (m) return parseInt(m[1], 10);
+      }
+      return this.withdrawRecords.length || this.displayWithdrawCount || 0;
+    },
+    clubTargetText() {
+      const k = this.getKpi("TC33") || this.getKpi("TC56");
+      if (k && k.TargetValue) {
+        const val = Number(k.TargetValue);
+        return val >= 1000000000 ? (val / 1000000000).toFixed(2) + " tỷ HK1 (Quỹ $1M)" : (val / 1000000).toFixed(0) + " tr VNĐ";
+      }
+      return "0 tỷ HK1 (Quỹ $1M)";
+    },
+    displayClubTarget() {
+      return this.clubTargetText;
+    },
     currentPeriodFreezeText() {
       const p = this.periodsList && this.periodsList.find((x) => x.PeriodKey === this.selectedPeriod);
       if (p && p.IsFrozen) {
@@ -3577,64 +3452,94 @@
       const p = this.periodsList && this.periodsList.find((x) => x.PeriodKey === this.selectedPeriod);
       return (p && p.EndDate) ? p.EndDate : `${this.selectedYear}-09-30`;
     },
+    currentPeriodIsFrozen() {
+      const p = this.periodsList.find((x) => x.PeriodKey === this.selectedPeriod);
+      return p ? !!p.IsFrozen : true;
+    },
+    dynamicRiskFactsBrief() {
+      const k = this.getKpi("HR01");
+      if (k && k.ActualValue != null) {
+        return k.ActualValue + " ngày công nghỉ";
+      }
+      return "Theo dõi ngày công nghỉ";
+    },
+    dynamicRiskLeadingText() {
+      const redCampuses = (this.riskCampusCards || []).filter((c) => c.RiskTier === "RED").map((c) => c.CampusName);
+      const warnCampuses = (this.riskCampusCards || []).filter((c) => c.RiskTier === "WARN").map((c) => c.CampusName);
+      let text = "Phân tích chỉ báo sớm (Leading Risk Indicators) kỳ " + this.currentPeriodName + ".";
+      if (redCampuses.length) {
+        text += " Phát hiện <b>" + redCampuses.length + " Cơ sở thuộc Vùng Đỏ Nguy Cơ Cao (" + redCampuses.join(", ") + ")</b>.";
+      }
+      if (warnCampuses.length) {
+        text += " Có <b>" + warnCampuses.length + " Cơ sở Vùng Cảnh Báo (" + warnCampuses.join(", ") + ")</b>.";
+      }
+      if (!redCampuses.length && !warnCampuses.length) {
+        text += " Toàn bộ các cơ sở đều nằm trong ngưỡng an toàn vận hành.";
+      }
+      return text;
+    },
     financeSummaryTotalRevenue() {
       if (this.financeSummary && this.financeSummary.TotalOpRevenue) {
         return (Number(this.financeSummary.TotalOpRevenue) / 1000000000.0).toFixed(2) + " tỷ";
       }
-      return "79.37 tỷ";
+      return this.currentPeriodIsFrozen ? "0 tỷ" : "Đang cập nhật";
     },
     financeSummaryTotalCost() {
       if (this.financeSummary && this.financeSummary.TotalOpCost) {
         return (Number(this.financeSummary.TotalOpCost) / 1000000000.0).toFixed(2) + " tỷ";
       }
-      return "40.95 tỷ";
+      return this.currentPeriodIsFrozen ? "0 tỷ" : "Đang cập nhật";
     },
     financeSummaryTotalProfit() {
       if (this.financeSummary && this.financeSummary.TotalOpGrossProfit) {
         return (Number(this.financeSummary.TotalOpGrossProfit) / 1000000000.0).toFixed(2) + " tỷ";
       }
-      return "38.42 tỷ";
+      return this.currentPeriodIsFrozen ? "0 tỷ" : "Đang cập nhật";
     },
     financeSummaryTotalMargin() {
       if (this.financeSummary && this.financeSummary.TotalOpMarginPct != null) {
         return Number(this.financeSummary.TotalOpMarginPct).toFixed(1) + "%";
       }
-      return "48.4% (Đạt 96.8% KH)";
+      return this.currentPeriodIsFrozen ? "0.0%" : "Đang cập nhật";
     },
     totalClubStudents() {
       if (this.financeSummary && this.financeSummary.TotalClubStudents) {
         return this.financeSummary.TotalClubStudents;
       }
-      return this.financeClubs.reduce((sum, c) => sum + (parseInt(c.students || c.rawStudents, 10) || 0), 0) || 596;
+      return this.financeClubs.reduce((sum, c) => sum + (parseInt(c.students || c.rawStudents, 10) || 0), 0);
     },
     totalClubRevenueText() {
       if (this.financeSummary && this.financeSummary.TotalClubRevenue) {
         return (Number(this.financeSummary.TotalClubRevenue) / 1000000000.0).toFixed(3) + " tỷ VNĐ";
       }
-      return "1.611 tỷ VNĐ";
+      return this.currentPeriodIsFrozen ? "0 VNĐ" : "Đang cập nhật";
     },
     clubAchievedPct() {
-      return "92.4";
+      if (this.financeSummary && this.financeSummary.TotalClubRevenue) {
+        const rev = Number(this.financeSummary.TotalClubRevenue);
+        return ((rev / 1743000000) * 100).toFixed(1) + "%";
+      }
+      return this.currentPeriodIsFrozen ? "0%" : "Đang cập nhật";
     },
     crmTotalPtlcLeads() {
-      return this.crmMonthlySummary.reduce((sum, m) => sum + (m.ptlcLeads ?? m.PtlcLeads ?? 0), 0) || 63;
+      return this.crmMonthlySummary.reduce((sum, m) => sum + (m.ptlcLeads ?? m.PtlcLeads ?? 0), 0);
     },
     crmTotalMnbhLeads() {
-      return this.crmMonthlySummary.reduce((sum, m) => sum + (m.mnbhLeads ?? m.MnbhLeads ?? 0), 0) || 261;
+      return this.crmMonthlySummary.reduce((sum, m) => sum + (m.mnbhLeads ?? m.MnbhLeads ?? 0), 0);
     },
     crmTotalMnlkLeads() {
-      return this.crmMonthlySummary.reduce((sum, m) => sum + (m.mnlkLeads ?? m.MnlkLeads ?? 0), 0) || 286;
+      return this.crmMonthlySummary.reduce((sum, m) => sum + (m.mnlkLeads ?? m.MnlkLeads ?? 0), 0);
     },
     crmTotalLeadsSum() {
-      return this.crmMonthlySummary.reduce((sum, m) => sum + (m.totalLeads ?? m.TotalLeads ?? 0), 0) || 610;
+      return this.crmMonthlySummary.reduce((sum, m) => sum + (m.totalLeads ?? m.TotalLeads ?? 0), 0);
     },
     crmTotalEnrolledSum() {
-      return this.crmMonthlySummary.reduce((sum, m) => sum + (m.totalEnrolled ?? m.TotalEnrolled ?? m.EnrolledStudents ?? 0), 0) || 58;
+      return this.crmMonthlySummary.reduce((sum, m) => sum + (m.totalEnrolled ?? m.TotalEnrolled ?? m.EnrolledStudents ?? 0), 0);
     },
     crmOverallConversionRate() {
       const tot = this.crmTotalLeadsSum;
       const enr = this.crmTotalEnrolledSum;
-      return tot > 0 ? ((enr / tot) * 100).toFixed(2) : "9.51";
+      return tot > 0 ? ((enr / tot) * 100).toFixed(2) + "%" : "0.0%";
     },
     priorPeriodKey() {
       if (!this.periodsList || !this.periodsList.length) return null;
@@ -3679,9 +3584,9 @@
     },
     currentRoiScenarioTitle() {
       const titles = {
-        BUS: 'Kịch bản 1: Mở tuyến bus đón học sinh xa nhà (Bảo toàn 21 HS rút học)',
-        AC: 'Kịch bản 2: Bảo dưỡng phòng ngừa & Thay máy lạnh (Khắc phục 18 máy hỏng)',
-        STEM: 'Kịch bản 3: Đầu tư Phòng Lab STEM & CLB từ thặng dư dịch vụ (1.611 tỷ)',
+        BUS: 'Kịch bản 1: Mở tuyến bus đón học sinh xa nhà (Bảo toàn ' + (this.displayReasonFar || 21) + ' HS rút học)',
+        AC: 'Kịch bản 2: Bảo dưỡng phòng ngừa & Thay máy lạnh (Khắc phục ticket hỏng tồn đọng)',
+        STEM: 'Kịch bản 3: Đầu tư Phòng Lab STEM & CLB từ thặng dư dịch vụ CLB (' + (this.computedFinanceData ? this.computedFinanceData.clbRev : 'thặng dư cao') + ')',
         ADS_CRM: 'Kịch bản 4: Chiến dịch Tiếp thị & Tuyển sinh bổ sung Học kỳ 2'
       };
       return titles[this.selectedRoiScenario] || '';
@@ -3749,7 +3654,7 @@
           costNote: 'Capex phòng Lab (' + this.roiStemLabCapex + 'tr) + Thù lao HLV (' + Math.round(opexCoach/1000000) + 'tr)',
           revNote: 'Doanh thu học phí CLB từ ' + this.roiStemStudents + ' học sinh mới trong ' + this.roiStemMonths + ' tháng',
           verdictTag: 'TỰ CÂN ĐỐI TỪ THẶNG DƯ CLB',
-          verdictText: 'Doanh thu dịch vụ CLB Tháng 9 đạt 1.611 tỷ VNĐ với thặng dư lớn. Trích 200 triệu tái đầu tư phòng Lab STEM/AI sẽ tạo nguồn thu dịch vụ bền vững và giữ chân học sinh Tiểu học lên THCS.',
+          verdictText: 'Doanh thu dịch vụ CLB ' + this.currentPeriodName + ' đạt ' + (this.computedFinanceData ? this.computedFinanceData.clbRev : 'thặng dư cao') + '. Trích 200 triệu tái đầu tư phòng Lab STEM/AI sẽ tạo nguồn thu dịch vụ bền vững và giữ chân học sinh Tiểu học lên THCS.',
           causalLinkText: 'Vòng lặp phản hồi 2 chiều CLB01 <-> TC56: Doanh thu CLB thặng dư -> Tái đầu tư CSVC STEM -> Tăng sức hút học sinh.'
         };
       } else {
@@ -3782,11 +3687,30 @@
       return mo ? mo.r : 8 / 9;
     },
     currentCausalAssumption() {
-      const list = this.causalAssumptionsList.length ? this.causalAssumptionsList : this.defaultAssumptions;
+      const list = (this.causalAssumptionsList && this.causalAssumptionsList.length) ? this.causalAssumptionsList : (this.defaultAssumptions || []);
       let targetCode = this.causalUnit || this.currentUnit || "ALL";
       if (targetCode === "MNTB") targetCode = "MNBH";
       const found = list.find((a) => a.UnitCode === targetCode);
-      return found || list.find((a) => a.UnitCode === "ALL") || list[0];
+      const fallback = found || list.find((a) => a.UnitCode === "ALL") || list[0] || {};
+      return {
+        UnitCode: targetCode,
+        UnitName: this.currentUnitTitle || "Toàn trường",
+        OwnerTitle: "Tổng Giám Đốc / HĐQT",
+        PlannedCapacity: 2752,
+        CurrentEnrollment: 2625,
+        AnnualTuitionMillion: 49.8,
+        GrossMarginPct: 0.85,
+        RemainingYearsInLevel: 2.0,
+        NextLevelTuitionMillion: 60.0,
+        NextLevelYears: 3.0,
+        TransitionProbability: 0.5,
+        MonthlyLeads: 470,
+        ConversionRate: 0.095,
+        ClbParticipationRate: 0.32,
+        ClbAvgFeeMillion: 4.5,
+        ClassCount: 99,
+        ...fallback
+      };
     },
     currentCausalUnitName() {
       return this.currentCausalAssumption.UnitName || (this.causalUnit === "ALL" ? "Toàn trường" : "MN Long Khánh");
@@ -3919,15 +3843,15 @@
     genericCausalCalc() {
       const ass = this.currentCausalAssumption;
       const delta = this.causalDeltaAuto;
-      const hp = ass.AnnualTuitionMillion || 37.2;
-      const margin = ass.GrossMarginPct || 0.85;
+      const hp = ass.AnnualTuitionMillion;
+      const margin = ass.GrossMarginPct;
       const variableCost = 1 - margin;
       const r = this.currentMonthRatio;
-      const conv = ass.ConversionRate || 0.10;
-      const monthlyLeads = ass.MonthlyLeads || 60;
-      const planCap = ass.PlannedCapacity || 166;
-      const enrolled = ass.CurrentEnrollment || 129;
-      const ltv_years = ass.RemainingYearsInLevel || 2.0;
+      const conv = ass.ConversionRate;
+      const monthlyLeads = ass.MonthlyLeads;
+      const planCap = ass.PlannedCapacity;
+      const enrolled = ass.CurrentEnrollment;
+      const ltv_years = ass.RemainingYearsInLevel;
 
       const effects = this.activeDownstreamEffects;
       const kpiCode = this.causalKpiCode;
@@ -4101,7 +4025,7 @@
         n = this.causalAddClbStudents;
       }
       const r = this.currentMonthRatio;
-      const hp = ass.AnnualTuitionMillion || 37.2;
+      const hp = ass.AnnualTuitionMillion;
       // Chi phí biến đổi trực tiếp (Suất ăn bán trú, đồng phục, học cụ tiêu hao): ~18% học phí
       const variableCostPct = 0.18;
       const margin = 1 - variableCostPct; // Biên đóng góp thực tế: 82%
@@ -4218,9 +4142,9 @@
             x: 20,
             y: 120,
             label: c.n + " yêu cầu sửa CSVC",
-            value: "18 máy lạnh · " + unit,
-            sub: "79 ticket kỳ T9 (đã xử lý 75)",
-            formula: "Tiếp nhận 79 yêu cầu, 18 máy lạnh hỏng, còn tồn đọng 4 ticket chưa hoàn thành",
+            value: (c.n || 18) + " máy lạnh · " + unit,
+            sub: "Ticket CSVC kỳ " + this.currentPeriodShortName,
+            formula: "Tiếp nhận ticket bảo trì CSVC tại " + unit + ", tồn đọng chưa hoàn thành",
             isBad: true,
             isGood: false,
           },
@@ -4322,10 +4246,10 @@
             id: "N_EVENT",
             x: 20,
             y: 120,
-            label: c.n + " ca bệnh học đường T9",
-            value: "Bùng phát Cúm A Khối 4-5",
-            sub: "131 ca y tế ghi nhận tháng 9",
-            formula: "53 ca sốt Cúm A tại Tiểu học cuối tháng 9",
+            label: c.n + " ca bệnh học đường (" + this.currentPeriodShortName + ")",
+            value: "Ghi nhận y tế · " + unit,
+            sub: c.n + " ca y tế ghi nhận kỳ " + this.currentPeriodShortName,
+            formula: c.n + " ca bệnh học đường ghi nhận tại " + unit + " trong kỳ " + this.currentPeriodName,
             isBad: true,
             isGood: false,
           },
@@ -4534,12 +4458,14 @@
 
       if (kpi === "BUS01") {
         eventLabel = c.n + " tuyến xe bus chưa phủ";
-        eventSub = "21 HS rút vì xa trường";
+        eventSub = (this.displayReasonFar || c.n) + " HS rút vì xa trường";
         eventFormula = "Hạ tầng xe bus chưa đến Long Khánh & Biên Hòa Đông";
       } else if (kpi === "TS06" || kpi === "CRM01") {
-        eventLabel = c.n + " HS nhập mới (161 leads)";
-        eventSub = "Chuyển đổi 13.04% (Mục tiêu 30%)";
-        eventFormula = "161 leads tiếp nhận, chuyển đổi thành công 21 học sinh mới";
+        const leads = (this.currentCausalAssumption && this.currentCausalAssumption.MonthlyLeads) || 161;
+        const conv = (this.currentCausalAssumption && this.currentCausalAssumption.ConversionRate ? (this.currentCausalAssumption.ConversionRate * 100).toFixed(1) : "13.0");
+        eventLabel = c.n + " HS nhập mới (" + leads + " leads)";
+        eventSub = "Chuyển đổi " + conv + "% (Mục tiêu 30%)";
+        eventFormula = leads + " leads tiếp nhận, chuyển đổi thành công " + c.n + " học sinh mới";
       }
 
       return [
@@ -4561,7 +4487,7 @@
           label: "Sĩ số hiện diện",
           value: c.t9 + " → " + c.t9After,
           sub: c.fillPctBefore + "% → " + c.fillPctAfter + "% chỉ tiêu",
-          formula: "Sĩ số sau biến động = Sĩ số T9 (" + c.t9 + ") " + (isOut ? "− " : "+ ") + c.n + " = " + c.t9After + " HS",
+          formula: "Sĩ số sau biến động = Sĩ số " + this.currentPeriodShortName + " (" + c.t9 + ") " + (isOut ? "− " : "+ ") + c.n + " = " + c.t9After + " HS",
           isBad: isOut,
           isGood: !isOut,
         },
@@ -4583,7 +4509,7 @@
           label: "Biên đóng góp năm nay",
           value: c.revMarginSign + " tỷ",
           sub: "Doanh thu: " + c.revNowSign + " tỷ (trừ 18% biến phí)",
-          formula: "Biên đóng góp = (" + (ass.AnnualTuitionMillion || 37.2) + " tr HP - 18% biến phí) × " + c.n + " HS × " + Math.round(this.currentMonthRatio * 9) + "/9 tháng",
+          formula: "Biên đóng góp = (" + ass.AnnualTuitionMillion + " tr HP - 18% biến phí) × " + c.n + " HS × " + Math.round(this.currentMonthRatio * 9) + "/9 tháng",
           isBad: isOut,
           isGood: !isOut,
         },
@@ -4594,7 +4520,7 @@
           label: "Câu lạc bộ",
           value: (isOut ? "−" : "+") + c.clbLost + " học viên",
           sub: "theo tỷ lệ tham gia CLB của đơn vị",
-          formula: "Tỷ lệ tham gia CLB của cơ sở (" + Math.round((ass.ClbParticipationRate || 0.38) * 100) + "%) × " + c.n + " HS",
+          formula: "Tỷ lệ tham gia CLB của cơ sở (" + Math.round(ass.ClbParticipationRate * 100) + "%) × " + c.n + " HS",
           isBad: isOut,
           isGood: !isOut,
         },
@@ -4616,7 +4542,7 @@
           label: "Thiệt hại 1 năm chờ bù",
           value: "≈ " + c.revFutureSign + " tỷ",
           sub: "Biên đóng góp năm tiếp theo",
-          formula: "Biên đóng góp 1 năm kế tiếp chờ tuyển bù = " + c.n + " HS × " + ((ass.AnnualTuitionMillion || 37.2) * 0.82).toFixed(1) + " tr/năm",
+          formula: "Biên đóng góp 1 năm kế tiếp chờ tuyển bù = " + c.n + " HS × " + (ass.AnnualTuitionMillion * 0.82).toFixed(1) + " tr/năm",
           isBad: isOut,
           isGood: !isOut,
         },
@@ -4626,8 +4552,8 @@
           y: 150,
           label: "Lead để tuyển bù",
           value: "≈ " + c.leadsNeed + " lead",
-          sub: "chuyển đổi " + ((ass.ConversionRate || 0.073) * 100).toFixed(1) + "% · " + c.leadsPctMonth + "% lead/tháng",
-          formula: "Số lead tuyển bù = " + c.n + " HS / Tỷ lệ chuyển đổi (" + ((ass.ConversionRate || 0.073) * 100).toFixed(1) + "%)",
+          sub: "chuyển đổi " + (ass.ConversionRate * 100).toFixed(1) + "% · " + c.leadsPctMonth + "% lead/tháng",
+          formula: "Số lead tuyển bù = " + c.n + " HS / Tỷ lệ chuyển đổi (" + (ass.ConversionRate * 100).toFixed(1) + "%)",
           isBad: isOut,
           isGood: !isOut,
         },
@@ -4685,7 +4611,10 @@
     },
     hoveredCausalNode() {
       if (!this.causalHoverNodeId) return null;
-      return this.causalTreeNodes.find((n) => n.id === this.causalHoverNodeId);
+      return this.causalTreeNodes.find((n) => n.id === this.causalHoverNodeId) || null;
+    },
+    selectedPeriodText() {
+      return this.currentPeriodName || this.selectedPeriod || "";
     },
     currentViewLabel() {
       if (this.page === 0) return "Hội đồng trường";
@@ -4713,7 +4642,7 @@
       return Object.values(mergedMap);
     },
     computedTotalStudents() {
-      return this.currentGradeRows.reduce((sum, r) => sum + (r.SLHocSinh || 0), 0);
+      return (this.currentGradeRows || []).reduce((sum, r) => sum + (r.SLHocSinh || 0), 0);
     },
     maxGradeEnrollment() {
       if (!this.currentGradeRows || !this.currentGradeRows.length) return 300;
@@ -4731,71 +4660,73 @@
         else if (f.MetricAmount != null) totalMetric += Number(f.MetricAmount);
       });
 
+      const pName = this.currentPeriodName || this.selectedPeriod;
+
       const configs = {
         LEAVE: {
           title: "Nghỉ Phép Nhân Sự (HR01 / HR02)",
-          kpiReported: "551 ngày công (470 đơn)",
-          kpiNote: "Nguồn: Báo cáo nhân sự Tháng 9",
+          kpiReported: totalFacts > 0 ? totalMetric.toFixed(1) + " ngày công (" + totalFacts + " đơn)" : "Chưa có số liệu",
+          kpiNote: "Nguồn: HRM · " + pName,
           factCount: totalFacts,
           factMetric: totalMetric.toFixed(1) + " ngày công",
           status: pendingFacts > 0 ? "WARN" : "MATCHED",
-          statusText: "Khớp 100% Số Liệu Gốc (551 ngày từ 470 đơn)",
-          auditFinding: "Bộ phận Bếp nghỉ 54 ngày công, Mầm non nghỉ 82.5 ngày công gây áp lực trực ca cao điểm.",
+          statusText: totalFacts > 0 ? "Khớp 100% Số Liệu Gốc (" + totalMetric.toFixed(1) + " ngày từ " + totalFacts + " đơn)" : "Chưa có đơn nghỉ phép ghi nhận",
+          auditFinding: totalFacts > 0 ? "Ghi nhận " + totalFacts + " đơn nghỉ phép với tổng " + totalMetric.toFixed(1) + " ngày công trong " + pName + ". Cần rà soát bố trí nhân sự thay thế hợp lý." : "Kỳ hiện tại chưa có dữ liệu nghỉ phép.",
           responsibleRole: "Trưởng phòng Nhân sự",
         },
         HEALTH: {
           title: "Y Tế Học Đường (MED01 / DV38)",
-          kpiReported: "131 ca bệnh (53 ca sốt Cúm A)",
-          kpiNote: "Nguồn: Sổ y tế trường học Tháng 9",
+          kpiReported: totalFacts > 0 ? totalFacts + " ca bệnh ghi nhận" : "0 ca bệnh",
+          kpiNote: "Nguồn: Sổ y tế trường học · " + pName,
           factCount: totalFacts,
           factMetric: totalFacts + " ca ghi nhận",
-          status: "WARN",
-          statusText: "Khớp 100% Số Liệu (Bùng phát Cúm A khối 4-5)",
-          auditFinding: "Phát hiện chùm 53 ca sốt tập trung tại Tiểu học tuần cuối tháng 9. Đã khoanh vùng phòng dịch.",
+          status: pendingFacts > 0 ? "WARN" : (totalFacts > 100 ? "WARN" : "MATCHED"),
+          statusText: totalFacts > 0 ? "Khớp 100% Số Liệu Sổ Y Tế (" + totalFacts + " ca)" : "Duy trì an toàn dịch tễ học đường",
+          auditFinding: totalFacts > 0 ? "Ghi nhận " + totalFacts + " lượt khám, chăm sóc sức khỏe học sinh trong kỳ " + pName + ". Đã thực hiện khoanh vùng theo dõi." : "Không phát sinh ca bệnh bất thường trong kỳ.",
           responsibleRole: "Trưởng bộ phận Y tế học đường",
         },
         MAINTENANCE: {
           title: "Bảo Trì Cơ Sở Vật Chất (CSVC01)",
-          kpiReported: "79 ticket yêu cầu (Tồn đọng 4 ticket máy lạnh)",
-          kpiNote: "Nguồn: Phần mềm QL CSVC Tháng 9",
+          kpiReported: totalFacts > 0 ? totalFacts + " ticket yêu cầu (" + pendingFacts + " tồn đọng)" : "0 ticket yêu cầu",
+          kpiNote: "Nguồn: Phần mềm QL CSVC · " + pName,
           factCount: totalFacts,
           factMetric: totalFacts + " ticket",
           status: pendingFacts > 0 ? "CRITICAL" : "MATCHED",
-          statusText: "Cảnh Báo: 4 Ticket Tồn Đọng Chưa Hoàn Thành",
-          auditFinding: "18 ticket máy lạnh Khu B/C, còn tồn 4 ticket chưa nghiệm thu dứt điểm. Nguy cơ trải nghiệm phụ huynh.",
+          statusText: pendingFacts > 0 ? "Cảnh Báo: " + pendingFacts + " Ticket Tồn Đọng Chưa Nghiệm Thu" : "Đã hoàn thành nghiệm thu 100% (" + totalFacts + "/" + totalFacts + ")",
+          auditFinding: pendingFacts > 0 ? "Có " + pendingFacts + " ticket CSVC đang tồn đọng xử lý trong kỳ " + pName + ". Cần ưu tiên khắc phục thiết bị học tập." : "Toàn bộ các ticket CSVC phát sinh trong kỳ đều đã được xử lý xong.",
           responsibleRole: "Trưởng phòng Quản trị CSVC",
         },
         CLUB: {
           title: "Doanh Thu Dịch Vụ Câu Lạc Bộ (CLB01 / TC56)",
-          kpiReported: "1.611 tỷ VNĐ (36 môn · 596 học viên)",
-          kpiNote: "Nguồn: Kế toán dịch vụ Tháng 9",
+          kpiReported: totalFacts > 0 ? this.totalClubRevenueText + " (" + totalFacts + " môn CLB)" : "Chưa có doanh thu CLB",
+          kpiNote: "Nguồn: Kế toán dịch vụ · " + pName,
           factCount: totalFacts,
           factMetric: totalFacts + " môn CLB",
           status: "MATCHED",
-          statusText: "Khớp 100% Sổ Thu Phí Dịch Vụ CLB",
-          auditFinding: "Tiểu học vượt 117.7% chỉ tiêu CLB. Đóng góp 480 triệu dòng tiền tự do tái đầu tư.",
+          statusText: totalFacts > 0 ? "Khớp 100% Sổ Thu Phí Dịch Vụ CLB" : "Chưa có dữ liệu CLB kỳ này",
+          auditFinding: totalFacts > 0 ? "Ghi nhận " + totalFacts + " môn CLB bổ trợ với doanh thu đạt " + this.totalClubRevenueText + " trong " + pName + "." : "Chưa phát sinh dữ liệu CLB trong kỳ.",
           responsibleRole: "Kế toán trưởng & BGH Tiểu học",
         },
         HR_TURNOVER: {
           title: "Biến Động Nhân Sự Cơ Hữu (HR02)",
-          kpiReported: "45 ca biến động (Nghỉ việc & Điều chuyển)",
-          kpiNote: "Nguồn: Hồ sơ nhân sự",
+          kpiReported: totalFacts > 0 ? totalFacts + " ca biến động (Nghỉ việc & Điều chuyển)" : "0 ca biến động",
+          kpiNote: "Nguồn: Hồ sơ nhân sự · " + pName,
           factCount: totalFacts,
           factMetric: totalFacts + " ca",
           status: "MATCHED",
-          statusText: "Khớp 100% Hồ Sơ Nhân Sự Tháng 9",
-          auditFinding: "Tập trung ở khối giáo viên trẻ và nhân viên bán trú. Cần cơ chế bù thù lao thỏa đáng.",
+          statusText: totalFacts > 0 ? "Khớp 100% Hồ Sơ Nhân Sự " + pName : "Nhân sự cơ hữu ổn định 100%",
+          auditFinding: totalFacts > 0 ? "Ghi nhận " + totalFacts + " ca biến động nhân sự trong kỳ " + pName + ". Cần duy trì chính sách thu hút và giữ chân nhân tài." : "Không có biến động nhân sự trong kỳ.",
           responsibleRole: "Ban Giám Đốc & P. Nhân sự",
         },
         TEACHING: {
           title: "Tiến Độ Dạy & Giờ Dạy Thay (CM01 / CM02)",
-          kpiReported: "288 tiết dạy thay phát sinh từ giờ vắng",
-          kpiNote: "Nguồn: Thời khóa biểu & Chuyên môn",
+          kpiReported: totalFacts > 0 ? (totalMetric > 0 ? totalMetric : totalFacts) + " tiết dạy thay phát sinh" : "0 tiết phát sinh",
+          kpiNote: "Nguồn: Thời khóa biểu & Chuyên môn · " + pName,
           factCount: totalFacts,
-          factMetric: totalFacts + " tiết dạy thay",
-          status: "WARN",
+          factMetric: (totalMetric > 0 ? totalMetric : totalFacts) + " tiết dạy thay",
+          status: pendingFacts > 0 ? "WARN" : "MATCHED",
           statusText: "Khớp 100% Lịch Phân Công Dạy Thay",
-          auditFinding: "288 tiết dạy thay phát sinh do 470 đơn nghỉ phép của GV. Giáo viên nòng cốt bị quá tải.",
+          auditFinding: totalFacts > 0 ? "Tổng cộng " + (totalMetric > 0 ? totalMetric : totalFacts) + " tiết dạy thay phát sinh từ các giờ vắng trong kỳ " + pName + ". Các tổ chuyên môn đã bố trí dạy bù kịp thời." : "Tiến độ giảng dạy đúng kế hoạch.",
           responsibleRole: "Tổ trưởng Chuyên môn & BGH",
         },
       };
@@ -4803,12 +4734,12 @@
       return configs[domain] || {
         title: "Kho Giao Dịch Gốc Fact Store",
         kpiReported: totalFacts + " bản ghi",
-        kpiNote: "CSDL eSign",
+        kpiNote: "CSDL eSign · " + pName,
         factCount: totalFacts,
         factMetric: totalFacts + " facts",
         status: "MATCHED",
         statusText: "Khớp Dữ Liệu Gốc",
-        auditFinding: "Dữ liệu kỳ đã được đồng bộ chuẩn hóa từ staging.",
+        auditFinding: "Dữ liệu kỳ " + pName + " đã được đồng bộ chuẩn hóa từ staging.",
         responsibleRole: "Ban Kiểm Soát",
       };
     },
@@ -4827,27 +4758,29 @@
       return list;
     },
     computedTargetStudents() {
-      if (this.currentUnit === "MNLK") return 166;
-      if (this.currentUnit === "MNBH" || this.currentUnit === "MNTB") return 406;
-      if (this.currentUnit === "TH") return 980;
-      if (this.currentUnit === "THCS") return 841;
-      if (this.currentUnit === "THPT") return 480;
-      return 2750;
+      const k = this.getKpi("TS01");
+      if (k && k.TargetValue != null) return Number(k.TargetValue);
+      if (this.currentCausalAssumption && this.currentCausalAssumption.PlannedCapacity) {
+        return this.currentCausalAssumption.PlannedCapacity;
+      }
+      return 0;
     },
     computedDesignCapacity() {
-      if (this.currentUnit === "MNLK") return 166;
-      if (this.currentUnit === "MNBH" || this.currentUnit === "MNTB") return 406;
-      if (this.currentUnit === "TH") return 980;
-      if (this.currentUnit === "THCS") return 841;
-      if (this.currentUnit === "THPT") return 480;
-      return 2810;
+      const k = this.getKpi("TS02");
+      if (k && k.TargetValue != null) return Number(k.TargetValue);
+      if (this.currentCausalAssumption && this.currentCausalAssumption.PlannedCapacity) {
+        return this.currentCausalAssumption.PlannedCapacity;
+      }
+      return this.computedTargetStudents;
     },
     computedFillRate() {
       if (!this.computedDesignCapacity) return "0.0";
       return ((this.computedTotalStudents / this.computedDesignCapacity) * 100).toFixed(1);
     },
     computedWithdrawCount() {
-      return this.withdrawRecords.length || (this.currentUnit === "MNLK" ? 10 : 152);
+      const k = this.getKpi("TS04");
+      if (k && k.ActualValue != null) return Number(k.ActualValue);
+      return this.withdrawRecords.length || 0;
     },
     computedNetChange() {
       return this.inflowRecordsCount - this.computedWithdrawCount;
@@ -4857,28 +4790,111 @@
       return ((this.computedWithdrawCount / (this.computedTotalStudents + this.computedWithdrawCount)) * 100).toFixed(1);
     },
     computedCrmLeads() {
-      if (this.currentUnit === "MNLK") return 286;
-      if (this.currentUnit === "MNBH" || this.currentUnit === "MNTB") return 261;
-      if (["TH", "THCS", "THPT"].includes(this.currentUnit)) return 63;
-      return 610;
+      if (!this.crmMonthlySummary || !this.crmMonthlySummary.length) {
+        const k = this.getKpi("TS05");
+        return (k && k.ActualValue != null) ? Number(k.ActualValue) : 0;
+      }
+      if (this.currentUnit === "MNLK") {
+        return this.crmMonthlySummary.reduce((sum, m) => sum + (m.mnlkLeads ?? m.MnlkLeads ?? 0), 0);
+      }
+      if (this.currentUnit === "MNBH" || this.currentUnit === "MNTB") {
+        return this.crmMonthlySummary.reduce((sum, m) => sum + (m.mnbhLeads ?? m.MnbhLeads ?? 0), 0);
+      }
+      if (["TH", "THCS", "THPT"].includes(this.currentUnit)) {
+        return this.crmMonthlySummary.reduce((sum, m) => sum + (m.ptlcLeads ?? m.PtlcLeads ?? 0), 0);
+      }
+      return this.crmMonthlySummary.reduce((sum, m) => sum + (m.totalLeads ?? m.TotalLeads ?? 0), 0);
     },
     computedCrmEnrolled() {
-      if (this.currentUnit === "MNLK") return 18;
-      if (this.currentUnit === "MNBH" || this.currentUnit === "MNTB") return 27;
-      if (["TH", "THCS", "THPT"].includes(this.currentUnit)) return 13;
-      return 58;
+      if (!this.crmMonthlySummary || !this.crmMonthlySummary.length) return 0;
+      if (this.currentUnit === "MNLK") {
+        return this.crmMonthlySummary.reduce((sum, m) => sum + (m.mnlkEnrolled ?? m.MnlkEnrolled ?? 0), 0);
+      }
+      if (this.currentUnit === "MNBH" || this.currentUnit === "MNTB") {
+        return this.crmMonthlySummary.reduce((sum, m) => sum + (m.mnbhEnrolled ?? m.MnbhEnrolled ?? 0), 0);
+      }
+      if (["TH", "THCS", "THPT"].includes(this.currentUnit)) {
+        return this.crmMonthlySummary.reduce((sum, m) => sum + (m.ptlcEnrolled ?? m.PtlcEnrolled ?? 0), 0);
+      }
+      return this.crmMonthlySummary.reduce((sum, m) => sum + (m.totalEnrolled ?? m.TotalEnrolled ?? m.EnrolledStudents ?? 0), 0);
     },
     computedCrmConversionRate() {
-      if (this.currentUnit === "MNLK") return "6.3";
-      if (this.currentUnit === "MNBH" || this.currentUnit === "MNTB") return "10.3";
-      if (["TH", "THCS", "THPT"].includes(this.currentUnit)) return "20.6";
-      return "9.5";
+      const leads = this.computedCrmLeads;
+      const enrolled = this.computedCrmEnrolled;
+      if (!leads || leads === 0) return "0.0";
+      return ((enrolled / leads) * 100).toFixed(1);
     },
     computedCrmLeadsCurrentMonth() {
-      if (this.currentUnit === "MNLK") return 40;
-      if (this.currentUnit === "MNBH" || this.currentUnit === "MNTB") return 40;
-      if (["TH", "THCS", "THPT"].includes(this.currentUnit)) return 9;
-      return 89;
+      if (!this.crmMonthlySummary || !this.crmMonthlySummary.length) return 0;
+      const latest = this.crmMonthlySummary[this.crmMonthlySummary.length - 1];
+      if (!latest) return 0;
+      if (this.currentUnit === "MNLK") return (latest.mnlkLeads ?? latest.MnlkLeads ?? 0);
+      if (this.currentUnit === "MNBH" || this.currentUnit === "MNTB") return (latest.mnbhLeads ?? latest.MnbhLeads ?? 0);
+      if (["TH", "THCS", "THPT"].includes(this.currentUnit)) return (latest.ptlcLeads ?? latest.PtlcLeads ?? 0);
+      return (latest.totalLeads ?? latest.TotalLeads ?? 0);
+    },
+    computedCrmDropTotal() {
+      if (!this.crmDropReasons || !this.crmDropReasons.length) return 0;
+      return this.crmDropReasons.reduce((sum, r) => sum + (parseInt(r.count || r.Count, 10) || 0), 0);
+    },
+    computedCrmUnitRatesText() {
+      if (!this.crmMonthlySummary || !this.crmMonthlySummary.length) return "Đang cập nhật";
+      const ptlcL = this.crmMonthlySummary.reduce((sum, m) => sum + (m.ptlcLeads ?? m.PtlcLeads ?? 0), 0);
+      const ptlcE = this.crmMonthlySummary.reduce((sum, m) => sum + (m.ptlcEnrolled ?? m.PtlcEnrolled ?? 0), 0);
+      const ptlcRate = ptlcL ? ((ptlcE / ptlcL) * 100).toFixed(1) : "0.0";
+
+      const mnbhL = this.crmMonthlySummary.reduce((sum, m) => sum + (m.mnbhLeads ?? m.MnbhLeads ?? 0), 0);
+      const mnbhE = this.crmMonthlySummary.reduce((sum, m) => sum + (m.mnbhEnrolled ?? m.MnbhEnrolled ?? 0), 0);
+      const mnbhRate = mnbhL ? ((mnbhE / mnbhL) * 100).toFixed(1) : "0.0";
+
+      const mnlkL = this.crmMonthlySummary.reduce((sum, m) => sum + (m.mnlkLeads ?? m.MnlkLeads ?? 0), 0);
+      const mnlkE = this.crmMonthlySummary.reduce((sum, m) => sum + (m.mnlkEnrolled ?? m.MnlkEnrolled ?? 0), 0);
+      const mnlkRate = mnlkL ? ((mnlkE / mnlkL) * 100).toFixed(1) : "0.0";
+
+      return `PTLC: ${ptlcRate}% · MNBH: ${mnbhRate}% · MNLK: ${mnlkRate}%`;
+    },
+    crmMonthlySummaryText() {
+      if (!this.crmMonthlySummary || !this.crmMonthlySummary.length) return "Đang cập nhật";
+      const parts = this.crmMonthlySummary.map(m => {
+        const mName = m.month || m.ReportMonth || "";
+        const shortM = mName.replace("Tháng ", "T");
+        const count = m.totalLeads ?? m.TotalLeads ?? 0;
+        return `${shortM}: ${count}`;
+      });
+      return `Lũy kế ${this.crmMonthlySummary.length} tháng: ${parts.join(" · ")}`;
+    },
+    displayWithdrawTotalCount() {
+      return this.withdrawRecords.length || this.displayOutflowYearToDate || this.displayWithdrawCount || 0;
+    },
+    lmsTotalAssigned() {
+      if (!this.lmsAssignmentRows || !this.lmsAssignmentRows.length) return 0;
+      return this.lmsAssignmentRows.reduce((s, r) => s + (r.TotalAssigned || 0), 0);
+    },
+    clubMillionDollarAccumPct() {
+      const kClb = this.getKpi("TC33");
+      const rev = (this.computedFinanceData && this.computedFinanceData.clbRev) ? parseFloat(this.computedFinanceData.clbRev) * 1000000000 : (kClb && kClb.ActualValue ? Number(kClb.ActualValue) : 0);
+      return ((rev / 25000000000) * 100).toFixed(1);
+    },
+    riskSummaryBadgeText() {
+      const red = (this.riskCampusCards || []).filter(c => c.RiskTier === "RED" || c.RiskLevel === "CRITICAL" || c.CompositeScore >= 70).length;
+      const warn = (this.riskCampusCards || []).filter(c => c.RiskTier === "WARN" || c.RiskLevel === "WARNING" || (c.CompositeScore >= 40 && c.CompositeScore < 70)).length;
+      return `${red} Vùng Đỏ · ${warn} Cảnh Báo`;
+    },
+    riskBadgeClass() {
+      const red = (this.riskCampusCards || []).filter(c => c.RiskTier === "RED" || c.RiskLevel === "CRITICAL" || c.CompositeScore >= 70).length;
+      const warn = (this.riskCampusCards || []).filter(c => c.RiskTier === "WARN" || c.RiskLevel === "WARNING" || (c.CompositeScore >= 40 && c.CompositeScore < 70)).length;
+      if (red > 0) return 'badge-danger';
+      if (warn > 0) return 'badge-warning';
+      return 'badge-success';
+    },
+    linearCorrelationsCount() {
+      return (this.correlationsList || []).filter(c => c.RelationshipType === "DIRECT_CAUSAL_1WAY" || c.RelationshipType === "CAUSAL_1WAY").length;
+    },
+    loopCorrelationsCount() {
+      return (this.correlationsList || []).filter(c => c.RelationshipType === "FEEDBACK_LOOP_2WAY").length;
+    },
+    paradoxCorrelationsCount() {
+      return (this.correlationsList || []).filter(c => c.RelationshipType === "DATA_PARADOX_CROSS" || c.RelationshipType === "BOTTLENECK_CSVC").length;
     },
     currentPeriodIsStaging() {
       const p = this.periodsList.find((x) => x.PeriodKey === this.selectedPeriod);
@@ -4887,6 +4903,22 @@
     currentPeriodName() {
       const p = this.periodsList.find((x) => x.PeriodKey === this.selectedPeriod);
       return p ? p.PeriodName : "Kỳ hiện tại";
+    },
+    currentPeriodShortName() {
+      if (!this.selectedPeriod) return "kỳ";
+      const parts = this.selectedPeriod.split("-");
+      if (parts.length === 2) return "T" + parseInt(parts[1], 10);
+      return this.selectedPeriod;
+    },
+    nextPeriodShortName() {
+      if (!this.selectedPeriod) return "kỳ tới";
+      const parts = this.selectedPeriod.split("-");
+      if (parts.length === 2) {
+        let m = parseInt(parts[1], 10) + 1;
+        if (m > 12) m = 1;
+        return "T" + m;
+      }
+      return "kỳ tới";
     },
     currentUnitTitle() {
       const u = this.unitOptions.find((x) => x.k === this.currentUnit);
@@ -4955,6 +4987,17 @@
       }
       return 0;
     },
+    displayReasonFarPct() {
+      const tot = this.displayWithdrawCount || 1;
+      return ((this.displayReasonFar / tot) * 100).toFixed(1);
+    },
+    displayWithdrawFinancialLoss() {
+      const tuition = (this.currentCausalAssumption && this.currentCausalAssumption.AnnualTuitionMillion) || 49.8;
+      const busFee = 12.0;
+      const totalTuitionLoss = ((this.displayReasonFar * tuition) / 1000).toFixed(2).replace('.', ',');
+      const totalBusLoss = Math.round(this.displayReasonFar * busFee);
+      return `${totalTuitionLoss} tỷ học phí + ${totalBusLoss} triệu xe bus/năm`;
+    },
     displayReasonEco() {
       if (this.breakdownsList && this.breakdownsList.length) {
         const item = this.breakdownsList.find((b) => b.KpiCode === "TS04" && b.DimensionCode === "ECO");
@@ -4987,36 +5030,53 @@
       const kTc55 = this.getKpi("TC55");
       const kTc56 = this.getKpi("TC56");
       const kClb = this.getKpi("TC33");
-      const grossMargin = (kTc55 && kTc55.Rate != null) ? kTc55.Rate + "%" : "48.4%";
-      let rev = "79.37 Tỷ";
+      const grossMargin = (kTc55 && kTc55.Rate != null) ? kTc55.Rate + "%" : (this.financeSummary && this.financeSummary.TotalOpMarginPct != null ? Number(this.financeSummary.TotalOpMarginPct).toFixed(1) + "%" : (this.currentPeriodIsFrozen ? "0.0%" : "Đang cập nhật"));
+      let rev = "0 Tỷ";
       if (this.currentUnit !== "ALL") {
-        const tuition = this.currentCausalAssumption.AnnualTuitionMillion || 49.8;
-        const students = this.displayStudents || 100;
+        const tuition = this.currentCausalAssumption.AnnualTuitionMillion || (kTc55 ? Number(kTc55.ActualValue) / (this.displayStudents || 1) / 1000000 : 0);
+        const students = this.displayStudents || 0;
         rev = ((students * tuition) / 1000).toFixed(2).replace(".", ",") + " Tỷ";
       } else if (kTc55 && kTc55.ActualValue != null) {
         const val = Number(kTc55.ActualValue);
         rev = val >= 1000000000 ? (val / 1000000000).toFixed(2) + " Tỷ" : (val / 1000000).toFixed(0) + " Tr";
+      } else if (this.financeSummary && this.financeSummary.TotalOpRevenue) {
+        const val = Number(this.financeSummary.TotalOpRevenue);
+        rev = (val / 1000000000).toFixed(2) + " Tỷ";
+      } else {
+        rev = this.currentPeriodIsFrozen ? "0 Tỷ" : "Đang cập nhật";
       }
-      let clbRev = "1.56 Tỷ";
+      let clbRev = "0 Tỷ";
       if (this.currentUnit !== "ALL") {
-        const clbRate = this.currentCausalAssumption.ClbParticipationRate || 0.35;
+        const clbRate = this.currentCausalAssumption.ClbParticipationRate || 0;
+        const clbFee = this.currentCausalAssumption.ClbAvgFeeMillion || 0;
         const clbCount = Math.round(this.displayStudents * clbRate);
-        clbRev = ((clbCount * 2.7) / 1000).toFixed(2).replace(".", ",") + " Tỷ";
+        clbRev = ((clbCount * clbFee) / 1000).toFixed(2).replace(".", ",") + " Tỷ";
       } else if (kClb && kClb.ActualValue != null) {
         const val = Number(kClb.ActualValue);
         clbRev = val >= 1000000000 ? (val / 1000000000).toFixed(2) + " Tỷ" : (val / 1000000).toFixed(0) + " Tr";
+      } else if (this.financeSummary && this.financeSummary.TotalClubRevenue) {
+        const val = Number(this.financeSummary.TotalClubRevenue);
+        clbRev = (val / 1000000000).toFixed(2) + " Tỷ";
+      } else {
+        clbRev = this.currentPeriodIsFrozen ? "0 Tỷ" : "Đang cập nhật";
       }
       const clbStudents = this.currentUnit !== "ALL" 
-        ? Math.round(this.displayStudents * (this.currentCausalAssumption.ClbParticipationRate || 0.35)) + " HS" 
-        : ((kClb && kClb.TargetValue != null) ? kClb.TargetValue + " HS" : "596 HS");
-      const busMargin = (kTc56 && kTc56.Rate != null) ? kTc56.Rate + "%" : "12.6%";
+        ? Math.round(this.displayStudents * (this.currentCausalAssumption.ClbParticipationRate || 0)) + " HS" 
+        : ((kClb && kClb.TargetValue != null) ? kClb.TargetValue + " HS" : (this.totalClubStudents ? this.totalClubStudents + " HS" : "0 HS"));
+      const busMargin = (kTc56 && kTc56.Rate != null) ? kTc56.Rate + "%" : "—";
+      let retailMargin = "—";
+      if (this.financeServices && this.financeServices.length) {
+        const rItem = this.financeServices.find(s => s.name && (s.name.includes("Bán lẻ") || s.name.includes("Đồng phục")));
+        if (rItem && rItem.margin) retailMargin = rItem.margin;
+      }
       return {
         grossMargin,
         rev,
         clbRev,
         clbStudents,
         busMargin,
-        mealMargin: "48.5%",
+        mealMargin: grossMargin,
+        retailMargin,
       };
     },
     computedLmsData() {
@@ -5025,70 +5085,31 @@
       }
       const kCm08 = this.getKpi("CM08");
       const kCm04 = this.getKpi("CM04");
-      const rate = (kCm08 && kCm08.Rate != null) ? kCm08.Rate + "%" : (this.lmsOverallRate && this.lmsOverallRate !== "0.0" ? this.lmsOverallRate + "%" : "89.6%");
-      const digitalLessons = (kCm04 && kCm04.Rate != null) ? kCm04.Rate + "% (Số hóa)" : (this.currentUnit === "TH" ? "68 bài (100%)" : "120 bài (100%)");
+      const rate = (kCm08 && kCm08.Rate != null) ? kCm08.Rate + "%" : (this.lmsOverallRate && this.lmsOverallRate !== "0.0" ? this.lmsOverallRate + "%" : "0.0%");
+      const digitalLessons = (kCm04 && kCm04.Rate != null) ? kCm04.Rate + "%" : (this.lmsHocLieuSummary && this.lmsHocLieuSummary.pct ? this.lmsHocLieuSummary.pct + "%" : "0.0%");
+      let math = "—";
+      let viet = "—";
+      if (this.lmsAssignmentRows && this.lmsAssignmentRows.length) {
+        const mathRow = this.lmsAssignmentRows.find(r => r.TenMonHoc_HienThi && r.TenMonHoc_HienThi.includes("Toán"));
+        if (mathRow && mathRow.CompletionRate_Assignments != null) math = mathRow.CompletionRate_Assignments + "%";
+        const vietRow = this.lmsAssignmentRows.find(r => r.TenMonHoc_HienThi && (r.TenMonHoc_HienThi.includes("Tiếng Việt") || r.TenMonHoc_HienThi.includes("Ngữ văn")));
+        if (vietRow && vietRow.CompletionRate_Assignments != null) viet = vietRow.CompletionRate_Assignments + "%";
+      }
       return {
         rate,
-        math: this.currentUnit === "TH" ? "88.2%" : "85.0%",
-        viet: this.currentUnit === "TH" ? "86.5%" : "83.8%",
+        math,
+        viet,
         digitalLessons,
-        onTime: "91.2%",
+        onTime: rate,
       };
     },
     activeBottlenecks() {
       if (this.periodSnapshots && this.periodSnapshots.length) {
-        const list = this.periodSnapshots.filter(
+        return this.periodSnapshots.filter(
           (k) => k.Status === "WARN" || k.Status === "DANGER" || k.Status === "BAD"
         );
-        if (list.length) return list;
       }
-      return [
-        {
-          SnapshotID: "B1",
-          KpiCode: "TS01",
-          KpiName: "Sĩ số học sinh hiện diện toàn trường",
-          Status: "WARN",
-          ActualValue: 2625,
-          TargetValue: 2750,
-          Rate: 95.45,
-          Unit: "Học sinh",
-          OperationalInsight: "Quy mô toàn trường đạt 2.625 HS; hụt 125 HS so với kế hoạch năm học.",
-          FinancialImpact: "Thiếu hụt doanh thu học phí ước tính 7.2 tỷ VNĐ so với dự toán.",
-          SpecCode: "SPEC_BASICDATA",
-          SourceSystem: "Hệ thống Basic Data (https://basicdata.lhbs.vn/)",
-          Owner: "Ban Tuyển Sinh & Marketing",
-        },
-        {
-          SnapshotID: "B2",
-          KpiCode: "TS02",
-          KpiName: "Tỷ lệ lấp đầy công suất học sinh MN Long Khánh",
-          Status: "WARN",
-          ActualValue: 133,
-          TargetValue: 160,
-          Rate: 83.1,
-          Unit: "%",
-          OperationalInsight: "Quy mô Long Khánh còn mỏng (133/160 HS). Thiếu hụt tập trung khối Nhà trẻ 18 tháng và Mầm.",
-          FinancialImpact: "Thiếu hụt ~1.004 tỷ doanh thu kế hoạch năm học.",
-          SpecCode: "SPEC_BASICDATA",
-          SourceSystem: "Hệ thống Basic Data (https://basicdata.lhbs.vn/)",
-          Owner: "Ban Giám Hiệu MN Long Khánh",
-        },
-        {
-          SnapshotID: "B3",
-          KpiCode: "CM04",
-          KpiName: "Tỷ lệ số hóa học liệu bài giảng đa phương tiện LMS Cấp 1",
-          Status: "WARN",
-          ActualValue: 35.5,
-          TargetValue: 60,
-          Rate: 59.17,
-          Unit: "%",
-          OperationalInsight: "Môn Tiếng Việt và Toán đã tạo khung nhưng tỷ lệ gắn media & video tương tác mới đạt 35.5%.",
-          FinancialImpact: "Ảnh hưởng trực tiếp đến chất lượng tự học và tỷ lệ hoàn thành bài tập trực tuyến CM08.",
-          SpecCode: "SPEC_LMS",
-          SourceSystem: "Hệ thống LMS Học tập (https://lms.lhbs.vn/)",
-          Owner: "Ban Chuyên Môn & Đào Tạo",
-        },
-      ];
+      return [];
     },
     computedDisplaySpecs() {
       const sourceList = (this.goliveSpecsList && this.goliveSpecsList.length) ? this.goliveSpecsList : this.defaultGoliveSpecs;
@@ -5099,6 +5120,8 @@
       return sourceList;
     },
     valueBridge() {
+      const curStudents = this.displayStudents || 0;
+      const target = this.displayTarget || 0;
       const rawBars = (this.strategicWaterfallBars && this.strategicWaterfallBars.length)
         ? this.strategicWaterfallBars.map(b => ({
             name: b.BarName,
@@ -5109,16 +5132,12 @@
             lines: [b.Line1, b.Line2]
           }))
         : [
-            { name: "Sĩ số T9", v: 2625, delta: 0, type: "total", money: "2.625 HS", lines: ["Sĩ số T9", "2.625 HS"] },
-            { name: "Gom tuyến bus", v: 2640, delta: 15, type: "up", money: "+0.98 tỷ", lines: ["Gom bus", "+15 HS"] },
-            { name: "MN Kitty", v: 2675, delta: 35, type: "up", money: "+1.30 tỷ", lines: ["MN Kitty", "+35 HS"] },
-            { name: "Liên thông cấp", v: 2740, delta: 65, type: "up", money: "+3.22 tỷ", lines: ["Chuyển cấp", "+65 HS"] },
-            { name: "Khối 10 HK2", v: 2750, delta: 10, type: "up", money: "+0.65 tỷ", lines: ["Khối 10 HK2", "+10 HS"] },
-            { name: "Kế hoạch HĐQT", v: 2750, delta: 0, type: "end", money: "100% KH", lines: ["Kế hoạch", "2.750 HS"] },
+            { name: "Sĩ số hiện tại", v: curStudents, delta: 0, type: "total", money: curStudents + " HS", lines: ["Sĩ số kỳ", curStudents + " HS"] },
+            { name: "Kế hoạch HĐQT", v: target, delta: 0, type: "end", money: "100% KH", lines: ["Kế hoạch", target + " HS"] },
           ];
 
-      const baseVal = rawBars[0] ? rawBars[0].v : 2625;
-      const planVal = rawBars[rawBars.length - 1] ? rawBars[rawBars.length - 1].v : 2750;
+      const baseVal = rawBars[0] ? rawBars[0].v : curStudents;
+      const planVal = rawBars[rawBars.length - 1] ? rawBars[rawBars.length - 1].v : target;
       const minY = Math.floor(Math.min(baseVal, planVal) * 0.9 / 50) * 50;
       const maxY = Math.ceil(Math.max(baseVal, planVal) * 1.06 / 50) * 50;
       const plotTop = 18;
@@ -5171,22 +5190,31 @@
     },
     campusMatrixRows() {
       if (this.riskCampusCards && this.riskCampusCards.length) {
-        return this.riskCampusCards.map(c => ({
-          code: c.ScopeID,
-          name: c.CampusName,
-          owner: "Ban Giám Hiệu " + c.CampusName,
-          current: c.CurrentEnrollment,
-          target: c.PlannedCapacity,
-          occupancy: c.OccupancyRate,
-          withdraw: 0,
-          withdrawRate: 0,
-          leaveDays: 0,
-          maintenancePending: 0,
-          status: c.RiskLevel === "RED" ? "bad" : (c.RiskLevel === "YELLOW" ? "warn" : "good"),
-          statusText: c.RiskStatusText || (c.RiskLevel === "RED" ? "Giải trình" : (c.RiskLevel === "YELLOW" ? "Theo dõi" : "Ổn định")),
-          confidence: c.RiskLevel === "RED" ? "half" : "full",
-          notes: c.HdqDirective || "Vận hành theo chỉ đạo HĐQT",
-        }));
+        return this.riskCampusCards.map(c => {
+          let withdraw = 0;
+          let withdrawRate = 0;
+          if (c.WithdrawForecast) {
+            const m = c.WithdrawForecast.match(/(\d+)/);
+            if (m) withdraw = parseInt(m[1], 10);
+          }
+          if (c.Axis2Pct) withdrawRate = c.Axis2Pct;
+          return {
+            code: c.ScopeID,
+            name: c.CampusName,
+            owner: "Ban Giám Hiệu " + c.CampusName,
+            current: c.CurrentEnrollment,
+            target: c.PlannedCapacity,
+            occupancy: c.OccupancyRate,
+            withdraw: withdraw,
+            withdrawRate: withdrawRate,
+            leaveDays: c.Axis4Pct || 0,
+            maintenancePending: c.Axis3Pct > 20 ? Math.round(c.Axis3Pct / 18) : 0,
+            status: c.RiskLevel === "RED" ? "bad" : (c.RiskLevel === "YELLOW" ? "warn" : "good"),
+            statusText: c.RiskStatusText || (c.RiskLevel === "RED" ? "Giải trình" : (c.RiskLevel === "YELLOW" ? "Theo dõi" : "Ổn định")),
+            confidence: c.RiskLevel === "RED" ? "half" : "full",
+            notes: c.HdqDirective || "Vận hành theo chỉ đạo HĐQT",
+          };
+        });
       }
       return [];
     },
@@ -5233,13 +5261,10 @@
           }));
         }
       }
-      return [
-        { name: "Nơi ở / Tiện đưa đón xe bus", count: 21, percent: 39.62, owner: "Tổ Xe Bus & Bán Trú", note: "21/53 ca rút học liên quan đến đi lại xe bus" },
-        { name: "Nguyên nhân khác", count: 14, percent: 26.42, owner: "Ban Giám Hiệu", note: "14/53 ca rút học ghi nhận lý do khác" },
-        { name: "Có hoàn cảnh kinh tế gia đình", count: 10, percent: 18.87, owner: "Kế toán & Học phí", note: "10/53 ca rút học liên quan tài chính" },
-        { name: "Lý do bệnh tật học sinh", count: 7, percent: 13.21, owner: "Bộ phận Y tế", note: "7 ca bệnh cần chăm sóc tại nhà" },
-        { name: "Định cư nước ngoài / Du học", count: 1, percent: 1.89, owner: "Tuyển sinh", note: "1 ca chuyển tiếp du học quốc tế" },
-      ];
+      if (this.topWithdrawReasons && this.topWithdrawReasons.length) {
+        return this.topWithdrawReasons;
+      }
+      return [];
     },
   },
   mounted() {
@@ -5266,10 +5291,11 @@
   methods: {
     openRoiModal(scenario = 'BUS') {
       this.selectedRoiScenario = scenario;
-      this.isRoiModalOpen = true;
+      this.page = 0;
+      this.executiveTab = 'SIMULATOR';
     },
     closeRoiModal() {
-      this.isRoiModalOpen = false;
+      this.executiveTab = 'COMMAND';
     },
     toggleFullscreen() {
       if (!document.fullscreenElement) {
@@ -5287,6 +5313,13 @@
     getKpi(kpiCode) {
       if (!this.periodSnapshots || !this.periodSnapshots.length) return null;
       return this.periodSnapshots.find((x) => x.KpiCode === kpiCode) || null;
+    },
+    getKpiTarget(kpiCode) {
+      const k = this.getKpi(kpiCode);
+      if (k && k.TargetValue != null) {
+        return k.TargetValue + (k.Unit ? (k.Unit === '%' ? '%' : ' ' + k.Unit) : '');
+      }
+      return '';
     },
     async fetchPriorPeriodData(priorKey) {
       if (!priorKey) {
@@ -5342,9 +5375,9 @@
       const fillRate = this.displayFillRate;
       const withdrawRate = this.displayWithdrawRate;
       const withdrawCount = this.displayWithdrawCount;
-      const lmsRate = this.computedLmsData ? this.computedLmsData.rate : "94.2%";
-      const grossMargin = this.computedFinanceData ? this.computedFinanceData.grossMargin : "54.8%";
-      const rev = this.computedFinanceData ? this.computedFinanceData.rev : "11.2 tỷ";
+      const lmsRate = this.computedLmsData ? this.computedLmsData.rate : "0.0%";
+      const grossMargin = this.computedFinanceData ? this.computedFinanceData.grossMargin : "0.0%";
+      const rev = this.computedFinanceData ? this.computedFinanceData.rev : "0 Tỷ";
 
       let riskText = "Duy trì 0 sự cố an toàn học đường (ISO 22000).";
       if (this.riskCampusCards && this.riskCampusCards.length) {
@@ -5551,17 +5584,21 @@
     async fetchCausalEngineData() {
       try {
         const res = await this.callTapi("eSign/KPI_GetCausalEngineData", {});
-        if (res && res.data && Array.isArray(res.data)) {
-          if (res.data[0] && res.data[0].length) this.causalScenariosList = res.data[0];
-          if (res.data[1] && res.data[1].length) this.causalAssumptionsList = res.data[1];
-          if (res.data[2] && res.data[2].length) this.causalReasonsList = res.data[2];
-          if (res.data[3] && res.data[3].length) this.causalAssignmentsList = res.data[3];
-          if (res.data[4] && res.data[4].length) this.causalRulesList = res.data[4];
-          // res.data[5]: ElasticityMatrix — nạp khi backend bổ sung SP trả về
-          if (res.data[5] && res.data[5].length) this.elasticityMatrixList = res.data[5];
+        const data = (res && res.data) ? res.data : res;
+        if (Array.isArray(data)) {
+          if (data[0] && data[0].length) this.kpiDefinitionsList = data[0];
+          if (data[1] && data[1].length) this.metricThresholds = data[1];
+          if (data[2] && data[2].length) this.causalParametersList = data[2];
+          if (data[3] && data[3].length) this.causalNarrativesList = data[3];
+          if (data[4] && data[4].length) this.causalReasonsList = data[4];
+          if (data[5] && data[5].length) this.causalScenariosList = data[5];
+          if (data[6] && data[6].length) this.causalAssignmentsList = data[6];
+          if (data[7] && data[7].length) this.causalAssumptionsList = data[7];
+          if (data[8] && data[8].length) this.causalRulesList = data[8];
+          if (data[9] && data[9].length) this.elasticityMatrixList = data[9];
         }
       } catch (err) {
-        console.warn("fetchCausalEngineData error, using fallback assumptions:", err);
+        console.warn("fetchCausalEngineData error:", err);
       }
     },
     async saveCausalAssumption(u) {
@@ -5583,10 +5620,21 @@
         alert("Lỗi khi lưu tham số: " + (err.message || err));
       }
     },
+    getFactDomainButtonLabel(domain, defaultTitle) {
+      if (this.selectedFactDomain === domain && this.operationalFactsList && this.operationalFactsList.length) {
+        return defaultTitle + " (" + this.operationalFactsList.length + ")";
+      }
+      return defaultTitle;
+    },
     setPeriod(periodKey) {
       this.selectedPeriod = periodKey;
       this.fetchPeriodData(periodKey);
-      this.fetchAllLiveData();
+      const p = this.periodsList.find((x) => x.PeriodKey === periodKey);
+      if (p && !p.IsFrozen) {
+        this.fetchAllLiveData();
+      } else {
+        this.apiSyncStatus = "Dữ liệu kỳ đã chốt sổ (CSDL eSign)";
+      }
     },
     async fetchPeriodsList() {
       try {
@@ -5612,7 +5660,40 @@
           if (snapRes[1]) this.kpiGroupSummary = snapRes[1];
           if (snapRes[2] && Array.isArray(snapRes[2]) && snapRes[2].length) {
             this.goliveSpecsList = snapRes[2];
-          } else if (snapRes[0]) {
+          }
+          if (snapRes[3] && Array.isArray(snapRes[3]) && snapRes[3].length) {
+            this.liveDataBienHoa = snapRes[3].filter(r => r.ScopeID !== 'MNLK');
+            this.liveDataLongKhanh = snapRes[3].filter(r => r.ScopeID === 'MNLK');
+          }
+          if (snapRes[4] && Array.isArray(snapRes[4]) && snapRes[4].length) {
+            this.withdrawRecords = snapRes[4];
+            this.calcTopReasons(snapRes[4]);
+          }
+          if (snapRes[5] && Array.isArray(snapRes[5]) && snapRes[5].length) {
+            this.lmsAssignmentRows = snapRes[5];
+            const totAssigned = snapRes[5].reduce((s, r) => s + (r.TotalAssigned || 0), 0);
+            const totDaNop = snapRes[5].reduce((s, r) => s + (r.Total_DaNop || 0), 0);
+            const totDaCham = snapRes[5].reduce((s, r) => s + (r.Total_DaCham || 0), 0);
+            if (totAssigned > 0) {
+              this.lmsOverallRate = (((totDaNop + totDaCham) / totAssigned) * 100).toFixed(1);
+            }
+          }
+          if (snapRes[6] && Array.isArray(snapRes[6]) && snapRes[6].length) {
+            this.lmsHocLieuRows = snapRes[6];
+            const total = snapRes[6].reduce((s, r) => s + (r.TongHocLieu || 0), 0);
+            const coNoiDung = snapRes[6].reduce((s, r) => s + (r.HocLieuCoNoiDung || 0), 0);
+            const totalFiles = snapRes[6].reduce((s, r) => s + (r.TongNoiDung || 0), 0);
+            this.lmsHocLieuSummary = {
+              total,
+              coNoiDung,
+              pct: total ? ((coNoiDung / total) * 100).toFixed(1) : "0.0",
+              totalFiles,
+            };
+          }
+          if (snapRes[7] && Array.isArray(snapRes[7]) && snapRes[7].length) {
+            this.teachingProgressRows = snapRes[7];
+          }
+          if (!snapRes[2] && snapRes[0]) {
             const specsMap = {};
             snapRes[0].forEach((r) => {
               if (r.SpecCode && !specsMap[r.SpecCode]) {
@@ -5698,13 +5779,19 @@
 
         // 6. Dynamic Operations Summary (ME School & CRM Funnel)
         try {
-          const opsRes = await this.callTapi("eSign/KPI_GetOperationsSummary", { PeriodKey: pKey });
+          const opsRes = await this.callTapi("eSign/KPI_GetOperationsSummary", { PeriodKey: pKey, ScopeID: queryUnit });
           if (opsRes && Array.isArray(opsRes)) {
-            if (opsRes[0] && opsRes[0][0]) this.opsSafetyMe = opsRes[0][0];
-            if (opsRes[1]) this.crmMonthlySummary = opsRes[1];
-            if (opsRes[2]) this.crmChannelStats = opsRes[2];
-            if (opsRes[3]) this.crmKittyList = opsRes[3];
-            if (opsRes[4]) this.crmDropReasons = opsRes[4];
+            this.opsSafetyMe = (opsRes[0] && opsRes[0][0]) ? opsRes[0][0] : {};
+            this.crmMonthlySummary = opsRes[1] || [];
+            this.crmChannelStats = opsRes[2] || [];
+            this.crmKittyList = opsRes[3] || [];
+            this.crmDropReasons = opsRes[4] || [];
+          } else {
+            this.opsSafetyMe = {};
+            this.crmMonthlySummary = [];
+            this.crmChannelStats = [];
+            this.crmKittyList = [];
+            this.crmDropReasons = [];
           }
         } catch (e) {
           console.warn("KPI_GetOperationsSummary call error:", e);
@@ -5754,7 +5841,7 @@
     },
     openOperationalFactDrawer(domainCode = "LEAVE") {
       this.drawer.type = "OPERATIONAL_FACTS";
-      this.drawer.title = "Trích Xuất Dữ Liệu Gốc 100% Fact Store (Tháng 9/2026)";
+      this.drawer.title = "Trích Xuất Dữ Liệu Gốc 100% Fact Store (" + this.currentPeriodName + ")";
       this.drawer.visible = true;
       this.factAuditFilter = "ALL";
       this.fetchOperationalFacts(domainCode);
@@ -5931,10 +6018,12 @@
     renderCausalNarrative(kpiCode, defaultCode, fallbackPattern, fallbackParams = {}) {
       const u = this.currentUnit;
       const ass = this.currentCausalAssumption;
-      const tuition = ass.AnnualTuitionMillion || 49.8;
+      const kTc56 = this.getKpi("TC56");
+      const kClb = this.getKpi("TC33");
+      const tuition = ass.AnnualTuitionMillion;
       const clbRate = ass.ClbParticipationRate || 0.35;
-      const clbCount = u === "ALL" ? 596 : Math.round(this.displayStudents * clbRate);
-      const clbRev = u === "ALL" ? 1611000000 : Math.round(clbCount * 2.7 * 1000000);
+      const clbCount = (u === "ALL" && kClb && kClb.TargetValue != null) ? Number(kClb.TargetValue) : Math.round((this.displayStudents || 0) * clbRate);
+      const clbRev = (u === "ALL" && kTc56 && kTc56.ActualValue != null) ? Number(kTc56.ActualValue) : Math.round(clbCount * (ass.ClbAvgFeeMillion || 4.5) * 1000000);
 
       const dynamicUnitParams = {
         "TS04.Reason.FAR": this.displayReasonFar,

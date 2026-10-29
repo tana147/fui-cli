@@ -2777,6 +2777,34 @@
   border: 1px solid #ffe380;
 }
 
+/* What-If Simulator Inline Panel (Zero Modal) */
+.uc-kpi-ops__sim-panel {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  margin-top: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.uc-kpi-ops__roi-head-banner {
+  padding: 12px 18px;
+  background: #1B365D;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.uc-kpi-ops__roi-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.uc-kpi-ops__roi-sub {
+  font-size: 11px;
+  color: #93c5fd;
+  margin-top: 2px;
+}
+
 /* ROI Simulator Modal */
 .uc-kpi-ops__roi-modal-overlay {
   position: fixed;

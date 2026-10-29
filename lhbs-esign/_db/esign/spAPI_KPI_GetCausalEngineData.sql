@@ -132,4 +132,60 @@ BEGIN
         SortOrder
     FROM tblKPI_CausalActionAssignments
     ORDER BY ScenarioCode, SortOrder ASC;
+
+    -- 8. Result Set 7: Hồ Sơ Giả Định Đơn Vị (tblKPI_CausalAssumptions)
+    SELECT 
+        UnitCode,
+        UnitName,
+        OwnerTitle,
+        PlannedCapacity,
+        CurrentEnrollment,
+        AnnualTuitionMillion,
+        GrossMarginPct,
+        RemainingYearsInLevel,
+        NextLevelTuitionMillion,
+        NextLevelYears,
+        TransitionProbability,
+        MonthlyLeads,
+        ConversionRate,
+        ClbParticipationRate,
+        ClbAvgFeeMillion,
+        ClassCount
+    FROM tblKPI_CausalAssumptions
+    ORDER BY CASE UnitCode 
+        WHEN 'MNBH' THEN 1 
+        WHEN 'MNLK' THEN 2 
+        WHEN 'TH' THEN 3 
+        WHEN 'THCS' THEN 4 
+        WHEN 'THPT' THEN 5 
+        ELSE 6 END;
+
+    -- 9. Result Set 8: Danh Mục Quy Tắc Logic Nhân Quả (tblKPI_CausalRules)
+    SELECT 
+        RuleID,
+        RuleCode,
+        RuleName,
+        ConditionExpr,
+        Severity,
+        OutcomeSummary,
+        IsActive
+    FROM tblKPI_CausalRules
+    WHERE IsActive = 1
+    ORDER BY RuleID ASC;
+
+    -- 10. Result Set 9: Ma Trận Co Giãn Tương Quan Hệ Thống (tblKPI_CorrelationOntology)
+    SELECT 
+        RelationID,
+        RelationCode,
+        RelationType,
+        SourceKpiCode AS CauseKpiCode,
+        TargetKpiCode AS EffectKpiCode,
+        ElasticityRatio AS ElasticityCoeff,
+        FinancialKpiCode,
+        UnitFinancialImpact,
+        ActionRoleOwner AS InterventionOwner,
+        SeverityLevel
+    FROM tblKPI_CorrelationOntology
+    WHERE IsActive = 1
+    ORDER BY SortOrder ASC;
 END;
