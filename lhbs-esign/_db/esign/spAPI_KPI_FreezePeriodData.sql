@@ -5,7 +5,7 @@
 -- Database: eSignature
 -- ===================================================================================
 
-CREATE OR ALTER PROCEDURE spAPI_KPI_FreezePeriodData
+CREATE   PROCEDURE spAPI_KPI_FreezePeriodData
     @PeriodKey VARCHAR(20),
     @FrozenBy NVARCHAR(100),
     @Note NVARCHAR(500)

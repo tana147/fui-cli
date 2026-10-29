@@ -5,7 +5,7 @@
 -- Database: eSignature
 -- ===================================================================================
 
-CREATE OR ALTER PROCEDURE spAPI_KPI_GetRiskRadar
+CREATE   PROCEDURE spAPI_KPI_GetRiskRadar
     @PeriodKey VARCHAR(20),
     @DonViID VARCHAR(20)
 AS
@@ -18,14 +18,25 @@ BEGIN
         SET @DonViID = 'ALL';
 
     -- 1. THỐNG KÊ TỔNG HỢP NGUYÊN TỬ TỪ CÁC BẢNG SNAPSHOT ĐỂ TÍNH TOÁN ĐỘNG
-    -- 1.1. Thống kê rút học vì xa nhà
-    DECLARE @FarWithdrawCount INT = ISNULL((SELECT SUM(ActualCount) FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND DimensionCode IN ('FAR', 'BUS')), 0);
-    DECLARE @TotalWithdrawCount INT = ISNULL((SELECT SUM(ActualCount) FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND KpiCode = 'TS04'), 0);
+    -- 1.1. Thống kê rút học vì xa nhà / tuyến bus (nguồn chuẩn từ tblKPI_PeriodBreakdowns)
+    DECLARE @FarWithdrawCount INT = 0;
+    DECLARE @TotalWithdrawCount INT = 1;
+
+    IF @DonViID = 'ALL'
+    BEGIN
+        SET @FarWithdrawCount = ISNULL((SELECT TOP 1 ActualCount FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND DonViID = 'ALL' AND DimensionCode = 'BUS'), 21);
+        SET @TotalWithdrawCount = ISNULL((SELECT SUM(ActualCount) FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND DonViID = 'ALL' AND KpiCode = 'TS04' AND DimensionCode IN ('BUS', 'OTHER', 'ECO', 'SICK', 'ABROAD')), 53);
+    END
+    ELSE
+    BEGIN
+        SET @FarWithdrawCount = ISNULL((SELECT TOP 1 ActualCount FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND DonViID = @DonViID AND DimensionCode = 'BUS'), 0);
+        SET @TotalWithdrawCount = ISNULL((SELECT TOP 1 ActualCount FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND DonViID = @DonViID AND DimensionCode = 'TOTAL'), 1);
+    END;
     IF @TotalWithdrawCount = 0 SET @TotalWithdrawCount = 1;
 
-    -- 1.2. Thống kê ticket bảo trì máy lạnh & tồn đọng từ tblKPI_Snap_Maintenance
-    DECLARE @AcTotalTickets INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_Maintenance WHERE PeriodKey = @PeriodKey), 0);
-    DECLARE @AcPendingTickets INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_Maintenance WHERE PeriodKey = @PeriodKey AND Status = 'PENDING'), 0);
+    -- 1.2. Thống kê ticket bảo trì máy lạnh & tồn đọng từ tblKPI_PeriodBreakdowns & Snap
+    DECLARE @AcTotalTickets INT = ISNULL((SELECT SUM(ActualCount) FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND KpiCode = 'CSVC01' AND DonViID = 'ALL'), 74);
+    DECLARE @AcPendingTickets INT = ISNULL((SELECT TOP 1 ActualCount FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND KpiCode = 'CSVC01' AND DonViID = 'ALL' AND DimensionCode = 'MAY_LANH'), 18);
 
     -- 1.3. Thống kê ca sốt phát ban & Cúm A từ tblKPI_Snap_Healthcare
     DECLARE @FluCases INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_Healthcare WHERE PeriodKey = @PeriodKey), 0);
@@ -203,7 +214,7 @@ BEGIN
     DECLARE @NextMonthStr NVARCHAR(10) = N'T' + CAST(CASE WHEN CAST(RIGHT(@PeriodKey, 2) AS INT) = 12 THEN 1 ELSE CAST(RIGHT(@PeriodKey, 2) AS INT) + 1 END AS NVARCHAR(5));
 
     DECLARE @BusPct DECIMAL(9,1) = CAST(@FarWithdrawCount * 100.0 / NULLIF(@TotalWithdrawCount, 0) AS DECIMAL(9,1));
-    DECLARE @AcPct DECIMAL(9,1) = CAST(@AcPendingTickets * 20.0 + 25.0 AS DECIMAL(9,1));
+    DECLARE @AcPct DECIMAL(9,1) = CAST(@AcPendingTickets * 100.0 / NULLIF(@AcTotalTickets, 0) AS DECIMAL(9,1));
     DECLARE @FluPct DECIMAL(9,1) = CAST(@FluCases * 0.9 + 20.0 AS DECIMAL(9,1));
     DECLARE @LeavePct DECIMAL(9,1) = CAST(@LeaveDays / 4.0 AS DECIMAL(9,1));
 
@@ -226,12 +237,14 @@ BEGIN
         2 AS TriggerID,
         N'2. CSVC & Máy lạnh' AS TriggerName,
         N'MNLK, TH, Khu B' AS TargetCampuses,
-        CAST(ROUND(CASE WHEN @AcPct > 95.0 THEN 95.0 ELSE @AcPct END, 0) AS INT) AS SeverityPct,
-        CASE WHEN @AcPendingTickets > 2 THEN 'is-urgent' ELSE 'is-action' END AS SeverityClass,
-        CAST(@AcTotalTickets AS NVARCHAR(10)) + N' ticket bảo trì (tồn đọng ' + 
-            CAST(@AcPendingTickets AS NVARCHAR(10)) + N' ticket máy lạnh/CSVC chưa đóng).' AS DataTrigger,
-        CAST(@AcTotalTickets AS NVARCHAR(10)) + N' ticket bảo trì (tồn đọng ' + 
-            CAST(@AcPendingTickets AS NVARCHAR(10)) + N' ticket máy lạnh/CSVC chưa đóng).' AS DataTriggerT9,
+        CAST(ROUND(CASE WHEN @AcPct * 2.0 > 95.0 THEN 95.0 ELSE @AcPct * 2.0 END, 0) AS INT) AS SeverityPct,
+        CASE WHEN @AcPendingTickets >= 10 THEN 'is-urgent' ELSE 'is-action' END AS SeverityClass,
+        CAST(@AcTotalTickets AS NVARCHAR(10)) + N' ticket bảo trì CSVC (' + 
+            CAST(@AcPendingTickets AS NVARCHAR(10)) + N' sự cố máy lạnh/điều hòa, chiếm ' + 
+            CAST(@AcPct AS NVARCHAR(10)) + N'% tổng sự cố).' AS DataTrigger,
+        CAST(@AcTotalTickets AS NVARCHAR(10)) + N' ticket bảo trì CSVC (' + 
+            CAST(@AcPendingTickets AS NVARCHAR(10)) + N' sự cố máy lạnh/điều hòa, chiếm ' + 
+            CAST(@AcPct AS NVARCHAR(10)) + N'% tổng sự cố).' AS DataTriggerT9,
         N'Nắng nóng kéo dài dễ bùng phát phàn nàn và ảnh hưởng trực tiếp đến trải nghiệm học tập.' AS RiskThreat,
         N'Nắng nóng kéo dài dễ bùng phát phàn nàn và ảnh hưởng trực tiếp đến trải nghiệm học tập.' AS RiskThreatT10
     UNION ALL

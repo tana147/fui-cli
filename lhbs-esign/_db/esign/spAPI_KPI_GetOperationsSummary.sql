@@ -7,7 +7,7 @@
 -- Database: eSignature
 -- ===================================================================================
 
-CREATE OR ALTER PROCEDURE spAPI_KPI_GetOperationsSummary
+CREATE   PROCEDURE spAPI_KPI_GetOperationsSummary
     @PeriodKey VARCHAR(20),
     @ScopeID VARCHAR(50)
 AS

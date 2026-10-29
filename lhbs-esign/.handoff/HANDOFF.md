@@ -1,18 +1,21 @@
 # AGENT HANDOFF: lhbs-esign
 
-- **Generated At:** 2026-10-29T15:13:30+07:00
+- **Generated At:** 2026-10-29T17:18:00+07:00
 - **Workspace Root:** `/home/iot/CODE/fui-cli/lhbs-esign`
 - **Status:** `done`
-- **Next Session Focus:** Kiểm tra hiển thị thực tế trên các kích thước màn hình (laptop 1366x768, Full HD 1920x1080) trong môi trường phòng họp / HĐQT; theo dõi phản hồi người dùng về trải nghiệm tương tác với các micro-action pill tương quan nhân quả trên 4 thẻ KPI.
+- **Next Session Focus:** Tiếp tục theo dõi phản hồi thực tế từ ban lãnh đạo khi trải nghiệm Heatmap Grid 60 KPI, Dumbbell Variance Chart và luồng đối soát Fact Store 1-1; tối ưu hóa thêm các filter đa chiều (nếu ban giám hiệu yêu cầu bổ sung slice theo từng khối lớp hoặc phòng ban).
 
 ## 1. NEXT SESSION ACTION PLAN
-1. Mở giao diện `kpi-ops-dashboard` trên trình duyệt ở độ phân giải 1366x768 và 1920x1080: xác nhận toàn bộ 4 thẻ KPI, subtabs và biểu đồ Value Bridge hiển thị trọn vẹn trong một khung nhìn (above-the-fold) mà không cần cuộn chuột.
-2. Kiểm tra tương tác: click vào các micro-pill tương quan (`Tương quan: CRM → Sĩ số → Doanh thu ›`, `Tác động: Thất thu LTV dài hạn ›`, ...) trên 4 thẻ KPI để đảm bảo slide-over drawer / causal modal mở đúng kịch bản phân tích tác động sâu.
-3. Kiểm tra chuyển đổi giữa các subtabs (Tổng quan / Radar Rủi ro / Kiểm toán) và các trang chuyên sâu (Page 1, 2, 4, 5, 6, 7).
+1. Mở dashboard trên môi trường web test/production, kiểm tra các thao tác chuyển đổi view:
+   - Tab 3 (Danh mục 60 KPI): Chuyển đổi giữa `[Lưới Ô Nhiệt]` (Heatmap Grid) và `[Dạng Bảng]` (Table), hover xem tooltip và click từng ô để mở Fact Modal tương ứng.
+   - Tab 2 (Kiểm toán & Đối soát): Chuyển đổi giữa `[Biểu Đồ Độ Lệch]` (Dumbbell Gap Chart), `[Dạng Thẻ]` và `[Dạng Bảng]`.
+   - Tab 0 (Điều hành tổng thể): Xác nhận hiển thị 4 Trụ Cột Doanh Nghiệp Cân Bằng, Funnel Tuyển Sinh CRM 4 tầng và Cơ cấu Doanh thu Dịch vụ FTS.
+2. Kiểm tra Modal Fact Store: click xem fact của từng tiêu chí bất kỳ (TS01, TS02, TS04, CM08, DV28, TC52...) để đảm bảo 100% hiển thị đúng dữ liệu domain/kpi tương ứng, không bị lẫn lộn giữa Sĩ số/Công suất và Rút học.
 
 ## 2. SUGGESTED SKILLS
-- `ux-ui-upgrade-review`: Sử dụng khi cần đánh giá tiếp trải nghiệm người dùng hoặc tinh chỉnh thêm màu sắc/icon theo phản hồi của HĐQT.
-- `context-mode`: Luôn sử dụng `ctx_execute` / `ctx_execute_file` để kiểm tra SFC hoặc đọc file nhằm bảo vệ context window.
+- `test-before-patch`: Sử dụng khi cần kiểm tra các SP mới hoặc query dữ liệu fact trước khi cập nhật.
+- `context-mode`: Luôn sử dụng `ctx_execute` / `ctx_execute_file` để thao tác và phân tích SFC hoặc SP SQL.
+- `clean-stage-commit-push`: Sử dụng khi kết thúc session để đảm bảo git hygiene.
 
 ## 3. GIT & COMMIT STATE
 - **Branch:** `main`
@@ -20,59 +23,60 @@
   - `c8adeff` — refactor(lhbs-esign): streamline KPI Ops Dashboard, isolate frozen period data and preserve Impact Zone
   - `84b3b05` — feat(lhbs-esign): dynamic data-driven KPI Ops Dashboard and fix tab rendering
 - **Working Tree Ownership:**
-  - **Current task changes:**
-    - `modules/kpi-ops-dashboard/components/uc-kpi-ops.vue` (Lược bỏ banner văn xuôi Navy lặp lại; bỏ dải safeguard strip và tích hợp thành micro-pill; thu gọn 4 thẻ KPI từ 420px xuống 165px bằng micro-pill tương quan; lược bỏ text lặp lại ở Bếp/Nghỉ phép)
-    - `modules/kpi-ops-dashboard/style.css` (Nén padding trang về 8px 16px, chuẩn hóa gap 8px; nén Top Bar và Slicers Bar; thêm style cho safeguard-pill và bkpi-causal-pill; giảm padding-bottom trang từ 76px xuống 46px)
-    - `.handoff/HANDOFF.md` (Tài liệu chuyển giao phiên làm việc)
+  - **Current task changes to commit:**
+    - `.md/lessons.md` (Ghi nhận bài học về Fact Store mapping và FUI whitespace normalization)
+    - `.handoff/HANDOFF.md` (Universal Agent Handoff tài liệu chuyển giao)
+    - `_db/esign/schema.json` (Cập nhật schema CSDL)
+    - `_db/esign/spAPI_KPI_GetOperationalFacts.sql` (Root cause fix cho fact store mismatch: tách ENROLLMENT vs WITHDRAWAL, direct 60 KPI routing)
+    - `_db/esign/spAPI_KPI_GetRiskRadar.sql` (Cập nhật dữ liệu Radar Rủi ro)
+    - `_db/esign/spAPI_KPI_GetPeriodSnapshots.sql` (Đồng bộ snapshot chu kỳ)
+    - `_db/esign/spAPI_KPI_GetStrategicLevers.sql` (Đòn bẩy chiến lược)
+    - `_db/esign/spAPI_KPI_GetOperationsSummary.sql` (Tổng quan vận hành)
+    - `_db/esign/spAPI_KPI_GetAuditDiscrepancies.sql` (Đối soát dữ liệu kiểm toán)
+    - `_db/esign/spAPI_KPI_FreezePeriodData.sql` (Đóng băng chu kỳ dữ liệu)
+    - `_db/esign/migration_kpi_audit_rules_engine.sql` (Migration engine luật kiểm toán)
+    - `_db/esign/migration_seed_bus_withdrawal_facts.sql` (Migration seed bus/rút học)
+    - `_db/esign/migration_seed_full_60_kpis_snapshots.sql` (Migration seed 60 KPI snapshots)
+    - `modules/kpi-ops-dashboard/components/uc-kpi-ops.vue` (Cockpit điều hành 4 trụ cột, Funnel Tuyển sinh, FTS Stacked Bar, Heatmap Grid 60 KPI, Dumbbell Gap Chart, Fact Modal context banner)
+    - `modules/kpi-ops-dashboard/style.css` (Style Heatmap Grid, Dumbbell Chart, Funnel, FTS Bar, Top-line scorecard)
   - **Pre-existing dirty / unrelated (DO NOT TOUCH):**
-    - `../lhu-qldetaisdh/*` (Phân hệ thuộc dự án khác, không chỉnh sửa)
+    - `../lhu-qldetaisdh/*` (Phân hệ thuộc dự án khác)
     - `../_logs/tool-errors.jsonl` (File log shared của CLI tool)
-- **Quick Inspect Commands:**
-  - `git diff modules/kpi-ops-dashboard/`
 
 ## 4. PROBLEM & SYSTEM FLOW
-- **Objective:** Tối ưu hóa giao diện module `kpi-ops-dashboard` giải quyết tình trạng tốn diện tích, khoảng cách to, khoảng trống nhiều và trùng lặp thông tin theo phản hồi của người dùng.
-- **Expected:** Toàn bộ khu vực điều hành cốt lõi (Top bar, Bộ lọc, 4 Thẻ KPI chính, Subtabs và Biểu đồ Value Bridge / 5 cơ sở) nằm gọn trong 1 khung nhìn laptop (above-the-fold) mà không cần cuộn chuột, loại bỏ thông tin lặp lại, giữ nguyên 100% logic nghiệp vụ và triết lý Cross-KPI Correlation.
-- **Actual:** Đã hoàn thành 100%, giảm hơn 300px chiều cao lãng phí, chiều cao mỗi thẻ KPI giảm từ ~420px xuống còn ~165px (giảm hơn 60%), đã publish thành công lên server FUI (`fui file status` = 0).
-- **Flow Analysis:**
-  - **Input:** Người dùng truy cập dashboard, chọn kỳ báo cáo (T8, T9, T10, NH26), cấp học/đơn vị hoặc năm học.
-  - **Process:** `modules/kpi-ops-dashboard/components/uc-kpi-ops.vue` nhận filter → tính toán reactivity trong `computed` → render 4 thẻ KPI tinh gọn với micro-pill tương quan.
-  - **State:** `page` (0..7), `executiveTab` ('COMMAND' | 'RISK' | 'AUDIT'), `selectedPeriod`, `currentUnit`.
-  - **Output:** Giao diện điều hành mật độ cao (high-density), sắc nét, không cuộn vô tận.
-  - **Side Effects:** Đã publish trực tiếp file `style.css` và component `uc-kpi-ops` lên server FUI (ComID 13057).
+- **Objective:**
+  1. Khắc phục lỗi sai dữ liệu Fact Store (xem fact tiêu chí A ra dữ liệu tiêu chí B).
+  2. Nâng cấp Tab 0 từ góc nhìn micro-ops local thành Executive Cockpit toàn diện của toàn bộ doanh nghiệp.
+  3. Thay thế các bảng số liệu tĩnh (Table) bằng các dạng trực quan hóa chuyên dụng (Heatmap Grid 60 KPI, Dumbbell Gap Chart).
+  4. Xác nhận trạng thái publish và đảm bảo đồng bộ hoàn toàn với server FUI.
+- **Expected:**
+  - Fact modal hiển thị chính xác 1-1 dữ liệu của KPI đang xem kèm banner context nhận diện tiêu chí, phân tách rõ Sĩ số/Công suất (Basic Data) và Rút học (SIS).
+  - Tab 0 thể hiện bức tranh vĩ mô: 4 Trụ Cột Doanh Nghiệp (Tài chính, Lấp đầy, Học thuật, An toàn), Funnel Tuyển Sinh CRM 4 tầng, Cơ cấu Doanh thu Dịch vụ FTS và Value Bridge 4.076 tỷ.
+  - Tab 3 hiển thị Heatmap Grid 60 ô trực quan; Tab 2 hiển thị Dumbbell Gap Chart độ lệch giữa Báo cáo và Fact Store.
+  - Đã publish 100% lên server FUI, 0 unpublished files, 0 error.
+- **Actual:** Hoàn thành 100%, đã test, build, deploy SP, publish component/css và verify normalized diff trùng khớp 100%.
 
 ## 5. RELEVANT CODE & ARTIFACT REFERENCES
-- **Specs / Plans / Issues / ADRs:**
-  - `.md/DESIGN.md` (Executive Fluent Design System cho KPI Workspace)
-  - `.md/AGENTS.md` (Codex Rules & Triết lý tương quan Cross-KPI)
-  - `.md/lessons.md` (Các bài học kinh nghiệm FUI & Vue SFC)
 - **Code Locations:**
-  - `modules/kpi-ops-dashboard/components/uc-kpi-ops.vue:1-330` (Header Top, Slicers, 4 Thẻ KPI Vital với micro-pills)
-  - `modules/kpi-ops-dashboard/style.css:23-400` (Spacing, padding trang, typography, card layout, causal pill styles)
+  - `_db/esign/spAPI_KPI_GetOperationalFacts.sql`: Tuyến phân luồng dữ liệu fact store 60 KPI.
+  - `modules/kpi-ops-dashboard/components/uc-kpi-ops.vue`: Logic Vue, Heatmap, Dumbbell, Funnel, Fact Modal.
+  - `modules/kpi-ops-dashboard/style.css`: CSS responsive, color scales, animation cho biểu đồ.
 
 ## 6. SESSION KNOWLEDGE (FACTS vs HYPOTHESES)
 ### Verified Facts
-- [FACT] Giao diện cũ chiếm gần 700px chiều dọc trước khi hiển thị biểu đồ do 4 lớp banner/thẻ xếp chồng (Evidence: `uc-kpi-ops.vue` lines 101-320 trước khi sửa).
-- [FACT] Đoạn văn xuôi nhân quả `.uc-kpi-ops__bkpi-causal` trong 4 thẻ KPI làm card bị phình to ~420px nhưng nội dung chi tiết đã có trong Drawer và Modal (Evidence: hàm `openCausalChainForCard()` và drawer component).
-- [FACT] `fui module simulate -p lhbs-esign -m kpi-ops-dashboard` trả về Exit 0 với 0 lỗi/cảnh báo sau khi áp dụng bản vá (Evidence: CLI output).
-- [FACT] Đã publish thành công cả 2 file `style.css` và `uc-kpi-ops.vue` lên server FUI, `fui file status` xác nhận 0 file chưa publish (Evidence: `fui file push` log).
-
-### Active Hypotheses
-None (Tác vụ đã hoàn tất và được xác minh thực tế).
-
-### Assumptions & Unknowns
-- [ASSUMPTION] Màn hình mục tiêu của người dùng là laptop tiêu chuẩn (1366x768) hoặc Full HD (1920x1080).
+- [FACT] `spAPI_KPI_GetOperationalFacts` trước đây gom toàn bộ học sinh vào domain `WITHDRAWAL`, gây lỗi xem Sĩ số/Lớp học nhưng chỉ hiển thị 21 học sinh rút học.
+- [FACT] Bổ sung domain `ENROLLMENT` truy vấn `tblKPI_Snap_BasicData_Students` (`RecordType != 'WITHDRAWAL'`) trả về chính xác 1,324 học sinh / 1,600 chỗ (82.8% lấp đầy).
+- [FACT] `fui module check -p lhbs-esign -m kpi-ops-dashboard` và `fui file status` xác nhận 0 unpublished files, mã hash trùng khớp 100% với server FUI.
+- [FACT] FUI CLI tự động normalize loại bỏ dòng trắng đầu file `style.css` khi push lên server.
 
 ## 7. TESTS, LOGS & DIAGNOSTICS
 - **Overall Verification Status:** `PASS`
-- **Test / Benchmark Runs:**
-  - `fui module simulate -p lhbs-esign -m kpi-ops-dashboard` → **Result:** PASS (0 lỗi, 0 cảnh báo) | **Proves:** Template, script, reactivity và runtime FUI hoạt động hoàn hảo.
-  - CSS Braces Match Check → **Result:** PASS (696 blocks đóng mở khớp 100%) | **Proves:** Không có lỗi cú pháp CSS.
-- **Critical Error / Log Snippet:** None.
+- **Verification Runs:**
+  - `fui sp verify spAPI_KPI_GetOperationalFacts`: PASS (SP hợp lệ, đã triển khai trên DB eSignature).
+  - `fui module check -p lhbs-esign -m kpi-ops-dashboard`: PASS (0 errors, 0 warnings).
+  - `fui file status`: PASS (`0 unpublished file(s)`).
+  - `fui remote diff -p lhbs-esign -m kpi-ops-dashboard`: PASS (Normalized content matches 100%).
 
-## 8. ATTEMPTS & DEAD ENDS (DO NOT REPEAT)
-- Không nhét đoạn văn bản văn xuôi dài vào lòng các thẻ KPI chính vì sẽ làm vỡ chiều cao và gây phân mảnh thị giác. Chỉ nên dùng micro-action tag 1 dòng tương tác on-demand.
-
-## 9. CONSTRAINTS & RISKS
-- **Contracts to Preserve:** Giữ nguyên 100% CSDL eSign, tAPI contracts và các hàm kích hoạt Drawer/Modal tương quan nhân quả (`openCausalChainForCard`, `openCausalModal`).
-- **Side Effects / Tradeoffs:** Không có side effects tiêu cực. Giao diện trở nên thoáng, gọn, tập trung vào số liệu điều hành.
+## 8. CONSTRAINTS & RISKS
+- CSDL eSignature và contracts tAPI được bảo toàn tuyệt đối.
+- Tuyệt đối không can thiệp hoặc stage các file thuộc `lhu-qldetaisdh`.

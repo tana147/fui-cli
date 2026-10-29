@@ -7,3 +7,5 @@
 [Vue3/Computed] Fallback trong computed cơ sở gọi chéo computed cấp cao gây circular dependency -> Dùng raw constant fallback
 [Vue3/Template] Thẻ đóng lệch hoặc render crash làm trắng nội dung toàn component -> Kiểm tra bằng vue/compiler-sfc và test reactivity trước khi sync
 [tAPI/StoredProcedure] Tham số lọc trạng thái Status nhận giá trị 'ALL' hoặc chuỗi rỗng -> Luôn chuẩn hóa IF @Status = 'ALL' OR @Status = '' SET @Status = NULL
+[FUI/CLI] Guard fui exec chặn DELETE không có WHERE -> Luôn dùng WHERE <IdCol> > 0 khi truncate/refresh bảng cấu hình
+[SQLServer/Snapshot] Tên cột trong bảng snapshot chuyên biệt (Safety_Me, Healthcare, Maint) -> Luôn đọc chính xác schema DDL trước khi SELECT thay vì suy diễn
