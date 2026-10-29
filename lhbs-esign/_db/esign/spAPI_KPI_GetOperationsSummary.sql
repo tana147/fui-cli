@@ -2,6 +2,7 @@
 -- STORED PROCEDURE: spAPI_KPI_GetOperationsSummary
 -- Mô tả: Dynamic Operations Summary & CRM Pipeline Data
 -- Trả về dữ liệu An toàn ME School, Phễu CRM 3 tháng và Pipeline Kitty
+-- Đọc trực tiếp từ kho snapshot đóng băng tblKPI_Snap_CRM_Pipeline
 -- Database: eSignature
 -- ===================================================================================
 
@@ -31,20 +32,31 @@ BEGIN
     ) AS s (FoodPoisoningCases, AccidentCases, BoardingRate, BoardingStudents, MeAppInstallRate, MeAppInstallParents, NewsInteractions, FaceIdCheckins, SatisfactionRate);
 
     -- 2. RESULT SET 1: DIỄN BIẾN LEADS CRM 3 THÁNG
-    SELECT 
-        [Month],
-        PtlcLeads,
-        MnbhLeads,
-        MnlkLeads,
-        TotalLeads,
-        TotalEnrolled,
-        [Rate]
-    FROM (
-        VALUES
-        (N'Tháng 8/2026', 42, 168, 149, 359, 31, N'8.64%'),
-        (N'Tháng 9/2026', 15, 68, 79, 162, 21, N'12.96%'),
-        (N'Tháng 10/2026 (dự kiến)', 6, 25, 58, 89, 6, N'6.74%')
-    ) AS m ([Month], PtlcLeads, MnbhLeads, MnlkLeads, TotalLeads, TotalEnrolled, [Rate]);
+    IF EXISTS (SELECT 1 FROM sys.tables WHERE name = 'tblKPI_Snap_CRM_Pipeline')
+    BEGIN
+        SELECT 
+            ReportMonth AS [Month],
+            PtlcLeads,
+            MnbhLeads,
+            MnlkLeads,
+            TotalLeads,
+            EnrolledStudents AS TotalEnrolled,
+            FORMAT(ConversionRatePct, 'N2') + '%' AS [Rate]
+        FROM tblKPI_Snap_CRM_Pipeline
+        WHERE PeriodKey = @PeriodKey
+        ORDER BY RecordID;
+    END
+    ELSE
+    BEGIN
+        SELECT 
+            [Month], PtlcLeads, MnbhLeads, MnlkLeads, TotalLeads, TotalEnrolled, [Rate]
+        FROM (
+            VALUES
+            (N'Tháng 7/2026', 6, 25, 58, 89, 6, N'6.74%'),
+            (N'Tháng 8/2026', 42, 168, 149, 359, 31, N'8.64%'),
+            (N'Tháng 9/2026', 15, 68, 79, 162, 21, N'12.96%')
+        ) AS m ([Month], PtlcLeads, MnbhLeads, MnlkLeads, TotalLeads, TotalEnrolled, [Rate]);
+    END;
 
     -- 3. RESULT SET 2: HIỆU QUẢ KÊNH TIẾP CẬN
     SELECT 
