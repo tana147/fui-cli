@@ -23,7 +23,7 @@
   background: var(--bg);
   color: var(--ink);
   min-height: 100vh;
-  padding: 0 0 76px 0;
+  padding: 0 0 46px 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 13px;
   line-height: 1.5;
@@ -47,37 +47,55 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
   background: var(--card);
   border-bottom: 1px solid var(--line);
-  padding: 12px 20px;
+  padding: 8px 16px;
 }
 .uc-kpi-ops__title {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--accent2);
   letter-spacing: -0.2px;
+}
+.uc-kpi-ops__safeguard-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+.uc-kpi-ops__safeguard-pill .safeguard-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #16a34a;
 }
 .uc-kpi-ops__subtitle {
   color: var(--ink2);
   margin-top: 2px;
-  font-size: 12.5px;
+  font-size: 11.5px;
 }
 .uc-kpi-ops__meta {
   color: var(--ink2);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
-  font-size: 12px;
+  font-size: 11px;
 }
 .uc-kpi-ops__sep { color: var(--line); }
 
 .uc-kpi-ops__pill {
   border: 1px solid #c8c6c4;
   color: var(--ink2);
-  padding: 2px 8px;
+  padding: 2px 7px;
   font-size: 11px;
   font-weight: 600;
   border-radius: 2px;
@@ -94,11 +112,11 @@
 }
 
 .uc-kpi-ops__simbtn {
-  padding: 5px 12px;
+  padding: 3px 8px;
   border: 1px solid var(--accent2);
   color: var(--accent2);
   background: #fff;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
   cursor: pointer;
   border-radius: 2px;
@@ -111,24 +129,24 @@
 /* 2. Slicers Bar */
 .uc-kpi-ops__slicers {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
-  padding: 10px 20px;
+  padding: 6px 16px;
   background: var(--card);
   border-bottom: 1px solid var(--line);
 }
 .uc-kpi-ops__slicers-left {
   display: flex;
-  align-items: flex-end;
-  gap: 16px;
+  align-items: center;
+  gap: 12px;
   flex-wrap: wrap;
 }
 .uc-kpi-ops__slicer-label {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--ink2);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -140,13 +158,14 @@
   overflow: hidden;
 }
 .uc-kpi-ops__seg button {
-  padding: 4px 10px;
+  padding: 2px 7px;
   background: #fff;
   color: var(--ink);
   border: 0;
   border-right: 1px solid #c8c6c4;
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
+  height: 24px;
 }
 .uc-kpi-ops__seg button:last-child { border-right: 0; }
 .uc-kpi-ops__seg button:hover { background: #f3f2f1; }
@@ -156,15 +175,15 @@
   font-weight: 600;
 }
 .uc-kpi-ops__view {
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 600;
   color: var(--accent2);
-  padding: 4px 0;
+  padding: 2px 0;
 }
 
 /* 3. Main Page Container */
 .uc-kpi-ops__page {
-  padding: 12px 20px 0;
+  padding: 8px 16px 0;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -174,21 +193,21 @@
 .uc-kpi-ops__bhead {
   background: var(--accent2);
   color: #fff;
-  padding: 16px 20px;
-  margin-bottom: 10px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
   border-radius: 2px;
 }
 .uc-kpi-ops__bhead-k {
-  font-size: 11px;
-  letter-spacing: 0.6px;
+  font-size: 10.5px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   color: #C3CFDC;
 }
 .uc-kpi-ops__bhead-t {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 20px;
-  line-height: 1.45;
-  margin: 6px 0;
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 4px 0;
   max-width: 100%;
 }
 .uc-kpi-ops__bhead-t b {
@@ -196,7 +215,7 @@
   font-weight: 600;
 }
 .uc-kpi-ops__bhead-s {
-  font-size: 11.5px;
+  font-size: 11px;
   color: #C3CFDC;
 }
 
@@ -204,14 +223,14 @@
 .uc-kpi-ops__bkpis {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 .uc-kpi-ops__bkpi {
   background: var(--card);
   border: 1px solid var(--line);
-  border-top: 4px solid #a19f9d;
-  padding: 12px 14px 10px;
+  border-top: 3px solid #a19f9d;
+  padding: 8px 10px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -230,28 +249,28 @@
   justify-content: space-between;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   color: var(--ink2);
 }
 .uc-kpi-ops__bkpi-title-wrap {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
 }
 .uc-kpi-ops__gl-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 17px;
-  height: 17px;
-  min-width: 17px;
+  width: 15px;
+  height: 15px;
+  min-width: 15px;
   border-radius: 50%;
   background: #e0f2fe;
   border: 1px solid #7dd3fc;
   color: #0284c7;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   cursor: pointer;
   padding: 0;
@@ -272,7 +291,7 @@
   display: block;
 }
 .uc-kpi-ops__bkpi-h b {
-  font-size: 11px;
+  font-size: 10.5px;
   white-space: nowrap;
 }
 .uc-kpi-ops__bkpi.is-good .uc-kpi-ops__bkpi-h b { color: var(--good); }
@@ -283,68 +302,68 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: 4px;
+  gap: 6px;
+  margin-top: 2px;
 }
 .uc-kpi-ops__bkpi-v {
-  font-size: 32px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
   color: var(--accent2);
-  line-height: 1.15;
+  line-height: 1.1;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 .uc-kpi-ops__bkpi-v small {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 400;
   color: var(--ink2);
   margin-left: 2px;
 }
 
 .uc-kpi-ops__spark {
-  width: 110px;
-  height: 42px;
+  width: 90px;
+  height: 24px;
   flex: none;
   overflow: visible;
 }
-.uc-kpi-ops__spark .sp-l { fill: none; stroke: var(--accent); stroke-width: 2; }
+.uc-kpi-ops__spark .sp-l { fill: none; stroke: var(--accent); stroke-width: 1.5; }
 .uc-kpi-ops__spark .sp-d { fill: #fff; stroke: var(--accent); stroke-width: 1.5; }
 .uc-kpi-ops__spark .sp-d.is-last { fill: var(--accent2); stroke: var(--accent2); }
-.uc-kpi-ops__spark .sp-tg { stroke: #8a8886; stroke-width: 1; stroke-dasharray: 3 3; }
-.uc-kpi-ops__spark .sp-x { font-size: 9.5px; fill: var(--ink3); }
+.uc-kpi-ops__spark .sp-tg { stroke: #8a8886; stroke-width: 1; stroke-dasharray: 2 2; }
+.uc-kpi-ops__spark .sp-x { font-size: 8.5px; fill: var(--ink3); }
 
 .uc-kpi-ops__bkpi-d {
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--ink2);
-  margin: 4px 0 6px;
-  line-height: 1.35;
+  margin: 3px 0 4px;
+  line-height: 1.25;
 }
 
 .uc-kpi-ops__cmp {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   border-top: 1px solid var(--line);
-  padding-top: 6px;
+  padding-top: 4px;
   margin-top: auto;
 }
 .uc-kpi-ops__cmp span {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding-right: 4px;
+  padding-right: 2px;
 }
 .uc-kpi-ops__cmp span + span {
   border-left: 1px solid #f3f2f1;
-  padding-left: 6px;
+  padding-left: 4px;
 }
 .uc-kpi-ops__cmp i {
   font-style: normal;
-  font-size: 10.5px;
+  font-size: 10px;
   color: var(--ink3);
   white-space: nowrap;
 }
 .uc-kpi-ops__cmp b {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--ink);
   white-space: nowrap;
@@ -352,10 +371,61 @@
   text-overflow: ellipsis;
   font-variant-numeric: tabular-nums;
 }
-.uc-kpi-ops__bkpi-i {
-  font-size: 11px;
-  color: var(--accent);
+.uc-kpi-ops__bkpi-causal-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   margin-top: 6px;
+  padding: 3px 7px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 3px;
+  font-size: 10.5px;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.uc-kpi-ops__bkpi-causal-pill:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+.uc-kpi-ops__bkpi-causal-pill.is-bad {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+.uc-kpi-ops__bkpi-causal-pill.is-bad:hover {
+  background: #fee2e2;
+}
+.uc-kpi-ops__bkpi-causal-pill.is-good {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+.uc-kpi-ops__bkpi-causal-pill.is-good:hover {
+  background: #dcfce7;
+}
+.uc-kpi-ops__bkpi-causal-pill .causal-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.uc-kpi-ops__bkpi-causal-pill .causal-txt {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+.uc-kpi-ops__bkpi-causal-pill .causal-arr {
+  font-size: 11px;
+  font-weight: 700;
+}
+.uc-kpi-ops__bkpi-i {
+  font-size: 10.5px;
+  color: var(--accent);
+  margin-top: 4px;
 }
 .uc-kpi-ops__bkpi:hover .uc-kpi-ops__bkpi-i { text-decoration: underline; }
 
@@ -560,8 +630,8 @@
   background: #fff;
   border-top: 1px solid #c8c6c4;
   z-index: 50;
-  padding: 0 12px;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+  padding: 0 10px;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
 }
 .uc-kpi-ops__tabrow {
   display: flex;
@@ -591,11 +661,11 @@
   white-space: nowrap;
 }
 .uc-kpi-ops__tabs button {
-  padding: 8px 14px;
-  font-size: 12px;
+  padding: 6px 10px;
+  font-size: 11.5px;
   color: var(--ink2);
   border: 0;
-  border-top: 3px solid transparent;
+  border-top: 2px solid transparent;
   background: transparent;
   cursor: pointer;
   white-space: nowrap;
@@ -2250,16 +2320,16 @@
 /* 1. Thanh Sub-Tabs Điều Hành Fold 1 */
 .uc-kpi-ops__subtabs {
   display: flex;
-  gap: 4px;
+  gap: 3px;
   background: var(--card);
   border: 1px solid var(--line);
-  padding: 4px;
-  margin-bottom: 8px;
+  padding: 2px;
+  margin-bottom: 6px;
   flex-wrap: wrap;
 }
 .uc-kpi-ops__subtab-btn {
-  padding: 6px 14px;
-  font-size: 12.5px;
+  padding: 4px 10px;
+  font-size: 11.5px;
   font-weight: 600;
   color: var(--ink2);
   background: transparent;
@@ -2269,7 +2339,7 @@
   transition: all 0.15s ease;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 .uc-kpi-ops__subtab-btn:hover {
   color: var(--accent2);

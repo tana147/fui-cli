@@ -3,29 +3,33 @@
     <!-- 1. Header Top -->
     <div class="uc-kpi-ops__top">
       <div>
-        <div class="uc-kpi-ops__title">KPI Results Framework &amp; Ops Dashboard · LHBS</div>
-        <div class="uc-kpi-ops__subtitle">Báo cáo vận hành {{ currentPeriodName }} · Năm học {{ selectedYear }}–{{ selectedYear + 1 }}</div>
+        <div class="d-flex align-center gap-2">
+          <div class="uc-kpi-ops__title">KPI Results Framework &amp; Ops Dashboard · LHBS</div>
+          <span class="uc-kpi-ops__safeguard-pill">
+            <span class="safeguard-dot"></span>
+            <span>An toàn học đường: 0 sự cố</span>
+          </span>
+        </div>
+        <div class="uc-kpi-ops__subtitle">Báo cáo vận hành {{ currentPeriodName }} · Năm học {{ selectedYear }}–{{ selectedYear + 1 }} · {{ currentPeriodFreezeText }}</div>
       </div>
       <div class="uc-kpi-ops__meta">
-        <span>{{ currentPeriodFreezeText }}</span>
-        <span class="uc-kpi-ops__sep">|</span>
         <span :class="['uc-kpi-ops__pill', isLoading ? 'is-warn' : 'is-live']">
           {{ apiSyncStatus }}
         </span>
         <button type="button" class="uc-kpi-ops__simbtn" :disabled="isLoading" @click="refreshData()">
-          {{ isLoading ? 'Đang tải...' : (currentPeriodIsFrozen ? 'Làm mới dữ liệu chốt kỳ' : 'Làm mới dữ liệu (Live API)') }}
+          {{ isLoading ? 'Đang tải...' : (currentPeriodIsFrozen ? 'Làm mới chốt kỳ' : 'Làm mới Live') }}
         </button>
         <button type="button" class="uc-kpi-ops__simbtn" @click="openCausalModal()">
-          Vùng tác động (ước tính)
+          Vùng tác động
         </button>
         <button type="button" class="uc-kpi-ops__simbtn" @click="copyExecutiveBriefing()">
-          {{ copiedBriefing ? 'Đã sao chép briefing!' : 'Sao chép tóm tắt họp' }}
+          {{ copiedBriefing ? 'Đã chép!' : 'Sao chép briefing' }}
         </button>
         <button type="button" class="uc-kpi-ops__simbtn" @click="printExecutiveReport()">
           In báo cáo A4
         </button>
         <button type="button" :class="['uc-kpi-ops__simbtn', { 'is-solid': isPresentMode }]" @click="toggleFullscreen()">
-          {{ isPresentMode ? 'Thoát toàn màn hình' : 'Toàn màn hình' }}
+          {{ isPresentMode ? 'Thoát' : 'Toàn màn hình' }}
         </button>
       </div>
     </div>
@@ -34,7 +38,7 @@
     <div v-if="!isPresentMode" class="uc-kpi-ops__slicers">
       <div class="uc-kpi-ops__slicers-left">
         <div>
-          <div class="uc-kpi-ops__slicer-label">Kỳ báo cáo &amp; Chốt sổ</div>
+          <div class="uc-kpi-ops__slicer-label">Kỳ báo cáo</div>
           <div class="uc-kpi-ops__seg">
             <button
               v-for="p in periodsList"
@@ -69,17 +73,14 @@
             >{{ y }}</button>
           </div>
         </div>
-        <div>
-          <div class="uc-kpi-ops__slicer-label">Góc nhìn điều hành</div>
-          <div class="uc-kpi-ops__view">{{ currentViewLabel }}</div>
-        </div>
       </div>
-      <div style="display:flex;gap:6px;">
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="uc-kpi-ops__view">{{ currentViewLabel }}</span>
         <button type="button" class="uc-kpi-ops__simbtn" @click="openFactModal('LEAVE')">
-          Tra cứu Fact Store
+          Fact Store
         </button>
         <button type="button" class="uc-kpi-ops__simbtn is-solid" @click="openDrawer('STUDENT_LIST')">
-          Xem cơ cấu chi tiết ›
+          Cơ cấu chi tiết ›
         </button>
       </div>
     </div>
@@ -98,45 +99,12 @@
 
     <!-- 3. PAGE 0: HỘI ĐỒNG TRƯỜNG (Executive Board Overview) -->
     <div v-if="page === 0" class="uc-kpi-ops__page">
-      <div class="uc-kpi-ops__bhead">
-        <div class="uc-kpi-ops__bhead-k">Tóm tắt Điều hành Hội đồng trường · {{ currentPeriodName }} · {{ currentUnitTitle }}</div>
-        <div class="uc-kpi-ops__bhead-t">
-          Tổng quy mô đạt <b>{{ formatNumber(displayStudents) }} học sinh</b> (Lấp đầy <b>{{ displayFillRate }}%</b> công suất). Tỷ lệ rút học trong kỳ {{ currentPeriodShortName }} là <b>{{ displayWithdrawRate }}%</b> ({{ displayWithdrawCount }} HS - Lũy kế chuyển đi: {{ displayOutflowYearToDate }} HS; ngưỡng an toàn {{ getMetricThresholdLabel('TS04') }}). Tỷ lệ hoàn thành bài tập trực tuyến LMS đạt <b>{{ computedLmsData.rate }}</b>. Lợi nhuận gộp dịch vụ trường học đạt <b>{{ computedFinanceData.grossMargin }}</b> (Doanh thu <b>{{ computedFinanceData.rev }}</b>). Duy trì <b>0 sự cố</b> an toàn học đường (ISO 22000).
-        </div>
-        <div class="uc-kpi-ops__bhead-s">
-          Kết nối trực tiếp CSDL eSign &amp; tapi.lhbs.vn · Tự động đồng bộ phản hồi theo bộ lọc cơ sở &amp; kỳ chốt sổ.
-        </div>
-      </div>
-
-      <!-- Executive Safeguard & Quality Banner -->
-      <div class="uc-kpi-ops__safeguard-strip">
-        <div class="uc-kpi-ops__safeguard-item is-zero-tol">
-          <span class="safeguard-dot"></span>
-          <span>AN TOÀN HỌC ĐƯỜNG: <b>0 Vụ ngộ độc thực phẩm (ISO 22000)</b></span>
-        </div>
-        <div class="uc-kpi-ops__safeguard-item is-zero-tol">
-          <span class="safeguard-dot"></span>
-          <span>Y TẾ HỌC ĐƯỜNG: <b>0 Tai nạn thương tích nghiêm trọng</b></span>
-        </div>
-        <div class="uc-kpi-ops__safeguard-item">
-          <span>TÁI ĐẦU TƯ CSVC: <b>100% Thặng dư CLB &amp; Bán trú</b></span>
-        </div>
-        <div class="uc-kpi-ops__safeguard-item ml-auto">
-          <span class="safeguard-badge">HĐQT GOVERNANCE · BẢO TOÀN VỐN</span>
-        </div>
-      </div>
-
       <!-- 4 Vital KPI Tiles -->
       <div class="uc-kpi-ops__bkpis">
         <!-- Tile 1: Quy mô & Tuyển sinh -->
         <div class="uc-kpi-ops__bkpi is-good" @click="openDrawer('STUDENT_LIST')">
           <div class="uc-kpi-ops__bkpi-h">
-            <div class="uc-kpi-ops__bkpi-title-wrap">
-              <span>QUY MÔ HIỆN DIỆN (TS01, TS02)</span>
-              <button type="button" class="uc-kpi-ops__gl-btn" title="Ghi chú tích hợp Go-Live (TS01, TS02) · Bấm xem đặc tả API" @click.stop="openGoliveSpecs('SPEC_BASICDATA')">
-                <span class="gl-icon">!</span>
-              </button>
-            </div>
+            <span>QUY MÔ HIỆN DIỆN</span>
             <b>ĐẠT {{ displayCapacityPct }}% KH</b>
           </div>
           <div class="uc-kpi-ops__bkpi-m">
@@ -146,91 +114,61 @@
                 {{ getKpiMoM('TS01').trend === 'up' ? '▲' : (getKpiMoM('TS01').trend === 'down' ? '▼' : '■') }} {{ Math.abs(getKpiMoM('TS01').deltaPct) }}% MoM
               </span>
             </div>
-            <svg class="uc-kpi-ops__spark" viewBox="0 0 110 42">
-              <line x1="2" x2="108" y1="12" y2="12" class="sp-tg"></line>
-              <polyline points="4,34 20,32 36,29 52,26 68,14 84,16 100,17" class="sp-l"></polyline>
-              <circle cx="100" cy="17" r="3" class="sp-d is-last"></circle>
-              <text x="100" y="38" text-anchor="middle" class="sp-x">NH26</text>
+            <svg class="uc-kpi-ops__spark" viewBox="0 0 100 24">
+              <line x1="2" x2="98" y1="8" y2="8" class="sp-tg"></line>
+              <polyline points="4,20 20,18 36,16 52,14 68,9 84,10 96,11" class="sp-l"></polyline>
+              <circle cx="96" cy="11" r="2.5" class="sp-d is-last"></circle>
             </svg>
           </div>
-          <div class="uc-kpi-ops__bkpi-d">Lấp đầy {{ displayFillRate }}% công suất · Kế hoạch: {{ formatNumber(displayTarget) }} HS (Thiết kế: {{ formatNumber(displayCapacity) }} HS)</div>
+          <div class="uc-kpi-ops__bkpi-d">Lấp đầy {{ displayFillRate }}% · Kế hoạch: {{ formatNumber(displayTarget) }} HS</div>
           <div class="uc-kpi-ops__cmp">
-            <span><i>Leads TVTS (TS05):</i> <b>{{ displayLeads }}</b></span>
-            <span><i>Chuyển đổi (TS06):</i> <b class="tx-good">{{ displayConversionRate }}% ({{ displayEnrolled }} HS)</b></span>
-            <span><i>Kế hoạch:</i> <b>{{ formatNumber(displayTarget) }}</b></span>
+            <span><i>Leads:</i> <b>{{ displayLeads }}</b></span>
+            <span><i>Chuyển đổi:</i> <b class="tx-good">{{ displayConversionRate }}%</b></span>
+            <span><i>Mục tiêu:</i> <b>{{ formatNumber(displayTarget) }}</b></span>
           </div>
-
-          <!-- Mắt xích Nhân quả Ngữ cảnh Tile 1 -->
-          <div class="uc-kpi-ops__bkpi-causal" @click.stop="openCausalChainForCard('ENROLLMENT')">
-            <div class="causal-pill">{{ renderCausalTitle('TS06', 'Chuỗi: Phễu CRM → Sĩ số → Doanh thu') }}</div>
-            <div class="causal-desc" v-html="renderCausalNarrative('TS06', 'NARRATIVE_ENROLLMENT_CONV')"></div>
-            <div class="causal-cta">
-              <span>Phân tích tác động tuyển thêm &rsaquo;</span>
-            </div>
-          </div>
-
-          <div class="uc-kpi-ops__bkpi-i" @click.stop="page = 7">
-            <span>Xem chi tiết Phễu TVTS (TS05, TS06) ›</span>
-            <span class="text-muted" style="font-size:11px;">Mã chỉ tiêu: TS01, TS02</span>
+          <div class="uc-kpi-ops__bkpi-causal-pill" @click.stop="openCausalChainForCard('ENROLLMENT')" title="Bấm mở phân tích tác động tương quan nhân quả">
+            <span class="causal-dot"></span>
+            <span class="causal-txt">Tương quan: CRM → Sĩ số → Doanh thu</span>
+            <span class="causal-arr">&rsaquo;</span>
           </div>
         </div>
 
         <!-- Tile 2: Rút học / Chuyển đi -->
         <div class="uc-kpi-ops__bkpi is-good" @click="openDrawer('WITHDRAW_LIST')">
           <div class="uc-kpi-ops__bkpi-h">
-            <div class="uc-kpi-ops__bkpi-title-wrap">
-              <span>RÚT HỌC / CHUYỂN ĐI (TS04)</span>
-              <button type="button" class="uc-kpi-ops__gl-btn" title="Ghi chú tích hợp Go-Live (TS04) · Bấm xem đặc tả API" @click.stop="openGoliveSpecs('SPEC_BASICDATA')">
-                <span class="gl-icon">!</span>
-              </button>
-            </div>
+            <span>RÚT HỌC / CHUYỂN ĐI</span>
             <b :class="'tx-' + getMetricStatus('TS04')">{{ displayWithdrawRate }}% {{ getMetricStatusText('TS04') }}</b>
           </div>
           <div class="uc-kpi-ops__bkpi-m">
             <div class="uc-kpi-ops__bkpi-v">
-              {{ displayWithdrawRate }}% <small>({{ displayWithdrawCount }} HS kỳ {{ currentPeriodShortName }})</small>
+              {{ displayWithdrawRate }}% <small>({{ displayWithdrawCount }} HS)</small>
               <span v-if="getKpiMoM('TS04').hasPrior" :class="['uc-kpi-ops__trend-badge', getKpiMoM('TS04').isGood ? 'is-good' : 'is-bad']">
                 {{ getKpiMoM('TS04').trend === 'up' ? '▲' : (getKpiMoM('TS04').trend === 'down' ? '▼' : '■') }} {{ Math.abs(getKpiMoM('TS04').deltaPct) }}% MoM
               </span>
             </div>
-            <svg class="uc-kpi-ops__spark" viewBox="0 0 110 42">
-              <line x1="2" x2="108" y1="8" y2="8" class="sp-tg"></line>
-              <polyline points="4,18 25,22 46,20 67,26 88,24 100,21" class="sp-l"></polyline>
-              <circle cx="100" cy="21" r="3" class="sp-d is-last"></circle>
-              <text x="100" y="38" text-anchor="middle" class="sp-x">{{ nextPeriodShortName }}</text>
+            <svg class="uc-kpi-ops__spark" viewBox="0 0 100 24">
+              <line x1="2" x2="98" y1="6" y2="6" class="sp-tg"></line>
+              <polyline points="4,12 25,15 46,14 67,18 88,16 96,14" class="sp-l"></polyline>
+              <circle cx="96" cy="14" r="2.5" class="sp-d is-last"></circle>
             </svg>
           </div>
-          <div class="uc-kpi-ops__bkpi-d">Đến: +{{ displayInflow }} HS | Đi ({{ currentPeriodShortName }}): -{{ displayOutflow }} HS (Lũy kế năm: {{ displayOutflowYearToDate }} HS)</div>
+          <div class="uc-kpi-ops__bkpi-d">Kỳ {{ currentPeriodShortName }}: -{{ displayOutflow }} HS · Lũy kế năm: {{ displayOutflowYearToDate }} HS</div>
           <div class="uc-kpi-ops__cmp">
-            <span><i>Nơi ở/tiện đón:</i> <b>{{ displayReasonFar }}</b></span>
+            <span><i>Xa nhà/bus:</i> <b>{{ displayReasonFar }}</b></span>
             <span><i>Kinh tế:</i> <b>{{ displayReasonEco }}</b></span>
-            <span><i>Bệnh/Khác:</i> <b>{{ displayReasonOther }}</b></span>
+            <span><i>Khác:</i> <b>{{ displayReasonOther }}</b></span>
           </div>
-
-          <!-- Mắt xích Nhân quả Ngữ cảnh Tile 2 -->
-          <div class="uc-kpi-ops__bkpi-causal is-bad" @click.stop="openCausalChainForCard('WITHDRAW')">
-            <div class="causal-pill">{{ renderCausalTitle('TS04', 'Chuỗi: Xe bus/CSVC → Rút học → Thất thu LTV') }}</div>
-            <div class="causal-desc" v-html="renderCausalNarrative('TS04', 'NARRATIVE_WITHDRAW_BUS')"></div>
-            <div class="causal-cta">
-              <span>Mở Dialog Vùng Tác Động Rút Học &rsaquo;</span>
-            </div>
-          </div>
-
-          <div class="uc-kpi-ops__bkpi-i">
-            <span @click.stop="openCausalModal(currentUnit, 'RUT_HOC')" style="font-weight:700;color:var(--accent);">Xem Vùng tác động (ước tính) ›</span>
-            <span class="text-muted" style="font-size:11px;">Mã chỉ tiêu: TS04</span>
+          <div class="uc-kpi-ops__bkpi-causal-pill is-bad" @click.stop="openCausalChainForCard('WITHDRAW')" title="Bấm mở phân tích tác động tương quan nhân quả">
+            <span class="causal-dot"></span>
+            <span class="causal-txt">Tác động: Thất thu LTV dài hạn</span>
+            <span class="causal-arr">&rsaquo;</span>
           </div>
         </div>
 
         <!-- Tile 3: Hoàn thành bài tập & Học liệu LMS -->
         <div class="uc-kpi-ops__bkpi is-good" @click="page = 4">
           <div class="uc-kpi-ops__bkpi-h">
-            <div class="uc-kpi-ops__bkpi-title-wrap">
-              <span>HOÀN THÀNH BÀI TẬP LMS (CM08)</span>
-              <button type="button" class="uc-kpi-ops__gl-btn" title="Ghi chú tích hợp Go-Live (CM04, CM08) · Bấm xem đặc tả API" @click.stop="openGoliveSpecs('SPEC_LMS')">
-                <span class="gl-icon">!</span>
-              </button>
-            </div>
+            <span>HOÀN THÀNH BÀI TẬP LMS</span>
             <b>{{ computedLmsData.rate }} TỶ LỆ</b>
           </div>
           <div class="uc-kpi-ops__bkpi-m">
@@ -240,44 +178,29 @@
                 {{ getKpiMoM('CM08').trend === 'up' ? '▲' : (getKpiMoM('CM08').trend === 'down' ? '▼' : '■') }} {{ Math.abs(getKpiMoM('CM08').deltaPct) }}% MoM
               </span>
             </div>
-            <svg class="uc-kpi-ops__spark" viewBox="0 0 110 42">
-              <line x1="2" x2="108" y1="10" y2="10" class="sp-tg"></line>
-              <polyline points="4,22 25,20 46,18 67,16 88,14 100,12" class="sp-l"></polyline>
-              <circle cx="100" cy="12" r="3" class="sp-d is-last"></circle>
-              <text x="100" y="38" text-anchor="middle" class="sp-x">LMS</text>
+            <svg class="uc-kpi-ops__spark" viewBox="0 0 100 24">
+              <line x1="2" x2="98" y1="6" y2="6" class="sp-tg"></line>
+              <polyline points="4,16 25,14 46,13 67,11 88,10 96,8" class="sp-l"></polyline>
+              <circle cx="96" cy="8" r="2.5" class="sp-d is-last"></circle>
             </svg>
           </div>
-          <div class="uc-kpi-ops__bkpi-d">Toán đạt {{ computedLmsData.math }}, Văn đạt {{ computedLmsData.viet }} · Kho học liệu: {{ computedLmsData.digitalLessons }}</div>
+          <div class="uc-kpi-ops__bkpi-d">Toán: {{ computedLmsData.math }} · Văn: {{ computedLmsData.viet }} · Học liệu: {{ computedLmsData.digitalLessons }}</div>
           <div class="uc-kpi-ops__cmp">
             <span><i>Toán:</i> <b class="tx-good">{{ computedLmsData.math }}</b></span>
-            <span><i>Tiếng Việt:</i> <b class="tx-good">{{ computedLmsData.viet }}</b></span>
-            <span><i>Học liệu số:</i> <b>{{ computedLmsData.digitalLessons }}</b></span>
+            <span><i>Văn:</i> <b class="tx-good">{{ computedLmsData.viet }}</b></span>
+            <span><i>Học liệu:</i> <b>{{ computedLmsData.digitalLessons }}</b></span>
           </div>
-
-          <!-- Mắt xích Nhân quả Ngữ cảnh Tile 3 -->
-          <div class="uc-kpi-ops__bkpi-causal is-good" @click.stop="openCausalChainForCard('LMS')">
-            <div class="causal-pill">{{ renderCausalTitle('CM08', 'Chuỗi: Đổi mới dạy học & LMS → Nâng cao chất lượng & Gắn kết') }}</div>
-            <div class="causal-desc" v-html="renderCausalNarrative('CM08', 'NARRATIVE_LMS_QUALITY')"></div>
-            <div class="causal-cta">
-              <span>Xem ma trận chất lượng giáo dục &rsaquo;</span>
-            </div>
-          </div>
-
-          <div class="uc-kpi-ops__bkpi-i" @click.stop="page = 4">
-            <span>Xem chi tiết bài tập &amp; học liệu số (CM04, CM08) ›</span>
-            <span class="text-muted" style="font-size:11px;">Mã chỉ tiêu: CM04, CM08</span>
+          <div class="uc-kpi-ops__bkpi-causal-pill is-good" @click.stop="openCausalChainForCard('LMS')" title="Bấm mở phân tích tác động tương quan nhân quả">
+            <span class="causal-dot"></span>
+            <span class="causal-txt">Tương quan: LMS → Chất lượng học tập</span>
+            <span class="causal-arr">&rsaquo;</span>
           </div>
         </div>
 
         <!-- Tile 4: Tài chính - Tỷ suất Lợi nhuận gộp & Doanh thu CLB -->
         <div class="uc-kpi-ops__bkpi is-good" @click="page = 5">
           <div class="uc-kpi-ops__bkpi-h">
-            <div class="uc-kpi-ops__bkpi-title-wrap">
-              <span>LỢI NHUẬN GỘP DỊCH VỤ (KPI 4)</span>
-              <button type="button" class="uc-kpi-ops__gl-btn" title="Ghi chú tích hợp Go-Live (TC33, TC55, TC56) · Bấm xem đặc tả API" @click.stop="openGoliveSpecs('SPEC_HOCPHI')">
-                <span class="gl-icon">!</span>
-              </button>
-            </div>
+            <span>LN GỘP DỊCH VỤ (KPI 4)</span>
             <b class="tx-good">ĐẠT {{ computedFinanceData.grossMargin }}</b>
           </div>
           <div class="uc-kpi-ops__bkpi-m">
@@ -287,32 +210,22 @@
                 {{ getKpiMoM('TC55').trend === 'up' ? '▲' : (getKpiMoM('TC55').trend === 'down' ? '▼' : '■') }} {{ Math.abs(getKpiMoM('TC55').deltaPct) }}% MoM
               </span>
             </div>
-            <svg class="uc-kpi-ops__spark" viewBox="0 0 110 42">
-              <line x1="2" x2="108" y1="12" y2="12" class="sp-tg"></line>
-              <polyline points="4,28 25,24 46,20 67,16 88,14 100,13" class="sp-l"></polyline>
-              <circle cx="100" cy="13" r="3" class="sp-d is-last"></circle>
-              <text x="100" y="38" text-anchor="middle" class="sp-x">KPI {{ getKpiTarget('TC55') || '50%' }}</text>
+            <svg class="uc-kpi-ops__spark" viewBox="0 0 100 24">
+              <line x1="2" x2="98" y1="8" y2="8" class="sp-tg"></line>
+              <polyline points="4,20 25,17 46,14 67,11 88,10 96,9" class="sp-l"></polyline>
+              <circle cx="96" cy="9" r="2.5" class="sp-d is-last"></circle>
             </svg>
           </div>
-          <div class="uc-kpi-ops__bkpi-d">Doanh thu thuần: {{ computedFinanceData.rev }} · Bán trú {{ computedFinanceData.mealMargin }} · Xe bus {{ computedFinanceData.busMargin }}</div>
+          <div class="uc-kpi-ops__bkpi-d">Doanh thu: {{ computedFinanceData.rev }} · Bán trú {{ computedFinanceData.mealMargin }} · Bus {{ computedFinanceData.busMargin }}</div>
           <div class="uc-kpi-ops__cmp">
-            <span><i>DT CLB (KPI 3.2.1):</i> <b>{{ computedFinanceData.clbRev }}</b></span>
-            <span><i>Học sinh CLB:</i> <b>{{ computedFinanceData.clbStudents }}</b></span>
-            <span><i>Mục tiêu CLB:</i> <b>{{ displayClubTarget }}</b></span>
+            <span><i>DT CLB:</i> <b>{{ computedFinanceData.clbRev }}</b></span>
+            <span><i>HS CLB:</i> <b>{{ computedFinanceData.clbStudents }}</b></span>
+            <span><i>Mục tiêu:</i> <b>{{ displayClubTarget }}</b></span>
           </div>
-
-          <!-- Mắt xích Nhân quả Ngữ cảnh Tile 4 -->
-          <div class="uc-kpi-ops__bkpi-causal is-good" @click.stop="openCausalChainForCard('FINANCE')">
-            <div class="causal-pill">{{ renderCausalTitle('TC55', 'Chuỗi: LN Dịch vụ → Tái đầu tư CSVC → Giảm rút học') }}</div>
-            <div class="causal-desc" v-html="renderCausalNarrative('TC55', 'NARRATIVE_FINANCE_REINVEST')"></div>
-            <div class="causal-cta">
-              <span>Xem ma trận tái đầu tư tài chính &rsaquo;</span>
-            </div>
-          </div>
-
-          <div class="uc-kpi-ops__bkpi-i" @click.stop="page = 5">
-            <span>Xem chi tiết Tài chính (Chỉ tiêu 55, 56) ›</span>
-            <span class="text-muted" style="font-size:11px;">Mã chỉ tiêu: TC33, TC55, TC56</span>
+          <div class="uc-kpi-ops__bkpi-causal-pill is-good" @click.stop="openCausalChainForCard('FINANCE')" title="Bấm mở phân tích tác động tương quan nhân quả">
+            <span class="causal-dot"></span>
+            <span class="causal-txt">Tương quan: LN Dịch vụ → Tái đầu tư CSVC</span>
+            <span class="causal-arr">&rsaquo;</span>
           </div>
         </div>
       </div>
@@ -479,22 +392,19 @@
           <!-- Áp lực Nghỉ phép & Phụ Bếp Bán Trú -->
           <div class="uc-kpi-ops__dist-box">
             <div class="d-flex justify-space-between align-center">
-              <span style="font-size:12.5px;font-weight:700;color:var(--accent2);">Tải Trọng Nghỉ Phép &amp; Áp Lực Bán Trú</span>
+              <span style="font-size:12px;font-weight:700;color:var(--accent2);">Tải Trọng Nghỉ Phép &amp; Áp Lực Bán Trú</span>
               <span style="font-size:11px;color:#d9822b;font-weight:600;">{{ dynamicRiskFactsBrief }}</span>
             </div>
-            <div style="font-size:11.5px;color:#334155;margin:6px 0;line-height:1.4;">
-              Áp lực cao nhất tại <b>Mầm non ({{ contextStore['LEAVE.KinderDays'] || '106' }} ngày)</b>, <b>Long Khánh ({{ contextStore['LEAVE.Days'] ? (Number(contextStore['LEAVE.Days']) / 8).toFixed(0) : '68' }} ngày)</b> và <b>Bộ phận Bếp ({{ contextStore['LEAVE.KitchenDays'] || '54' }} ngày)</b>. Cần bổ sung phụ bếp dự phòng tránh ảnh hưởng chất lượng bán trú.
-            </div>
-            <div class="d-flex gap-2 mt-2 pt-1 border-top" style="font-size:11px;border-color:#f1f5f9 !important;">
+            <div class="d-flex gap-2 mt-2 pt-1" style="font-size:11px;">
               <span class="p-1 px-2 rounded" style="background:#fef2f2;color:#991b1b;font-weight:600;">Bếp: {{ contextStore['LEAVE.KitchenDays'] || '54' }} ngày</span>
               <span class="p-1 px-2 rounded" style="background:#fef3c7;color:#92400e;font-weight:600;">Mầm non: {{ contextStore['LEAVE.KinderDays'] || '106' }} ngày</span>
-              <span class="p-1 px-2 rounded" style="background:#f1f5f9;color:#475569;">Bảo trì: {{ contextStore['MAINT.PendingTickets'] || '0' }} ticket tồn</span>
+              <span class="p-1 px-2 rounded" style="background:#f1f5f9;color:#475569;">Bảo trì: {{ contextStore['MAINT.PendingTickets'] || '0' }} ticket</span>
               <button
                 type="button"
                 class="uc-kpi-ops__simbtn ml-auto"
                 style="padding:1px 8px;font-size:10.5px;"
                 @click="openFactModal('LEAVE')"
-              >Xem chi tiết đơn nghỉ phép &rsaquo;</button>
+              >Đơn nghỉ phép &rsaquo;</button>
             </div>
           </div>
         </div>
@@ -1787,14 +1697,9 @@
 
     <!-- 8. PAGE 5: TÀI CHÍNH VẬN HÀNH (Nhóm 4: Chỉ tiêu 55 & 56) -->
     <div v-if="page === 5" class="uc-kpi-ops__page">
-      <div class="uc-kpi-ops__bhead">
-        <div class="uc-kpi-ops__bhead-k">Chỉ tiêu Tài chính Vận hành (Nhóm 4 · Chỉ tiêu 55, 56) · {{ currentUnitTitle }}</div>
-        <div class="uc-kpi-ops__bhead-t">
-          Tỷ suất lợi nhuận gộp dịch vụ của {{ currentUnitTitle }} đạt <b>{{ computedFinanceData.grossMargin }}</b> (Mục tiêu <b>KPI 4: {{ getKpiTarget('TC55') || '50%' }}</b>). Doanh thu các Câu lạc bộ bổ trợ ngoài giờ đạt <b>{{ computedFinanceData.clbRev }}</b> với <b>{{ computedFinanceData.clbStudents }}</b> tham gia (Đóng góp mục tiêu <b>KPI 3.2.1: $1M</b>).
-        </div>
-        <div class="uc-kpi-ops__bhead-s">
-          Nguồn dữ liệu: Phòng Kế toán PM FTS · Phân hệ Thu phí Dịch vụ &amp; Quản lý Hoạt động ngoài giờ.
-        </div>
+      <div class="uc-kpi-ops__vhead mb-2">
+        <div class="uc-kpi-ops__vtitle">Chỉ tiêu Tài chính Vận hành (Nhóm 4 · Chỉ tiêu 55, 56) · {{ currentUnitTitle }}</div>
+        <div class="uc-kpi-ops__vnote">Tỷ suất LN gộp: <b>{{ computedFinanceData.grossMargin }}</b> (Mục tiêu {{ getKpiTarget('TC55') || '50%' }}) · Doanh thu CLB: <b>{{ computedFinanceData.clbRev }}</b> ({{ computedFinanceData.clbStudents }} HS tham gia) · Nguồn: PM FTS</div>
       </div>
 
       <!-- 4 Stats Cards Tài chính -->
@@ -1980,14 +1885,9 @@
 
     <!-- 9b. PAGE 7: PHỄU TUYỂN SINH & LEADS CRM (TS05, TS06) -->
     <div v-if="page === 7" class="uc-kpi-ops__page">
-      <div class="uc-kpi-ops__bhead">
-        <div class="uc-kpi-ops__bhead-k">Chuyên môn Tuyển sinh &amp; Chăm sóc khách hàng (TVTS · CRM)</div>
-        <div class="uc-kpi-ops__bhead-t">
-          Lũy kế năm học 2026–2027 tiếp nhận <b>{{ computedCrmLeads }} Leads tiềm năng (TS05)</b>, chuyển đổi thành công <b>{{ computedCrmEnrolled }} học sinh nhập học</b>, tỷ lệ chuyển đổi trung bình đạt <b>{{ computedCrmConversionRate }}% (TS06)</b>. Kênh Người quen &amp; PH hiện hữu đạt tỷ lệ chốt cao nhất (&gt; 50%).
-        </div>
-        <div class="uc-kpi-ops__bhead-s">
-          Trích xuất từ Báo cáo Tracking Tuyển sinh 2026–2027 (Google Spreadsheet TVTS) · Cập nhật theo đơn vị và khối lớp.
-        </div>
+      <div class="uc-kpi-ops__vhead mb-2">
+        <div class="uc-kpi-ops__vtitle">Chuyên môn Tuyển sinh &amp; Chăm sóc khách hàng (TVTS · CRM)</div>
+        <div class="uc-kpi-ops__vnote">Lũy kế NH 2026–2027: <b>{{ computedCrmLeads }} Leads (TS05)</b> · Chuyển đổi: <b>{{ computedCrmConversionRate }}% ({{ computedCrmEnrolled }} HS nhập học - TS06)</b> · Nguồn: TVTS Tracking</div>
       </div>
 
       <!-- 4 Stats Cards CRM -->
