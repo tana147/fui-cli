@@ -3616,3 +3616,139 @@
   border-radius: 4px;
   border-left: 3px solid var(--accent);
 }
+
+/* ==========================================================================
+   Executive Enhancements — KPI Operations Dashboard
+   - Trend Badges (MoM Delta)
+   - Sticky Subnav Breadcrumb
+   - Directive Checklist Filters & Status
+   - Print Layout (@media print)
+   ========================================================================== */
+
+.uc-kpi-ops__trend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 2px;
+  margin-left: 6px;
+  line-height: 1.2;
+  vertical-align: middle;
+}
+.uc-kpi-ops__trend-badge.is-good {
+  background: var(--good-t);
+  color: var(--good);
+  border: 1px solid rgba(16, 124, 65, 0.25);
+}
+.uc-kpi-ops__trend-badge.is-bad {
+  background: var(--bad-t);
+  color: var(--bad);
+  border: 1px solid rgba(168, 0, 0, 0.25);
+}
+
+.uc-kpi-ops__sticky-subnav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 12px;
+}
+.uc-kpi-ops__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.uc-kpi-ops__breadcrumb .crumb-link {
+  color: var(--accent2);
+  font-weight: 600;
+  cursor: pointer;
+}
+.uc-kpi-ops__breadcrumb .crumb-link:hover {
+  text-decoration: underline;
+}
+.uc-kpi-ops__breadcrumb .crumb-sep {
+  color: var(--ink3);
+}
+.uc-kpi-ops__breadcrumb .crumb-current {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.uc-kpi-ops__directive-filters {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.uc-kpi-ops__directive-btn {
+  padding: 2px 8px;
+  font-size: 11px;
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--ink2);
+  border-radius: 2px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.uc-kpi-ops__directive-btn.is-active {
+  background: var(--accent2);
+  color: #ffffff;
+  border-color: var(--accent2);
+  font-weight: 700;
+}
+.uc-kpi-ops__directive-check {
+  cursor: pointer;
+  width: 15px;
+  height: 15px;
+  accent-color: var(--good);
+  vertical-align: middle;
+}
+.uc-kpi-ops__directive-row.is-done td {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .uc-kpi-ops {
+    background: #ffffff !important;
+    padding: 0 !important;
+  }
+  .uc-kpi-ops__top button,
+  .uc-kpi-ops__slicers,
+  .uc-kpi-ops__tabs,
+  .uc-kpi-ops__subtabs,
+  .uc-kpi-ops__sticky-subnav,
+  .uc-kpi-ops__veil,
+  .uc-kpi-ops__drawer,
+  .uc-kpi-ops__causal-spot,
+  .uc-kpi-ops__roi-modal-overlay,
+  .uc-kpi-ops__view-switcher,
+  .uc-kpi-ops__bkpi-causal,
+  .uc-kpi-ops__bkpi-i {
+    display: none !important;
+  }
+  .uc-kpi-ops__page {
+    display: block !important;
+    page-break-after: avoid;
+  }
+  .uc-kpi-ops__bkpi,
+  .uc-kpi-ops__visual,
+  .uc-kpi-ops__audit-card,
+  .uc-kpi-ops__risk-card {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #cccccc !important;
+  }
+}

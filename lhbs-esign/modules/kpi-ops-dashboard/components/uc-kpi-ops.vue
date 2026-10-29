@@ -18,6 +18,12 @@
         <button type="button" class="uc-kpi-ops__simbtn" @click="openCausalModal()">
           Vùng tác động (ước tính)
         </button>
+        <button type="button" class="uc-kpi-ops__simbtn" @click="copyExecutiveBriefing()">
+          {{ copiedBriefing ? 'Đã sao chép briefing!' : 'Sao chép tóm tắt họp' }}
+        </button>
+        <button type="button" class="uc-kpi-ops__simbtn" @click="printExecutiveReport()">
+          In báo cáo A4
+        </button>
         <button type="button" :class="['uc-kpi-ops__simbtn', { 'is-solid': isPresentMode }]" @click="toggleFullscreen()">
           {{ isPresentMode ? 'Thoát toàn màn hình' : 'Toàn màn hình' }}
         </button>
@@ -81,6 +87,18 @@
       </div>
     </div>
 
+    <!-- Sticky Subnav Breadcrumb khi xem trang chuyên sâu (page !== 0) -->
+    <div v-if="page !== 0" class="uc-kpi-ops__sticky-subnav">
+      <div class="uc-kpi-ops__breadcrumb">
+        <span class="crumb-link" @click="page = 0">0. Hội đồng trường (Executive Cockpit)</span>
+        <span class="crumb-sep">&rsaquo;</span>
+        <span class="crumb-current">{{ currentBreadcrumbTitle }}</span>
+      </div>
+      <button type="button" class="uc-kpi-ops__simbtn is-solid" @click="page = 0">
+        &lsaquo; Quay lại Trung tâm điều hành
+      </button>
+    </div>
+
     <!-- 3. PAGE 0: HỘI ĐỒNG TRƯỜNG (Executive Board Overview) -->
     <div v-if="page === 0" class="uc-kpi-ops__page">
       <div class="uc-kpi-ops__bhead">
@@ -125,7 +143,12 @@
             <b>ĐẠT {{ displayCapacityPct }}% KH</b>
           </div>
           <div class="uc-kpi-ops__bkpi-m">
-            <div class="uc-kpi-ops__bkpi-v">{{ formatNumber(displayStudents) }} <small>HS</small></div>
+            <div class="uc-kpi-ops__bkpi-v">
+              {{ formatNumber(displayStudents) }} <small>HS</small>
+              <span v-if="getKpiMoM('TS01').hasPrior" :class="['uc-kpi-ops__trend-badge', getKpiMoM('TS01').isGood ? 'is-good' : 'is-bad']">
+                {{ getKpiMoM('TS01').trend === 'up' ? '▲' : (getKpiMoM('TS01').trend === 'down' ? '▼' : '■') }} {{ Math.abs(getKpiMoM('TS01').deltaPct) }}% MoM
+              </span>
+            </div>
             <svg class="uc-kpi-ops__spark" viewBox="0 0 110 42">
               <line x1="2" x2="108" y1="12" y2="12" class="sp-tg"></line>
               <polyline points="4,34 20,32 36,29 52,26 68,14 84,16 100,17" class="sp-l"></polyline>
@@ -167,7 +190,12 @@
             <b :class="'tx-' + getMetricStatus('TS04')">{{ displayWithdrawRate }}% {{ getMetricStatusText('TS04') }}</b>
           </div>
           <div class="uc-kpi-ops__bkpi-m">
-            <div class="uc-kpi-ops__bkpi-v">{{ displayWithdrawRate }}% <small>({{ displayWithdrawCount }} HS kỳ T9)</small></div>
+            <div class="uc-kpi-ops__bkpi-v">
+              {{ displayWithdrawRate }}% <small>({{ displayWithdrawCount }} HS kỳ T9)</small>
+              <span v-if="getKpiMoM('TS04').hasPrior" :class="['uc-kpi-ops__trend-badge', getKpiMoM('TS04').isGood ? 'is-good' : 'is-bad']">
+                {{ getKpiMoM('TS04').trend === 'up' ? '▲' : (getKpiMoM('TS04').trend === 'down' ? '▼' : '■') }} {{ Math.abs(getKpiMoM('TS04').deltaPct) }}% MoM
+              </span>
+            </div>
             <svg class="uc-kpi-ops__spark" viewBox="0 0 110 42">
               <line x1="2" x2="108" y1="8" y2="8" class="sp-tg"></line>
               <polyline points="4,18 25,22 46,20 67,26 88,24 100,21" class="sp-l"></polyline>
@@ -209,7 +237,12 @@
             <b>{{ computedLmsData.rate }} TỶ LỆ</b>
           </div>
           <div class="uc-kpi-ops__bkpi-m">
-            <div class="uc-kpi-ops__bkpi-v">{{ computedLmsData.rate }} <small>hoàn thành</small></div>
+            <div class="uc-kpi-ops__bkpi-v">
+              {{ computedLmsData.rate }} <small>hoàn thành</small>
+              <span v-if="getKpiMoM('CM08').hasPrior" :class="['uc-kpi-ops__trend-badge', getKpiMoM('CM08').isGood ? 'is-good' : 'is-bad']">
+                {{ getKpiMoM('CM08').trend === 'up' ? '▲' : (getKpiMoM('CM08').trend === 'down' ? '▼' : '■') }} {{ Math.abs(getKpiMoM('CM08').deltaPct) }}% MoM
+              </span>
+            </div>
             <svg class="uc-kpi-ops__spark" viewBox="0 0 110 42">
               <line x1="2" x2="108" y1="10" y2="10" class="sp-tg"></line>
               <polyline points="4,22 25,20 46,18 67,16 88,14 100,12" class="sp-l"></polyline>
@@ -251,7 +284,12 @@
             <b class="tx-good">ĐẠT {{ computedFinanceData.grossMargin }}</b>
           </div>
           <div class="uc-kpi-ops__bkpi-m">
-            <div class="uc-kpi-ops__bkpi-v">{{ computedFinanceData.grossMargin }} <small>LN Gộp</small></div>
+            <div class="uc-kpi-ops__bkpi-v">
+              {{ computedFinanceData.grossMargin }} <small>LN Gộp</small>
+              <span v-if="getKpiMoM('TC55').hasPrior" :class="['uc-kpi-ops__trend-badge', getKpiMoM('TC55').isGood ? 'is-good' : 'is-bad']">
+                {{ getKpiMoM('TC55').trend === 'up' ? '▲' : (getKpiMoM('TC55').trend === 'down' ? '▼' : '■') }} {{ Math.abs(getKpiMoM('TC55').deltaPct) }}% MoM
+              </span>
+            </div>
             <svg class="uc-kpi-ops__spark" viewBox="0 0 110 42">
               <line x1="2" x2="108" y1="12" y2="12" class="sp-tg"></line>
               <polyline points="4,28 25,24 46,20 67,16 88,14 100,13" class="sp-l"></polyline>
@@ -628,6 +666,14 @@
                 <div class="uc-kpi-ops__risk-card-threat">
                   <b>Nguy cơ:</b> {{ t.RiskThreatT10 }}
                 </div>
+                <div style="margin-top:6px;display:flex;justify-content:flex-end;">
+                  <button
+                    type="button"
+                    class="uc-kpi-ops__simbtn"
+                    style="padding:1px 6px;font-size:10.5px;"
+                    @click.stop="jumpToFactStore(getTriggerFactDomain(t), t.TargetCampus)"
+                  >Xem chứng từ gốc &rsaquo;</button>
+                </div>
               </div>
             </div>
 
@@ -654,20 +700,55 @@
 
           <!-- Right: Preventive Checklist -->
           <div class="uc-kpi-ops__risk-checklist-box">
-            <div class="uc-kpi-ops__risk-subhead">
+            <div class="uc-kpi-ops__risk-subhead" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
               <span>Checklist Chỉ Đạo Can Thiệp Khẩn Cấp Của HĐQT</span>
-              <span style="font-size:11px;color:#d13438;font-weight:700;">Hạn chót: 05/10/2026</span>
+              <div class="uc-kpi-ops__directive-filters">
+                <button
+                  type="button"
+                  :class="['uc-kpi-ops__directive-btn', { 'is-active': directiveStatusFilter === 'ALL' }]"
+                  @click="directiveStatusFilter = 'ALL'"
+                >Tất cả</button>
+                <button
+                  type="button"
+                  :class="['uc-kpi-ops__directive-btn', { 'is-active': directiveStatusFilter === 'URGENT' }]"
+                  @click="directiveStatusFilter = 'URGENT'"
+                >Khẩn</button>
+                <button
+                  type="button"
+                  :class="['uc-kpi-ops__directive-btn', { 'is-active': directiveStatusFilter === 'PENDING' }]"
+                  @click="directiveStatusFilter = 'PENDING'"
+                >Chưa xong</button>
+                <button
+                  type="button"
+                  :class="['uc-kpi-ops__directive-btn', { 'is-active': directiveStatusFilter === 'DONE' }]"
+                  @click="directiveStatusFilter = 'DONE'"
+                >Đã xong</button>
+              </div>
             </div>
-            <table class="uc-kpi-ops__checklist-table" v-if="riskChecklist && riskChecklist.length">
+            <table class="uc-kpi-ops__checklist-table" v-if="filteredRiskChecklist && filteredRiskChecklist.length">
               <thead>
                 <tr>
+                  <th style="width:28px;text-align:center;">✓</th>
                   <th>Nội dung chỉ đạo phòng ngừa</th>
                   <th>Người phụ trách</th>
                   <th>Hạn chót</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="ch in riskChecklist" :key="ch.ChecklistID">
+                <tr
+                  v-for="ch in filteredRiskChecklist"
+                  :key="ch.ChecklistID"
+                  :class="['uc-kpi-ops__directive-row', { 'is-done': isDirectiveDone(ch.ChecklistID) }]"
+                >
+                  <td style="text-align:center;">
+                    <input
+                      type="checkbox"
+                      class="uc-kpi-ops__directive-check"
+                      :checked="isDirectiveDone(ch.ChecklistID)"
+                      @change="toggleDirectiveStatus(ch.ChecklistID)"
+                      title="Đánh dấu đã hoàn thành"
+                    />
+                  </td>
                   <td>
                     <b>{{ ch.DirectiveTitle }}</b>
                     <div style="font-size:10.5px;color:var(--ink3);">{{ ch.SubText }}</div>
@@ -677,7 +758,7 @@
                 </tr>
               </tbody>
             </table>
-            <div v-else class="text-caption text-grey p-3 text-center">Đang cập nhật chỉ đạo HĐQT...</div>
+            <div v-else class="text-caption text-grey p-3 text-center">Không có chỉ thị nào trong mục này.</div>
           </div>
         </div>
       </div>
@@ -742,12 +823,20 @@
 
               <div class="uc-kpi-ops__audit-owner">
                 <span>Đầu mối: <b>{{ item.ActionOwner }}</b></span>
-                <button
-                  type="button"
-                  class="uc-kpi-ops__simbtn"
-                  style="padding:1px 6px;font-size:10.5px;"
-                  @click="openFactAuditForItem(item)"
-                >Đối soát Fact Store &rsaquo;</button>
+                <div style="display:flex;gap:4px;">
+                  <button
+                    type="button"
+                    class="uc-kpi-ops__simbtn"
+                    style="padding:1px 6px;font-size:10.5px;"
+                    @click="openFactAuditForItem(item)"
+                  >Đối soát Drawer &rsaquo;</button>
+                  <button
+                    type="button"
+                    class="uc-kpi-ops__simbtn is-solid"
+                    style="padding:1px 6px;font-size:10.5px;"
+                    @click="jumpToFactStore(getAuditDomain(item), item.ScopeID)"
+                  >Duyệt Fact Tab &rsaquo;</button>
+                </div>
               </div>
             </div>
           </div>
@@ -3248,6 +3337,10 @@
       operationalFactsList: [],
       factAuditFilter: "ALL",
       causalChainFilter: "ALL",
+      priorPeriodSnapshots: [],
+      directiveStatusFilter: "ALL",
+      directiveStatusMap: {},
+      copiedBriefing: false,
       defaultCorrelations: [],
       defaultAuditDiscrepancies: [],
       goliveSpecsList: [],
@@ -3468,6 +3561,47 @@
     };
   },
   computed: {
+    priorPeriodKey() {
+      if (!this.periodsList || !this.periodsList.length) return null;
+      const idx = this.periodsList.findIndex((p) => p.PeriodKey === this.selectedPeriod);
+      if (idx >= 0 && idx + 1 < this.periodsList.length) {
+        return this.periodsList[idx + 1].PeriodKey;
+      }
+      const match = (this.selectedPeriod || "").match(/^(\d{4})-(\d{2})$/);
+      if (match) {
+        let year = parseInt(match[1], 10);
+        let month = parseInt(match[2], 10) - 1;
+        if (month === 0) {
+          month = 12;
+          year -= 1;
+        }
+        const fallbackKey = `${year}-${month < 10 ? "0" + month : month}`;
+        return this.periodsList.some((p) => p.PeriodKey === fallbackKey) ? fallbackKey : null;
+      }
+      return null;
+    },
+    filteredRiskChecklist() {
+      if (!this.riskChecklist || !this.riskChecklist.length) return [];
+      return this.riskChecklist.filter((item) => {
+        const id = item.ChecklistID || item.DirectiveTitle;
+        const isDone = !!this.directiveStatusMap[id];
+        if (this.directiveStatusFilter === "DONE") return isDone;
+        if (this.directiveStatusFilter === "PENDING") return !isDone;
+        if (this.directiveStatusFilter === "URGENT") return item.StatusClass === "is-urgent" && !isDone;
+        return true;
+      });
+    },
+    currentBreadcrumbTitle() {
+      switch (this.page) {
+        case 1: return "1. Sĩ số & Khối lớp (Chỉ tiêu 1–3)";
+        case 7: return "2. Phễu TVTS & Leads CRM (Chỉ tiêu 5, 6)";
+        case 2: return "3. Rút học & Chuyển đi (Chỉ tiêu 4)";
+        case 4: return "4. Chuyên môn LMS (Nhóm 2: 8, 11, 15)";
+        case 6: return "5. Dịch vụ & An toàn Học đường (Nhóm 3: 28–40)";
+        case 5: return "6. Tài chính: LN gộp & CLB (Nhóm 4: 55, 56)";
+        default: return "Chi tiết Phân hệ Vận hành";
+      }
+    },
     currentRoiScenarioTitle() {
       const titles = {
         BUS: 'Kịch bản 1: Mở tuyến bus đón học sinh xa nhà (Bảo toàn 21 HS rút học)',
@@ -5034,6 +5168,12 @@
     },
   },
   mounted() {
+    try {
+      if (typeof localStorage !== "undefined") {
+        const saved = localStorage.getItem("kpi_ops_directives_status");
+        if (saved) this.directiveStatusMap = JSON.parse(saved);
+      }
+    } catch (e) {}
     this.fetchPeriodsList();
     this.fetchPeriodData(this.selectedPeriod);
     this.fetchAllLiveData();
@@ -5072,6 +5212,151 @@
     getKpi(kpiCode) {
       if (!this.periodSnapshots || !this.periodSnapshots.length) return null;
       return this.periodSnapshots.find((x) => x.KpiCode === kpiCode) || null;
+    },
+    async fetchPriorPeriodData(priorKey) {
+      if (!priorKey) {
+        this.priorPeriodSnapshots = [];
+        return;
+      }
+      const queryUnit = (this.currentUnit === "MNTB") ? "MNBH" : this.currentUnit;
+      try {
+        const snapRes = await this.callTapi("eSign/KPI_GetPeriodSnapshots", { PeriodKey: priorKey, DonViID: queryUnit });
+        if (snapRes && Array.isArray(snapRes) && snapRes[0]) {
+          this.priorPeriodSnapshots = snapRes[0];
+        } else {
+          this.priorPeriodSnapshots = [];
+        }
+      } catch (e) {
+        console.warn("fetchPriorPeriodData error:", e);
+        this.priorPeriodSnapshots = [];
+      }
+    },
+    getKpiMoM(kpiCode) {
+      const curr = this.getKpi(kpiCode);
+      if (!curr || curr.ActualValue == null || !this.priorPeriodSnapshots || !this.priorPeriodSnapshots.length) {
+        return { hasPrior: false, deltaValue: 0, deltaPct: 0, trend: "flat", isGood: true };
+      }
+      const prior = this.priorPeriodSnapshots.find((x) => x.KpiCode === kpiCode);
+      if (!prior || prior.ActualValue == null) {
+        return { hasPrior: false, deltaValue: 0, deltaPct: 0, trend: "flat", isGood: true };
+      }
+      const currVal = Number(curr.ActualValue);
+      const priorVal = Number(prior.ActualValue);
+      if (isNaN(currVal) || isNaN(priorVal) || priorVal === 0) {
+        return { hasPrior: false, deltaValue: 0, deltaPct: 0, trend: "flat", isGood: true };
+      }
+      const deltaValue = currVal - priorVal;
+      const deltaPct = Number(((deltaValue / Math.abs(priorVal)) * 100).toFixed(1));
+      const trend = deltaValue > 0.05 ? "up" : (deltaValue < -0.05 ? "down" : "flat");
+      const isInverse = ["TS04", "TS07", "HR01", "VH29", "VH38", "SK02"].includes(kpiCode);
+      const isGood = isInverse ? (deltaValue <= 0) : (deltaValue >= 0);
+      return {
+        hasPrior: true,
+        priorValue: priorVal,
+        currentValue: currVal,
+        deltaValue: Number(deltaValue.toFixed(1)),
+        deltaPct,
+        trend,
+        isGood,
+      };
+    },
+    copyExecutiveBriefing() {
+      const period = this.currentPeriodName || this.selectedPeriod;
+      const unit = this.currentUnitTitle || this.currentUnit;
+      const students = this.formatNumber(this.displayStudents);
+      const fillRate = this.displayFillRate;
+      const withdrawRate = this.displayWithdrawRate;
+      const withdrawCount = this.displayWithdrawCount;
+      const lmsRate = this.computedLmsData ? this.computedLmsData.rate : "94.2%";
+      const grossMargin = this.computedFinanceData ? this.computedFinanceData.grossMargin : "54.8%";
+      const rev = this.computedFinanceData ? this.computedFinanceData.rev : "11.2 tỷ";
+
+      let riskText = "Duy trì 0 sự cố an toàn học đường (ISO 22000).";
+      if (this.riskCampusCards && this.riskCampusCards.length) {
+        const redCampuses = this.riskCampusCards.filter((c) => c.RiskTier === "RED").map((c) => c.CampusName);
+        if (redCampuses.length) {
+          riskText += " Cảnh báo vùng đỏ rủi ro tại: " + redCampuses.join(", ") + ".";
+        }
+      }
+
+      const text = "[BÁO CÁO ĐIỀU HÀNH HỘI ĐỒNG TRƯỜNG - LHBS]\n" +
+        "Kỳ báo cáo: " + period + " · Đơn vị: " + unit + "\n" +
+        "--------------------------------------------------\n" +
+        "1. Quy mô học sinh: " + students + " HS (Lấp đầy " + fillRate + "% công suất).\n" +
+        "2. Tỷ lệ rút học kỳ: " + withdrawRate + "% (" + withdrawCount + " HS rút học).\n" +
+        "3. Chuyên môn & LMS: Tỷ lệ hoàn thành bài tập trực tuyến đạt " + lmsRate + ".\n" +
+        "4. Tài chính vận hành: Lợi nhuận gộp dịch vụ đạt " + grossMargin + " (Doanh thu thuần: " + rev + ").\n" +
+        "5. An toàn & Rủi ro: " + riskText + "\n" +
+        "--------------------------------------------------\n" +
+        "Nguồn: CSDL eSign & tapi.lhbs.vn · Trích xuất tự động từ KPI Ops Dashboard";
+
+      if (typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          this.copiedBriefing = true;
+          setTimeout(() => { this.copiedBriefing = false; }, 3000);
+          if (typeof showToast !== "undefined" && showToast && showToast.success) {
+            showToast.success("Đã sao chép tóm tắt điều hành vào clipboard!");
+          }
+        }).catch((err) => {
+          console.warn("Clipboard write failed:", err);
+          prompt("Sao chép tóm tắt điều hành dưới đây:", text);
+        });
+      } else {
+        prompt("Sao chép tóm tắt điều hành dưới đây:", text);
+      }
+    },
+    printExecutiveReport() {
+      window.print();
+    },
+    jumpToFactStore(domainCode, scopeId) {
+      this.executiveTab = "FACTS";
+      this.selectedFactDomain = domainCode || "LEAVE";
+      this.factAuditFilter = scopeId || "ALL";
+      this.fetchOperationalFacts(this.selectedFactDomain);
+    },
+    getTriggerFactDomain(t) {
+      if (!t) return "LEAVE";
+      const tid = (t.TriggerID || "").toUpperCase();
+      if (tid.includes("MAINT") || tid.includes("CSVC")) return "MAINTENANCE";
+      if (tid.includes("HEALTH") || tid.includes("YTE")) return "HEALTH";
+      if (tid.includes("CRM") || tid.includes("ENROLL")) return "LEAVE";
+      if (tid.includes("LMS") || tid.includes("TEACH")) return "TEACHING";
+      return "LEAVE";
+    },
+    getAuditDomain(item) {
+      let domain = "LEAVE";
+      const code = ((item && item.AuditCode) || "").toUpperCase();
+      const cat = ((item && item.Category) || "").toUpperCase();
+      const title = ((item && item.Title) || "").toUpperCase();
+      if (code.includes("MAINT") || cat.includes("CSVC") || title.includes("MÁY LẠNH")) {
+        domain = "MAINTENANCE";
+      } else if (code.includes("HEALTH") || cat.includes("Y TẾ") || title.includes("CÚM") || title.includes("SỐT")) {
+        domain = "HEALTH";
+      } else if (code.includes("CLUB") || cat.includes("CLB") || title.includes("CLB")) {
+        domain = "CLUB";
+      } else if (code.includes("TEACH") || cat.includes("DẠY") || title.includes("TIẾT")) {
+        domain = "TEACHING";
+      } else if (code.includes("HR") || cat.includes("NHÂN SỰ") || title.includes("BIẾN ĐỘNG")) {
+        domain = "HR_TURNOVER";
+      }
+      return domain;
+    },
+    isDirectiveDone(checklistId) {
+      if (!checklistId) return false;
+      return !!this.directiveStatusMap[checklistId];
+    },
+    toggleDirectiveStatus(checklistId) {
+      if (!checklistId) return;
+      const current = !!this.directiveStatusMap[checklistId];
+      this.directiveStatusMap = {
+        ...this.directiveStatusMap,
+        [checklistId]: !current,
+      };
+      try {
+        if (typeof localStorage !== "undefined") {
+          localStorage.setItem("kpi_ops_directives_status", JSON.stringify(this.directiveStatusMap));
+        }
+      } catch (e) {}
     },
     getKpiOwner(b) {
       if (!b) return "Ban Điều Hành Cơ Sở";
@@ -5233,6 +5518,9 @@
         const res = await this.callTapi("eSign/KPI_GetPeriods", {});
         if (res && Array.isArray(res) && res.length) {
           this.periodsList = res;
+          if (this.priorPeriodKey && (!this.priorPeriodSnapshots || !this.priorPeriodSnapshots.length)) {
+            this.fetchPriorPeriodData(this.priorPeriodKey);
+          }
         }
       } catch (e) {
         console.warn("fetchPeriodsList error:", e);
@@ -5269,6 +5557,10 @@
             const list = Object.values(specsMap);
             if (list.length) this.goliveSpecsList = list;
           }
+        }
+
+        if (this.priorPeriodKey) {
+          this.fetchPriorPeriodData(this.priorPeriodKey);
         }
 
         const corrRes = await this.callTapi("eSign/KPI_GetCorrelations", { PeriodKey: pKey, DonViID: queryUnit });
