@@ -6,8 +6,8 @@
 -- ===================================================================================
 
 CREATE   PROCEDURE spAPI_KPI_GetRiskRadar
-    @PeriodKey VARCHAR(20) = '2026-09',
-    @DonViID VARCHAR(20) = 'ALL'
+    @PeriodKey VARCHAR(20),
+    @DonViID VARCHAR(20)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -17,25 +17,25 @@ BEGIN
     IF @DonViID IS NULL OR @DonViID = ''
         SET @DonViID = 'ALL';
 
-    -- 1. THỐNG KÊ TỔNG HỢP NGUYÊN TỬ TỪ FACT STORE ĐỂ TÍNH TOÁN ĐỘNG
+    -- 1. THỐNG KÊ TỔNG HỢP NGUYÊN TỬ TỪ CÁC BẢNG SNAPSHOT ĐỂ TÍNH TOÁN ĐỘNG
     -- 1.1. Thống kê rút học vì xa nhà
     DECLARE @FarWithdrawCount INT = ISNULL((SELECT SUM(ActualCount) FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND DimensionCode = 'FAR'), 21);
     DECLARE @TotalWithdrawCount INT = ISNULL((SELECT SUM(ActualCount) FROM tblKPI_PeriodBreakdowns WHERE PeriodKey = @PeriodKey AND KpiCode = 'TS04'), 53);
     IF @TotalWithdrawCount = 0 SET @TotalWithdrawCount = 53;
 
-    -- 1.2. Thống kê ticket bảo trì máy lạnh & tồn đọng
-    DECLARE @AcTotalTickets INT = ISNULL((SELECT COUNT(*) FROM tblKPI_OperationalFacts WHERE PeriodKey = @PeriodKey AND DomainCode = 'MAINTENANCE'), 18);
-    DECLARE @AcPendingTickets INT = ISNULL((SELECT COUNT(*) FROM tblKPI_OperationalFacts WHERE PeriodKey = @PeriodKey AND DomainCode = 'MAINTENANCE' AND Status = 'PENDING'), 4);
+    -- 1.2. Thống kê ticket bảo trì máy lạnh & tồn đọng từ tblKPI_Snap_Maintenance
+    DECLARE @AcTotalTickets INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_Maintenance WHERE PeriodKey = @PeriodKey), 18);
+    DECLARE @AcPendingTickets INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_Maintenance WHERE PeriodKey = @PeriodKey AND Status = 'PENDING'), 4);
     IF @AcTotalTickets = 0 SET @AcTotalTickets = 18;
     IF @AcPendingTickets = 0 SET @AcPendingTickets = 4;
 
-    -- 1.3. Thống kê ca sốt phát ban & Cúm A
-    DECLARE @FluCases INT = ISNULL((SELECT COUNT(*) FROM tblKPI_OperationalFacts WHERE PeriodKey = @PeriodKey AND DomainCode = 'HEALTH'), 53);
+    -- 1.3. Thống kê ca sốt phát ban & Cúm A từ tblKPI_Snap_Healthcare
+    DECLARE @FluCases INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_Healthcare WHERE PeriodKey = @PeriodKey), 53);
     IF @FluCases = 0 SET @FluCases = 53;
 
-    -- 1.4. Thống kê ngày nghỉ phép giáo viên
-    DECLARE @LeaveCount INT = ISNULL((SELECT COUNT(*) FROM tblKPI_OperationalFacts WHERE PeriodKey = @PeriodKey AND DomainCode = 'LEAVE'), 150);
-    DECLARE @LeaveDays INT = ISNULL((SELECT CAST(SUM(MetricCount) AS INT) FROM tblKPI_OperationalFacts WHERE PeriodKey = @PeriodKey AND DomainCode = 'LEAVE'), 298);
+    -- 1.4. Thống kê ngày nghỉ phép giáo viên từ tblKPI_Snap_HRM_Leave
+    DECLARE @LeaveCount INT = ISNULL((SELECT COUNT(*) FROM tblKPI_Snap_HRM_Leave WHERE PeriodKey = @PeriodKey), 150);
+    DECLARE @LeaveDays INT = ISNULL((SELECT CAST(SUM(LeaveDays) AS INT) FROM tblKPI_Snap_HRM_Leave WHERE PeriodKey = @PeriodKey), 298);
     IF @LeaveCount = 0 SET @LeaveCount = 150;
     IF @LeaveDays = 0 SET @LeaveDays = 298;
 

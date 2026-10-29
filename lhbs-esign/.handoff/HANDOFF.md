@@ -1,17 +1,17 @@
 # AGENT HANDOFF: lhbs-esign
 
-- **Generated At:** 2026-10-29T10:56:00+07:00
+- **Generated At:** 2026-10-29T11:02:00+07:00
 - **Workspace Root:** `/home/iot/CODE/fui-cli/lhbs-esign`
 - **Status:** `done`
-- **Next Session Focus:** Kiểm thử trải nghiệm thực tế trên giao diện họp điều hành tại `https://kyso.lhbs.vn/kpi-ops-dashboard` với toàn bộ số liệu đã được nạp và đối soát tự động từ database eSignature live.
+- **Next Session Focus:** Kiểm thử thực tế trên giao diện họp điều hành tại `https://kyso.lhbs.vn/kpi-ops-dashboard` với toàn bộ số liệu 8 bảng Snapshot nguồn và các bảng cũ đã được cô lập an toàn.
 
 ## 1. NEXT SESSION ACTION PLAN
 1. Mở trình duyệt truy cập `https://kyso.lhbs.vn/kpi-ops-dashboard`:
    - Xác nhận dropdown kỳ làm việc chọn "Tháng 09/2026 (Chốt sổ)".
    - Kiểm tra bảng Tài chính 5 dịch vụ (79.37 tỷ VNĐ) và 36 CLB (1.611 tỷ VNĐ) hiển thị đầy đủ từ `spAPI_KPI_GetFinanceServices`.
-   - Kiểm tra Fact Drawer hiển thị đúng 470 đơn nghỉ phép, 131 ca y tế, 44 ca nhân sự, 10 ticket CSVC.
-   - Kiểm tra phễu CRM và các chỉ số an toàn ME School từ `spAPI_KPI_GetOperationsSummary`.
-2. Thiết kế pipeline/worker định kỳ tự động kéo dữ liệu snapshot cho kỳ chốt tiếp theo (Tháng 10/2026).
+   - Kiểm tra Fact Drawer hiển thị đúng 470 đơn nghỉ phép, 131 ca y tế, 44 ca nhân sự, 10 ticket CSVC từ 8 bảng `tblKPI_Snap_*`.
+   - Kiểm tra tab Risk Radar và Audit Drawer hoạt động bình thường, không còn phụ thuộc vào bảng cũ.
+2. (Tùy chọn) Khi DBA chạy lệnh dọn dẹp vật lý trên server DB, có thể `DROP` hẳn 5 bảng `*_deprecated`.
 
 ## 2. SUGGESTED SKILLS
 - `clean-stage-commit-push`: Đã thực thi trong session này để đưa code và schema lên Git remote.

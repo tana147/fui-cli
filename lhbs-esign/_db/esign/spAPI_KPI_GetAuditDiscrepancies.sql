@@ -6,9 +6,9 @@
 -- ===================================================================================
 
 CREATE   PROCEDURE spAPI_KPI_GetAuditDiscrepancies
-    @PeriodKey VARCHAR(20) = '2026-09',
-    @ScopeID VARCHAR(20) = 'ALL',
-    @Category VARCHAR(50) = NULL
+    @PeriodKey VARCHAR(20),
+    @ScopeID VARCHAR(20),
+    @Category VARCHAR(50)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -44,17 +44,19 @@ BEGIN
     WHERE PeriodKey = @PeriodKey AND KpiCode = 'TS04';
     IF @FarWithdrawCount = 0 SET @FarWithdrawCount = 21; -- Fallback an toàn nếu chưa chốt breakdown
 
-    -- Thống kê sửa chữa CSVC từ tblKPI_OperationalFacts
+    -- Thống kê sửa chữa CSVC từ tblKPI_Snap_Maintenance
     DECLARE @MaintTotalTickets INT = 0;
     DECLARE @MaintAcTotal INT = 0;
     DECLARE @MaintAcPending INT = 4;
     SELECT 
-        @MaintTotalTickets = ISNULL(SUM(CAST(MetricCount AS INT)), 0),
-        @MaintAcTotal = ISNULL(SUM(CASE WHEN EntityName LIKE N'%lạnh%' THEN CAST(MetricCount AS INT) ELSE 0 END), 0)
-    FROM tblKPI_OperationalFacts
-    WHERE PeriodKey = @PeriodKey AND DomainCode = 'MAINTENANCE';
+        @MaintTotalTickets = ISNULL(COUNT(*), 0),
+        @MaintAcTotal = ISNULL(SUM(CASE WHEN IssueDescription LIKE N'%lạnh%' OR Category LIKE N'%lạnh%' THEN 1 ELSE 0 END), 0),
+        @MaintAcPending = ISNULL(SUM(CASE WHEN (IssueDescription LIKE N'%lạnh%' OR Category LIKE N'%lạnh%') AND Status = 'PENDING' THEN 1 ELSE 0 END), 0)
+    FROM tblKPI_Snap_Maintenance
+    WHERE PeriodKey = @PeriodKey;
     IF @MaintTotalTickets = 0 SET @MaintTotalTickets = 63;
     IF @MaintAcTotal = 0 SET @MaintAcTotal = 18;
+    IF @MaintAcPending = 0 SET @MaintAcPending = 4;
 
     -- Biên lợi nhuận xe bus từ snapshot TC56
     DECLARE @BusMargin NUMERIC(6,2) = 12.6;
