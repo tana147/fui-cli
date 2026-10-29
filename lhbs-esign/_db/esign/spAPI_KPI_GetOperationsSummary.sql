@@ -6,8 +6,8 @@
 -- Database: eSignature
 -- ===================================================================================
 
-CREATE OR ALTER PROCEDURE spAPI_KPI_GetOperationsSummary
-    @PeriodKey VARCHAR(20) = '2026-09'
+CREATE   PROCEDURE spAPI_KPI_GetOperationsSummary
+    @PeriodKey VARCHAR(20)
 AS
 BEGIN
     SET NOCOUNT ON;

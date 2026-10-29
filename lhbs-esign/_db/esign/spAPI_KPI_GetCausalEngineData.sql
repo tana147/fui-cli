@@ -7,7 +7,7 @@
 -- DB: eSignature (esign)
 -- ==============================================================================
 
-CREATE OR ALTER PROCEDURE spAPI_KPI_GetCausalEngineData
+CREATE   PROCEDURE spAPI_KPI_GetCausalEngineData
 AS
 BEGIN
     SET NOCOUNT ON;

@@ -4,7 +4,7 @@
 -- DB: eSignature (esign)
 -- ==============================================================================
 
-CREATE OR ALTER PROCEDURE spAPI_KPI_SaveCausalReason
+CREATE   PROCEDURE spAPI_KPI_SaveCausalReason
     @ReasonCode VARCHAR(50),
     @ActionOwner NVARCHAR(150),
     @WatchIndicator NVARCHAR(255),

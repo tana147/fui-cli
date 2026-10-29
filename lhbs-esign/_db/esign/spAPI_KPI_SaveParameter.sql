@@ -3,7 +3,7 @@
 -- Lưu / cập nhật tham số nghiệp vụ linh hoạt
 -- DB: eSignature (esign)
 -- ========================================================
-CREATE OR ALTER PROCEDURE spAPI_KPI_SaveParameter
+CREATE   PROCEDURE spAPI_KPI_SaveParameter
     @ParamID INT,
     @ParamCode VARCHAR(50),
     @ScopeType VARCHAR(20),

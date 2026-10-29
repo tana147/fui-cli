@@ -5,7 +5,7 @@
 -- Database: eSignature
 -- ===================================================================================
 
-CREATE OR ALTER PROCEDURE spAPI_KPI_GetRiskRadar
+CREATE   PROCEDURE spAPI_KPI_GetRiskRadar
     @PeriodKey VARCHAR(20) = '2026-09',
     @DonViID VARCHAR(20) = 'ALL'
 AS

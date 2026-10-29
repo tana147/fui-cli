@@ -5,7 +5,7 @@
 -- Database: eSignature
 -- ===================================================================================
 
-CREATE OR ALTER PROCEDURE spAPI_KPI_GetAuditDiscrepancies
+CREATE   PROCEDURE spAPI_KPI_GetAuditDiscrepancies
     @PeriodKey VARCHAR(20) = '2026-09',
     @ScopeID VARCHAR(20) = 'ALL',
     @Category VARCHAR(50) = NULL

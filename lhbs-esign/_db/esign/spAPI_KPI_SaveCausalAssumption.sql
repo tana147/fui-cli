@@ -4,7 +4,7 @@
 -- DB: eSignature (esign)
 -- ==============================================================================
 
-CREATE OR ALTER PROCEDURE spAPI_KPI_SaveCausalAssumption
+CREATE   PROCEDURE spAPI_KPI_SaveCausalAssumption
     @UnitCode VARCHAR(20),
     @AnnualTuitionMillion FLOAT,
     @GrossMarginPct FLOAT,

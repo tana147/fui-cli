@@ -5,7 +5,7 @@
 -- Database: eSignature
 -- ===================================================================================
 
-CREATE OR ALTER PROCEDURE spAPI_KPI_GetStrategicLevers
+CREATE   PROCEDURE spAPI_KPI_GetStrategicLevers
     @PeriodKey VARCHAR(20) = '2026-09'
 AS
 BEGIN

@@ -1,18 +1,17 @@
 # AGENT HANDOFF: lhbs-esign
 
-- **Generated At:** 2026-10-29T10:48:00+07:00
+- **Generated At:** 2026-10-29T10:56:00+07:00
 - **Workspace Root:** `/home/iot/CODE/fui-cli/lhbs-esign`
 - **Status:** `done`
-- **Next Session Focus:** Chạy kiểm thử luồng thực thi SQL migration trên database eSign thực tế (khi có quyền truy cập DB server) hoặc xây dựng cron job/worker tự động đóng băng dữ liệu các kỳ tiếp theo.
+- **Next Session Focus:** Kiểm thử trải nghiệm thực tế trên giao diện họp điều hành tại `https://kyso.lhbs.vn/kpi-ops-dashboard` với toàn bộ số liệu đã được nạp và đối soát tự động từ database eSignature live.
 
 ## 1. NEXT SESSION ACTION PLAN
-1. Khi có quyền kết nối DB SQL Server eSign, chạy lần lượt các script migration theo thứ tự:
-   - `_db/esign/migration_v2_source_snapshots_schema.sql` (tạo 8 bảng `tblKPI_Snap_*`).
-   - `_db/esign/migration_v2_seed_frozen_data_september.sql` (nạp dữ liệu đóng băng T9/2026).
-   - Cập nhật 4 Stored Procedures: `spAPI_KPI_GetFinanceServices.sql`, `spAPI_KPI_GetOperationalFacts.sql`, `spAPI_KPI_GetOperationsSummary.sql`, `spAPI_KPI_GetPeriodSnapshots.sql`.
-   - `_db/esign/migration_v2_drop_legacy_tables.sql` (dọn dẹp 6 bảng generic cũ).
-2. Kiểm tra UI `https://kyso.lhbs.vn/kpi-ops-dashboard` để xác nhận tất cả thẻ số liệu, tài chính, CLB và CRM hiển thị chuẩn xác từ dữ liệu kỳ đã chốt.
-3. Thiết kế pipeline tự động hóa nạp snapshot định kỳ (Tuần / Tháng / Quý / Năm) từ các hệ thống tác nghiệp nguồn (Basic Data, LMS, FTS, CRM).
+1. Mở trình duyệt truy cập `https://kyso.lhbs.vn/kpi-ops-dashboard`:
+   - Xác nhận dropdown kỳ làm việc chọn "Tháng 09/2026 (Chốt sổ)".
+   - Kiểm tra bảng Tài chính 5 dịch vụ (79.37 tỷ VNĐ) và 36 CLB (1.611 tỷ VNĐ) hiển thị đầy đủ từ `spAPI_KPI_GetFinanceServices`.
+   - Kiểm tra Fact Drawer hiển thị đúng 470 đơn nghỉ phép, 131 ca y tế, 44 ca nhân sự, 10 ticket CSVC.
+   - Kiểm tra phễu CRM và các chỉ số an toàn ME School từ `spAPI_KPI_GetOperationsSummary`.
+2. Thiết kế pipeline/worker định kỳ tự động kéo dữ liệu snapshot cho kỳ chốt tiếp theo (Tháng 10/2026).
 
 ## 2. SUGGESTED SKILLS
 - `clean-stage-commit-push`: Đã thực thi trong session này để đưa code và schema lên Git remote.

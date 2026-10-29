@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE spAPI_KPI_GetCorrelations
+CREATE   PROCEDURE spAPI_KPI_GetCorrelations
     @PeriodKey VARCHAR(20),
     @DonViID VARCHAR(20)
 AS

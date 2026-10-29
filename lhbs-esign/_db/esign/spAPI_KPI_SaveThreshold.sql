@@ -3,7 +3,7 @@
 -- Lưu / cập nhật ngưỡng KPI động
 -- DB: eSignature (esign)
 -- ========================================================
-CREATE OR ALTER PROCEDURE spAPI_KPI_SaveThreshold
+CREATE   PROCEDURE spAPI_KPI_SaveThreshold
     @ThresholdID INT,
     @KpiCode VARCHAR(50),
     @ScopeType VARCHAR(20),

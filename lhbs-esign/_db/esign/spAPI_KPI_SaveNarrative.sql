@@ -3,7 +3,7 @@
 -- Lưu / cập nhật mẫu câu chuỗi nhân quả kèm biểu thức, phân loại kịch bản & prompt kiểm toán
 -- DB: eSignature (esign)
 -- ========================================================
-CREATE OR ALTER PROCEDURE spAPI_KPI_SaveNarrative
+CREATE   PROCEDURE spAPI_KPI_SaveNarrative
     @NarrativeID INT,
     @NarrativeCode VARCHAR(50),
     @NarrativeGroup NVARCHAR(100),

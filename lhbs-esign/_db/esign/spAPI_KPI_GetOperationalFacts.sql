@@ -5,14 +5,17 @@
 -- Database: eSignature
 -- ===================================================================================
 
-CREATE OR ALTER PROCEDURE spAPI_KPI_GetOperationalFacts
-    @DomainCode VARCHAR(50) = 'LEAVE',
-    @PeriodKey VARCHAR(20) = '2026-09',
-    @ScopeID VARCHAR(50) = 'ALL',
-    @Status VARCHAR(50) = NULL
+CREATE   PROCEDURE spAPI_KPI_GetOperationalFacts
+    @DomainCode VARCHAR(50),
+    @PeriodKey VARCHAR(20),
+    @ScopeID VARCHAR(50),
+    @Status VARCHAR(50)
 AS
 BEGIN
     SET NOCOUNT ON;
+
+    IF @DomainCode IS NULL OR @DomainCode = ''
+        SET @DomainCode = 'LEAVE';
 
     IF @PeriodKey IS NULL OR @PeriodKey = ''
         SET @PeriodKey = '2026-09';

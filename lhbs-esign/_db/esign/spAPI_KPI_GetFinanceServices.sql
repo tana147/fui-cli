@@ -5,9 +5,9 @@
 -- Database: eSignature
 -- ===================================================================================
 
-CREATE OR ALTER PROCEDURE spAPI_KPI_GetFinanceServices
-    @PeriodKey VARCHAR(20) = '2026-09',
-    @ScopeID VARCHAR(50) = 'ALL'
+CREATE   PROCEDURE spAPI_KPI_GetFinanceServices
+    @PeriodKey VARCHAR(20),
+    @ScopeID VARCHAR(50)
 AS
 BEGIN
     SET NOCOUNT ON;

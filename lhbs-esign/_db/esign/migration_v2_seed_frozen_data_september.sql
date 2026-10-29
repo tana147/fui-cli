@@ -5,13 +5,40 @@
 -- ===================================================================================
 SET NOCOUNT ON;
 
--- 1. NẠP DANH MỤC KỲ CHỐT (tblKPI_Periods)
-DELETE FROM tblKPI_Periods WHERE PeriodKey IN ('2026-09', '2026-10');
+-- 1. NẠP / CẬP NHẬT DANH MỤC KỲ CHỐT (tblKPI_Periods)
+IF NOT EXISTS (SELECT 1 FROM tblKPI_Periods WHERE PeriodKey = '2026-09')
+    INSERT INTO tblKPI_Periods (PeriodKey, PeriodName, PeriodType, SchoolYear, StartDate, EndDate, IsFrozen, DataSourceType, FreezeDate, FrozenBy, Note)
+    VALUES ('2026-09', N'Tháng 09/2026 (Chốt sổ)', 'MONTH', '2026-2027', '2026-09-01', '2026-09-30', 1, 'EXCEL_STAGING', '2026-09-30 17:00:00', N'HĐQT & Ban Giám Hiệu', N'Dữ liệu chốt sổ chính thức toàn trường Tháng 9');
+ELSE
+    UPDATE tblKPI_Periods
+    SET PeriodName = N'Tháng 09/2026 (Chốt sổ)',
+        PeriodType = 'MONTH',
+        SchoolYear = '2026-2027',
+        StartDate = '2026-09-01',
+        EndDate = '2026-09-30',
+        IsFrozen = 1,
+        DataSourceType = 'EXCEL_STAGING',
+        FreezeDate = '2026-09-30 17:00:00',
+        FrozenBy = N'HĐQT & Ban Giám Hiệu',
+        Note = N'Dữ liệu chốt sổ chính thức toàn trường Tháng 9'
+    WHERE PeriodKey = '2026-09';
 
-INSERT INTO tblKPI_Periods (PeriodKey, PeriodName, PeriodType, SchoolYear, StartDate, EndDate, IsFrozen, DataSourceType, FreezeDate, FrozenBy, Note)
-VALUES
-('2026-09', N'Tháng 09/2026 (Chốt sổ)', 'MONTH', '2026-2027', '2026-09-01', '2026-09-30', 1, 'EXCEL_STAGING', '2026-09-30 17:00:00', N'HĐQT & Ban Giám Hiệu', N'Dữ liệu chốt sổ chính thức toàn trường Tháng 9'),
-('2026-10', N'Tháng 10/2026 (Kỳ Live)', 'MONTH', '2026-2027', '2026-10-01', '2026-10-31', 0, 'LIVE_API', NULL, NULL, N'Kỳ vận hành hiện tại đang thu thập dữ liệu');
+IF NOT EXISTS (SELECT 1 FROM tblKPI_Periods WHERE PeriodKey = '2026-10')
+    INSERT INTO tblKPI_Periods (PeriodKey, PeriodName, PeriodType, SchoolYear, StartDate, EndDate, IsFrozen, DataSourceType, FreezeDate, FrozenBy, Note)
+    VALUES ('2026-10', N'Tháng 10/2026 (Kỳ Live)', 'MONTH', '2026-2027', '2026-10-01', '2026-10-31', 0, 'LIVE_API', NULL, NULL, N'Kỳ vận hành hiện tại đang thu thập dữ liệu');
+ELSE
+    UPDATE tblKPI_Periods
+    SET PeriodName = N'Tháng 10/2026 (Kỳ Live)',
+        PeriodType = 'MONTH',
+        SchoolYear = '2026-2027',
+        StartDate = '2026-10-01',
+        EndDate = '2026-10-31',
+        IsFrozen = 0,
+        DataSourceType = 'LIVE_API',
+        FreezeDate = NULL,
+        FrozenBy = NULL,
+        Note = N'Kỳ vận hành hiện tại đang thu thập dữ liệu'
+    WHERE PeriodKey = '2026-10';
 
 -- 2. NẠP DỮ LIỆU TÀI CHÍNH DỊCH VỤ & CLB (tblKPI_Snap_Finance_Services)
 DELETE FROM tblKPI_Snap_Finance_Services WHERE PeriodKey = '2026-09';
