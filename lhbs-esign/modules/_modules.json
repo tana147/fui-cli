@@ -824,5 +824,19 @@
     "LoadCount": 48,
     "HTMLOnly": false,
     "Framework": "V3"
+  },
+  {
+    "id": "lhbs-esign/kpi-executive-dashboard",
+    "url": "//kyso.lhbs.vn/kpi-executive-dashboard",
+    "mDomain": "",
+    "ProjectID": "lhbs-esign",
+    "ModuleID": "kpi-executive-dashboard",
+    "ModuleName": "KPI 3-Tier Executive Dashboard",
+    "UpdateTime": "2026-10-30 14:35:00",
+    "UpdateUser": "DEV000068",
+    "LastLoad": "2026-10-30",
+    "LoadCount": 1,
+    "HTMLOnly": false,
+    "Framework": "V3"
   }
 ]

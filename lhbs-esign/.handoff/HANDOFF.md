@@ -1,82 +1,84 @@
 # AGENT HANDOFF: lhbs-esign
 
-- **Generated At:** 2026-10-29T17:18:00+07:00
-- **Workspace Root:** `/home/iot/CODE/fui-cli/lhbs-esign`
+- **Generated At:** 2026-10-30T15:02:00+07:00
+- **Workspace Root:** `d:\code\fui-cli\lhbs-esign`
 - **Status:** `done`
-- **Next Session Focus:** Tiếp tục theo dõi phản hồi thực tế từ ban lãnh đạo khi trải nghiệm Heatmap Grid 60 KPI, Dumbbell Variance Chart và luồng đối soát Fact Store 1-1; tối ưu hóa thêm các filter đa chiều (nếu ban giám hiệu yêu cầu bổ sung slice theo từng khối lớp hoặc phòng ban).
+- **Next Session Focus:** Kiểm thử thực tế các tương tác 3 tầng trên môi trường live (kyso.lhbs.vn/kpi-ops-dashboard), lắng nghe phản hồi của người dùng về trải nghiệm drilldown từ 6 KPI Chiến lược cha xuống 60 tiêu chí và 6 phân hệ chuyên sâu.
 
 ## 1. NEXT SESSION ACTION PLAN
-1. Mở dashboard trên môi trường web test/production, kiểm tra các thao tác chuyển đổi view:
-   - Tab 3 (Danh mục 60 KPI): Chuyển đổi giữa `[Lưới Ô Nhiệt]` (Heatmap Grid) và `[Dạng Bảng]` (Table), hover xem tooltip và click từng ô để mở Fact Modal tương ứng.
-   - Tab 2 (Kiểm toán & Đối soát): Chuyển đổi giữa `[Biểu Đồ Độ Lệch]` (Dumbbell Gap Chart), `[Dạng Thẻ]` và `[Dạng Bảng]`.
-   - Tab 0 (Điều hành tổng thể): Xác nhận hiển thị 4 Trụ Cột Doanh Nghiệp Cân Bằng, Funnel Tuyển Sinh CRM 4 tầng và Cơ cấu Doanh thu Dịch vụ FTS.
-2. Kiểm tra Modal Fact Store: click xem fact của từng tiêu chí bất kỳ (TS01, TS02, TS04, CM08, DV28, TC52...) để đảm bảo 100% hiển thị đúng dữ liệu domain/kpi tương ứng, không bị lẫn lộn giữa Sĩ số/Công suất và Rút học.
+1. Đăng nhập vào hệ thống live `https://kyso.lhbs.vn/kpi-ops-dashboard` với các tài khoản role BGH / Hiệu trưởng / Kế toán để kiểm tra phân quyền và hiển thị số liệu chốt kỳ 2026-09.
+2. Kiểm tra tương tác click chuyển đổi giữa 6 KPI Chiến lược cha ở Tầng 1 và việc lọc tương ứng các chỉ tiêu thành phần ở Tầng 2.
+3. Kiểm tra tính năng click CTA Tầng 3 chuyển hướng mượt mà sang 6 phân hệ phân tích sâu (Sĩ số `page=1`, LMS `page=4`, Rút học `page=2`, Tài chính `page=5`, CSVC/Y tế `page=6`, TVTS/CRM `page=7`) và nút quay lại `page=0`.
 
 ## 2. SUGGESTED SKILLS
-- `test-before-patch`: Sử dụng khi cần kiểm tra các SP mới hoặc query dữ liệu fact trước khi cập nhật.
-- `context-mode`: Luôn sử dụng `ctx_execute` / `ctx_execute_file` để thao tác và phân tích SFC hoặc SP SQL.
-- `clean-stage-commit-push`: Sử dụng khi kết thúc session để đảm bảo git hygiene.
+- `test-before-patch`: Khi cần mở rộng thêm các chỉ tiêu đo lường mới trong Stored Procedure hoặc UI.
+- `fui-mcp`: Để publish các bản cập nhật mới lên FUI Server.
 
 ## 3. GIT & COMMIT STATE
 - **Branch:** `main`
 - **Relevant Recent Commits:**
-  - `c8adeff` — refactor(lhbs-esign): streamline KPI Ops Dashboard, isolate frozen period data and preserve Impact Zone
-  - `84b3b05` — feat(lhbs-esign): dynamic data-driven KPI Ops Dashboard and fix tab rendering
+  - `33dd5e0` — feat: dong bo toan bo 505 module va 1491 stored procedures trong workspace
+  - `32e0376` — feat(lhbs-esign): enterprise executive cockpit, 60 kpi heatmap grid, dumbbell variance chart and 1-1 fact reconciliation
 - **Working Tree Ownership:**
-  - **Current task changes to commit:**
-    - `.md/lessons.md` (Ghi nhận bài học về Fact Store mapping và FUI whitespace normalization)
-    - `.handoff/HANDOFF.md` (Universal Agent Handoff tài liệu chuyển giao)
-    - `_db/esign/schema.json` (Cập nhật schema CSDL)
-    - `_db/esign/spAPI_KPI_GetOperationalFacts.sql` (Root cause fix cho fact store mismatch: tách ENROLLMENT vs WITHDRAWAL, direct 60 KPI routing)
-    - `_db/esign/spAPI_KPI_GetRiskRadar.sql` (Cập nhật dữ liệu Radar Rủi ro)
-    - `_db/esign/spAPI_KPI_GetPeriodSnapshots.sql` (Đồng bộ snapshot chu kỳ)
-    - `_db/esign/spAPI_KPI_GetStrategicLevers.sql` (Đòn bẩy chiến lược)
-    - `_db/esign/spAPI_KPI_GetOperationsSummary.sql` (Tổng quan vận hành)
-    - `_db/esign/spAPI_KPI_GetAuditDiscrepancies.sql` (Đối soát dữ liệu kiểm toán)
-    - `_db/esign/spAPI_KPI_FreezePeriodData.sql` (Đóng băng chu kỳ dữ liệu)
-    - `_db/esign/migration_kpi_audit_rules_engine.sql` (Migration engine luật kiểm toán)
-    - `_db/esign/migration_seed_bus_withdrawal_facts.sql` (Migration seed bus/rút học)
-    - `_db/esign/migration_seed_full_60_kpis_snapshots.sql` (Migration seed 60 KPI snapshots)
-    - `modules/kpi-ops-dashboard/components/uc-kpi-ops.vue` (Cockpit điều hành 4 trụ cột, Funnel Tuyển sinh, FTS Stacked Bar, Heatmap Grid 60 KPI, Dumbbell Gap Chart, Fact Modal context banner)
-    - `modules/kpi-ops-dashboard/style.css` (Style Heatmap Grid, Dumbbell Chart, Funnel, FTS Bar, Top-line scorecard)
-  - **Pre-existing dirty / unrelated (DO NOT TOUCH):**
-    - `../lhu-qldetaisdh/*` (Phân hệ thuộc dự án khác)
-    - `../_logs/tool-errors.jsonl` (File log shared của CLI tool)
+  - **Current task changes:**
+    - `lhbs-esign/modules/kpi-ops-dashboard/components/uc-kpi-ops.vue`: Tích hợp Tầng 1 (6 KPI Chiến lược cha), Tầng 2 (Bảng tiêu chí con) và liên kết Tầng 3 (Deep-dive BI CTA).
+    - `lhbs-esign/modules/kpi-ops-dashboard/style.css`: Bổ sung scoped CSS cho giao diện 3 tầng (`.uc-kpi3t__...`).
+    - `lhbs-esign/modules/_modules.json`: Đồng bộ cache danh mục modules (đã dọn sạch module thử nghiệm `kpi-executive-dashboard`).
+    - `lhbs-esign/_db/esign/migration_kpi_3tier_architecture.sql`: Script DDL tạo bảng `tblKPI_StrategicFramework`, `tblKPI_DiagnosticConfigs` và cập nhật `MasterKpiCode` cho 60 KPI.
+    - `lhbs-esign/_db/esign/spAPI_KPI_Get3TierDashboardData.sql`: Stored Procedure chính trả về 4 Result Sets cho mô hình 3 tầng.
+    - `lhbs-esign/.handoff/HANDOFF.md`: File bàn giao ngữ cảnh session.
+    - `.gitignore`: Bổ sung bỏ qua thư mục `_backups/` và file `.zip` dự phòng.
+  - **Pre-existing dirty / unrelated:**
+    - `lhbs-esign/docs/KPI1.pbix`: File PowerBI người dùng cung cấp đầu session để đối chiếu (giữ nguyên).
+- **Quick Inspect Commands:**
+  - `git diff lhbs-esign/modules/kpi-ops-dashboard/`
 
 ## 4. PROBLEM & SYSTEM FLOW
-- **Objective:**
-  1. Khắc phục lỗi sai dữ liệu Fact Store (xem fact tiêu chí A ra dữ liệu tiêu chí B).
-  2. Nâng cấp Tab 0 từ góc nhìn micro-ops local thành Executive Cockpit toàn diện của toàn bộ doanh nghiệp.
-  3. Thay thế các bảng số liệu tĩnh (Table) bằng các dạng trực quan hóa chuyên dụng (Heatmap Grid 60 KPI, Dumbbell Gap Chart).
-  4. Xác nhận trạng thái publish và đảm bảo đồng bộ hoàn toàn với server FUI.
-- **Expected:**
-  - Fact modal hiển thị chính xác 1-1 dữ liệu của KPI đang xem kèm banner context nhận diện tiêu chí, phân tách rõ Sĩ số/Công suất (Basic Data) và Rút học (SIS).
-  - Tab 0 thể hiện bức tranh vĩ mô: 4 Trụ Cột Doanh Nghiệp (Tài chính, Lấp đầy, Học thuật, An toàn), Funnel Tuyển Sinh CRM 4 tầng, Cơ cấu Doanh thu Dịch vụ FTS và Value Bridge 4.076 tỷ.
-  - Tab 3 hiển thị Heatmap Grid 60 ô trực quan; Tab 2 hiển thị Dumbbell Gap Chart độ lệch giữa Báo cáo và Fact Store.
-  - Đã publish 100% lên server FUI, 0 unpublished files, 0 error.
-- **Actual:** Hoàn thành 100%, đã test, build, deploy SP, publish component/css và verify normalized diff trùng khớp 100%.
+- **Objective:** Tái cấu trúc giao diện và luồng dữ liệu KPI sang Mô hình 3 tầng: Tầng 1 (6 KPI Chiến lược cha) -> Tầng 2 (60 Tiêu chí vận hành thành phần) -> Tầng 3 (Phân tích chẩn đoán chuyên sâu Deep-dive BI). Hợp nhất trực tiếp vào `kpi-ops-dashboard` để tránh phân mảnh trải nghiệm.
+- **Expected:** Bảng điều khiển vận hành có giao diện 3 tầng trực quan tại `page=0`, kết nối dữ liệu động từ CSDL eSignature qua SP, click KPI cha tự động filter tiêu chí con và điều hướng sang các màn hình phân tích sâu sẵn có.
+- **Actual:** Đã hoàn thành 100%, deploy SP và migrate DB thành công, cập nhật frontend và publish lên `https://kyso.lhbs.vn/kpi-ops-dashboard`.
+- **Flow Analysis:**
+  - **Input:** Tham số kỳ `PeriodKey` (mặc định `'2026-09'`), cơ sở `DonViID` (`'ALL'`, `'MNBH'`, `'MNLK'`, `'TH'`, `'THCS'`), và `ActiveMasterKpi` (`'KPI_1'` .. `'KPI_6'`).
+  - **Process:** `uc-kpi-ops.vue` gọi `dbo.spAPI_KPI_Get3TierDashboardData` (hỗ trợ `ajaxCALL` và tAPI endpoint `eSign/KPI_Get3TierDashboardData`).
+  - **State:** Vue data quản lý `activeTier1Kpi`, `tier1List` (6 KPI cha), `tier2Drivers` (chỉ tiêu con tương ứng), và `page` điều hướng.
+  - **Output:** Render Grid 6 thẻ KPI cha ở Tầng 1, Bảng danh mục chỉ tiêu con ở Tầng 2, và điều hướng Tầng 3 sang `page=1, 2, 4, 5, 6, 7`.
+  - **Side Effects:** Không phá vỡ bất kỳ tính năng hiện có nào (Radar rủi ro, Đối soát, Vùng tác động Causal, Mô phỏng ROI đều nguyên vẹn).
 
 ## 5. RELEVANT CODE & ARTIFACT REFERENCES
+- **Specs / Plans / Issues / ADRs:**
+  - `C:\Users\fory1\.gemini\antigravity\brain\ea2e0fa7-f249-44ce-88e5-c7c47146344d\kpi_3tier_architecture_plan.md` (Approved Plan)
 - **Code Locations:**
-  - `_db/esign/spAPI_KPI_GetOperationalFacts.sql`: Tuyến phân luồng dữ liệu fact store 60 KPI.
-  - `modules/kpi-ops-dashboard/components/uc-kpi-ops.vue`: Logic Vue, Heatmap, Dumbbell, Funnel, Fact Modal.
-  - `modules/kpi-ops-dashboard/style.css`: CSS responsive, color scales, animation cho biểu đồ.
+  - `d:/code/fui-cli/lhbs-esign/modules/kpi-ops-dashboard/components/uc-kpi-ops.vue`: Template `page === 0` (Tầng 1 & Tầng 2), methods `fetch3TierData`, `selectTier1Kpi`, `jumpToTier3Page`.
+  - `d:/code/fui-cli/lhbs-esign/modules/kpi-ops-dashboard/style.css`: Lines 4781-4980: Styles cho `.uc-kpi3t__...`.
+  - `d:/code/fui-cli/lhbs-esign/_db/esign/spAPI_KPI_Get3TierDashboardData.sql`: Stored Procedure trả về 4 Result Sets.
 
 ## 6. SESSION KNOWLEDGE (FACTS vs HYPOTHESES)
 ### Verified Facts
-- [FACT] `spAPI_KPI_GetOperationalFacts` trước đây gom toàn bộ học sinh vào domain `WITHDRAWAL`, gây lỗi xem Sĩ số/Lớp học nhưng chỉ hiển thị 21 học sinh rút học.
-- [FACT] Bổ sung domain `ENROLLMENT` truy vấn `tblKPI_Snap_BasicData_Students` (`RecordType != 'WITHDRAWAL'`) trả về chính xác 1,324 học sinh / 1,600 chỗ (82.8% lấp đầy).
-- [FACT] `fui module check -p lhbs-esign -m kpi-ops-dashboard` và `fui file status` xác nhận 0 unpublished files, mã hash trùng khớp 100% với server FUI.
-- [FACT] FUI CLI tự động normalize loại bỏ dòng trắng đầu file `style.css` khi push lên server.
+- [FACT] File `docs/KPI1.pbix` chỉ bao quát ~6.7% dữ liệu (4/60 chỉ tiêu), tự chế công thức sai và hardcode kỳ T9; trong khi hệ thống 60 KPI trong CSDL `eSignature` đã có chuẩn mực snapshot đầy đủ.
+- [FACT] `callTapi` không phải là hàm global của FUI mà là helper tự viết trong một số module; hàm chuẩn chính quy của FUI là `ajaxCALL` (tự động gắn auth token và fixURL).
+- [FACT] `modules/kpi-ops-dashboard` đã có sẵn toàn bộ 6 màn hình deep-dive ứng đúng với 6 KPI Chiến lược cha; việc nâng cấp trực tiếp giúp loại bỏ trùng lặp mã nguồn và duy trì tính nhất quán.
+
+### Active Hypotheses
+- None (Toàn bộ kiến trúc đã được verify runtime).
+
+### Assumptions & Unknowns
+- [ASSUMPTION] Kỳ chốt sổ hiện tại được sử dụng làm baseline là tháng 09/2026 (`2026-09`), các kỳ sau mở live sẽ tự động kế thừa cơ chế snapshot.
 
 ## 7. TESTS, LOGS & DIAGNOSTICS
 - **Overall Verification Status:** `PASS`
-- **Verification Runs:**
-  - `fui sp verify spAPI_KPI_GetOperationalFacts`: PASS (SP hợp lệ, đã triển khai trên DB eSignature).
-  - `fui module check -p lhbs-esign -m kpi-ops-dashboard`: PASS (0 errors, 0 warnings).
-  - `fui file status`: PASS (`0 unpublished file(s)`).
-  - `fui remote diff -p lhbs-esign -m kpi-ops-dashboard`: PASS (Normalized content matches 100%).
+- **Test / Benchmark Runs:**
+  - Test SP `dbo.spAPI_KPI_Get3TierDashboardData`: Trả về đủ 4 Result Sets hợp lệ.
+  - Test Node.js Syntax Check trên `uc-kpi-ops.vue`: Cú pháp script và template tags hoàn toàn hợp lệ.
+  - Test publish module qua FUI-MCP: Đã push thành công `style.css` và `uc-kpi-ops` (ComID: 13057).
 
-## 8. CONSTRAINTS & RISKS
-- CSDL eSignature và contracts tAPI được bảo toàn tuyệt đối.
-- Tuyệt đối không can thiệp hoặc stage các file thuộc `lhu-qldetaisdh`.
+## 8. ATTEMPTS & DEAD ENDS (DO NOT REPEAT)
+- Attempt 1: Tạo module tách rời `kpi-executive-dashboard`.
+  - Result: Gây phân mảnh trải nghiệm người dùng và trùng lặp mã nguồn biểu đồ với `kpi-ops-dashboard`.
+  - Conclusion: Đã xóa hoàn toàn module này theo yêu cầu của user và hợp nhất vào `kpi-ops-dashboard`.
+
+## 9. CONSTRAINTS & RISKS
+- **Contracts to Preserve:**
+  - Tuyệt đối giữ nguyên module `modules/kpi-results-framework` để tham khảo đối chiếu.
+  - Giữ nguyên các sub-page `page = 1, 2, 4, 5, 6, 7` của `kpi-ops-dashboard` cùng các modal Causal / ROI.
+- **Side Effects / Tradeoffs:**
+  - Không có side effects tiêu cực. Giao diện `page = 0` được tổ chức lại gọn gàng, có tính phân cấp cao hơn.

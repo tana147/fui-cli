@@ -12,7 +12,10 @@ _publishState.json
 
 # Modules containing hardcoded 3rd party API keys
 lhbs-lms/modules/dashboard-phat-trien-nang-luc*
-_history/**/dashboard-phat-trien-nang-luc*
+_history/
+_backups/
+**/_backups/
+**/dashboard-phat-trien-nang-luc*
 
 # Stored procedures containing hardcoded 3rd party API keys / OAuth tokens
 lhbs-esign/_db/esign/spAPI_TkbChatBot_Hieu.sql
@@ -32,3 +35,6 @@ _cache/
 _componentPreview/
 
 _history/
+_backups/
+**/_backups/
+
