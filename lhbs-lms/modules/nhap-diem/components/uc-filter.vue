@@ -150,6 +150,20 @@
 				if (!item) return '';
 				const raw = (item && item.raw) ? item.raw : item;
 				if (typeof raw === 'string') return raw;
+				// Chỉ đổi tên các Theme trong bộ lọc nhập điểm cấp 2; mã nhóm và nhãn các cấp khác giữ nguyên.
+				if (Number(this.vueData.CapID) === 2) {
+					const themeLabels = {
+						Theme_1: 'Starter Unit',
+						Theme_2: 'Unit 1',
+						Theme_3: 'Unit 2',
+						Theme_4: 'Unit 3',
+						Theme_5: 'Unit 4',
+						Theme_6: 'Unit 5',
+						Theme_7: 'Unit 6',
+						Theme_8: 'Unit 7',
+					};
+					if (themeLabels[raw.MaNhomCotDiem]) return themeLabels[raw.MaNhomCotDiem];
+				}
 				if (this.isEn && raw.TenNhomCotDiem_EN) return raw.TenNhomCotDiem_EN;
 				return raw.TenNhomCotDiem_VI || raw.TenNhomCotDiem || raw.title || '';
 			},

@@ -3,7 +3,6 @@
    Executive Fluent Palette — LHBS (Tương đồng kpi-results-framework)
    Scope: modules/kpi-ops-dashboard/style.css
    ========================================================================== */
-
 .uc-kpi-ops {
   --bg: #f3f2f1;
   --card: #ffffff;
@@ -19,7 +18,6 @@
   --good-t: #dff6dd;
   --warn-t: #fdf1e3;
   --bad-t: #fde7e9;
-
   background: var(--bg);
   color: var(--ink);
   min-height: 100vh;
@@ -28,7 +26,6 @@
   font-size: 13px;
   line-height: 1.5;
 }
-
 /* Typography & Utility */
 .uc-kpi-ops .tx-good { color: var(--good); font-weight: 600; }
 .uc-kpi-ops .tx-bad { color: var(--bad); font-weight: 600; }
@@ -41,7 +38,6 @@
 .uc-kpi-ops .ta-l { text-align: left; }
 .uc-kpi-ops .ta-r { text-align: right; }
 .uc-kpi-ops .is-click { cursor: pointer; }
-
 /* 1. Header Top */
 .uc-kpi-ops__top {
   display: flex;
@@ -91,7 +87,6 @@
   font-size: 11px;
 }
 .uc-kpi-ops__sep { color: var(--line); }
-
 .uc-kpi-ops__pill {
   border: 1px solid #c8c6c4;
   color: var(--ink2);
@@ -110,7 +105,6 @@
   color: var(--warn);
   background: var(--warn-t);
 }
-
 .uc-kpi-ops__simbtn {
   padding: 3px 8px;
   border: 1px solid var(--accent2);
@@ -125,7 +119,6 @@
 .uc-kpi-ops__simbtn:hover { background: #EEF2F6; }
 .uc-kpi-ops__simbtn.is-solid { background: var(--accent2); color: #fff; }
 .uc-kpi-ops__simbtn.is-solid:hover { background: #142846; }
-
 /* 2. Slicers Bar */
 .uc-kpi-ops__slicers {
   display: flex;
@@ -180,7 +173,6 @@
   color: var(--accent2);
   padding: 2px 0;
 }
-
 /* 3. Main Page Container */
 .uc-kpi-ops__page {
   padding: 8px 16px 0;
@@ -188,7 +180,6 @@
   max-width: 100%;
   box-sizing: border-box;
 }
-
 /* 4. Executive Headline Banner (Chuẩn kpi-results-framework) */
 .uc-kpi-ops__bhead {
   background: var(--accent2);
@@ -218,7 +209,6 @@
   font-size: 11px;
   color: #C3CFDC;
 }
-
 /* 5. Four Vital KPI Tiles */
 .uc-kpi-ops__bkpis {
   display: grid;
@@ -243,7 +233,6 @@
 .uc-kpi-ops__bkpi.is-good { border-top-color: var(--good); }
 .uc-kpi-ops__bkpi.is-warn { border-top-color: var(--warn); }
 .uc-kpi-ops__bkpi.is-bad { border-top-color: var(--bad); }
-
 .uc-kpi-ops__bkpi-h {
   display: flex;
   justify-content: space-between;
@@ -297,7 +286,6 @@
 .uc-kpi-ops__bkpi.is-good .uc-kpi-ops__bkpi-h b { color: var(--good); }
 .uc-kpi-ops__bkpi.is-warn .uc-kpi-ops__bkpi-h b { color: var(--warn); }
 .uc-kpi-ops__bkpi.is-bad .uc-kpi-ops__bkpi-h b { color: var(--bad); }
-
 .uc-kpi-ops__bkpi-m {
   display: flex;
   align-items: flex-end;
@@ -319,7 +307,6 @@
   color: var(--ink2);
   margin-left: 2px;
 }
-
 .uc-kpi-ops__spark {
   width: 90px;
   height: 24px;
@@ -331,14 +318,12 @@
 .uc-kpi-ops__spark .sp-d.is-last { fill: var(--accent2); stroke: var(--accent2); }
 .uc-kpi-ops__spark .sp-tg { stroke: #8a8886; stroke-width: 1; stroke-dasharray: 2 2; }
 .uc-kpi-ops__spark .sp-x { font-size: 8.5px; fill: var(--ink3); }
-
 .uc-kpi-ops__bkpi-d {
   font-size: 11px;
   color: var(--ink2);
   margin: 3px 0 4px;
   line-height: 1.25;
 }
-
 .uc-kpi-ops__cmp {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -428,7 +413,6 @@
   margin-top: 4px;
 }
 .uc-kpi-ops__bkpi:hover .uc-kpi-ops__bkpi-i { text-decoration: underline; }
-
 /* 6. Two Column Box: Lưu ý & Đề xuất */
 .uc-kpi-ops__bcols {
   display: grid;
@@ -500,7 +484,6 @@
   cursor: pointer;
 }
 .uc-kpi-ops__bimp:hover { text-decoration: underline; }
-
 /* 7. Health Strip (Dải sức khỏe đo lường) */
 .uc-kpi-ops__bstrip {
   display: grid;
@@ -527,7 +510,6 @@
 .uc-kpi-ops__bstrip .bs-v { font-size: 16px; font-weight: 700; color: var(--accent2); text-align: right; font-variant-numeric: tabular-nums; }
 .uc-kpi-ops__bstrip .bs-v small { font-size: 11.5px; font-weight: 400; color: var(--ink3); }
 .uc-kpi-ops__bstrip .bs-n { grid-column: span 2; font-size: 11px; color: var(--ink3); }
-
 /* 8. Visual Panels & Tables */
 .uc-kpi-ops__visual {
   background: var(--card);
@@ -554,7 +536,6 @@
   font-size: 11.5px;
   color: var(--ink3);
 }
-
 .uc-kpi-ops__tablewrap {
   overflow-x: auto;
 }
@@ -588,7 +569,6 @@
   border-top: 1px solid #a19f9d;
   border-bottom: 2px solid #a19f9d;
 }
-
 .uc-kpi-ops__cell-tag {
   display: inline-block;
   padding: 1px 6px;
@@ -599,7 +579,6 @@
 .uc-kpi-ops__cell-tag.is-good { background: var(--good-t); color: var(--good); }
 .uc-kpi-ops__cell-tag.is-warn { background: var(--warn-t); color: var(--warn); }
 .uc-kpi-ops__cell-tag.is-bad { background: var(--bad-t); color: var(--bad); }
-
 /* Bullet track */
 .uc-kpi-ops__btrack {
   width: 90px;
@@ -620,7 +599,6 @@
 .uc-kpi-ops__bfill.is-good { background: var(--good); }
 .uc-kpi-ops__bfill.is-warn { background: var(--warn); }
 .uc-kpi-ops__bfill.is-bad { background: var(--bad); }
-
 /* 9. Multi-tier Fixed Bottom Tab Bar */
 .uc-kpi-ops__tabs {
   position: fixed;
@@ -681,7 +659,6 @@
   border-top-color: var(--accent2);
   background: #EEF2F6;
 }
-
 /* 10. Slide-over Drawer */
 .uc-kpi-ops__veil {
   position: fixed;
@@ -736,11 +713,9 @@
   overflow-y: auto;
   padding: 14px 18px 24px;
 }
-
 /* ==========================================================================
    Responsive Breakpoints: HD (<=1366px), Full HD (1920px), 2K (>=2560px)
    ========================================================================== */
-
 /* 2K & Màn hình lớn (>= 2200px) */
 @media (min-width: 2200px) {
   .uc-kpi-ops__page {
@@ -757,14 +732,12 @@
     max-height: 94vh;
   }
 }
-
 /* Full HD chuẩn (1401px - 2199px) */
 @media (min-width: 1401px) and (max-width: 2199px) {
   .uc-kpi-ops__bkpis {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
-
 /* HD & Laptop phổ thông (1024px - 1400px, ví dụ 1366x768, 1280x800) */
 @media (max-width: 1400px) {
   .uc-kpi-ops__bkpis {
@@ -775,14 +748,12 @@
     max-height: 96vh;
   }
 }
-
 /* Tablet & Mobile (< 1024px) */
 @media (max-width: 1024px) {
   .uc-kpi-ops__bcols { grid-template-columns: 1fr; }
   .uc-kpi-ops__bstrip { grid-template-columns: 1fr; }
   .uc-kpi-ops__grid2 { grid-template-columns: 1fr; }
 }
-
 @media (max-width: 768px) {
   .uc-kpi-ops__page { padding: 8px 12px 0; }
   .uc-kpi-ops__bkpis { grid-template-columns: 1fr; }
@@ -790,7 +761,6 @@
   .uc-kpi-ops__tabs button { padding: 6px 8px; font-size: 11px; }
   .uc-kpi-ops__drawer { width: 100vw; }
 }
-
 /* Layout helpers & CRM Grid aliases */
 .uc-kpi-ops__grid2 {
   display: grid;
@@ -801,7 +771,6 @@
 @media (max-width: 1200px) {
   .uc-kpi-ops__grid2 { grid-template-columns: 1fr; }
 }
-
 /* ==========================================================================
    Data Provenance & Golive Integration Banner
    ========================================================================== */
@@ -840,7 +809,6 @@
   display: flex;
   gap: 8px;
 }
-
 /* Source Chips on Cards */
 .uc-kpi-ops__src-chip {
   display: inline-flex;
@@ -869,7 +837,6 @@
   color: #137333;
   border-color: #ceead6;
 }
-
 /* ==========================================================================
    Executive Cause-and-Effect Canvas & Cross-KPI Correlation
    ========================================================================== */
@@ -1048,7 +1015,6 @@
   font-size: 11.5px;
   text-transform: uppercase;
 }
-
 /* ==========================================================================
    Golive API Specs in Drawer
    ========================================================================== */
@@ -1119,8 +1085,6 @@
   margin-top: 8px;
   border-radius: 2px;
 }
-
-
 /* ==========================================================================
    Executive Causal Engine (Vùng Tác Động & Cây SVG Nhân Quả Động - DIALOG MODAL)
    ========================================================================== */
@@ -1228,7 +1192,6 @@
   border-color: #0284c7;
   color: #fff;
 }
-
 /* Layout */
 .uc-kpi-ops__causal-body {
   display: grid;
@@ -1243,7 +1206,6 @@
     overflow-y: auto;
   }
 }
-
 /* Rail */
 .uc-kpi-ops__causal-rail {
   background: #fff;
@@ -1325,7 +1287,6 @@
   padding-top: 10px;
   border-top: 1px dashed #e2e8f0;
 }
-
 /* Main */
 .uc-kpi-ops__causal-main {
   padding: 16px 20px;
@@ -1335,7 +1296,6 @@
   background: #f8fafc;
   overflow-y: auto;
 }
-
 /* Hero Conclusion */
 .uc-kpi-ops__causal-hero {
   background: #fffbeb;
@@ -1360,7 +1320,6 @@
   color: #1e293b;
   line-height: 1.5;
 }
-
 /* 4 KPI Hero Tiles */
 .uc-kpi-ops__causal-kpis {
   display: grid;
@@ -1427,7 +1386,6 @@
   background: #dcfce7;
   color: #166534;
 }
-
 /* Cây Tác Động SVG */
 .uc-kpi-ops__causal-card {
   border: 1px solid var(--line);
@@ -1566,7 +1524,6 @@
   font-size: 9.5px;
   fill: #64748b;
 }
-
 .uc-kpi-ops__causal-formula {
   background: #f1f5f9;
   border: 1px dashed #cbd5e1;
@@ -1585,7 +1542,6 @@
   margin-top: 6px;
   line-height: 1.4;
 }
-
 /* 4 Sub Cards */
 .uc-kpi-ops__causal-subgrid {
   display: grid;
@@ -1643,7 +1599,6 @@
 .uc-kpi-ops__causal-strip-lg em.is-future {
   background: #fca5a5;
 }
-
 /* Progress Bars So Sánh Trước & Sau */
 .uc-kpi-ops__causal-tbars {
   display: flex;
@@ -1691,7 +1646,6 @@
 .uc-kpi-ops__causal-tbar-v b {
   color: #0f172a;
 }
-
 /* Route & Assignments */
 .uc-kpi-ops__causal-route {
   display: flex;
@@ -1719,7 +1673,6 @@
   border-radius: 3px;
   margin-top: 6px;
 }
-
 .uc-kpi-ops__causal-actions {
   display: flex;
   flex-direction: column;
@@ -1744,7 +1697,6 @@
   color: #334155;
   line-height: 1.4;
 }
-
 /* ==========================================================================
    Contextual Causal Executive Links Under KPI Tiles
    ========================================================================== */
@@ -1816,7 +1768,6 @@
 .uc-kpi-ops__bkpi-causal.is-good .causal-cta {
   color: #059669;
 }
-
 /* ==========================================================================
    Contextual Golive Requirement Box Under Each KPI
    ========================================================================== */
@@ -1865,7 +1816,6 @@
   font-size: 10.5px;
   color: #0f172a;
 }
-
 /* ==========================================================================
    4 Command Pillars Bar
    ========================================================================== */
@@ -1940,7 +1890,6 @@
   color: #64748b;
   line-height: 1.3;
 }
-
 /* ==========================================================================
    Active Operational Bottlenecks & Escalation Matrix
    ========================================================================== */
@@ -2024,12 +1973,9 @@
   background: #d1fae5;
   color: #065f46;
 }
-
-
 /* ==========================================================================
    Kế Thừa Tinh Hoa kpi-results-framework: Value Bridge, Harvey Balls, Matrix & Audit
    ========================================================================== */
-
 /* 1. Value Bridge Waterfall Chart SVG */
 .uc-kpi-ops__svg {
   width: 100%;
@@ -2086,7 +2032,6 @@
   font-size: 11px;
   font-weight: 700;
 }
-
 /* 2. Harvey Balls (Độ tin cậy dữ liệu) */
 .uc-kpi-ops__hb {
   width: 13px;
@@ -2104,7 +2049,6 @@
 .uc-kpi-ops__hb .hb-f {
   fill: #1B365D;
 }
-
 /* 3. Trung Tâm Kiểm Toán & Điểm Vênh Số Liệu (Audit Discrepancies) */
 .uc-kpi-ops__audit-box {
   background: var(--card);
@@ -2212,7 +2156,6 @@
   align-items: center;
   margin-top: auto;
 }
-
 /* 4. Campus Accountability Matrix (Ma Trận 5 Cơ Sở) */
 .uc-kpi-ops__matrix-box {
   background: var(--card);
@@ -2264,7 +2207,6 @@
   color: #94a3b8;
   font-weight: 400;
 }
-
 /* 5. Causal Modal Filter Tags */
 .uc-kpi-ops__filter-tags {
   display: flex;
@@ -2312,11 +2254,9 @@
   background: #fef3c7;
   color: #b45309;
 }
-
 /* ==========================================================================
    Tối Ưu Dashboard Vận Hành (High-Density Executive UI & No-Emoji Clean Theme)
    ========================================================================== */
-
 /* 1. Thanh Sub-Tabs Điều Hành Fold 1 */
 .uc-kpi-ops__subtabs {
   display: flex;
@@ -2360,7 +2300,6 @@
   background: rgba(255, 255, 255, 0.25);
   color: #fff;
 }
-
 /* 2. Split Layout 7:5 (Value Bridge & 4 Đòn Bẩy) */
 .uc-kpi-ops__split-grid {
   display: grid;
@@ -2424,7 +2363,6 @@
   font-weight: 600;
   color: #0369a1;
 }
-
 /* 3. Grid 5 Thẻ Cơ Sở Tinh Gọn (5 Compact Campus Cards) */
 .uc-kpi-ops__campus-grid {
   display: grid;
@@ -2502,7 +2440,6 @@
   font-size: 11px;
   color: #64748b;
 }
-
 /* 4. Bullet Meter (Thanh đo công suất) */
 .uc-kpi-ops__bullet-meter {
   position: relative;
@@ -2548,7 +2485,6 @@
   font-size: 11.5px;
   color: #0f172a;
 }
-
 /* 5. Dải Phân Bổ Tỷ Trọng Rút Học (Stacked Distribution Bar) */
 .uc-kpi-ops__dist-box {
   background: var(--card);
@@ -2591,15 +2527,12 @@
   border-radius: 2px;
   display: inline-block;
 }
-
 /* 6. Spacing Tối Giản */
 .uc-kpi-ops .mb-compact { margin-bottom: 8px !important; }
 .uc-kpi-ops .p-compact { padding: 10px 14px !important; }
-
 /* ==========================================================================
    7. EXECUTIVE ROI SIMULATOR & RISK RADAR (HĐQT PHÂN BỔ VỐN & DỰ BÁO RỦI RO)
    ========================================================================== */
-
 /* Subtab Badge biến thể */
 .uc-kpi-ops__subtab-badge.badge-danger {
   background: #fde7e9;
@@ -2611,7 +2544,6 @@
   color: #795b00;
   border: 1px solid #ffe380;
 }
-
 /* Tab 5: Risk Radar Layout */
 .uc-kpi-ops__risk-container {
   display: flex;
@@ -2661,7 +2593,6 @@
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
-
 /* 5 Risk Cards Grid */
 .uc-kpi-ops__risk-cards-grid {
   display: grid;
@@ -2692,7 +2623,6 @@
 .uc-kpi-ops__risk-card.level-green {
   border-top: 3.5px solid #1a9e4b;
 }
-
 .uc-kpi-ops__risk-card-head {
   display: flex;
   justify-content: space-between;
@@ -2730,7 +2660,6 @@
   color: #107c41;
   border: 1px solid #b7ebb4;
 }
-
 .uc-kpi-ops__risk-forecast-box {
   background: #f8fafc;
   border: 1px solid #edf2f7;
@@ -2750,7 +2679,6 @@
 .level-red .uc-kpi-ops__risk-forecast-val { color: #d13438; }
 .level-yellow .uc-kpi-ops__risk-forecast-val { color: #d9822b; }
 .level-green .uc-kpi-ops__risk-forecast-val { color: #1a9e4b; }
-
 .uc-kpi-ops__risk-axes {
   display: flex;
   flex-direction: column;
@@ -2775,7 +2703,6 @@
   height: 100%;
   border-radius: 2px;
 }
-
 .uc-kpi-ops__risk-card-action {
   font-size: 10.5px;
   color: #0369a1;
@@ -2786,7 +2713,6 @@
   line-height: 1.35;
   margin-top: 4px;
 }
-
 /* Split Grid cho Matrix & Checklist */
 .uc-kpi-ops__risk-detail-split {
   display: grid;
@@ -2809,7 +2735,6 @@
   justify-content: space-between;
   align-items: center;
 }
-
 /* Risk Checklist Table */
 .uc-kpi-ops__checklist-table {
   width: 100%;
@@ -2846,7 +2771,6 @@
   color: #795b00;
   border: 1px solid #ffe380;
 }
-
 /* What-If Simulator Inline Panel (Zero Modal) */
 .uc-kpi-ops__sim-panel {
   background: #ffffff;
@@ -2874,7 +2798,6 @@
   color: #93c5fd;
   margin-top: 2px;
 }
-
 /* ROI Simulator Modal */
 .uc-kpi-ops__roi-modal-overlay {
   position: fixed;
@@ -2926,7 +2849,6 @@
   padding: 0 4px;
   line-height: 1;
 }
-
 .uc-kpi-ops__roi-scenarios-bar {
   display: flex;
   gap: 6px;
@@ -2953,7 +2875,6 @@
   color: #ffffff;
   border-color: #1B365D;
 }
-
 .uc-kpi-ops__roi-modal-body {
   padding: 16px 18px;
   overflow-y: auto;
@@ -2961,7 +2882,6 @@
   grid-template-columns: 5fr 7fr;
   gap: 16px;
 }
-
 /* Left: Sliders & Controls */
 .uc-kpi-ops__roi-controls-card {
   background: #f8fafc;
@@ -3004,7 +2924,6 @@
   font-size: 9.5px;
   color: var(--ink3);
 }
-
 /* Right: KPI Summary & Flow */
 .uc-kpi-ops__roi-results-card {
   display: flex;
@@ -3037,7 +2956,6 @@
 .uc-kpi-ops__roi-kpi-tile.tile-roi {
   border-left: 3.5px solid #7c3aed;
 }
-
 .uc-kpi-ops__roi-kpi-tile-lbl {
   font-size: 10px;
   font-weight: 700;
@@ -3054,7 +2972,6 @@
   font-size: 10.5px;
   color: var(--ink2);
 }
-
 .uc-kpi-ops__roi-verdict-box {
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
@@ -3081,7 +2998,6 @@
   color: #166534;
   line-height: 1.4;
 }
-
 .uc-kpi-ops__roi-modal-foot {
   padding: 10px 18px;
   background: #f8fafc;
@@ -3090,7 +3006,6 @@
   justify-content: flex-end;
   gap: 8px;
 }
-
 /* ==========================================================
    Executive Safeguard Strip & Quality Gatekeeper (HĐQT)
    ========================================================== */
@@ -3108,17 +3023,14 @@
   font-size: 11.5px;
   color: #166534;
 }
-
 .uc-kpi-ops__safeguard-item {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
-
 .uc-kpi-ops__safeguard-item.is-zero-tol {
   font-weight: 600;
 }
-
 .uc-kpi-ops__safeguard-item .safeguard-dot {
   width: 7px;
   height: 7px;
@@ -3126,7 +3038,6 @@
   border-radius: 50%;
   display: inline-block;
 }
-
 .uc-kpi-ops__safeguard-item .safeguard-badge {
   background: #1B365D;
   color: #ffffff;
@@ -3136,7 +3047,6 @@
   font-weight: 700;
   letter-spacing: 0.5px;
 }
-
 .is-bias-warning {
   display: inline-block;
   background: #fffbeb;
@@ -3148,13 +3058,10 @@
   font-weight: 600;
   margin-left: 6px;
 }
-
-
 /* ==========================================================
    Executive Chart Components (Visual Enhancements)
    Replacing heavy tables with compact, intuitive charts
    ========================================================== */
-
 /* 1. View Mode Switcher (Biểu đồ / Bảng) */
 .uc-kpi-ops__view-switcher {
   display: inline-flex;
@@ -3188,7 +3095,6 @@
   font-weight: 700;
   box-shadow: 0 1px 2px rgba(0,0,0,0.06);
 }
-
 /* 2. Horizontal Stacked Bar Chart: Cơ Cấu Sĩ Số 12 Khối */
 .uc-kpi-ops__grade-chart-wrap {
   background: #ffffff;
@@ -3295,7 +3201,6 @@
   color: #64748b;
   font-size: 11px;
 }
-
 /* 3. Ranked Horizontal Bar: Top Lý Do Rút Học */
 .uc-kpi-ops__withdraw-chart-wrap {
   display: flex;
@@ -3364,7 +3269,6 @@
 .uc-kpi-ops__withdraw-bar-fill.is-econ { background: #f59e0b; }
 .uc-kpi-ops__withdraw-bar-fill.is-study { background: #3b82f6; }
 .uc-kpi-ops__withdraw-bar-fill.is-move { background: #94a3b8; }
-
 .uc-kpi-ops__withdraw-rank-bot {
   display: flex;
   align-items: center;
@@ -3382,7 +3286,6 @@
 .can-intervene-badge.is-action { background: #fef3c7; color: #b45309; }
 .can-intervene-badge.is-investigate { background: #ede9fe; color: #6d28d9; }
 .can-intervene-badge.is-neutral { background: #f1f5f9; color: #475569; }
-
 /* 4. LMS Subject Progress Grid */
 .uc-kpi-ops__lms-cards-grid {
   display: grid;
@@ -3441,7 +3344,6 @@
   font-size: 12px;
   color: #1e293b;
 }
-
 /* 5. Interactive Risk Cards: Thay thế Ma Trận Rủi Ro (Tab HĐQT) */
 .uc-kpi-ops__risk-cards-grid {
   display: grid;
@@ -3509,11 +3411,9 @@
   color: #64748b;
   line-height: 1.35;
 }
-
 /* ==========================================================
    Fact Store Reconciliation & Audit Gatekeeper
    ========================================================== */
-
 /* Reconciliation Header Strip (So Khớp KPI vs Fact Store Gốc) */
 .uc-kpi-ops__reconcile-strip {
   display: grid;
@@ -3592,14 +3492,12 @@
 .is-warn .status-dot { background: #f59e0b; }
 .is-critical .uc-kpi-ops__reconcile-status { color: #b91c1c; }
 .is-critical .status-dot { background: #ef4444; }
-
 .uc-kpi-ops__reconcile-finding {
   font-size: 11px;
   color: #334155;
   line-height: 1.35;
   margin-top: 3px;
 }
-
 /* Smart Audit Filter Bar */
 .uc-kpi-ops__audit-filter-bar {
   display: flex;
@@ -3651,7 +3549,6 @@
   border-color: #d97706;
   color: #ffffff;
 }
-
 /* ==========================================================
    Executive Net Impact Matrix (Causal Dialog Compactness)
    ========================================================== */
@@ -3714,7 +3611,6 @@
   border-radius: 4px;
   border-left: 3px solid var(--accent);
 }
-
 /* ==========================================================================
    Executive Enhancements — KPI Operations Dashboard
    - Trend Badges (MoM Delta)
@@ -3722,7 +3618,6 @@
    - Directive Checklist Filters & Status
    - Print Layout (@media print)
    ========================================================================== */
-
 .uc-kpi-ops__trend-badge {
   display: inline-flex;
   align-items: center;
@@ -3745,7 +3640,6 @@
   color: var(--bad);
   border: 1px solid rgba(168, 0, 0, 0.25);
 }
-
 .uc-kpi-ops__sticky-subnav {
   position: sticky;
   top: 0;
@@ -3780,7 +3674,6 @@
   color: var(--ink);
   font-weight: 700;
 }
-
 .uc-kpi-ops__directive-filters {
   display: flex;
   align-items: center;
@@ -3813,7 +3706,6 @@
   text-decoration: line-through;
   opacity: 0.6;
 }
-
 /* ==============================================================================
    FACTS MODAL / DIALOG (ON-DEMAND DRILL-DOWN)
    ============================================================================== */
@@ -3889,7 +3781,6 @@
   justify-content: space-between;
   align-items: center;
 }
-
 @media print {
   body {
     background: #ffffff !important;
@@ -3927,11 +3818,9 @@
     border: 1px solid #cccccc !important;
   }
 }
-
 /* ==========================================================================
    EXECUTIVE REDESIGN: TAB 1 (RISK RADAR) & TAB 2 (AUDIT CENTER)
    ========================================================================== */
-
 /* --- TAB 1: CAMPUS RISK LEADERBOARD PILLS --- */
 .uc-kpi-ops__risk-campus-filter-bar {
   display: flex;
@@ -3978,7 +3867,6 @@
   outline: 2px solid var(--accent2);
   box-shadow: 0 0 0 4px rgba(3, 105, 161, 0.12);
 }
-
 /* --- TAB 2: AUDIT KPI STRIP --- */
 .uc-kpi-ops__audit-container {
   display: flex;
@@ -4039,7 +3927,6 @@
   margin-top: 2px;
   font-weight: 600;
 }
-
 /* --- TAB 2: AUDIT TOOLBAR & CONTROLS --- */
 .uc-kpi-ops__audit-toolbar {
   background: #ffffff;
@@ -4144,7 +4031,6 @@
   background: #f0f9ff;
   border-color: #0284c7;
 }
-
 /* --- TAB 2: SMART AUDIT CARD GRID (2 COLUMNS) --- */
 .uc-kpi-ops__audit-smart-grid {
   display: grid;
@@ -4228,7 +4114,6 @@
   color: var(--ink);
   line-height: 1.35;
 }
-
 /* Contrast Box (Nguồn A vs Nguồn B) */
 .uc-kpi-ops__audit-contrast-box {
   display: grid;
@@ -4278,7 +4163,6 @@
   color: #94a3b8;
   line-height: 1.25;
 }
-
 /* Accordion expand button */
 .uc-kpi-ops__audit-accordion-toggle {
   font-size: 10.5px;
@@ -4300,7 +4184,6 @@
   padding: 8px;
   border-radius: 4px;
 }
-
 /* Card footer */
 .uc-kpi-ops__audit-smart-footer {
   display: flex;
@@ -4314,7 +4197,6 @@
   font-size: 10.5px;
   color: #64748b;
 }
-
 /* --- TAB 2: AUDIT MATRIX TABLE (20 ROWS DENSE VIEW) --- */
 .uc-kpi-ops__audit-table-wrap {
   background: #ffffff;
@@ -4356,7 +4238,6 @@
   overflow: hidden;
   line-height: 1.35;
 }
-
 /* Fact Audit Context Banner */
 .uc-kpi-ops__fact-audit-banner {
   background: #f8fafc;
@@ -4399,8 +4280,6 @@
   font-size: 11.5px;
   color: #64748b;
 }
-
-
 /* ==========================================================================
    KPI RESULTS FRAMEWORK HEALTH STRIP & PROGRESS MATRIX (TAB 3)
    ========================================================================== */
@@ -4487,7 +4366,6 @@
 .uc-kpi-ops__health-legend-item .legend-indicator.is-crit {
   background: #ef4444;
 }
-
 /* Results Framework Container & Matrix */
 .uc-kpi-ops__rf-container {
   padding-bottom: 24px;
@@ -4735,7 +4613,6 @@
   border-radius: 3px;
   padding: 1px 6px;
 }
-
 /* ================= VIEW TOGGLE CHIPS ================= */
 .uc-kpi-ops__view-toggle {
   display: inline-flex;
@@ -4761,7 +4638,6 @@
   color: #0f172a;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
-
 /* ================= KPI HEATMAP GRID ================= */
 .uc-kpi-ops__heatmap-section {
   margin-top: 14px;
@@ -4835,7 +4711,6 @@
   font-size: 10px;
   font-weight: 600;
 }
-
 /* ================= DUMBBELL GAP CHART ================= */
 .uc-kpi-ops__dumbbell-list {
   display: flex;

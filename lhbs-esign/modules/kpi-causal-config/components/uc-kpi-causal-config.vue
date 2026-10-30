@@ -1,5 +1,5 @@
 <template>
-  <div class="uc-kpi-cfg">
+	<div class="uc-kpi-cfg">
     <!-- 1. Header Top -->
     <div class="uc-kpi-cfg__top">
       <div>
@@ -539,8 +539,8 @@
 </template>
 
 <script>
-export default {
-  name: "uc-kpi-causal-config",
+	export default {
+		name: "uc-kpi-causal-config",
   data() {
     return {
       activeSpace: "MATRIX",
@@ -919,5 +919,5 @@ export default {
       });
     },
   },
-};
+	}
 </script>

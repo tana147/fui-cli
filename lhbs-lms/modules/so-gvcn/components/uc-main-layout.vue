@@ -2029,7 +2029,11 @@
 			if (String(this.form.SoGVCNID) !== String(soGVCNID)) return
 			const data = datasets[0] || []
 			this.detail = Array.isArray(data) ? (data[0]?.[0] || {}) : data
-			this.monthList = Array.isArray(data?.[1]) ? data[1] : []
+			// Lớp tổ hợp cấp 3 có nhiều sổ GVCN; kế hoạch tháng dùng chung nên
+			// lấy phần dữ liệu còn thiếu từ các lớp thành viên thay vì chỉ đọc lớp đầu.
+			this.monthList = contexts.length > 1
+				? this.mergeKeHoachMonthRows(datasets.map(item => item?.[1]))
+				: (Array.isArray(data?.[1]) ? data[1] : [])
 			const shouldLoadWeeklyPlan = !this.isCap1 || this.tab === 'cong-tac-cn'
 			this.weeklyPlanLoaded = false
 			const weeklyResponses = shouldLoadWeeklyPlan
@@ -2046,7 +2050,7 @@
 			this.renLuyenSavedRows = this.mergeSoGVCNRows(datasets.map(item => item?.[3]))
 			this.soLienLacSavedRows = this.mergeSoGVCNRows(datasets.map(item => item?.[4]))
 			this.siSoSavedRows = this.mergeSoGVCNRows(datasets.map(item => item?.[5]))
-			this.giaoVienBoMonSavedRows = this.mergeSoGVCNRows(datasets.map(item => item?.[6]))
+			this.giaoVienBoMonSavedRows = this.mergeGiaoVienBoMonRows(datasets.map(item => item?.[6]))
 			this.banDaiDienCMHSSavedRows = this.mergeSoGVCNRows(datasets.map(item => item?.[7]))
 			this.canBoLopSavedRows = this.mergeSoGVCNRows(datasets.map(item => item?.[8]))
 			this.huongNghiepSavedRows = this.mergeSoGVCNRows(datasets.map(item => item?.[9]))
@@ -2102,6 +2106,50 @@
 				return true
 			})
 		},
+		isKeHoachValuePopulated(value) {
+			if (value === null || value === undefined) return false
+			if (Array.isArray(value)) return value.some(item => this.isKeHoachValuePopulated(item))
+			if (typeof value === 'object') {
+				return Object.keys(value).some(key => this.isKeHoachValuePopulated(value[key]))
+			}
+			const text = this.cleanSheetValue(value)
+			if (!text) return false
+			if (/^[\[{\"]/.test(text)) {
+				try {
+					const parsed = JSON.parse(text)
+					if (parsed !== value) return this.isKeHoachValuePopulated(parsed)
+				} catch (error) {}
+			}
+			return text !== '[object Object]'
+		},
+		hasKeHoachMonthContent(rows) {
+			const fields = ['ChuDe', 'MucTieu', 'NhiemVu', 'KeHoachTuan', 'DanhGia']
+			return (rows || []).some(row => fields.some(field => this.isKeHoachValuePopulated(row?.[field])))
+		},
+		mergeKeHoachMonthRows(chunks) {
+			const rowsByMonth = new Map()
+			const contentFields = ['ChuDe', 'MucTieu', 'NhiemVu', 'KeHoachTuan', 'DanhGia']
+			;(chunks || []).forEach(chunk => {
+				;(Array.isArray(chunk) ? chunk : []).forEach(row => {
+					const month = row?.Thang
+					if (month === null || month === undefined || month === '') return
+					const key = String(month)
+					const existing = rowsByMonth.get(key)
+					if (!existing) {
+						rowsByMonth.set(key, { ...row })
+						return
+					}
+					// Giữ nội dung đã có ở lớp thành viên đầu tiên; chỉ lấp các ô trống
+					// từ lớp còn lại để một sổ rỗng không che mất kế hoạch đã lưu.
+					contentFields.forEach(field => {
+						if (!this.isKeHoachValuePopulated(existing[field]) && this.isKeHoachValuePopulated(row?.[field])) {
+							existing[field] = row[field]
+						}
+					})
+				})
+			})
+			return [...rowsByMonth.values()]
+		},
 		mergeChiTieuRows(chunks) {
 			const rows = this.mergeSoGVCNRows(chunks)
 			if ((this.soGVCNContexts || []).length < 2) return rows
@@ -2133,6 +2181,45 @@
 				}
 				return true
 			})
+		},
+		mergeGiaoVienBoMonRows(chunks) {
+			const rows = this.mergeSoGVCNRows(chunks)
+			const normalizeText = value => this.cleanSheetValue(value)
+				.toLowerCase()
+				.normalize('NFD')
+				.replace(/[\u0300-\u036f]/g, '')
+				.replace(/\s+/g, ' ')
+				.trim()
+			const mergedMap = new Map()
+			rows.forEach(row => {
+				if (!row || typeof row !== 'object') return
+				const boMon = this.cleanSheetValue(row.BoMon)
+				const giaoVien = this.cleanSheetValue(row.GiaoVien)
+				const thayDoi = this.cleanSheetValue(row.ThayDoi)
+				// Loại bỏ các dòng trống bị lưu nhầm do mã giáo viên rỗng họ tên (như NV0001001).
+				if (!boMon && !giaoVien && !thayDoi) return
+				// Khử trùng danh sách giáo viên bộ môn theo bộ môn + học kỳ + giáo viên
+				// khi gộp nhiều sổ GVCN của lớp tổ hợp cấp 3 (ví dụ 11B gồm 11B1, 11B2).
+				const hocKyKey = this.formatGiaoVienBoMonHocKy(row.HocKy)
+				const teacherKey = String(this.cleanSheetValue(row.GiaoVienID) || '').trim() || normalizeText(giaoVien)
+				const subjectKey = normalizeText(boMon) || String(this.cleanSheetValue(row.MonHocID) || '').trim()
+				const key = [subjectKey, hocKyKey, teacherKey].join('|')
+				const existing = mergedMap.get(key)
+				if (!existing) {
+					mergedMap.set(key, { ...row })
+					return
+				}
+				if (!this.cleanSheetValue(existing.ThayDoi) && thayDoi) {
+					existing.ThayDoi = row.ThayDoi
+				}
+				if (!existing.MonHocID && row.MonHocID) {
+					existing.MonHocID = row.MonHocID
+				}
+				if (!existing.GiaoVienID && row.GiaoVienID) {
+					existing.GiaoVienID = row.GiaoVienID
+				}
+			})
+			return [...mergedMap.values()]
 		},
 		async getStudents() {
 			this.loading.students = true
@@ -2493,30 +2580,41 @@
 				: mappedRows
 			if (card.key === 'giao-vien-bo-mon') {
 				this.giaoVienBoMonRowMeta = mappedRows.map((row, index) => {
-					const previous = previousRows[index]
-					const sameVisibleIdentity = previous && [0, 1, 2].every(columnIndex =>
-						this.cleanSheetValue(previous[columnIndex]) === this.cleanSheetValue(row[columnIndex])
-					)
-					const sameTeacherValue = previous
-						&& this.cleanSheetValue(previous[2]) === this.cleanSheetValue(row[2])
+					// So sánh với metadata trước đó thay vì previousRows vì JSpreadsheet cập nhật
+					// mảng card.rows tại chỗ (in-place) trước khi phát sự kiện onchange.
 					const previousMeta = previousTeacherMeta[index] || {}
-					const teacher = this.getTeacherByCellValue(row[2], sameTeacherValue ? previousMeta.GiaoVienID : '')
-					if (teacher.id && Array.isArray(row)) {
+					const currentBoMon = this.cleanSheetValue(row[0])
+					const currentHocKy = this.cleanSheetValue(row[1])
+					const currentGiaoVienCell = this.cleanSheetValue(row[2])
+					const previousTeacherDisplay = previousMeta.GiaoVien
+						? this.getTeacherDisplayValue(previousMeta.GiaoVien, previousMeta.GiaoVienID)
+						: ''
+					const sameTeacherValue = Boolean(currentGiaoVienCell) && (
+						currentGiaoVienCell === this.cleanSheetValue(previousMeta.GiaoVien)
+						|| currentGiaoVienCell === this.cleanSheetValue(previousTeacherDisplay)
+					)
+					const sameVisibleIdentity = currentBoMon === this.cleanSheetValue(previousMeta.BoMon)
+						&& this.formatGiaoVienBoMonHocKy(currentHocKy) === this.formatGiaoVienBoMonHocKy(previousMeta.HocKy)
+						&& (currentGiaoVienCell ? sameTeacherValue : !this.cleanSheetValue(previousMeta.GiaoVien))
+					const teacher = currentGiaoVienCell
+						? this.getTeacherByCellValue(currentGiaoVienCell, sameTeacherValue ? previousMeta.GiaoVienID : '')
+						: {}
+					if (teacher.id && teacher.name && Array.isArray(row)) {
 						// JSpreadsheet cần giá trị ô trùng với source; vì vậy ô hiển thị
 						// giữ nguyên dạng "(Mã) Họ tên" thay vì chỉ giữ tên thuần.
 						row[2] = teacher.displayText || this.getTeacherDisplayValue(teacher.name || row[2], teacher.id)
 					}
-					if (sameVisibleIdentity) return previousTeacherMeta[index] || {}
-					const subjectChanged = previous && this.cleanSheetValue(previous[0]) !== this.cleanSheetValue(row[0])
+					if (sameVisibleIdentity) return previousMeta
+					const subjectChanged = currentBoMon !== this.cleanSheetValue(previousMeta.BoMon)
 					// Khi chỉ đổi giáo viên/học kỳ, giữ các phần khóa còn lại của phân công;
 					// khi đổi môn, MonHocID phải chờ người dùng chọn lại môn tương ứng.
 					return {
 						...previousMeta,
-						BoMon: row[0] || '',
-						HocKy: row[1] || '',
-						GiaoVien: teacher.name || this.cleanSheetValue(row[2]),
+						BoMon: currentBoMon,
+						HocKy: currentHocKy,
+						GiaoVien: currentGiaoVienCell ? (teacher.name || currentGiaoVienCell) : '',
 						MonHocID: subjectChanged ? '' : (previousMeta.MonHocID ?? ''),
-						GiaoVienID: teacher.id || (sameTeacherValue ? (previousMeta.GiaoVienID ?? '') : ''),
+						GiaoVienID: currentGiaoVienCell ? (teacher.id || (sameTeacherValue ? (previousMeta.GiaoVienID ?? '') : '')) : '',
 						LopID: previousMeta.LopID ?? '',
 						NienKhoa: previousMeta.NienKhoa ?? ''
 					}
@@ -2678,15 +2776,26 @@
 		getTeacherByCellValue(value, preferredID) {
 			const rawValue = this.cleanSheetValue(value)
 			const preferred = this.cleanSheetValue(preferredID)
+			// Ô trống và không có mã giáo viên ưu tiên thì trả về rỗng ngay, tránh khớp nhầm
+			// với bản ghi giáo viên bị trống họ tên trong danh mục (ví dụ NV0001001).
+			if (!rawValue && !preferred) return {}
 			return (this.allTeachers || []).find(item => preferred && String(item.id) === String(preferred))
-				|| (this.allTeachers || []).find(item => item.displayText === rawValue || item.text === rawValue || item.name === rawValue)
+				|| (rawValue
+					? (this.allTeachers || []).find(item =>
+						(item.displayText && item.displayText === rawValue)
+						|| (item.text && item.text === rawValue)
+						|| (item.name && item.name === rawValue)
+					)
+					: null)
 				|| {}
 		},
 		getTeacherDisplayValue(name, teacherID) {
 			const rawName = this.cleanSheetValue(name)
 			const id = this.cleanSheetValue(teacherID)
+			if (!rawName && !id) return ''
 			const teacher = this.getTeacherByCellValue(rawName, id)
-			if (teacher.displayText) return teacher.displayText
+			if (teacher.displayText && (teacher.name || rawName)) return teacher.displayText
+			if (!rawName) return ''
 			const prefix = id ? '(' + id + ') ' : ''
 			return prefix && rawName.indexOf(prefix) === 0 ? rawName : prefix + rawName
 		},
@@ -2694,17 +2803,19 @@
 			try {
 				const res = await ajaxCALLPromise('lms/GiaoVien_Get')
 				if (Array.isArray(res)) {
+					// Chỉ nạp các giáo viên có họ tên hợp lệ vào dropdown để không hiển thị
+					// hoặc tự động gán các mã nhân viên trống tên (như NV0001001) vào dòng trắng.
 					this.allTeachers = res.map(t => {
-						const name = t.HoTenGV || ((t.HoGV || '') + ' ' + (t.TenGV || '')).trim()
-						const phone = t.DienThoai || t.SoDienThoai || t.SDT || ''
+						const name = String(t.HoTenGV || ((t.HoGV || '') + ' ' + (t.TenGV || ''))).trim()
+						const phone = String(t.DienThoai || t.SoDienThoai || t.SDT || '').trim()
 						return {
 							id: t.GiaoVienID,
 							name: name,
 							phone: phone,
 							text: phone ? `${name} - ${phone}` : name,
-							displayText: t.GiaoVienID ? '(' + t.GiaoVienID + ') ' + name : (phone ? name + ' - ' + phone : name)
+							displayText: t.GiaoVienID && name ? '(' + t.GiaoVienID + ') ' + name : (phone ? name + ' - ' + phone : name)
 						}
-					})
+					}).filter(t => t.name)
 					this.applyTeacherDropdownOptions()
 				}
 			} catch (error) {
@@ -3063,8 +3174,8 @@
 				GiaoVien: row.GiaoVien || '',
 				MonHocID: row.MonHocID ?? '',
 				GiaoVienID: row.GiaoVienID ?? '',
-				LopID: row.LopID ?? '',
-				NienKhoa: row.NienKhoa ?? ''
+				LopID: row.LopID ?? (this.selectedClass?.LopID || ''),
+				NienKhoa: row.NienKhoa ?? (this.currentNienKhoa || this.filter?.NienKhoa || '')
 			}))
 			while (this.giaoVienBoMonRowMeta.length < rows.length) this.giaoVienBoMonRowMeta.push({})
 			this.applyTeacherDropdownOptions()
@@ -3082,21 +3193,16 @@
 				return
 			}
 			let rows = apiRows.map(row => {
-				// Ghép dữ liệu đã lưu theo composite key của phân công trước; họ tên chỉ là
-				// phương án tương thích với dữ liệu cũ chưa lưu đủ bốn trường khóa.
+				// Ghép dữ liệu đã lưu theo học kỳ + môn học + giáo viên; ở lớp gộp không bắt buộc
+				// trùng LopID để giữ được ghi chú ThayDoi giữa các lớp thành viên.
 				const saved = savedRows.find(item => {
-					const sameSemester = this.cleanSheetValue(item.HocKy) === this.cleanSheetValue(row.HocKy)
-					const savedKey = [item.MonHocID, item.GiaoVienID, item.LopID, item.NienKhoa]
-					const apiKey = [row.MonHocID, row.GiaoVienID, row.LopID, row.NienKhoa]
-					const hasSavedKey = savedKey.every(value => value !== '' && value !== null && value !== undefined)
-					const hasApiKey = apiKey.every(value => value !== '' && value !== null && value !== undefined)
-					const sameAssignment = hasSavedKey && hasApiKey
-						? savedKey.every((value, index) => String(value) === String(apiKey[index]))
-						: this.cleanSheetValue(item.BoMon) === row.BoMon
-							&& (item.GiaoVienID && row.GiaoVienID
-								? String(item.GiaoVienID) === String(row.GiaoVienID)
-								: this.cleanSheetValue(item.GiaoVien) === row.GiaoVien)
-					return sameSemester && sameAssignment
+					const sameSemester = this.formatGiaoVienBoMonHocKy(item.HocKy) === this.formatGiaoVienBoMonHocKy(row.HocKy)
+					const sameSubject = (item.MonHocID && row.MonHocID && String(item.MonHocID) === String(row.MonHocID))
+						|| (this.cleanSheetValue(item.BoMon) && this.cleanSheetValue(item.BoMon) === this.cleanSheetValue(row.BoMon))
+					const sameTeacher = (item.GiaoVienID && row.GiaoVienID)
+						? String(item.GiaoVienID) === String(row.GiaoVienID)
+						: this.cleanSheetValue(item.GiaoVien) === this.cleanSheetValue(row.GiaoVien)
+					return sameSemester && sameSubject && sameTeacher
 				}) || {}
 				return [row.BoMon, this.formatGiaoVienBoMonHocKy(row.HocKy), this.getTeacherDisplayValue(row.GiaoVien, row.GiaoVienID), saved.ThayDoi || '']
 			})
@@ -3124,6 +3230,7 @@
 		},
 		async fetchGiaoVienBoMonRows() {
 			const classIDs = this.getSelectedClassIDs()
+			const isGroupedClass = classIDs.length > 1
 			const nienKhoa = Number(this.currentNienKhoa || this.filter.NienKhoa || new Date().getFullYear())
 			const chunks = await Promise.all(classIDs.flatMap(lopID => [1, 2].map(hocKy => ajaxCALLPromise('lms/GiaoVienLop_Get_ByLopID', {
 				LopID: lopID,
@@ -3148,17 +3255,18 @@
 					GiaoVien: row.HoTenGV || '',
 					ThayDoi: ''
 				}
-				// Khóa phân công là MonHocID + GiaoVienID + LopID + NienKhoa.
-				// Học kỳ được nối thêm vì màn hình đang nạp riêng cả học kỳ 1 và 2;
-				// tên môn/tên giáo viên chỉ dùng làm fallback cho dữ liệu thiếu ID.
-				const assignmentKey = [item.MonHocID, item.GiaoVienID, item.LopID, item.NienKhoa]
+				// Ở lớp gộp (ví dụ 11B gồm 11B1, 11B2), cùng một môn học và giáo viên ở các lớp
+				// thành viên phải được gộp chung thành 1 dòng hiển thị thay vì nhân đôi theo LopID.
+				const scopeLopID = isGroupedClass ? '' : item.LopID
+				const assignmentKey = [item.MonHocID, item.GiaoVienID, scopeLopID, item.NienKhoa]
 					.map(value => String(value ?? '')).join('|')
-				const hasAssignmentKey = [item.MonHocID, item.GiaoVienID, item.LopID, item.NienKhoa]
+				const hasAssignmentKey = [item.MonHocID, item.GiaoVienID, item.NienKhoa]
 					.every(value => value !== '' && value !== null && value !== undefined)
+					&& (isGroupedClass || (item.LopID !== '' && item.LopID !== null && item.LopID !== undefined))
 				const key = hasAssignmentKey
 					? [assignmentKey, item.HocKy].join('|')
-					: [item.BoMon, item.HocKy, item.GiaoVien, item.LopID, item.NienKhoa].join('|')
-				if (item.BoMon || item.GiaoVien) map.set(key, item)
+					: [item.BoMon, item.HocKy, item.GiaoVien, scopeLopID, item.NienKhoa].join('|')
+				if ((item.BoMon || item.GiaoVien) && !map.has(key)) map.set(key, item)
 			})
 			return [...map.values()].sort((a, b) => {
 				if (`${a.HocKy}` !== `${b.HocKy}`) return `${a.HocKy}`.localeCompare(`${b.HocKy}`)
@@ -3188,28 +3296,37 @@
 			return (card.rows || []).map((row, index) => {
 				const identity = rowMeta[index] || {}
 				const giaoVienCell = this.cleanSheetCell(row, 2, 'GiaoVien')
-				const cellTeacher = this.getTeacherByCellValue(giaoVienCell, identity.GiaoVienID || '')
+				const previousTeacherDisplay = identity.GiaoVien
+					? this.getTeacherDisplayValue(identity.GiaoVien, identity.GiaoVienID)
+					: ''
+				const sameTeacher = Boolean(giaoVienCell) && (
+					giaoVienCell === this.cleanSheetValue(identity.GiaoVien)
+					|| giaoVienCell === this.cleanSheetValue(previousTeacherDisplay)
+				)
+				const cellTeacher = giaoVienCell
+					? this.getTeacherByCellValue(giaoVienCell, sameTeacher ? (identity.GiaoVienID || '') : '')
+					: {}
 				const giaoVien = cellTeacher.name || giaoVienCell
 				const hocKyValue = this.cleanSheetCell(row, 1, 'HocKy')
 				const boMon = this.cleanSheetCell(row, 0, 'BoMon')
 				const thayDoi = this.cleanSheetCell(row, 3, 'ThayDoi')
+				const sameSubject = Boolean(boMon) && this.cleanSheetValue(identity.BoMon) === boMon
+				const sameSemester = String(identity.HocKy ?? '').replace(/[^0-9]/g, '') === String(hocKyValue ?? '').replace(/[^0-9]/g, '')
 				const sameIdentity = identity.MonHocID !== '' && identity.MonHocID !== null && identity.MonHocID !== undefined
 					&& identity.GiaoVienID !== '' && identity.GiaoVienID !== null && identity.GiaoVienID !== undefined
-					&& identity.LopID !== '' && identity.LopID !== null && identity.LopID !== undefined
-					&& identity.NienKhoa !== '' && identity.NienKhoa !== null && identity.NienKhoa !== undefined
-					&& this.cleanSheetValue(identity.BoMon) === boMon
-					&& String(identity.HocKy ?? '').replace(/[^0-9]/g, '') === String(hocKyValue ?? '').replace(/[^0-9]/g, '')
+					&& sameSubject
+					&& sameSemester
 					&& this.cleanSheetValue(identity.GiaoVien) === giaoVien
 				// Dòng chưa đổi định danh dùng lại đủ composite key gốc, tránh chọn nhầm
 				// giáo viên đầu tiên khi danh sách có hai mục cùng tên.
 				const teacher = sameIdentity
 					? { id: identity.GiaoVienID, name: identity.GiaoVien }
 					: cellTeacher
-				const normalizedGiaoVien = teacher.name || giaoVien
+				const normalizedGiaoVien = giaoVienCell ? (teacher.name || giaoVien) : ''
 				// Không giữ GiaoVienID từ metadata cũ khi ô giáo viên đã được xóa;
 				// nếu không, dòng trắng vẫn bị coi là dòng đang nhập dở.
 				const resolvedGiaoVienID = normalizedGiaoVien
-					? (teacher.id || identity.GiaoVienID || '')
+					? (teacher.id || (sameTeacher ? (identity.GiaoVienID || '') : ''))
 					: ''
 				const isValid = !!(boMon || hocKyValue || normalizedGiaoVien || thayDoi)
 				if (isValid) {
@@ -3218,10 +3335,10 @@
 				return {
 					BoMon: boMon,
 					HocKy: String(hocKyValue).includes('2') ? 2 : (hocKyValue ? 1 : null),
-					MonHocID: sameIdentity ? identity.MonHocID : '',
+					MonHocID: sameSubject ? (identity.MonHocID ?? '') : '',
 					GiaoVienID: resolvedGiaoVienID,
-					LopID: sameIdentity ? identity.LopID : '',
-					NienKhoa: sameIdentity ? identity.NienKhoa : '',
+					LopID: sameSubject ? (identity.LopID ?? '') : '',
+					NienKhoa: sameSubject ? (identity.NienKhoa ?? '') : '',
 					GiaoVien: normalizedGiaoVien,
 					ThayDoi: thayDoi,
 					RowIndex: isValid ? validRowCounter : index + 1,
@@ -5842,16 +5959,50 @@
 		},
 		async saveKeHoachSheetForGroupedClasses() {
 			const group = this.selectedClass
-			let completed = false
+			const contexts = [...(this.soGVCNContexts || [])]
+			if (!group || !this.form.SoGVCNID) return
+			if (contexts.length < 2) throw new Error('Danh sách lớp gộp chưa tải đủ. Vui lòng tải lại lớp trước khi lưu.')
 			const original = {
 				selectedLopID: this.selectedLopID,
 				selectedClass: group,
 				filterLopID: this.filter.LopID,
 				formSoGVCNID: this.form.SoGVCNID
 			}
+			const restoreSelection = () => {
+				this.selectedLopID = original.selectedLopID
+				this.selectedClass = original.selectedClass
+				this.filter.LopID = original.filterLopID
+				this.form.SoGVCNID = original.formSoGVCNID
+			}
 			this.savingGroupedClasses = true
+			this.loading.month = true
 			try {
-				for (const context of this.soGVCNContexts) {
+				if (document.activeElement && typeof document.activeElement.blur === 'function') {
+					document.activeElement.blur()
+				}
+				const sheetRef = this.$refs.tabKeHoachRef
+				const sheetInstance = sheetRef?.getInstance ? sheetRef.getInstance() : null
+				const sheet = Array.isArray(sheetInstance) ? sheetInstance[0] : sheetInstance
+				if (sheet && typeof sheet.closeEditor === 'function') {
+					try { sheet.closeEditor(sheet.edition ? sheet.edition[0] : null, true) } catch (error) {}
+				}
+				// Đọc và đóng băng một lần trước khi đổi SoGVCNID để mọi lớp thành viên
+				// nhận đúng cùng một kế hoạch do GVCN vừa nhập trên bảng lớp gộp.
+				await this.$nextTick()
+				const rows = this.parseKeHoachSheetRows()
+				if (!rows.length) throw new Error('Bảng kế hoạch chưa tải xong. Vui lòng tải lại trước khi lưu.')
+				// Chặn thao tác lưu không có chỉnh sửa khi bảng đang rỗng nhưng sổ thành viên
+				// vẫn có dữ liệu; nếu GVCN chủ động xóa toàn bộ thì tab đã được đánh dấu dirty.
+				if (this.hasKeHoachMonthContent(this.monthList) &&
+					!this.hasKeHoachMonthContent(rows) && !this.isTabDirty('ke-hoach')) {
+					throw new Error('Bảng kế hoạch đang rỗng nhưng sổ đã có dữ liệu. Vui lòng tải lại trước khi lưu để tránh xóa nhầm.')
+				}
+
+				for (const context of contexts) {
+					if (!context?.SoGVCNID) throw new Error('Thiếu sổ GVCN của một lớp thành viên. Vui lòng tải lại lớp.')
+					const payload = rows.map(row => ({ ...row, SoGVCNID: context.SoGVCNID }))
+					await Promise.all(payload.map(row => ajaxCALLPromise('lms/SoGVCNKeHoachThangSave', row)))
+
 					this.selectedLopID = context.LopID
 					this.selectedClass = {
 						...group,
@@ -5861,17 +6012,23 @@
 					}
 					this.filter.LopID = context.LopID
 					this.form.SoGVCNID = context.SoGVCNID
-					await this.saveKeHoachSheet()
+					await this.recordAuditLogsForTab('ke-hoach')
 				}
-				completed = true
+				restoreSelection()
+				await this.getDetail()
+				this.keHoachSheetRows = this.buildKeHoachThangTuanExportAoA(false, true)
+				this.keHoachSheetStyle = this.buildKeHoachSheetStyle(false)
+				this.$refs.tabKeHoachRef?.initSheet?.()
+				this.clearUnsavedChanges('ke-hoach')
+			} catch (error) {
+				this.notify(error?.message || 'Không thể lưu kế hoạch tháng cho lớp gộp.', 'error')
+				throw error
 			} finally {
-				this.selectedLopID = original.selectedLopID
-				this.selectedClass = original.selectedClass
-				this.filter.LopID = original.filterLopID
-				this.form.SoGVCNID = original.formSoGVCNID
+				restoreSelection()
 				this.savingGroupedClasses = false
+				this.loading.month = false
 			}
-			if (completed) this.notify('Đã lưu kế hoạch tháng')
+			this.notify('Đã lưu kế hoạch tháng cho lớp gộp ' + (group.TenLop || ''))
 		},
 		async recordAuditLogsForTab(tabKey) {
 			try {

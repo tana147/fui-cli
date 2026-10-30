@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/log-hoc-lieu-so",
+  "url": "//lms.lhbs.vn/log-hoc-lieu-so",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "log-hoc-lieu-so",
+  "ModuleName": "Lịch sử học liệu số",
+  "UpdateTime": "2026-10-29 12:02:40",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-29",
+  "LoadCount": 11,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

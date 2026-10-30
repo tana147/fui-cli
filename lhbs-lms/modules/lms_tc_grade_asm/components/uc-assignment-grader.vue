@@ -1081,6 +1081,8 @@
 			updateGrading(questionId, newGradingData) {
 				const isQuestionRegraded = newGradingData?.manualScoreSource === 'teacher_regrade'
 					&& Array.isArray(newGradingData?.regradeHistory);
+				const isMatchingQuestion = this.allQuestions.some(question =>
+					String(question.id) === String(questionId) && question.type === 'QUIZ_MATCHING');
 				const previousAnnotations = this.gradingData[questionId]?.grading?.textAnnotations || [];
 				// Ghi chú vùng văn bản cũng là dữ liệu chấm; so sánh để autosave ngay cả
 				// khi bài đã hoàn tất và giáo viên không thay đổi điểm số.
@@ -1090,9 +1092,9 @@
 				const currentAnswer = newGrading[questionId] || {};
 				newGrading[questionId] = { ...currentAnswer, grading: newGradingData };
 				this.gradingData = newGrading;
-				// Regrade status 4 cũng phải tính lại tổng điểm trước khi auto-save;
-				// nếu chỉ giới hạn <= 3 thì điểm câu đã chấm lại không đi vào Score.
-				if (isQuestionRegraded || Number(this.submission?.SubmissionStatus) <= 3) {
+				// Câu ghép nối tự chấm lại khi mở bài đã trả; cập nhật cả tổng điểm đang
+				// hiển thị để không giữ tổng cũ 10.99 dù điểm câu đã sửa thành 1.
+				if (isQuestionRegraded || isMatchingQuestion || Number(this.submission?.SubmissionStatus) <= 3) {
 					setTimeout(() => {
 						this.calculateTotalScore();
 					}, 0);
@@ -1101,10 +1103,11 @@
 				// chuyển câu hoặc đóng trang mà chưa bấm Chấm nháp.
 				if (isQuestionRegraded || isAnnotationUpdate) this.triggerAutoSave();
 			},
-			async calculateTotalScore() {
+			calculateTotalScore() {
 				if (this.assignment?.AssignmentType === 'INTEGRATED') return;
 				let total = 0;
-				await this.allQuestions.forEach(q => {
+				// Tính đồng bộ để nút trả bài lấy đúng Score ngay sau lời gọi hàm này.
+				this.allQuestions.forEach(q => {
 					const score = this.getEffectiveQuestionScore(q.id);
 					if (score !== null) total += parseFloat(score || 0);
 				});

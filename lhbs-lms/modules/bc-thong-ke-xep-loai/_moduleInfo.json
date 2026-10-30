@@ -1,0 +1,15 @@
+{
+  "id": "lhbs-lms/bc-thong-ke-xep-loai",
+  "url": "//lms.lhbs.vn/bc-thong-ke-xep-loai",
+  "mDomain": "",
+  "ProjectID": "lhbs-lms",
+  "ModuleID": "bc-thong-ke-xep-loai",
+  "ModuleName": "Thống kê xếp loại theo môn học",
+  "UpdateTime": "2026-10-26 11:35:02",
+  "UpdateUser": "DEV000037",
+  "LastLoad": "2026-10-27",
+  "LoadCount": 25,
+  "HTMLOnly": false,
+  "Framework": "V3",
+  "mTitle": ""
+}

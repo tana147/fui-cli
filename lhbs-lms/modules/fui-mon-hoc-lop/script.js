@@ -24,6 +24,10 @@ async function loadMonHoc() {
 function sameId(left, right) {
     return left !== undefined && left !== null && right !== undefined && right !== null && String(left) === String(right)
 }
+function setDefaultNhomModeForMonHoc() {
+    // Cấp 3 GDTC đã có mapping nhóm riêng; mặc định hiển thị nhóm thay cho lớp gốc khi chọn môn này.
+    vueData.ShowNhom = vueData.CapItem?.CapID === 3 && vueData.MonHocItem?.MonHocCode === 'TD'
+}
 function onSave() {
     // const jsonData = vueData.items.map(x => {
     //     return {

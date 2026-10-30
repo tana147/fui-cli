@@ -142,9 +142,6 @@
                 { type: 'QUIZ_MULTIPLE_TRUE_FALSE', label: 'Nhiều đúng / Sai', icon: 'mdi-check-circle-outline', kind: "quiz" },
                 { type: 'QUIZ_FILL_IN_BLANK', label: 'Điền vào chỗ trống', icon: 'mdi-form-textbox', kind: "quiz" },
                 { type: 'QUIZ_MATCHING', label: 'Ghép nối', icon: 'mdi-merge', kind: "quiz" },
-                { type: 'QUIZ_ORDERING', label: 'Sắp xếp thứ tự', icon: 'mdi-format-list-numbered', kind: "quiz" },
-                { type: 'SHORT_ANSWER', label: 'Trả lời ngắn', icon: 'mdi-text-short', kind: "manual" },
-                { type: 'ESSAY', label: 'Tự luận', icon: 'mdi-text-box-edit-outline', kind: "manual" },
             ],
             GroupQuestion: [],
             isSelectedAll: false,
@@ -245,7 +242,7 @@
 		},
 		isSupportedQuestionType(type) {
 			return ['QUIZ_SINGLE_CHOICE', 'QUIZ_MULTIPLE_CHOICE', 'QUIZ_TRUE_FALSE',
-				'QUIZ_MULTIPLE_TRUE_FALSE', 'QUIZ_FILL_IN_BLANK', 'QUIZ_MATCHING', 'QUIZ_ORDERING', 'SHORT_ANSWER', 'ESSAY'].includes(type)
+				'QUIZ_MULTIPLE_TRUE_FALSE', 'QUIZ_FILL_IN_BLANK', 'QUIZ_MATCHING'].includes(type)
 		},
         importQuestion(question) {
             let listQuestionSelect = this.importableQuestions.filter(q => q.isSelected)
@@ -296,7 +293,7 @@
                     isAdvanced: data.isAdvanced || false,
                     questionText: data.prompt
                 },
-                sourceTracking: {
+				sourceTracking: {
 					sourceType: 'HOC_LIEU_SO',
 					HocLieuID: sourceInfo.HocLieuID,
 					NoiDungID: sourceInfo.NoiDungID,
@@ -305,17 +302,6 @@
 					importedAt: new Date().toISOString(),
 				}
             };
-
-			// Học liệu số có thể chứa rich-text/object; luôn làm sạch trước khi đưa vào ConfigJson để không phát sinh "[object Object]".
-			const cleanQuestionValue = value => {
-				if (value === null || value === undefined) return ''
-				if (typeof value === 'object') return cleanQuestionValue(value.html ?? value.content ?? value.text ?? value.value ?? value.label ?? '')
-				return String(value)
-			}
-			if (['SHORT_ANSWER', 'ESSAY'].includes(type)) {
-				newQuestion.gradingType = 'manual'
-				newQuestion.config.referenceAnswer = cleanQuestionValue(data?.referenceAnswer ?? data?.config?.referenceAnswer)
-			}
 
             switch (type) {
                 case 'QUIZ_SINGLE_CHOICE':
@@ -354,32 +340,6 @@
 						? data.correctPairs
 						: (data.columnA || []).map((item, index) => ({ from: item.id, to: data.columnB?.[index]?.id })).filter(pair => pair.to)
                     break;
-                case 'QUIZ_ORDERING': {
-                    // Học liệu cũ có thể gọi các ý là `options`; chuẩn hóa về `items` để dùng chung với Soạn bài tập.
-                    const sourceItems = Array.isArray(data.items) ? data.items : (Array.isArray(data.options) ? data.options : [])
-                    const cleanValue = value => {
-                        if (value === null || value === undefined) return ''
-                        if (typeof value === 'object') return cleanValue(value.text ?? value.content ?? value.html ?? value.label ?? value.value ?? '')
-                        return String(value)
-                    }
-                    const items = sourceItems.map((item, index) => ({
-                        id: cleanValue(item?.id ?? item?.value ?? ('ordering_' + (index + 1))),
-                        text: cleanValue(item?.text ?? item?.label ?? item?.content ?? item?.value ?? item),
-                    }))
-                    const orderValues = Array.isArray(data.correctOrder) && data.correctOrder.length
-                        ? data.correctOrder
-                        : items.map(item => item.id)
-                    const resolveId = value => {
-                        const direct = items.find(item => String(item.id) === String(value))
-                        if (direct) return direct.id
-                        const index = Number(value)
-                        return Number.isInteger(index) && items[index] ? items[index].id : null
-                    }
-                    newQuestion.config.items = items
-                    newQuestion.config.correctOrder = orderValues.map(resolveId).filter(Boolean)
-                    newQuestion.config.scoringMode = 'equal'
-                    break
-                }
             }
 
             return newQuestion

@@ -234,6 +234,8 @@ function normalizeLookupText(value) {
 		'ta tich hop gvvn': 'ngoai ngu',
 		'gd kt va pl': 'giao duc kinh te va phap luat',
 		'gdkt va pl': 'giao duc kinh te va phap luat',
+		// TKB ghi "Chuyên đề HT KT&PL", còn phân công trên LMS dùng tên môn đầy đủ.
+		'chuyen de ht kt va pl': 'giao duc kinh te va phap luat',
 		'gdcd': 'giao duc cong dan',
 		'hd trai nghiem': 'hoat dong trai nghiem'
 	}
@@ -245,6 +247,11 @@ function normalizeLookupText(value) {
 function normalizeClassLookupKey(value) {
 	// TKB dùng 11AV2, còn tên nhóm LMS có thể là 26-11AV2.
 	return normalizeLookupText(value).replace(/^\d+\s*-\s*/, '').replace(/^\d+\s+/, '').replace(/\s+/g, '')
+}
+function getBaseClassLookupKey(value) {
+	const classKey = normalizeClassLookupKey(value)
+	const match = classKey.match(/^(\d+[a-z]+)\d$/)
+	return match ? match[1] : ''
 }
 function scoreSubjectMatch(source, candidate) {
 	const sourceTokens = new Set(normalizeLookupText(source).split(' ').filter(Boolean))
@@ -288,7 +295,15 @@ function dienFormTuTiet(item) {
 	const tenLop = normalizeClassLookupKey(item.TenLop)
 	const tenMon = normalizeLookupText(item.TenMon)
 	const dsLop = vueData.DSLop_HienThi || []
-	const candidates = dsLop.filter(x => normalizeClassLookupKey(x.TenLop) === tenLop)
+	const exactClassCandidates = dsLop.filter(x => normalizeClassLookupKey(x.TenLop) === tenLop)
+	// Một số tiết TKB ghi lớp nhóm theo môn (10F2), trong khi phân công LMS lưu lớp gốc (10F).
+	// Chỉ thử tên lớp gốc khi không có lớp khớp chính xác; bên dưới vẫn phải khớp môn mới chọn.
+	const baseClassKey = exactClassCandidates.length ? '' : getBaseClassLookupKey(item.TenLop)
+	const baseClassCandidates = baseClassKey
+		? dsLop.filter(x => normalizeClassLookupKey(x.TenLop) === baseClassKey)
+		: []
+	const usedBaseClassFallback = exactClassCandidates.length === 0 && baseClassCandidates.length > 0
+	const candidates = exactClassCandidates.length ? exactClassCandidates : baseClassCandidates
 	const exactCandidates = candidates.filter(x => normalizeLookupText(x.TenMonHoc) === tenMon)
 	const exact = exactCandidates.find(x => !x.NhomID && !x.IsLopNhom && !x.LoaiLop) || exactCandidates[0]
 	const scored = candidates.map(x => ({ item: x, score: scoreSubjectMatch(tenMon, x.TenMonHoc) })).sort((a, b) => b.score - a.score)
@@ -301,7 +316,7 @@ function dienFormTuTiet(item) {
 	// Ưu tiên lớp thường; nếu chưa có metadata phân biệt tblLop/tblNhom thì
 	// dùng bản ghi đầu tiên để giáo viên vẫn thao tác được.
 	let found = exact || (bestMatches.length === 1 ? bestMatches[0].item :
-		(normalCandidates[0] || candidates[0] || null))
+		(usedBaseClassFallback ? null : (normalCandidates[0] || candidates[0] || null)))
 	// Không có lớp trùng tên: gộp các lớp thành phần thuộc lớp gốc và đúng môn.
 	// Ví dụ TKB "10A - Ngữ văn", phân công "10A1 - Ngữ văn" và
 	// "10A2 - Ngữ văn". Đây là các LopID thực, không phải lớp 10A giả.

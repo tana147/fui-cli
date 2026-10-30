@@ -389,6 +389,8 @@ html, body, .v-application {
 .lh-content-main,
 .lh-content-main-row {
   flex: 1 1 auto !important;
+  height: calc(100vh - 130px) !important;
+  max-height: calc(100vh - 130px) !important;
   min-height: 0 !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -510,7 +512,7 @@ html, body, .v-application {
 .lh-slide-viewer-core {
   width: 100% !important;
   height: 100% !important;
-  min-height: 100% !important;
+  min-height: 0 !important;
   display: flex !important;
   flex-direction: column !important;
   box-sizing: border-box !important;
@@ -525,7 +527,8 @@ html, body, .v-application {
   overflow: hidden !important;
 }
 /* Video phải co theo toàn bộ vùng viewer; tránh lấy aspect-ratio theo chiều rộng rồi bị cắt phần dưới. */
-.lh-video-slide {
+.lh-video-slide,
+.lh-media-slide {
   width: 100% !important;
   height: 100% !important;
   min-height: 0 !important;
@@ -536,7 +539,8 @@ html, body, .v-application {
   overflow: hidden !important;
   box-sizing: border-box !important;
 }
-.lh-video-slide .media-player-container {
+.lh-video-slide .media-player-container,
+.lh-media-slide .media-player-container {
   width: 100% !important;
   height: 100% !important;
   min-height: 0 !important;
@@ -546,49 +550,140 @@ html, body, .v-application {
   overflow: hidden !important;
   box-sizing: border-box !important;
 }
-.lh-video-slide .media-player-container > .v-row {
+.lh-video-slide .media-player-container > .v-row,
+.lh-media-slide .media-player-container > .v-row {
   display: flex !important;
   flex: 1 1 0 !important;
   height: 100% !important;
   min-height: 0 !important;
   align-items: stretch !important;
 }
-.lh-video-slide .media-player-container > .v-row > .v-col {
+.lh-video-slide .media-player-container > .v-row > .v-col,
+.lh-media-slide .media-player-container > .v-row > .v-col {
   height: 100% !important;
   min-height: 0 !important;
-  flex: 0 0 100% !important;
   display: flex !important;
   flex-direction: column !important;
 }
-.lh-video-slide .video-preview-box {
-  /* Các parent đều có chiều cao card; dùng 100% để video không dừng ở tỷ lệ 16:9 mặc định. */
-  flex: 1 1 0 !important;
+.media-player-container .video-preview-box,
+.lh-video-slide .video-preview-box,
+.lh-media-slide .video-preview-box,
+.video-preview-box {
   width: 100% !important;
   height: 100% !important;
-  min-height: 0 !important;
-  aspect-ratio: auto !important;
+  min-height: 200px !important;
   background: #000000 !important;
   border-radius: 8px !important;
   overflow: hidden !important;
+  position: relative !important;
 }
-.lh-video-slide .video-preview-box > video {
+.lh-video-slide .v-col:has(.lh-video-timeline) .video-preview-box,
+.lh-media-slide .v-col:has(.lh-video-timeline) .video-preview-box,
+.media-player-container:has(.lh-video-timeline) .video-preview-box,
+.media-player-container .v-col .video-preview-box {
+  flex: 1 1 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+.lh-video-slide .video-preview-box > video,
+.lh-media-slide .video-preview-box > video {
   display: block !important;
   width: 100% !important;
   height: 100% !important;
   object-fit: contain !important;
 }
-.lh-video-slide .lh-youtube-wrapper {
+.lh-video-slide .lh-youtube-wrapper,
+.lh-media-slide .lh-youtube-wrapper {
   top: 0 !important;
   left: 0 !important;
 }
 .lh-video-slide .lh-youtube-wrapper iframe,
-.lh-video-slide .lh-youtube-wrapper > div {
+.lh-video-slide .lh-youtube-wrapper > div,
+.lh-media-slide .lh-youtube-wrapper iframe,
+.lh-media-slide .lh-youtube-wrapper > div {
   width: 100% !important;
   height: 100% !important;
   border: 0 !important;
 }
-.lh-video-slide .lh-video-timeline {
+.lh-video-slide .lh-video-timeline,
+.lh-media-slide .lh-video-timeline,
+.media-player-container .lh-video-timeline,
+.lh-video-timeline {
   flex: 0 0 auto !important;
+  height: auto !important;
+  min-height: 56px !important;
+  width: 100% !important;
+  padding: 4px 4px 6px 4px !important;
+  margin-top: 4px !important;
+  margin-bottom: 0 !important;
+  box-sizing: border-box !important;
+}
+.lh-video-timeline .v-slider.v-input {
+  margin: 0 !important;
+}
+.lh-video-timeline .v-input__control {
+  min-height: 20px !important;
+  height: 20px !important;
+}
+/* Markers hiển thị mốc câu hỏi tương tác trên thanh timeline ngang */
+.lh-timeline-markers-layer {
+  position: absolute !important;
+  pointer-events: none !important;
+}
+.lh-timeline-marker {
+  position: absolute !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 18px !important;
+  height: 18px !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  transition: transform 0.15s ease !important;
+}
+.lh-timeline-marker:hover {
+  transform: translate(-50%, -50%) scale(1.4) !important;
+  z-index: 10 !important;
+}
+.lh-marker-pin {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  background-color: #f59e0b !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45) !important;
+  transition: all 0.2s ease !important;
+}
+.lh-timeline-marker:hover .lh-marker-pin {
+  background-color: #d97706 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6) !important;
+}
+.lh-marker-pin.is-completed {
+  background-color: #10b981 !important;
+}
+.lh-marker-pin.is-active {
+  background-color: #ef4444 !important;
+  animation: marker-pulse 1.5s infinite !important;
+}
+@keyframes marker-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { transform: scale(1.2); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+.media-player-container .v-col > .v-card {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+.media-player-container .video-events-list {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
 }
 .lh-reading-slide,
 .lh-ispring-slide {
@@ -1221,10 +1316,90 @@ iframe.lh-ispring-iframe {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  padding: 4px !important;
 }
-.lh-matching-dropzone:has(.lh-matching-item-b) {
+.lh-matching-dropzone:has(.lh-matching-item-b),
+.lh-matching-dropzone.has-item {
   border: 1.5px solid #0284c7 !important;
   background-color: #f0f9ff !important;
+}
+.lh-matching-dropzone:has(.lh-matching-item-b) .lh-dropzone-placeholder,
+.lh-matching-dropzone.has-item .lh-dropzone-placeholder {
+  display: none !important;
+}
+.lh-matching-dropzone .lh-matching-item-b {
+  width: 100% !important;
+  margin-bottom: 0 !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+  border-color: #0284c7 !important;
+}
+.lh-dropzone-placeholder {
+  color: #64748b !important;
+  font-size: 0.875rem !important;
+  font-style: italic !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+/* Phân loại (Categorize) Dropzone Hint */
+.lh-category-dropzone:has(.lh-draggable-item) .lh-dropzone-hint,
+.lh-category-dropzone:has(> :not(.lh-dropzone-hint)) .lh-dropzone-hint,
+.lh-category-dropzone.has-item .lh-dropzone-hint {
+  display: none !important;
+}
+.lh-drag-avatar-clone {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 12px !important;
+  box-sizing: border-box !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+}
+.lh-drag-avatar-clone .lh-matching-text {
+  flex: 1 1 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+.lh-drag-avatar-clone .lh-drag-icon {
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  color: #94a3b8 !important;
+  user-select: none !important;
+}
+/* Trong modal/dialog câu hỏi tương tác của video:
+   Bỏ khoảng trắng 156px bên trái (khoảng trống vốn chỉ dùng cho nút Mục Lục nổi của bài học toàn màn hình) */
+.v-dialog .lh-standalone-quiz-host .lh-single-slide,
+.v-card .lh-standalone-quiz-host .lh-single-slide,
+.v-card-text .lh-standalone-quiz-host .lh-single-slide,
+.lh-dialog-interaction .lh-standalone-quiz-host .lh-single-slide,
+.lh-dialog-interaction .lh-single-slide {
+  display: block !important;
+  padding: 4px 6px 12px 6px !important;
+  background: transparent !important;
+  overflow-y: visible !important;
+}
+.v-dialog .lh-standalone-quiz-host .lh-quiz-single,
+.v-card .lh-standalone-quiz-host .lh-quiz-single,
+.v-card-text .lh-standalone-quiz-host .lh-quiz-single,
+.lh-dialog-interaction .lh-standalone-quiz-host .lh-quiz-single,
+.lh-dialog-interaction .lh-quiz-single {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 16px 18px !important;
+  box-shadow: none !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  box-sizing: border-box !important;
 }
 /* 9. Loading & Empty State */
 .lh-loading-container {

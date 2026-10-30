@@ -5,8 +5,10 @@
   "ProjectID": "lhbs-esign",
   "ModuleID": "kpi-causal-config",
   "ModuleName": "Cấu Hình Nhân Quả & Tham Số KPI",
-  "UpdateInfo": null,
-  "LoadInfo": null,
+  "UpdateTime": "2026-10-28 11:10:52",
+  "UpdateUser": "DEV000068",
+  "LastLoad": "2026-10-28",
+  "LoadCount": 21,
   "HTMLOnly": false,
   "Framework": "V3",
   "mTitle": ""

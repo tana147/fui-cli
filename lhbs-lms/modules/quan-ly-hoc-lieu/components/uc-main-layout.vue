@@ -210,6 +210,17 @@
 	},
 
 	methods: {
+		// UUID chung dùng để gom các thay đổi thuộc cùng một thao tác quản lý học liệu.
+		createAuditContext(operationName) {
+			const bytes = window.crypto?.getRandomValues
+				? window.crypto.getRandomValues(new Uint8Array(16))
+				: Uint8Array.from({ length: 16 }, () => Math.floor(Math.random() * 256));
+			bytes[6] = (bytes[6] & 0x0f) | 0x40;
+			bytes[8] = (bytes[8] & 0x3f) | 0x80;
+			const hex = Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('');
+			const OperationID = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+			return { OperationID, OperationName: operationName, SourceModule: 'quan-ly-hoc-lieu' };
+		},
 		async getHocLieu() {
 			this.hocLieuList = await fetchPromise('lms/FP_HocLieu_GetAll', {
 				PageNumber: 1,
@@ -322,7 +333,8 @@
 
 			try {
 				if (this.isEditMode && this.editedItem.HocLieuID) {
-					await fetchPromise('lms/FP_HocLieu_Save', this.buildSaveParams(), { cache: false })
+					const auditContext = this.createAuditContext('Cập nhật ảnh thumbnail học liệu')
+					await fetchPromise('lms/FP_HocLieu_Save_Audited', { ...this.buildSaveParams(), ...auditContext }, { cache: false })
 					dbSaved = true
 				}
 				await this.deleteStoredThumbnailFiles([fileUrl])
@@ -380,10 +392,11 @@
 			return {
 				HocLieuID: this.toNullableInt(this.editedItem.HocLieuID) ?? 0,
 				TenHocLieu: String(this.editedItem.TenHocLieu || '').trim(),
-				...(boSachID !== null ? { BoSachID: boSachID } : {}),
-				...(monHocID !== null ? { MonHocID: monHocID } : {}),
-				...(khoiID !== null ? { KhoiID: khoiID } : {}),
-				...(hocKy !== null ? { HocKy: hocKy } : {}),
+				// Gửi đủ tham số của endpoint audit; null biểu thị trường chưa được chọn.
+				BoSachID: boSachID,
+				MonHocID: monHocID,
+				KhoiID: khoiID,
+				HocKy: hocKy,
 				ThumbnailURL: this.editedItem.ThumbnailURL,
 				ThumbnailURLs: JSON.stringify(this.editedItem.ThumbnailURLs),
 				TinhTrang: this.editedItem.TinhTrang || 'Private',
@@ -431,8 +444,9 @@
 
 			const params = this.buildSaveParams()
 			const message = this.isEditMode ? 'Cập nhật học liệu thành công' : 'Thêm học liệu thành công'
+			const auditContext = this.createAuditContext(this.isEditMode ? 'Cập nhật học liệu' : 'Tạo học liệu')
 			try {
-				await fetchPromise('lms/FP_HocLieu_Save', params, { cache: false })
+				await fetchPromise('lms/FP_HocLieu_Save_Audited', { ...params, ...auditContext }, { cache: false })
 				this.snackbarRef.value.showSnackbar({ message, color: 'success' })
 				this.dialog = false
 				await this.getHocLieu()
@@ -462,8 +476,10 @@
 				await this.deleteStoredThumbnailFiles(this.getThumbnailUrls(item))
 
 				// 2. Chỉ khi xóa file vật lý không bị lỗi mới xóa bản ghi trong CSDL
-				await fetchPromise('lms/FP_HocLieu_Delete', {
+				const auditContext = this.createAuditContext(`Xóa học liệu: ${String(item.TenHocLieu || '').slice(0, 100)}`)
+				await fetchPromise('lms/FP_HocLieu_Delete_Audited', {
 					HocLieuID: this.toNullableInt(item.HocLieuID),
+					...auditContext,
 				}, { cache: false })
 				this.snackbarRef.value.showSnackbar({ message: 'Xóa học liệu thành công', color: 'success' })
 				await this.getHocLieu()

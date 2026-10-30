@@ -569,8 +569,26 @@ function isMonHocConvertWithStar(currentMonHocID) {
     const arrMonHoc = [36, 37, 38, 40, 41, 42, 43, 106]
     return arrMonHoc.includes(currentMonHocID)
 }
-async function exportExcel() {
-    const headers = vueData.columnHeader.map(x => x.name)
+function openExportColumnsDialog() {
+    const columns = (vueData.columnHeader || []).filter(column => column?.name)
+    vueData.exportColumnsDialog.columns = columns.map(column => ({
+        name: column.name,
+        title: column.title || column.name
+    }))
+    // Mỗi lần mở hộp chọn đều bắt đầu với toàn bộ cột của bảng hiện tại.
+    vueData.exportColumnsDialog.selectedColumns = vueData.exportColumnsDialog.columns.map(column => column.name)
+    vueData.exportColumnsDialog.show = true
+}
+async function confirmExportColumns() {
+    const selectedColumns = vueData.exportColumnsDialog.selectedColumns || []
+    if (!selectedColumns.length) return
+    await exportExcel(selectedColumns)
+}
+async function exportExcel(selectedColumnNames) {
+    const availableHeaders = (vueData.columnHeader || []).map(x => x.name).filter(Boolean)
+    const selectedSet = new Set(selectedColumnNames || availableHeaders)
+    const headers = availableHeaders.filter(name => selectedSet.has(name))
+    if (!headers.length) return
     await processBeforeExport()
     const data = vueData.DataExcel.map(item =>
         headers.map(h => item[h] ?? "")
@@ -579,6 +597,7 @@ async function exportExcel() {
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
     XLSX.writeFile(workbook, `Bang_Diem_Lop${vueData.LopItem.TenLop}_${vueData.MonHocItem.MonHocName}.xlsx`)
+    vueData.exportColumnsDialog.show = false
 }
 function processBeforeExport() {
     vueData.DataExcel = []
@@ -734,6 +753,8 @@ function onKhoaCotDiem() {
 vueData.onKhoaCotDiem = onKhoaCotDiem
 vueData.isMonHocConvertWithStar = isMonHocConvertWithStar
 vueData.exportExcel = exportExcel
+vueData.openExportColumnsDialog = openExportColumnsDialog
+vueData.confirmExportColumns = confirmExportColumns
 vueData.reloadBangDiem = reloadBangDiem
 vueData.isExistThemeHas_TA2 = isExistThemeHas_TA2
 vueData.onGetLayDiemThemeTest = onGetLayDiemThemeTest

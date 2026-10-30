@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-26T02:52:53.647Z",
+  "fetchedAt": "2026-10-30T02:26:45.462Z",
   "tables": [
     "CREATE TABLE ChucTrach (ChucTrachID int(4) NOT NULL PRIMARY KEY IDENTITY,ChucTrach nvarchar(50) NULL,LoaiID int(4) NULL,Sort int(4) NULL);",
     "CREATE TABLE Decision (Decision_ID int(4) NOT NULL PRIMARY KEY IDENTITY,Decision_SoQD nvarchar(50) NULL,Decision_NgayQD varchar(2) NULL,Decision_ThangQD varchar(2) NULL,Decision_NamQD varchar(4) NULL,Decision_TieuDe nvarchar(500) NULL,Decision_NganhID int(4) NULL,Decision_Nganh nvarchar(200) NULL,Decision_NienKhoa nvarchar(20) NULL,Decision_Dot nvarchar(10) NULL,Decision_MaSo nvarchar(50) NULL,Decision_Type nvarchar(20) NULL,Decision_Description nvarchar(max) NULL,DecisionFile_ID nvarchar(50) NULL,DecisionFile_Url nvarchar(500) NULL,DecisionFile_Name nvarchar(255) NULL,Decision_TemplateID tinyint(1) NULL,Decision_Status tinyint(1) NOT NULL,Created_By varchar(20) NULL,Created_At datetime(8) NULL,Updated_By varchar(20) NULL,Updated_At datetime(8) NULL,HoiDong_ID int(4) NULL);",

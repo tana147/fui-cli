@@ -839,8 +839,12 @@
 			const students = responses.flatMap(response => this.flattenRows(response))
 				.map(student => ({
 					...student,
+					Ho: this.cleanSheetValue(student.Ho),
+					Ten: this.cleanSheetValue(student.Ten),
 					HoTen: this.cleanSheetValue(student.HoTen || `${student.Ho || ''} ${student.Ten || ''}`),
-					SoTT: Number(student.SoTT) || 0,
+					SoTT: student.SoTT === null || student.SoTT === undefined || String(student.SoTT).trim() === ''
+						? null
+						: Number(student.SoTT),
 					SoDanhBo: this.cleanSheetValue(student.SoDanhBo),
 					HocSinhID: student.HocSinhID || student.HocSinhId || student.StudentID || ''
 				}))
@@ -850,26 +854,33 @@
 					seen.add(uniqueKey)
 					return true
 				})
-			const hasAnySoDanhBo = students.some(student => Boolean(student.SoDanhBo))
-			const getStudentTen = student => this.cleanSheetValue(student.Ten)
-			// Nếu cả lớp không có Số danh bộ, dùng đúng cột Ten làm thứ tự chính.
-			if (!hasAnySoDanhBo) {
-				return students.sort((a, b) => getStudentTen(a).localeCompare(getStudentTen(b), 'vi'))
+			// Đồng bộ 100% quy tắc sắp xếp danh sách học sinh với màn hình nhập điểm (nhap-diem / spAPI_HocSinhBangDiem_Get_ByMonHocID_MaNhom):
+			// - Với lớp đơn hoặc nhóm đơn (lopIds.length <= 1): giữ nguyên đúng thứ tự đã được API SQL Server
+			//   (spAPI_HocSinhLop_Get_ByLopID / spAPI_HocSinhNhom_Get_ByNhomID) sort sẵn theo đúng quy tắc của nhap-diem,
+			//   không sort lại bằng JavaScript trên frontend (y hệt DataProcessor.processStudentList của nhap-diem).
+			if (lopIds.length <= 1) {
+				return students
 			}
 
-			// Nếu chỉ một vài học sinh thiếu Số danh bộ (ví dụ mới chuyển lớp),
-			// không để các em đó làm thay đổi thứ tự Số danh bộ của cả lớp:
-			// các dòng có SDB sort tăng dần, dòng thiếu SDB xuống cuối và sort nội bộ theo Ten.
+			// - Riêng trường hợp lớp gộp nhiều LopID ở cấp 3 (ví dụ gộp 10A1 + 10A2 thành 10A):
+			//   kết hợp dữ liệu từ 2 lần gọi API rồi sort theo đúng collation SQL_Latin1_General_CP1_CI_AS của SQL Server
+			//   (tương đương Intl.Collator('en-US', { sensitivity: 'accent' })):
+			//   nếu có bất kỳ học sinh nào thiếu SoDanhBo thì sort toàn bộ theo Ten -> Ho; ngược lại sort theo SoDanhBo -> Ten -> Ho.
+			const sqlCollator = new Intl.Collator('en-US', { sensitivity: 'accent' })
+			const compareByTenHo = (a, b) => {
+				const tenOrder = sqlCollator.compare(a.Ten || '', b.Ten || '')
+				if (tenOrder !== 0) return tenOrder
+				return sqlCollator.compare(a.Ho || '', b.Ho || '')
+			}
+
+			const hasSoDanhBoNull = students.some(student => !student.SoDanhBo)
+			if (hasSoDanhBoNull) {
+				return students.sort(compareByTenHo)
+			}
 			return students.sort((a, b) => {
-				if (!a.SoDanhBo && !b.SoDanhBo) return getStudentTen(a).localeCompare(getStudentTen(b), 'vi')
-				if (!a.SoDanhBo) return 1
-				if (!b.SoDanhBo) return -1
-				const numberA = Number(a.SoDanhBo)
-				const numberB = Number(b.SoDanhBo)
-				if (Number.isFinite(numberA) && Number.isFinite(numberB) && numberA !== numberB) return numberA - numberB
-				const danhBoOrder = a.SoDanhBo.localeCompare(b.SoDanhBo, 'vi', { numeric: true, sensitivity: 'base' })
-				if (danhBoOrder) return danhBoOrder
-				return getStudentTen(a).localeCompare(getStudentTen(b), 'vi')
+				const danhBoOrder = sqlCollator.compare(a.SoDanhBo || '', b.SoDanhBo || '')
+				if (danhBoOrder !== 0) return danhBoOrder
+				return compareByTenHo(a, b)
 			})
 		},
 		async buildExportPayload() {

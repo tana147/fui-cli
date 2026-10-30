@@ -25,7 +25,7 @@
     "menu": false,
     "menuLeft": [
       {
-        "name": "Học liệu số",
+        "name": "Học liệu số ",
         "icon": "mdi-book-multiple-outline",
         "submenu": [
           {
@@ -88,11 +88,11 @@
         }
       },
       {
-        "name": "Giao bài",
+        "name": "Giao bài - Assignments",
         "icon": "mdi-notebook-edit-outline",
         "submenu": [
           {
-            "name": "Giao bài",
+            "name": "Giao bài - Assignments",
             "url": "/lms-teacher-dashboard"
           },
           {
@@ -118,7 +118,7 @@
         }
       },
       {
-        "name": "Sổ GVCN",
+        "name": "Sổ GVCN - Homeroom",
         "icon": "mdi-human-male-board",
         "url": "/so-gvcn",
         "right": {
@@ -131,7 +131,7 @@
         }
       },
       {
-        "name": "Sổ điểm",
+        "name": "Sổ điểm - Gradebook",
         "icon": "mdi-human-male-board",
         "url": "/gv-xuat-so-theo-doi",
         "right": {
@@ -205,6 +205,20 @@
             }
           }
         ]
+      },
+      {
+        "name": "15 phút tự quản đầu giờ",
+        "icon": "mdi-clock-check-outline",
+        "url": "/tu-quan-15-phut",
+        "right": {
+          "SystemRight": [
+            1,
+            3,
+            4,
+            5,
+            9
+          ]
+        }
       },
       {
         "name": "Cấp 1 - Giáo viên",

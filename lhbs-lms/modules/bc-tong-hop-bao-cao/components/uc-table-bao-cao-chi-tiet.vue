@@ -4,16 +4,34 @@
 			Báo cáo chi tiết
 			<v-chip v-if="BaoCaoSelected" class="ml-2" size="small">{{BaoCaoSelected?.TenBaoCao}}</v-chip>
 			<v-spacer />
-			<v-btn v-if="IsActionPermission" size="small" icon="mdi-plus" @click="onOpenDialog" />
+			<!-- Mỗi niên khóa cần bộ chi tiết riêng; thao tác này giữ nguyên các dòng lịch sử và dữ liệu đã chốt. -->
+			<v-btn v-if="IsActionPermission && BaoCaoSelected && hasMissingCurrentYearRows" size="small" variant="outlined"
+				:loading="isGeneratingRows" :disabled="isGeneratingRows" @click="ensureCurrentYearRows(true)">
+				Tạo {{vueData.NienKhoa}}-{{Number(vueData.NienKhoa) + 1}}
+			</v-btn>
+			<!-- Dòng các niên khóa cũ được ẩn mặc định để bảng tập trung vào năm hiện tại, nhưng vẫn có thể mở khi cần tra cứu. -->
+			<v-btn v-if="historicalBaoCaoChiTiets.length" size="small" variant="text"
+				@click="showHistoricalRows = !showHistoricalRows">
+				{{showHistoricalRows ? 'Ẩn lịch sử' : 'Xem lịch sử (' + historicalBaoCaoChiTiets.length + ')'}}
+			</v-btn>
+			<v-btn v-if="IsActionPermission" size="small" icon="mdi-plus" :disabled="isGeneratingRows" @click="onOpenDialog" />
 		</v-card-title>
 	</v-card>
-	<v-data-table :headers="headerBaoCaoChiTiets" :items="itemBaoCaoChiTiets" hide-default-footer :items-per-page="-1">
+	<!-- Chỉ hiện niên khóa hiện tại lúc đầu; các dòng cũ chỉ thêm vào bảng sau khi người dùng mở lịch sử. -->
+	<v-data-table :headers="headerBaoCaoChiTiets" :items="visibleBaoCaoChiTiets" hide-default-footer :items-per-page="-1">
+		<template #item.NienKhoa="{item}">
+			<v-chip size="small" class="text-primary">{{renderNienKhoa(item.NienKhoa)}}</v-chip>
+		</template>
 		<template #item.NgayNguoiChot="{item}">
 			<p v-if="item.NguoiChot" class="text-caption text-italic">Người chốt: {{item.NguoiChot}}</p>
 			<p v-if="item.NgayChot" class="text-caption text-italic">Thời gian chốt: {{item.NgayChot}}</p>
 		</template>
 		<template #item.HocKi="{item}">
 			<v-chip size="small" class="text-primary">{{renderHocKi(item)}}</v-chip>
+		</template>
+		<!-- URL cũ có thể chưa lưu niên khóa; hiển thị URL đã gắn niên khóa của chính dòng báo cáo. -->
+		<template #item.Url_BaoCao="{item}">
+			{{getUrlForRow(item)}}
 		</template>
 		<template #item.JSON_BaoCao="{item}">
 			<v-chip color="blue" size="small" @click="onCopy(item)">
@@ -155,17 +173,130 @@
 				isShowDialogNienKhoa: false,
 				DSNienKhoa: [],
 				NienKhoaSelected: null,
-				UrlBaoCaoDangMo: ''
+				UrlBaoCaoDangMo: '',
+				isGeneratingRows: false,
+				pendingBaoCaoID: null,
+				showHistoricalRows: false
+			}
+		},
+		computed: {
+			// Nút tạo chỉ hiện khi danh sách chưa có đủ các học kì của niên khóa đang dùng.
+			hasMissingCurrentYearRows() {
+				const nienKhoa = Number(this.vueData.NienKhoa)
+				return Number.isInteger(nienKhoa) && this.getRowsToGenerate(this.itemBaoCaoChiTiets, nienKhoa).length > 0
+			},
+			// Tách năm hiện tại khỏi lịch sử để chế độ mặc định không trộn các báo cáo cũ vào bảng.
+			historicalBaoCaoChiTiets() {
+				const nienKhoa = Number(this.vueData.NienKhoa)
+				return (this.itemBaoCaoChiTiets || []).filter(item => Number(item.NienKhoa) !== nienKhoa)
+			},
+			visibleBaoCaoChiTiets() {
+				const rows = this.itemBaoCaoChiTiets || []
+				// API trả theo thứ tự ID; sắp kỳ điểm theo trình tự học vụ trước rồi mới đến các kiểu kỳ khác.
+				const periodOrder = ["GK_HK1", "CK_HK1", "GK_HK2", "CK_HK2", "HK1", "HK2", "CaNam"]
+				const sortRows = source => [...source].sort((a, b) => {
+					const yearDifference = Number(b.NienKhoa || 0) - Number(a.NienKhoa || 0)
+					if (yearDifference) return yearDifference
+					const periodIndex = value => {
+						const index = periodOrder.indexOf(value)
+						return index < 0 ? periodOrder.length : index
+					}
+					return periodIndex(a.HocKi) - periodIndex(b.HocKi)
+						|| Number(a.BaoCao_ChiTietID || 0) - Number(b.BaoCao_ChiTietID || 0)
+				})
+				if (this.showHistoricalRows) {
+					const nienKhoa = Number(this.vueData.NienKhoa)
+					const currentRows = rows.filter(item => Number(item.NienKhoa) === nienKhoa)
+					const historicalRows = rows.filter(item => Number(item.NienKhoa) !== nienKhoa)
+					return sortRows(currentRows).concat(sortRows(historicalRows))
+				}
+				return sortRows(rows.filter(item => Number(item.NienKhoa) === Number(this.vueData.NienKhoa)))
 			}
 		},
 		watch: {
 			"BaoCaoSelected.BaoCaoID": function (bc) {
+				this.showHistoricalRows = false
 				this.onLoadHK()
+				// Mỗi báo cáo được kiểm tra và tạo các học kì còn thiếu ngay khi chọn, để năm mới không chỉ hiện qua một nút thủ công.
+				if (bc) this.ensureCurrentYearRows()
 			}
 		},
 		methods: {
 			onOpenDialog() {
 				this.isShowDialogAdd = true
+			},
+			// Lấy các học kì từ niên khóa gần nhất; JSON và thông tin chốt không được sao chép sang năm mới.
+			getRowsToGenerate(rows, nienKhoa) {
+				const priorYears = (rows || []).map(item => Number(item.NienKhoa))
+					.filter(year => Number.isInteger(year) && year < nienKhoa)
+				if (!priorYears.length) return []
+
+				const templateYear = Math.max(...priorYears)
+				const templatesByHocKi = {}
+				;(rows || []).forEach(item => {
+					if (Number(item.NienKhoa) === templateYear && item.HocKi && !templatesByHocKi[item.HocKi]) {
+						templatesByHocKi[item.HocKi] = item
+					}
+				})
+
+				const existingHocKi = new Set((rows || [])
+					.filter(item => Number(item.NienKhoa) === nienKhoa)
+					.map(item => item.HocKi))
+				return Object.keys(templatesByHocKi)
+					.filter(hocKi => !existingHocKi.has(hocKi))
+					.map(hocKi => templatesByHocKi[hocKi])
+			},
+			async ensureCurrentYearRows(isManualRetry) {
+				const nienKhoa = Number(this.vueData.NienKhoa)
+				const baoCaoID = this.BaoCaoSelected?.BaoCaoID
+				if (!baoCaoID || !this.IsActionPermission) return
+
+				// Nếu người dùng đổi báo cáo giữa lúc đang tạo, xếp lượt kiểm tra mới để báo cáo vừa chọn cũng được khởi tạo.
+				if (this.isGeneratingRows) {
+					this.pendingBaoCaoID = baoCaoID
+					return
+				}
+
+				if (!Number.isInteger(nienKhoa) || nienKhoa <= 0) {
+					if (isManualRetry) Vue.$toast.error('Không xác định được niên khóa hiện tại', { position: 'top' })
+					return
+				}
+
+				this.isGeneratingRows = true
+				try {
+					// Đọc lại từ server trước khi ghi để lần tạo tự động có thể chạy lặp mà không nhân đôi học kì.
+					const latestRows = await ajaxCALLPromise('lms/BaoCao_TongHop_Get_ByBaoCaoID', { BaoCaoID: baoCaoID })
+					const latestRowsToGenerate = this.getRowsToGenerate(latestRows, nienKhoa)
+					if (!latestRowsToGenerate.length) {
+						if (isManualRetry) showMessage({ title: 'Thông báo', message: 'Các học kì của niên khóa này đã được tạo.' })
+						return
+					}
+
+					// Chỉ sao chép mẫu học kì từ năm trước; JSON và thông tin chốt luôn để trống cho năm mới.
+					for (const template of latestRowsToGenerate) {
+						await ajaxCALLPromise('lms/BaoCao_TongHop_Ins_ByBaoCaoID', {
+							BaoCaoID: baoCaoID,
+							HocKi: template.HocKi,
+							Url_BaoCao: this.buildUrlWithNienKhoa(template.Url_BaoCao, nienKhoa),
+							JSON_BaoCao: null,
+							TenBaoCao_ChiTiet: template.TenBaoCao_ChiTiet || '',
+							NienKhoa: nienKhoa
+						})
+					}
+
+					this.$emit('onAddFinnish')
+					Vue.$toast.success('Đã tạo ' + latestRowsToGenerate.length + ' dòng cho niên khóa ' + nienKhoa + '-' + (nienKhoa + 1), { position: 'top' })
+				} catch (error) {
+					this.$emit('onAddFinnish')
+					Vue.$toast.error('Không tạo hết được chi tiết báo cáo. Tải lại danh sách rồi thử lại để chỉ tạo phần còn thiếu.', { position: 'top' })
+				} finally {
+					this.isGeneratingRows = false
+					const pendingBaoCaoID = this.pendingBaoCaoID
+					this.pendingBaoCaoID = null
+					if (pendingBaoCaoID && pendingBaoCaoID !== baoCaoID && this.BaoCaoSelected?.BaoCaoID === pendingBaoCaoID) {
+						this.$nextTick(() => this.ensureCurrentYearRows())
+					}
+				}
 			},
 			onLoadHK() {
 				let DSHocKi = []
@@ -184,8 +315,8 @@
 				]
 				this.DSHocKi = [...hk_c1, ...hk_c2_c3, ...hk_ca_nam]
 			},
-			async onAdd() {
-				const form = await this.$refs.formAdd
+			onAdd() {
+				const form = this.$refs.formAdd
 				if (form.validate()) {
 					ajaxCALLPromise("lms/BaoCao_TongHop_Ins_ByBaoCaoID", {
 						BaoCaoID: this.BaoCaoSelected.BaoCaoID,
@@ -201,8 +332,8 @@
 					})
 				}
 			},
-			async onEdit() {
-				const form = await this.$refs.formEdit
+			onEdit() {
+				const form = this.$refs.formEdit
 				if (form.validate()) {
 					ajaxCALLPromise("lms/BaoCao_TongHop_Upd_ByBaoCao_ChiTietID", {
 						BaoCao_ChiTietID: this.formEdit.BaoCao_ChiTietID,
@@ -221,46 +352,89 @@
 				const hk = this.DSHocKi.find(x => x.textValue == bc.HocKi)
 				return hk?.title ?? ''
 			},
+			renderNienKhoa(nienKhoa) {
+				if (nienKhoa == null || nienKhoa === '') return ''
+				const year = Number(nienKhoa)
+				return Number.isInteger(year) ? year + ' - ' + (year + 1) : ''
+			},
 			onCopy(bc) {
 				navigator.clipboard.writeText(bc.JSON_BaoCao)
 				Vue.$toast.success("Sao chép JSON thành công", { position: "top" })
 			},
 			onRedirectPage(bc) {
 				if (this.isThongKeChatLuongBoMonUrl(bc?.Url_BaoCao)) {
-					this.onOpenDialogNienKhoa(bc?.Url_BaoCao)
+					const urlNienKhoa = this.getNienKhoaFromUrl(bc?.Url_BaoCao)
+					if (urlNienKhoa) {
+						// URL đã chốt niên khóa nên mở thẳng, tránh hỏi lại đúng giá trị đang có trong link.
+						this.openByIframeRef(this.buildUrlWithNienKhoa(bc?.Url_BaoCao, urlNienKhoa))
+						return
+					}
+					this.onOpenDialogNienKhoa(bc?.Url_BaoCao, this.getTargetNienKhoa(bc))
 					return
 				}
-				const finalUrl = this.buildUrlWithNienKhoa(bc?.Url_BaoCao, vueData.NienKhoa)
+				const finalUrl = this.buildUrlWithNienKhoa(bc?.Url_BaoCao, this.getTargetNienKhoa(bc))
 				this.openByIframeRef(finalUrl)
+			},
+			getNienKhoaFromUrl(url) {
+				if (!url) return null
+
+				try {
+					const value = new URL(url, window.location.origin).searchParams.get('nienkhoa')
+					const year = Number(value)
+					return Number.isInteger(year) && year > 0 ? year : null
+				} catch {
+					const match = String(url).match(/(?:[?&])nienkhoa=(\d+)(?:[&#]|$)/i)
+					return match ? Number(match[1]) : null
+				}
+			},
+			getTargetNienKhoa(bc) {
+				const rowNienKhoa = Number(bc?.NienKhoa)
+				return Number.isInteger(rowNienKhoa) && rowNienKhoa > 0
+					? rowNienKhoa
+					: Number(vueData.NienKhoa)
+			},
+			getUrlForRow(bc) {
+				return this.buildUrlWithNienKhoa(bc?.Url_BaoCao, this.getTargetNienKhoa(bc))
 			},
 			isThongKeChatLuongBoMonUrl(url) {
 				return String(url || '').toLowerCase().includes('thong-ke-chat-luong-bo-mon')
 			},
-			async onOpenDialogNienKhoa(url) {
+			onOpenDialogNienKhoa(url, preferredNienKhoa) {
 				this.UrlBaoCaoDangMo = url || ''
-				await this.onLoadNienKhoa()
-				this.isShowDialogNienKhoa = true
+				this.NienKhoaSelected = null
+				this.onLoadNienKhoa(preferredNienKhoa).then(() => {
+					this.isShowDialogNienKhoa = true
+				})
 			},
-			async onLoadNienKhoa() {
+			onLoadNienKhoa(preferredNienKhoa) {
 				if (this.DSNienKhoa.length) {
-					this.setDefaultNienKhoa()
-					return
+					this.setDefaultNienKhoa(preferredNienKhoa)
+					return Promise.resolve()
 				}
 
-				const res = await fetchPromise('lms/NienKhoa_Get', {})
-				const unique = [...new Map((res ?? []).map(item => [item.NienKhoa, item])).values()]
-				this.DSNienKhoa = unique.map(item => ({
-					...item,
-					label: `${item.NienKhoa} - ${item.NienKhoa + 1}`
-				}))
-				this.setDefaultNienKhoa()
+				return fetchPromise('lms/NienKhoa_Get', {}).then(res => {
+					const unique = [...new Map((res ?? []).map(item => [item.NienKhoa, item])).values()]
+					this.DSNienKhoa = unique.map(item => ({
+						...item,
+						label: item.NienKhoa + ' - ' + (Number(item.NienKhoa) + 1)
+					}))
+					this.setDefaultNienKhoa(preferredNienKhoa)
+				})
 			},
-			setDefaultNienKhoa() {
+			setDefaultNienKhoa(preferredNienKhoa) {
+				const preferred = Number(preferredNienKhoa)
+				const preferredItem = Number.isInteger(preferred)
+					? this.DSNienKhoa.find(item => Number(item.NienKhoa) === preferred)
+					: null
+				if (preferredItem) {
+					this.NienKhoaSelected = preferredItem
+					return
+				}
 				if (this.NienKhoaSelected) return
 
 				const nienKhoaHienTai = Number(vueData.NienKhoa)
 				this.NienKhoaSelected =
-					this.DSNienKhoa.find(item => item.NienKhoa === nienKhoaHienTai) ??
+					this.DSNienKhoa.find(item => Number(item.NienKhoa) === nienKhoaHienTai) ??
 					this.DSNienKhoa.find(item => item.IsActive) ??
 					this.DSNienKhoa[0] ??
 					null
@@ -296,10 +470,12 @@
 				try {
 					const parsed = new URL(url, window.location.origin)
 					parsed.searchParams.set('nienkhoa', nienKhoa)
+					// Đồng bộ tham số nk cũ để một đường dẫn không trỏ tới hai niên khóa khác nhau.
+					if (parsed.searchParams.has('nk')) parsed.searchParams.set('nk', nienKhoa)
 					return parsed.pathname + parsed.search + parsed.hash
 				} catch {
 					const splitChar = url.includes('?') ? '&' : '?'
-					return `${url}${splitChar}nienkhoa=${nienKhoa}`
+					return url + splitChar + 'nienkhoa=' + encodeURIComponent(nienKhoa)
 				}
 			},
 			onOpenDialogUpdate(bc) {

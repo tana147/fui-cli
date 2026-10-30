@@ -9,7 +9,8 @@
           "prop": ":no-gutters='true'",
           "cols": [
             {
-              "el": "uc-main-layout"
+              "el": "uc-main-layout",
+              "w": "12"
             }
           ]
         }

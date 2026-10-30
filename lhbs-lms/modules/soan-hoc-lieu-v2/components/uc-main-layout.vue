@@ -171,7 +171,7 @@
 			</div>
 		</div>
 		<!-- THÊM: Tích hợp Dialog vào đây -->
-		<uc-noi-dung-dialog v-model:is-open="isDialogOpen" :item="editingItem"
+		<uc-noi-dung-dialog ref="contentDialog" v-model:is-open="isDialogOpen" :item="editingItem" :saving="isSavingItem"
 			:resource-context="{ KhoiID: selectedKhoi, MonHocID: selectedMon, BoSachID: selectedBoSach }"
 			@save="onSaveItem" @refresh-tree="fetchTreeNoiDung" @update-item="editingItem = $event" />
 		<!-- Dùng component global để luồng import thống nhất; ảnh được lưu thành node IMAGE riêng. -->
@@ -210,6 +210,7 @@
 			},
 			// THÊM: State để quản lý dialog
 			isDialogOpen: false,
+			isSavingItem: false,
 			isThongKeDialogOpen: false,
 			editingItem: null,
 			isImportContentDialogOpen: false,
@@ -276,6 +277,17 @@
 		}
 	},
 		methods: {
+			// UUID chung giúp các lời gọi lưu liên quan được gom thành một thao tác trên báo cáo.
+			createAuditContext(operationName) {
+				const bytes = window.crypto?.getRandomValues
+					? window.crypto.getRandomValues(new Uint8Array(16))
+					: Uint8Array.from({ length: 16 }, () => Math.floor(Math.random() * 256));
+				bytes[6] = (bytes[6] & 0x0f) | 0x40;
+				bytes[8] = (bytes[8] & 0x3f) | 0x80;
+				const hex = Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('');
+				const OperationID = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+				return { OperationID, OperationName: operationName, SourceModule: 'soan-hoc-lieu-v2' };
+			},
 			getUrlSelectionId(paramName) {
 				if (typeof window === 'undefined') return null;
 				const params = new URLSearchParams(window.location.search || '');
@@ -475,47 +487,81 @@
 			this.isDialogOpen = true;
 		},
 
-		// HÀM MỚI: Xử lý sự kiện save từ dialog, hỗ trợ lưu nhiều câu một lần
-			async onSaveItem(payload) {
-				const itemsToSave = Array.isArray(payload) ? payload : [payload];
-				if (!itemsToSave.length) return;
-				console.log("Dữ liệu nhận từ dialog để lưu:", itemsToSave);
-				this.isDialogOpen = false;
-				let successCount = 0;
+		getSaveErrorMessage(error) {
+			const response = error?.response?.data;
+			const candidates = [response?.Message, response?.message, response?.Error, response?.error,
+				error?.Message, error?.message, typeof response === 'string' ? response : ''];
+			return candidates.find(value => typeof value === 'string' && value.trim()) || 'API không trả về mục đã lưu.';
+		},
+		cleanSheetValue(value) {
+			if (value == null) return '';
+			if (typeof value === 'string') return value;
+			if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+			return '';
+		},
+		// Các luồng tạo/sửa và import Content Hub đều phải nhận lại NoiDungID mới được báo thành công.
+		requireSavedContentNode(response) {
+			const result = response?.data ?? response?.result ?? response;
+			const saved = Array.isArray(result) ? result[0] : result;
+			const apiError = saved && (
+				saved.Success === false || saved.success === false ||
+				saved.Error || saved.error || saved.Status === 'ERROR'
+			);
+			const savedId = saved?.NoiDungID ?? saved?.noidungid;
+			if (apiError || !savedId) throw new Error(this.getSaveErrorMessage(saved));
+			return saved;
+		},
 
+		// Chỉ đóng dialog sau khi API xác nhận lưu để giữ nguyên HTML đã dán nếu yêu cầu thất bại.
+		async onSaveItem(payload) {
+			if (this.isSavingItem) return;
+			const itemsToSave = Array.isArray(payload) ? payload : [payload];
+			if (!itemsToSave.length) return;
+			this.isSavingItem = true;
+			let successCount = 0;
+			let firstError = '';
+			const hasExistingNode = itemsToSave.some(item => Number(item?.NoiDungID) > 0) || Number(this.editingItem?.NoiDungID) > 0;
+			const itemName = String(itemsToSave[0]?.TenNoiDung || '').trim().slice(0, 90);
+			const operationName = itemsToSave.length > 1
+				? `Lưu ${itemsToSave.length} nội dung`
+				: `${hasExistingNode ? 'Cập nhật nội dung' : 'Tạo nội dung'}${itemName ? `: ${itemName}` : ''}`;
+			const auditContext = this.createAuditContext(operationName);
+
+			try {
 				for (const rawItem of itemsToSave) {
 					const item = { ...rawItem };
 					item.ParentID = item.ParentID ?? this.editingItem?.ParentID ?? 0;
-					if (itemsToSave.length > 1 || !this.editingItem?.NoiDungID) {
-						delete item.NoiDungID;
-					}
+					// Wrapper tAPI khai báo đủ tham số; gửi ID 0 tường minh để SP hiểu đây là bản ghi mới.
+					const existingNodeId = Number(item.NoiDungID) || Number(this.editingItem?.NoiDungID) || 0;
+					item.NoiDungID = itemsToSave.length > 1 ? 0 : existingNodeId;
+					if (typeof item.DataJson !== 'string') item.DataJson = JSON.stringify(item.DataJson ?? {});
 					try {
-						const res = await fetchPromise('lms/FP_NoiDung_Save', item, { cache: false });
-						const saved = Array.isArray(res) ? res[0] : res;
-						const apiError = saved && (
-							saved.Success === false || saved.success === false ||
-							saved.Error || saved.error || saved.Status === 'ERROR'
-						);
-						const savedId = saved?.NoiDungID ?? saved?.noidungid;
-						// SP trả lại bản ghi vừa lưu; không coi object lỗi/rỗng là lưu thành công.
-						if (apiError || !savedId) {
-							throw new Error(saved?.Message || saved?.message || saved?.Error || saved?.error || 'API không trả về mục đã lưu.');
-						}
+						const res = await fetchPromise('lms/FP_NoiDung_Save_Audited', { ...item, ...auditContext }, { cache: false });
+						this.requireSavedContentNode(res);
 						successCount++;
 					} catch (error) {
 						console.error('Lỗi khi lưu nội dung:', error);
+						if (!firstError) firstError = this.getSaveErrorMessage(error);
 					}
 				}
 
 				if (successCount === itemsToSave.length) {
 					this.notify(itemsToSave.length > 1 ? `Đã lưu thành công ${successCount} câu!` : "Đã lưu thành công!");
 				} else if (successCount > 0) {
-					this.notify(`Đã lưu ${successCount}/${itemsToSave.length} câu.`, "warning");
+					this.notify(`Đã lưu ${successCount}/${itemsToSave.length} câu. ${firstError}`, "warning");
 				} else {
-					this.notify("Lưu thất bại!", "error");
+					this.notify(`Lưu thất bại: ${firstError}`, "error");
 				}
-				if (successCount > 0) await this.fetchTreeNoiDung();
-			},
+				if (successCount > 0) {
+					// Đóng cả đợt khi đã lưu một phần để lần bấm sau không tạo trùng các câu thành công.
+					this.$refs.contentDialog?.clearDraft?.();
+					this.isDialogOpen = false;
+					await this.fetchTreeNoiDung();
+				}
+			} finally {
+				this.isSavingItem = false;
+			}
+		},
 
 			// Chỉ mở dialog và giữ lại node đích; component global chịu trách nhiệm tải/chọn tài liệu.
 			async onImportContent(targetNode) {
@@ -536,6 +582,7 @@
 				const targetNode = this.importContentTarget;
 				if (!document || !this.selectedHocLieu) return;
 				try {
+					const auditContext = this.createAuditContext('Nhập tài liệu từ Content Hub');
 					const parentId = targetNode?.NoiDungID || 0;
 					const siblingCount = targetNode ? (targetNode.children || []).length : this.treeNoiDung.length;
 					const contentType = this.getImportedContentType(document);
@@ -557,27 +604,25 @@
 						sourceHocLieuID: document.sourceTracking?.resourceId || null
 					};
 					// Import tạo node mới giống luồng Tạo tài liệu: bỏ NoiDungID để API tự tạo bản ghi mới.
-					const saveResult = await fetchPromise('lms/FP_NoiDung_Save', {
+					const saveResult = await fetchPromise('lms/FP_NoiDung_Save_Audited', {
+						NoiDungID: 0,
 						HocLieuID: this.selectedHocLieu.HocLieuID,
 						ParentID: parentId,
-						TenHocLieu: this.selectedHocLieu.TenHocLieu || '',
-						TenNoiDung: document.name || 'Tài liệu Content Hub',
+						TenHocLieu: this.cleanSheetValue(this.selectedHocLieu.TenHocLieu),
+						TenNoiDung: this.cleanSheetValue(document.name).trim() || 'Tài liệu Content Hub',
 						LoaiNoiDung: contentType,
 						NguonTaiNguyenCode: 'CONTENT_HUB',
 						ThuTu: siblingCount + 1,
 						User: this.vueData.user?.UserID,
-						DataJson: JSON.stringify(dataJson)
+						DataJson: JSON.stringify(dataJson),
+						...auditContext
 					}, { cache: false });
-					// Một số tAPI trả lỗi trong object thay vì reject Promise; không đóng giả thành công khi node chưa được tạo.
-					const saved = Array.isArray(saveResult) ? saveResult[0] : saveResult;
-					if (saved && (saved.Success === false || saved.success === false || saved.Error || saved.error)) {
-						throw new Error(saved.Message || saved.message || saved.Error || saved.error || 'API không tạo được nội dung.');
-					}
+					this.requireSavedContentNode(saveResult);
 					await this.fetchTreeNoiDung();
 					this.importContentTarget = null;
 					this.notify('Đã import tài liệu từ Content Hub.');
 				} catch (error) {
-					this.notify(error?.message || 'Import tài liệu thất bại.', 'error');
+					this.notify(`Import tài liệu thất bại: ${this.getSaveErrorMessage(error)}`, 'error');
 				}
 			},
 
@@ -653,12 +698,13 @@
 			async onImportContentQuestion(question) {
 				if (!question || !this.selectedHocLieu) return;
 				try {
+					const auditContext = this.createAuditContext('Nhập câu hỏi từ Content Hub');
 					const targetNode = this.importContentTarget;
 					const parentId = targetNode?.NoiDungID || 0;
 					const siblingCount = targetNode ? (targetNode.children || []).length : this.treeNoiDung.length;
 					const normalized = this.normalizeImportedQuestion(question);
 					const questionText = normalized.data.prompt || 'Câu hỏi từ Content Hub';
-					await fetchPromise('lms/FP_NoiDung_Save', {
+					const saveResult = await fetchPromise('lms/FP_NoiDung_Save_Audited', {
 						NoiDungID: 0,
 						HocLieuID: this.selectedHocLieu.HocLieuID,
 						ParentID: parentId,
@@ -673,12 +719,15 @@
 							sourceTracking: question.sourceTracking || {},
 							contentHubQuestionId: question.id || null,
 							originalType: normalized.originalType
-						})
+						}),
+						...auditContext
 					}, { cache: false });
+					this.requireSavedContentNode(saveResult);
 					await this.fetchTreeNoiDung();
+					this.importContentTarget = null;
 					this.notify('Đã import câu hỏi từ Content Hub.');
 				} catch (error) {
-					this.notify(error?.message || 'Import câu hỏi thất bại.', 'error');
+					this.notify(`Import câu hỏi thất bại: ${this.getSaveErrorMessage(error)}`, 'error');
 				}
 			},
 
@@ -770,17 +819,18 @@
 				const resources = [];
 				if (this.isSharedLinkedNodeData(data)) return resources;
 
-				// Video chỉ được lưu trên YouTube; phải xóa video YouTube trước khi xóa node.
+				// Chỉ coi là tài nguyên YouTube do LMS phát hành cần xóa nếu có metadata upload (fileName/fileSize/isUploaded) hoặc không có link ngoài.
+				// Nếu người dùng chỉ dán link YouTube (embed video ngoài từ YouTube), không được coi là tài nguyên cần xóa trên kênh YouTube của trường.
+				const isPastedExternalYoutube = Boolean(url && (/youtube\.com|youtu\.be/i.test(url)) && !data.fileName && !data.fileSize && !data.isUploaded);
 				const videoId = data.videoId || this.getYoutubeVideoId(url);
-				if (source === 'youtube' || videoId || /youtube\.com|youtu\.be/i.test(url)) {
-					if (!videoId) throw new Error(`Không tìm thấy videoId YouTube của mục "${node.TenNoiDung || node.NoiDungID}".`);
+				if (!isPastedExternalYoutube && videoId && (source === 'youtube' || data.fileName || data.isUploaded)) {
 					resources.push({ type: 'youtube', id: videoId, key: `youtube:${videoId}` });
 				}
 
-				// Canva chỉ là liên kết embed; driveFileId của Canva là design id, không phải file Google Drive.
-				const driveId = data.driveFileId || this.getGoogleDriveFileId(url);
-				if (source !== 'canva' && (source === 'ggdrive' || driveId || /drive\.google\.com|docs\.google\.com/i.test(url))) {
-					if (!driveId) throw new Error(`Không tìm thấy Google Drive file id của mục "${node.TenNoiDung || node.NoiDungID}".`);
+				// Tương tự, nếu là link Google Drive ngoài được dán vào (không phải upload hệ thống), không xóa file trên Drive của người khác.
+				const isPastedExternalDrive = Boolean(url && (/drive\.google\.com|docs\.google\.com/i.test(url)) && !data.driveFileId && !data.fileId);
+				const driveId = data.driveFileId || (!isPastedExternalDrive ? this.getGoogleDriveFileId(url) : null);
+				if (source !== 'canva' && !isPastedExternalDrive && driveId) {
 					resources.push({ type: 'google-drive', id: driveId, key: `google-drive:${driveId}` });
 				}
 
@@ -789,8 +839,6 @@
 				if (data.iSpringGUID) {
 					const iSpringGuid = String(data.iSpringGUID);
 					resources.push({ type: 'github-ispring', id: iSpringGuid, key: `github-ispring:${iSpringGuid}` });
-				} else if (data.iSpringURL) {
-					throw new Error(`Không tìm thấy iSpringGUID của mục "${node.TenNoiDung || node.NoiDungID}".`);
 				}
 
 				// File archive trong LMS (nếu có metadata fileId) cũng được dọn cùng node.
@@ -812,33 +860,46 @@
 				});
 			},
 			async deleteExternalResource(resource) {
-				if (resource.type === 'lms-file') {
-					if (!window.UploadManager?.deleteLmsFile) throw new Error('UploadManager chưa hỗ trợ xóa file LMS.');
-					const result = await window.UploadManager.deleteLmsFile(resource.id);
-					if (result === false) throw new Error(`Không thể xóa file LMS ${resource.id}.`);
-					return;
-				}
-				if (resource.type === 'github-ispring') {
-					const config = await fetchPromise('lms/FP_Github_Config_Get');
-					const { token, owner, repo, branch } = config || {};
-					if (!token || !owner || !repo || !branch) throw new Error('Thiếu cấu hình GitHub để xóa iSpring content.');
-					await this.deleteGithubResource(`content/${resource.id}`, { token, owner, repo, branch });
-					return;
-				}
+				try {
+					if (resource.type === 'lms-file') {
+						if (!window.UploadManager?.deleteLmsFile) {
+							console.warn('UploadManager chưa hỗ trợ xóa file LMS.');
+							return;
+						}
+						const result = await window.UploadManager.deleteLmsFile(resource.id);
+						if (result === false) console.warn(`Không thể xóa file LMS ${resource.id}.`);
+						return;
+					}
+					if (resource.type === 'github-ispring') {
+						const config = await fetchPromise('lms/FP_Github_Config_Get');
+						const { token, owner, repo, branch } = config || {};
+						if (!token || !owner || !repo || !branch) {
+							console.warn('Thiếu cấu hình GitHub để xóa iSpring content.');
+							return;
+						}
+						await this.deleteGithubResource(`content/${resource.id}`, { token, owner, repo, branch });
+						return;
+					}
 
-				const tokenResult = await fetchPromise('lms/FP_Youtube_Token_Get');
-				const accessToken = tokenResult?.access_token;
-				if (!accessToken) throw new Error('Không lấy được quyền truy cập tài nguyên bên thứ ba.');
+					const tokenResult = await fetchPromise('lms/FP_Youtube_Token_Get');
+					const accessToken = tokenResult?.access_token;
+					if (!accessToken) {
+						console.warn('Không lấy được quyền truy cập tài nguyên bên thứ ba.');
+						return;
+					}
 
-				const endpoint = resource.type === 'youtube'
-					? `https://www.googleapis.com/youtube/v3/videos?id=${encodeURIComponent(resource.id)}`
-					: `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(resource.id)}`;
-				const response = await fetch(endpoint, {
-					method: 'DELETE',
-					headers: { Authorization: `Bearer ${accessToken}` }
-				});
-				if (!response.ok && response.status !== 404) {
-					throw new Error(`Không thể xóa tài nguyên ${resource.id} bên thứ ba: ${response.statusText}.`);
+					const endpoint = resource.type === 'youtube'
+						? `https://www.googleapis.com/youtube/v3/videos?id=${encodeURIComponent(resource.id)}`
+						: `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(resource.id)}`;
+					const response = await fetch(endpoint, {
+						method: 'DELETE',
+						headers: { Authorization: `Bearer ${accessToken}` }
+					});
+					if (!response.ok && response.status !== 404 && response.status !== 403 && response.status !== 401) {
+						console.warn(`Không thể xóa tài nguyên ${resource.id} bên thứ ba: ${response.status} ${response.statusText}`);
+					}
+				} catch (e) {
+					console.warn(`Lỗi khi dọn tài nguyên ${resource.key}:`, e);
 				}
 			},
 			async deleteGithubResource(path, config) {
@@ -888,17 +949,25 @@
 						skippedSharedCount++;
 						continue;
 					}
-					await this.deleteExternalResource(resource);
+					try {
+						await this.deleteExternalResource(resource);
+					} catch (e) {
+						console.warn(`Không thể dọn tài nguyên ${resource.key}:`, e);
+					}
 				}
 				return { resourceCount: resources.length, skippedSharedCount };
 			},
-			// Xóa tài nguyên bên ngoài thành công trước, sau đó mới xóa node trong DB.
-			async deleteNodesAfterExternalCleanup(nodes) {
+			// Xóa tài nguyên bên ngoài thành công trước (best effort), sau đó mới xóa node trong DB.
+			async deleteNodesAfterExternalCleanup(nodes, auditContext) {
 				const nodesToDelete = this.flattenNodeTree(nodes);
-				await this.cleanupExternalResources(nodesToDelete);
+				try {
+					await this.cleanupExternalResources(nodesToDelete);
+				} catch (err) {
+					console.warn('Lỗi khi dọn tài nguyên bên ngoài:', err);
+				}
 				const rootIds = [...new Set(nodes.map(node => node?.NoiDungID).filter(Boolean))];
 				for (const id of rootIds) {
-					await fetchPromise('lms/FP_NoiDung_Delete', { NoiDungID: Number(id) }, { cache: false });
+					await fetchPromise('lms/FP_NoiDung_Delete_Audited', { NoiDungID: Number(id), ...auditContext }, { cache: false });
 				}
 			},
 			// HÀM MỚI: Xử lý sự kiện delete từ cây
@@ -909,7 +978,8 @@
 				if (!ok) return;
 				this.isLoadingTree = true;
 				try {
-					await this.deleteNodesAfterExternalCleanup([node]);
+					const auditContext = this.createAuditContext(`Xóa nội dung: ${String(node.TenNoiDung || '').slice(0, 100)}`);
+					await this.deleteNodesAfterExternalCleanup([node], auditContext);
 					this.notify("Đã xóa tài nguyên liên quan và nội dung thành công!");
 					await this.fetchTreeNoiDung();
 				} catch (error) {
@@ -952,7 +1022,8 @@
 				const allNodes = this.flattenNodeTree(this.treeNoiDung);
 				const nodeMap = new Map(allNodes.map(node => [String(node.NoiDungID), node]));
 				const rootNodes = allNodes.filter(node => selectedSet.has(String(node.NoiDungID)) && !this.hasSelectedAncestor(node, nodeMap, selectedSet));
-				await this.deleteNodesAfterExternalCleanup(rootNodes);
+				const auditContext = this.createAuditContext(`Xóa ${rootNodes.length} nhóm nội dung`);
+				await this.deleteNodesAfterExternalCleanup(rootNodes, auditContext);
 				this.selectedNodeIds = {};
 				this.notify(`Đã dọn tài nguyên và xóa thành công ${rootNodes.length} mục!`);
 				await this.fetchTreeNoiDung();
@@ -979,7 +1050,8 @@
 			if (!ok) return;
 			this.isLoadingTree = true;
 			try {
-				await this.deleteNodesAfterExternalCleanup(this.treeNoiDung);
+				const auditContext = this.createAuditContext('Xóa toàn bộ nội dung học liệu');
+				await this.deleteNodesAfterExternalCleanup(this.treeNoiDung, auditContext);
 				this.selectedNodeIds = {};
 				this.notify("Đã xóa toàn bộ nội dung thành công!");
 				await this.fetchTreeNoiDung();
@@ -1041,6 +1113,7 @@
 			node.DataJson = JSON.stringify(currentDataJson);
 
 			try {
+				const auditContext = this.createAuditContext(newTeacherOnly ? 'Bật chế độ chỉ giáo viên' : 'Tắt chế độ chỉ giáo viên');
 				const payload = {
 					NoiDungID: node.NoiDungID,
 					HocLieuID: this.selectedHocLieu.HocLieuID,
@@ -1050,7 +1123,7 @@
 					ThuTu: node.ThuTu,
 					DataJson: node.DataJson
 				};
-				await fetchPromise('lms/FP_NoiDung_Save', payload, { cache: false });
+				await fetchPromise('lms/FP_NoiDung_Save_Audited', { ...payload, ...auditContext }, { cache: false });
 				this.notify(newTeacherOnly ? 'Đã bật: Chỉ giáo viên xem (Ẩn với học sinh)' : 'Đã tắt: Hiển thị cho cả giáo viên và học sinh', 'success');
 				this.treeKey += 1;
 			} catch (err) {
@@ -1085,7 +1158,8 @@
 			flatten(newTree, null);
 
 			console.log("Dữ liệu gửi lên API UpdateTreeStructure:", JSON.stringify(dataToUpdate));
-				await fetchPromise('lms/FP_NoiDung_UpdateTreeStructure', { JsonData: JSON.stringify(dataToUpdate) }, { cache: false });
+				const auditContext = this.createAuditContext('Sắp xếp cây nội dung');
+				await fetchPromise('lms/FP_NoiDung_UpdateTreeStructure_Audited', { JsonData: JSON.stringify(dataToUpdate), ...auditContext }, { cache: false });
 				console.log("Cập nhật thành công!");
 		},
 		getTreeStats() {

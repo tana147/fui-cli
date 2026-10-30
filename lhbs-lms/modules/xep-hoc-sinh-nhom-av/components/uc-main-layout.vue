@@ -19,7 +19,8 @@
 								variant="outlined" color="blue" :disabled="NhomDetail === null" />
 							<v-btn text="Cập nhật số thứ tự" prepend-icon="mdi-sort-numeric-ascending"
 								@click="onUpdateSTT" variant="outlined" color="green" :disabled="NhomDetail === null" />
-							<v-btn text="Lấy học sinh từ Calen" prepend-icon="mdi-account-multiple-plus"
+							<!-- Chỉ cho phép lấy danh sách từ Calen khi nhóm đang chọn thuộc môn Tiếng Anh. -->
+							<v-btn v-if="isEnglishSubject" text="Lấy học sinh từ Calen" prepend-icon="mdi-account-multiple-plus"
 								@click="onImportHocSinhCalen" variant="outlined" color="deep-purple"
 								:disabled="NhomDetail === null" />
 						</v-col>
@@ -227,6 +228,12 @@
 				let str = 'Chuyển nhóm'
 				if (this.DSHocSinhSeleceted.length > 0) str += ` ${this.DSHocSinhSeleceted.length}`
 				return str
+			},
+			isEnglishSubject() {
+				// Tên môn hiển thị trên nhóm là căn cứ để ẩn chức năng Calen ở các môn khác.
+				const subjectName = String(this.NhomDetail?.TenMonHoc_HienThi || this.NhomDetail?.TenMonHoc || '')
+					.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+				return subjectName.includes('tieng anh') || /\benglish\b/.test(subjectName)
 			}
 		},
 		watch: {

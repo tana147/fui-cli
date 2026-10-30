@@ -1,193 +1,183 @@
 <template>
-	<div class="uc-tu-quan-15-phut pa-2 pa-sm-4">
-		<!-- Header Card -->
-		<v-card class="mb-2 mb-sm-3" elevation="1" rounded="lg">
-			<v-card-item class="py-2 py-sm-3 px-3 px-sm-4">
-				<div class="d-flex align-center flex-wrap ga-2 ga-sm-3">
-					<v-avatar color="primary" size="38" class="text-white flex-shrink-0">
-						<v-icon size="22">mdi-clock-check-outline</v-icon>
-					</v-avatar>
-					<div class="flex-grow-1">
-						<div class="text-subtitle-1 text-sm-h6 font-weight-bold text-primary d-flex align-center flex-wrap ga-1 ga-sm-2">
-							<span>15 phút tự quản đầu giờ</span>
-							<span class="text-caption text-medium-emphasis d-none d-sm-inline">(7:15 – 7:30)</span>
-							<v-chip size="x-small" color="primary" variant="tonal" class="font-weight-medium">2026 - 2027</v-chip>
+	<div class="uc-tu-quan-15-phut pa-2 pa-sm-3">
+		<!-- Header Card Tinh Gọn (Single Modern Card, không border thô) -->
+		<v-card class="mb-3 bg-white" elevation="0" rounded="lg" style="border: 1px solid #f1f5f9;">
+			<!-- Dòng 1: Tiêu đề + Bộ lọc Tuần & Khối + Nút thao tác -->
+			<div class="px-3 px-sm-4 py-2 d-flex align-center justify-space-between flex-nowrap ga-2 border-b" style="border-bottom-color: #f8fafc !important;">
+				<!-- Khối Trái: Icon + Tiêu đề + Bộ chọn Tuần & Khối -->
+				<div class="d-flex align-center flex-nowrap ga-2 ga-sm-3 flex-grow-1" style="min-width: 0;">
+					<div class="d-flex align-center ga-2 flex-shrink-0">
+						<v-icon size="20" color="primary">mdi-clock-check-outline</v-icon>
+						<div>
+							<div class="font-weight-bold text-subtitle-2 text-grey-darken-4" style="line-height: 1.2; font-size: 14px;">
+								15 Phút Tự Quản
+							</div>
+							<div class="text-caption text-medium-emphasis d-none d-md-block" style="font-size: 10.5px; line-height: 1;">
+								7:15 – 7:30 · Năm học 2026 - 2027
+							</div>
 						</div>
 					</div>
-					<div class="d-flex align-center ga-2">
-						<!-- Chip vai trò kèm menu đổi vai trò thử nghiệm phân quyền -->
-						<v-menu location="bottom end">
-							<template v-slot:activator="{ props }">
-								<v-chip
-									v-bind="props"
-									:color="currentRoleColor"
-									size="small"
-									:prepend-icon="currentRoleIcon"
-									append-icon="mdi-menu-down"
-									class="font-weight-medium text-white cursor-pointer px-3 elevation-1"
-									variant="flat"
-									title="Nhấn để đổi vai trò kiểm tra phân quyền"
-								>
-									{{ currentRoleName }}
-								</v-chip>
-							</template>
-							<v-card min-width="270" class="pa-2 rounded-lg" elevation="4">
-								<div class="d-flex align-center justify-space-between px-3 py-1">
-									<span class="text-caption font-weight-medium text-medium-emphasis">Phân quyền vai trò</span>
-									<v-chip size="x-small" color="primary" variant="tonal">FUI SystemRight</v-chip>
-								</div>
-								<v-divider class="my-1" />
-								<v-list density="compact" nav>
-									<v-list-item
-										v-for="r in userRoles"
-										:key="r.id"
-										:value="r.id"
-										:active="currentSystemRight === r.id"
-										:color="r.color"
-										@click="switchRole(r.id)"
-										class="rounded-lg mb-1"
-									>
-										<template v-slot:prepend>
-											<v-avatar size="28" :color="r.color" class="text-white me-2">
-												<v-icon size="16" color="white">{{ r.icon }}</v-icon>
-											</v-avatar>
-										</template>
-										<v-list-item-title class="font-weight-medium" style="font-size: 13px;">
-											{{ r.name }}
-										</v-list-item-title>
-										<v-list-item-subtitle style="font-size: 11px;">
-											{{ r.description }}
-										</v-list-item-subtitle>
-									</v-list-item>
-								</v-list>
-							</v-card>
-						</v-menu>
-					</div>
-				</div>
-			</v-card-item>
 
-			<!-- Main Navigation Tabs (Phân quyền theo vai trò - Chỉ hiển thị khi có từ 2 tab trở lên như BGH/Admin) -->
-			<v-divider v-if="hasMultipleTabs" />
-			<v-tabs v-if="hasMultipleTabs" :key="'tabs-' + currentSystemRight" v-model="activeTab" color="primary" grow density="comfortable">
-				<v-tab v-if="canAccessQuanSinh" value="quansinh" class="text-none font-weight-medium px-2 px-sm-4 text-caption text-sm-body-2">
-					<v-icon start size="18" class="me-1">mdi-clipboard-check-outline</v-icon>
-					<span class="d-none d-sm-inline">Quản sinh chấm điểm</span>
-					<span class="d-inline d-sm-none">Quản sinh</span>
-					<v-badge v-if="pendingCheckCount > 0" color="warning" :content="pendingCheckCount" inline class="ms-1" />
-				</v-tab>
-				<v-tab v-if="canAccessGvcn" value="gvcn" class="text-none font-weight-medium px-2 px-sm-4 text-caption text-sm-body-2">
-					<v-icon start size="18" class="me-1">mdi-calendar-clock-outline</v-icon>
-					<span class="d-none d-sm-inline">GVCN đăng kí lịch</span>
-					<span class="d-inline d-sm-none">Lịch GVCN</span>
-				</v-tab>
-				<v-tab v-if="canAccessBaoCao" value="baocao" class="text-none font-weight-medium px-2 px-sm-4 text-caption text-sm-body-2">
-					<v-icon start size="18" class="me-1">mdi-chart-box-outline</v-icon>
-					<span class="d-none d-sm-inline">Báo cáo & thi đua</span>
-					<span class="d-inline d-sm-none">Báo cáo</span>
-				</v-tab>
-			</v-tabs>
-
-			<!-- Filter Bar (Nằm bên dưới Tab chức năng) -->
-			<v-divider />
-			<div class="px-3 px-sm-4 pt-2 pt-sm-3 bg-grey-lighten-5" :class="activeTab === 'quansinh' ? 'pb-1' : 'pb-2 pb-sm-3'">
-				<!-- Row 1: Chọn Tuần (Thời khóa biểu), Khối, và Nút Làm Mới -->
-				<div class="d-flex align-center flex-wrap ga-2 ga-sm-3" :class="{ 'mb-2': activeTab === 'quansinh' }">
-					<!-- Chọn Tuần -->
-					<div class="d-flex align-center ga-1 flex-grow-1 flex-sm-grow-0 w-100 w-sm-auto" style="min-width: 0; max-width: 100%;">
-						<v-btn icon="mdi-chevron-left" variant="text" density="compact" :disabled="selectedWeekIndex <= 0" @click="prevWeek" />
+					<!-- Bộ chọn Tuần (Thời khóa biểu) hiển thị đầy đủ, không bị cắt dấu ba chấm -->
+					<div class="d-flex align-center ga-0.5 week-selector-wrap" style="width: 375px; min-width: 340px; flex-shrink: 0;">
+						<v-btn icon="mdi-chevron-left" variant="text" density="compact" size="small" :disabled="selectedWeekIndex <= 0" @click="prevWeek" />
 						<v-select
 							v-model="selectedWeek"
 							:items="availableWeekList"
 							item-title="title"
 							item-value="id"
 							return-object
-							label="Thời khóa biểu"
 							density="compact"
 							variant="outlined"
 							color="primary"
 							hide-details
-							prepend-inner-icon="mdi-calendar-outline"
-							class="flex-grow-1 bg-white"
-							style="min-width: 200px;"
+							prepend-inner-icon="mdi-calendar-range"
+							class="compact-filter-select flex-grow-1"
+							style="font-size: 11.5px;"
 							@update:model-value="onWeekSelected"
 						/>
-						<v-btn icon="mdi-chevron-right" variant="text" density="compact" :disabled="selectedWeekIndex >= availableWeekList.length - 1" @click="nextWeek" />
+						<v-btn icon="mdi-chevron-right" variant="text" density="compact" size="small" :disabled="selectedWeekIndex >= availableWeekList.length - 1" @click="nextWeek" />
 					</div>
 
-					<!-- Chọn Khối (chỉ hiện khi không phải GVCN) -->
-					<div v-if="!isGVCNRole" style="min-width: 110px;" class="flex-grow-1 flex-sm-grow-0">
+					<!-- Bộ chọn Khối lớp (chỉ hiện khi ở tab Quản sinh hoặc Báo cáo, VÀ không phải là tài khoản chỉ có quyền GVCN) -->
+					<div v-if="!isGVCNRole && activeTab !== 'gvcn'" style="width: 95px;" class="flex-shrink-0">
 						<v-select
 							v-model="selectedKhoi"
 							:items="khoiList"
 							item-title="name"
 							item-value="id"
-							label="Khối lớp"
 							density="compact"
 							variant="outlined"
 							hide-details
-							class="bg-white"
+							class="compact-filter-select"
+							style="font-size: 11.5px;"
 							@update:model-value="onFilterChanged"
 						/>
 					</div>
-
-					<v-spacer class="d-none d-md-block" />
-
-					<!-- Nút làm mới (Desktop) -->
-					<v-btn class="d-none d-sm-flex text-none font-weight-medium" prepend-icon="mdi-refresh" variant="outlined" color="teal" size="small" :loading="isLoading" @click="reloadData">
-						Làm mới
-					</v-btn>
-
-					<!-- Nút làm mới (Mobile) -->
-					<v-btn class="d-flex d-sm-none" icon="mdi-refresh" variant="outlined" color="teal" density="compact" size="small" :loading="isLoading" @click="reloadData" />
 				</div>
 
-				<!-- Row 2: Chọn Ngày (Thứ 2 - Thứ 6) full width segmented bar (Chỉ hiện khi ở Tab Quản sinh chấm điểm) -->
+				<!-- Khối Phải: Nút Làm mới & Menu đổi vai trò -->
+				<div class="d-flex align-center ga-1 ms-auto flex-shrink-0">
+					<v-btn icon="mdi-refresh" variant="text" size="small" color="grey-darken-2" :loading="isLoading" @click="reloadData" title="Làm mới dữ liệu" />
+
+					<!-- Chip vai trò kèm menu đổi vai trò kiểm tra phân quyền (chỉ hiện khi là Admin) -->
+					<v-menu v-if="canSwitchRole" location="bottom end">
+						<template v-slot:activator="{ props }">
+							<v-chip
+								v-bind="props"
+								:color="currentRoleColor"
+								size="small"
+								:prepend-icon="currentRoleIcon"
+								append-icon="mdi-menu-down"
+								class="font-weight-medium text-white cursor-pointer px-2.5"
+								variant="flat"
+								title="Nhấn để đổi vai trò kiểm tra phân quyền"
+							>
+								{{ currentRoleName }}
+							</v-chip>
+						</template>
+						<v-card min-width="260" class="pa-2 rounded-lg" elevation="4">
+							<div class="d-flex align-center justify-space-between px-3 py-1">
+								<span class="text-caption font-weight-medium text-medium-emphasis">Phân quyền vai trò</span>
+								<v-chip size="x-small" color="primary" variant="tonal">FUI SystemRight</v-chip>
+							</div>
+							<v-divider class="my-1" />
+							<v-list density="compact" nav>
+								<v-list-item
+									v-for="r in userRoles"
+									:key="r.id"
+									:value="r.id"
+									:active="currentSystemRight === r.id"
+									:color="r.color"
+									@click="switchRole(r.id)"
+									class="rounded-lg mb-1"
+								>
+									<template v-slot:prepend>
+										<v-avatar size="26" :color="r.color" class="text-white me-2">
+											<v-icon size="15" color="white">{{ r.icon }}</v-icon>
+										</v-avatar>
+									</template>
+									<v-list-item-title class="font-weight-medium" style="font-size: 12.5px;">
+										{{ r.name }}
+									</v-list-item-title>
+									<v-list-item-subtitle style="font-size: 10.5px;">
+										{{ r.description }}
+									</v-list-item-subtitle>
+								</v-list-item>
+							</v-list>
+						</v-card>
+					</v-menu>
+				</div>
+			</div>
+
+			<!-- Dòng 2: Tabs chức năng (Quản sinh / GVCN / Báo cáo) - Chỉ hiện khi có từ 2 tab trở lên -->
+			<v-tabs
+				v-if="hasMultipleTabs"
+				:key="'tabs-' + currentSystemRight"
+				v-model="activeTab"
+				color="primary"
+				density="compact"
+				class="border-b px-2"
+				style="min-height: 40px;"
+			>
+				<v-tab v-if="canAccessQuanSinh" value="quansinh" class="text-none font-weight-medium px-3 text-caption text-sm-body-2" style="height: 40px;">
+					<v-icon start size="16" class="me-1">mdi-clipboard-check-outline</v-icon>
+					Quản sinh chấm điểm
+					<v-badge v-if="pendingCheckCount > 0" color="warning" :content="pendingCheckCount" inline class="ms-1" />
+				</v-tab>
+				<v-tab v-if="canAccessGvcn" value="gvcn" class="text-none font-weight-medium px-3 text-caption text-sm-body-2" style="height: 40px;">
+					<v-icon start size="16" class="me-1">mdi-calendar-clock-outline</v-icon>
+					GVCN đăng kí lịch
+				</v-tab>
+				<v-tab v-if="canAccessBaoCao" value="baocao" class="text-none font-weight-medium px-3 text-caption text-sm-body-2" style="height: 40px;">
+					<v-icon start size="16" class="me-1">mdi-chart-box-outline</v-icon>
+					Báo cáo & thi đua
+				</v-tab>
+			</v-tabs>
+
+			<!-- Dòng 3: Thanh chọn Ngày Thứ 2 - Thứ 6 (Chỉ hiện khi ở Tab Quản sinh) -->
+			<div v-if="activeTab === 'quansinh'" class="px-3 px-sm-4 py-2 bg-grey-lighten-5">
 				<v-btn-toggle
-					v-if="activeTab === 'quansinh'"
 					v-model="selectedDay"
 					mandatory
-					density="compact"
 					variant="text"
-					class="w-100 d-flex mobile-days-toggle"
+					class="w-100 d-flex clean-days-toggle"
+					style="height: auto !important; min-height: 48px !important;"
 					@update:model-value="onDayChanged"
 				>
 					<v-btn
 						v-for="d in daysOfWeek"
 						:key="d.val"
 						:value="d.val"
-						:disabled="isSpecificDayInFuture(d.val)"
-						class="text-none flex-grow-1 px-1"
-						style="flex: 1 1 0% !important; min-width: 0 !important;"
-						:style="{ opacity: isSpecificDayInFuture(d.val) ? 0.38 : 1, cursor: isSpecificDayInFuture(d.val) ? 'not-allowed' : 'pointer' }"
+						class="text-none flex-grow-1 px-1 clean-day-btn"
+						style="flex: 1 1 0% !important; min-width: 0 !important; height: 100% !important; min-height: 44px !important;"
 					>
-						<div class="text-center py-1 w-100">
+						<div class="text-center py-0.5 w-100 d-flex flex-column justify-center align-center">
 							<div class="d-flex align-center justify-center ga-1" style="line-height: 1.2;">
-								<span class="font-weight-bold d-none d-sm-inline" style="font-size: 12px;">{{ d.label }}</span>
-								<span class="font-weight-bold d-inline d-sm-none" style="font-size: 12px;">T{{ d.val }}</span>
+								<span class="font-weight-bold d-none d-sm-inline" style="font-size: 13px;">{{ d.label }}</span>
+								<span class="font-weight-bold d-inline d-sm-none" style="font-size: 13px;">T{{ d.val }}</span>
 								<v-icon
 									v-if="isSpecificDayInPast(d.val)"
 									size="12"
-									color="blue-grey-darken-1"
+									:color="selectedDay === d.val ? 'white' : 'blue-grey-darken-1'"
 									title="Đã qua ngày"
 								>mdi-lock-outline</v-icon>
 								<v-icon
 									v-else-if="isSpecificDayToday(d.val)"
 									size="12"
-									:color="isPastQsCutoffTime() ? 'blue-grey-darken-1' : 'primary'"
+									:color="selectedDay === d.val ? 'white' : 'green-darken-3'"
 									:title="isPastQsCutoffTime() ? 'Hôm nay (Đã khóa sau 09:30)' : 'Hôm nay (Đang mở)'"
 								>{{ isPastQsCutoffTime() ? 'mdi-lock-clock' : 'mdi-pencil' }}</v-icon>
 								<v-icon
 									v-else-if="isSpecificDayInFuture(d.val)"
 									size="12"
-									color="grey-lighten-1"
-									title="Chưa đến ngày"
+									:color="selectedDay === d.val ? 'white' : 'grey-darken-1'"
+									title="Chưa đến ngày (Xem trước & in phiếu)"
 								>mdi-clock-outline</v-icon>
 							</div>
-							<div class="d-flex align-center justify-center ga-1 mt-0.5" style="font-size: 10px; line-height: 1;">
-								<span class="text-medium-emphasis">{{ d.date }}</span>
-								<span v-if="isSpecificDayInPast(d.val)" class="text-blue-grey-darken-1 font-weight-medium d-none d-sm-inline" style="font-size: 9.5px;">(Khóa)</span>
-								<span v-else-if="isSpecificDayToday(d.val)" :class="isPastQsCutoffTime() ? 'text-blue-grey-darken-1 font-weight-medium' : 'text-primary font-weight-medium'" class="d-none d-sm-inline" style="font-size: 9.5px;">{{ isPastQsCutoffTime() ? '(Khóa sau 9h30)' : '(Mở)' }}</span>
-								<span v-else-if="isSpecificDayInFuture(d.val)" class="text-grey font-weight-medium d-none d-sm-inline" style="font-size: 9.5px;">(Chưa đến)</span>
+							<div class="d-flex align-center justify-center ga-1 mt-0.5 text-caption" style="font-size: 10.5px; line-height: 1.1;">
+								<span class="clean-day-date">{{ d.date }}</span>
+								<span v-if="isSpecificDayToday(d.val)" :class="selectedDay === d.val ? 'day-today-badge-active' : 'day-today-badge'">(Nay)</span>
 							</div>
 						</div>
 					</v-btn>
@@ -199,214 +189,110 @@
 		<v-window :key="'window-' + currentSystemRight" v-model="activeTab">
 			<!-- TAB 1: QUẢN SINH CHẤM ĐIỂM -->
 			<v-window-item value="quansinh">
-				<!-- Action Toolbar Quản sinh (Tinh gọn, chuẩn Executive UX) -->
-				<v-card class="mb-3 pa-2 pa-sm-3" elevation="0" rounded="lg" border>
-					<div class="d-flex align-center justify-space-between flex-wrap ga-2">
-						<!-- Nhóm thông tin trạng thái: Nổi bật thứ đang chấm to rõ, chuẩn LMS -->
-						<div class="d-flex align-center ga-2 flex-wrap">
-							<v-tooltip location="bottom" :text="isTodayQsLocked ? 'Hệ thống đã khóa sau 09:30 theo quy định nhà trường. Dữ liệu đã chốt tự động gửi cho GVCN & BGH.' : (isPastDay ? 'Ngày đã qua, dữ liệu đã khóa lưu trữ.' : (isFutureDay ? 'Chưa đến ngày, hệ thống chưa mở chấm.' : ''))" :disabled="!isReadOnlyDay || isBghRole">
-								<template #activator="{ props: lockProps }">
-									<v-chip
-										v-bind="lockProps"
-										:color="isBghRole ? 'primary' : (isPastDay ? 'blue-grey-darken-1' : (isTodayQsLocked ? 'blue-grey-darken-1' : (isFutureDay ? 'grey-darken-1' : (selectedDay === 2 ? 'blue-grey-darken-2' : 'primary'))))"
-										variant="flat"
-										size="small"
-										class="font-weight-medium px-3 rounded-pill text-white shadow-sm"
-										style="min-height: 28px;"
-									>
-										<v-icon start size="15" color="white">{{ isPastDay || isTodayQsLocked ? 'mdi-lock-outline' : (isFutureDay ? 'mdi-clock-outline' : (selectedDay === 2 ? 'mdi-school' : 'mdi-calendar-check')) }}</v-icon>
-										{{ isPastDay ? ('Đã khóa: ' + currentDayLabel) : (isTodayQsLocked ? ('Đã khóa sau 09:30: ' + currentDayLabel) : (isFutureDay ? ('Chưa đến ngày: ' + currentDayLabel) : (selectedDay === 2 ? ('Thứ 2: GVCN sinh hoạt (không chấm)') : (isBghRole ? ('Đang xem: ' + currentDayLabel) : ('Đang chấm: ' + currentDayLabel))))) }}
-									</v-chip>
-								</template>
-							</v-tooltip>
-							<span class="text-caption text-medium-emphasis">({{ selectedKhoiName }} · {{ currentClasses.length }} lớp)</span>
-							<v-chip v-if="selectedDay === 2" size="x-small" color="blue-grey" variant="tonal" class="font-weight-medium px-2 rounded-pill">
-								<v-icon start size="13">mdi-school</v-icon>
-								Thứ Hai: GVCN sinh hoạt toàn trường
-							</v-chip>
+				<!-- Action Toolbar Quản sinh: Phẳng, Tinh giản, Không lồng Card -->
+				<div class="mb-3 d-flex align-center justify-space-between flex-wrap ga-2 text-caption">
+					<!-- Trái: Tóm tắt trạng thái ngày (text thanh lịch, 1 chip trạng thái mỏng) -->
+					<div class="d-flex align-center ga-2 flex-wrap">
+						<span class="font-weight-bold text-grey-darken-4 text-subtitle-2">
+							{{ currentDayLabel }}
+						</span>
+						<v-chip
+							v-if="isReadOnlyDay"
+							size="x-small"
+							:color="isTodayQsLocked ? 'amber-darken-3' : (isPastDay ? 'blue-grey' : 'grey')"
+							variant="tonal"
+							class="font-weight-medium"
+						>
+							<v-icon start size="12">{{ isPastDay || isTodayQsLocked ? 'mdi-lock-outline' : 'mdi-clock-outline' }}</v-icon>
+							{{ isPastDay ? 'Đã khóa' : (isTodayQsLocked ? 'Khóa sau 09:30' : 'Chưa đến ngày') }}
+						</v-chip>
+						<span class="text-medium-emphasis">·</span>
+						<span v-if="selectedDay === 2" class="text-medium-emphasis">
+							Thứ Hai: GVCN sinh hoạt toàn trường
+						</span>
+						<span v-else class="text-medium-emphasis">
+							<strong class="text-success font-weight-bold">{{ tuQuanClassesCount }}/{{ currentClasses.length }}</strong> lớp tự quản
+							<span v-if="gvcnSinHoatCount > 0" class="d-none d-sm-inline"> · <strong>{{ gvcnSinHoatCount }}</strong> GVCN sinh hoạt</span>
+						</span>
+					</div>
+
+					<!-- Phải: Nút hành động chính & Trạng thái tự lưu -->
+					<div class="d-flex align-center ga-1.5 ms-auto">
+						<!-- Trạng thái tự động lưu dạng dot tinh tế thay vì chip to -->
+						<div v-if="!isBghRole" class="d-flex align-center ga-1 me-2 text-grey-darken-2" style="font-size: 11.5px;">
+							<template v-if="qsAutoSaveStatus === 'saving'">
+								<v-progress-circular indeterminate size="10" width="1.5" color="warning" class="me-1" />
+								<span class="text-warning font-weight-medium">Đang lưu...</span>
+							</template>
 							<template v-else>
-								<v-chip size="x-small" color="indigo" variant="tonal" class="font-weight-medium px-2 rounded-pill">
-									<v-icon start size="13">mdi-account-group</v-icon>
-									Lớp tự quản: {{ tuQuanClassesCount }}/{{ currentClasses.length }}
-								</v-chip>
-								<v-chip v-if="gvcnSinHoatCount > 0" size="x-small" color="blue-grey" variant="tonal" class="font-weight-medium px-2 rounded-pill">
-									<v-icon start size="13">mdi-account-tie</v-icon>
-									GVCN sinh hoạt: {{ gvcnSinHoatCount }}
-								</v-chip>
+								<span class="status-dot-green"></span>
+								<span class="font-weight-medium text-success-darken-2">Đã tự lưu</span>
+								<span v-if="qsLastSavedTime" class="text-medium-emphasis ms-0.5" style="font-size: 10.5px;">({{ qsLastSavedTime }})</span>
 							</template>
 						</div>
 
-						<!-- Nhóm thao tác tinh gọn (Desktop): Tự động lưu chuẩn Executive UX đồng bộ giống GVCN -->
-						<div class="d-none d-sm-flex align-center ga-2">
-							<v-btn
-								v-if="!isBghRole"
-								size="small"
-								color="teal"
-								variant="outlined"
-								prepend-icon="mdi-check-all"
-								class="text-none font-weight-medium"
-								:disabled="isReadOnlyDay || selectedDay === 2"
-								@click="markAllGood"
-							>
-								Chấm tất cả Tốt
-							</v-btn>
+						<v-btn
+							v-if="!isBghRole"
+							size="small"
+							color="teal-darken-1"
+							variant="tonal"
+							prepend-icon="mdi-check-all"
+							class="text-none font-weight-medium"
+							@click="markAllGood"
+						>
+							Tất cả Đạt
+						</v-btn>
 
-							<!-- Badge chỉ xem cho BGH -->
-							<v-chip
-								v-if="isBghRole"
-								color="grey-darken-2"
-								size="small"
-								variant="tonal"
-								class="font-weight-medium px-3 rounded-pill"
-								style="min-height: 28px;"
-							>
-								<v-icon start size="15" color="grey-darken-2">mdi-eye-outline</v-icon>
-								<span class="font-weight-medium">Chế độ xem</span>
-							</v-chip>
+						<v-btn
+							size="small"
+							variant="outlined"
+							color="grey-darken-3"
+							prepend-icon="mdi-printer"
+							class="text-none font-weight-medium"
+							@click="openPrintDialog('daily')"
+						>
+							In phiếu
+						</v-btn>
 
-							<!-- Trạng thái tự động lưu của Quản sinh (chỉ hiển thị khi đang trong ngày được chấm) -->
-							<v-chip
-								v-if="!isBghRole && !isReadOnlyDay && selectedDay !== 2"
-								:color="qsAutoSaveStatus === 'saving' ? 'amber-darken-3' : 'success'"
-								size="small"
-								:variant="qsAutoSaveStatus === 'saving' ? 'flat' : 'tonal'"
-								class="font-weight-medium px-3 rounded-pill"
-								style="transition: all 0.25s ease; min-height: 28px;"
-							>
-								<template v-if="qsAutoSaveStatus === 'saving'">
-									<v-progress-circular indeterminate size="12" width="2" color="white" class="me-1.5" />
-									<span class="text-white font-weight-medium">Đang lưu...</span>
-								</template>
-								<template v-else>
-									<v-icon start size="15" color="success">mdi-cloud-check</v-icon>
-									<span class="font-weight-medium text-success-darken-2">Đã lưu tự động</span>
-									<span v-if="qsLastSavedTime" class="ms-1 text-caption text-grey-darken-1" style="font-size: 10.5px;">({{ qsLastSavedTime }})</span>
-								</template>
-							</v-chip>
-
-							<!-- Menu Tiện ích: Gom In phiếu, Thêm tiêu chí, Zalo gọn gàng -->
-							<v-menu location="bottom end">
-								<template #activator="{ props }">
-									<v-btn
-										v-bind="props"
-										size="small"
-										variant="outlined"
-										color="grey-darken-2"
-										append-icon="mdi-chevron-down"
-										class="text-none font-weight-medium"
-									>
-										Tiện ích
-									</v-btn>
-								</template>
-								<v-list density="compact" rounded="lg" elevation="2">
-									<v-list-item
-										prepend-icon="mdi-printer"
-										title="In phiếu chấm (Sao đỏ)"
-										@click="openPrintDialog"
-									/>
-									<v-list-item
-										v-if="!isReadOnlyDay"
-										prepend-icon="mdi-plus-box-outline"
-										title="Thêm tiêu chí ngày này"
-										@click="openAddCriteriaDialog(null)"
-									/>
-									<v-list-item
-										prepend-icon="mdi-share-variant-outline"
-										title="Sao chép gửi Zalo"
-										@click="exportDailyReport"
-									/>
+						<v-menu location="bottom end">
+							<template #activator="{ props }">
+								<v-btn v-bind="props" icon="mdi-dots-vertical" size="small" variant="text" color="grey-darken-3" />
+							</template>
+							<v-list density="compact" rounded="lg">
+								<v-list-item v-if="canModifyCriteria" prepend-icon="mdi-plus" title="Thêm tiêu chí" @click="openAddCriteriaDialog(null)" />
+								<v-list-item prepend-icon="mdi-share-variant-outline" title="Gửi Zalo" @click="exportDailyReport" />
+								<template v-if="isDevOrAdminRole">
 									<v-divider class="my-1" />
-									<v-list-subheader class="text-caption font-weight-bold text-uppercase" style="font-size: 10px; height: 26px;">Giả lập mốc giờ kiểm thử</v-list-subheader>
+									<v-list-subheader class="text-caption font-weight-bold text-uppercase" style="font-size: 10px; height: 26px;">Giả lập quy định khóa (Dev / Test)</v-list-subheader>
 									<v-list-item
 										prepend-icon="mdi-clock-outline"
-										title="Giờ thực tế hệ thống"
-										:active="mockHourOverride === null"
-										@click="setMockTime(null)"
+										title="Thời gian thực tế hệ thống"
+										:active="mockDateOverride === null && mockHourOverride === null"
+										@click="setMockDateAndHour(null, null)"
 									/>
 									<v-list-item
-										prepend-icon="mdi-clock-fast"
-										title="Trước 6h sáng (05:30 - Mở hết)"
-										:active="mockHourOverride === 5"
-										@click="setMockTime(5, 30)"
+										prepend-icon="mdi-lock-open-outline"
+										title="Sáng Thứ Hai (09:00 - Mở đăng ký tuần cho GVCN)"
+										:active="mockScenarioName === 'monday_morning'"
+										@click="setMockDateAndHour('monday_morning', 9)"
 									/>
 									<v-list-item
-										prepend-icon="mdi-clock-fast"
-										title="08:00 sáng (Sau 6h sáng, trước 9h30: Khóa GV, Mở QS)"
-										:active="mockHourOverride === 8"
-										@click="setMockTime(8, 0)"
+										prepend-icon="mdi-lock-outline"
+										title="Thứ Ba - Thứ Sáu (Khóa đăng ký GVCN, Mở QS chấm)"
+										:active="mockScenarioName === 'midweek_morning' && mockHourOverride === 8"
+										@click="setMockDateAndHour('midweek_morning', 8)"
 									/>
 									<v-list-item
-										prepend-icon="mdi-clock-alert"
-										title="Sau 9h30 sáng (10:00 - Khóa cả GV & QS)"
+										prepend-icon="mdi-clock-alert-outline"
+										title="Sau 09:30 sáng (10:00 - Khóa Quản sinh nhập điểm)"
 										:active="mockHourOverride === 10"
-										@click="setMockTime(10, 0)"
+										@click="setMockDateAndHour('midweek_morning', 10)"
 									/>
-								</v-list>
-							</v-menu>
-						</div>
-
-						<!-- Nhóm thao tác Mobile: Tự động lưu giống GVCN -->
-						<div class="d-flex d-sm-none align-center ga-1.5 w-100 justify-space-between pt-1 border-t">
-							<v-btn
-								v-if="!isBghRole"
-								size="small"
-								color="teal"
-								variant="outlined"
-								class="text-none font-weight-medium"
-								:disabled="isReadOnlyDay || selectedDay === 2"
-								@click="markAllGood"
-							>
-								Tất cả Tốt
-							</v-btn>
-
-							<!-- Chip Chế độ xem Mobile -->
-							<v-chip
-								v-if="isBghRole"
-								color="grey-darken-2"
-								size="small"
-								variant="tonal"
-								class="font-weight-medium px-2 rounded-pill flex-grow-1 justify-center"
-							>
-								<v-icon start size="13" color="grey-darken-2">mdi-eye-outline</v-icon>
-								Chế độ xem
-							</v-chip>
-
-							<!-- Chip tự động lưu Mobile (chỉ hiển thị khi đang trong ngày được chấm) -->
-							<v-chip
-								v-if="!isBghRole && !isReadOnlyDay && selectedDay !== 2"
-								:color="qsAutoSaveStatus === 'saving' ? 'amber-darken-3' : 'success'"
-								size="small"
-								:variant="qsAutoSaveStatus === 'saving' ? 'flat' : 'tonal'"
-								class="font-weight-medium px-2 rounded-pill flex-grow-1 justify-center"
-							>
-								<template v-if="qsAutoSaveStatus === 'saving'">
-									<v-progress-circular indeterminate size="11" width="2" color="white" class="me-1" />
-									Đang lưu...
 								</template>
-								<template v-else>
-									<v-icon start size="13" color="success">mdi-cloud-check</v-icon>
-									Đã tự lưu <span v-if="qsLastSavedTime" class="ms-0.5" style="font-size: 10px;">({{ qsLastSavedTime }})</span>
-								</template>
-							</v-chip>
-
-							<v-menu location="bottom end">
-								<template #activator="{ props }">
-									<v-btn v-bind="props" icon="mdi-dots-vertical" size="small" variant="text" />
-								</template>
-								<v-list density="compact" rounded="lg">
-									<v-list-item prepend-icon="mdi-printer" title="In phiếu chấm" @click="openPrintDialog" />
-									<v-list-item v-if="!isReadOnlyDay" prepend-icon="mdi-plus" title="Thêm tiêu chí" @click="openAddCriteriaDialog(null)" />
-									<v-list-item prepend-icon="mdi-share-variant-outline" title="Gửi Zalo" @click="exportDailyReport" />
-									<v-divider class="my-1" />
-									<v-list-item prepend-icon="mdi-clock-outline" title="Giờ thực tế" @click="setMockTime(null)" />
-									<v-list-item prepend-icon="mdi-clock-fast" title="05:30 sáng (Mở hết)" @click="setMockTime(5, 30)" />
-									<v-list-item prepend-icon="mdi-clock-fast" title="08:00 sáng (Khóa GV, Mở QS)" @click="setMockTime(8, 0)" />
-									<v-list-item prepend-icon="mdi-clock-alert" title="10:00 sáng (Khóa GV & QS)" @click="setMockTime(10, 0)" />
-								</v-list>
-							</v-menu>
-						</div>
+							</v-list>
+						</v-menu>
 					</div>
-				</v-card>
+				</div>
 
 				<!-- Thông báo đặc biệt Thứ 2: Toàn trường GVCN sinh hoạt đầu tuần -->
 				<v-alert
@@ -432,7 +318,7 @@
 							<thead>
 								<tr style="height: 44px;">
 									<th style="width: 45px; text-align: center; padding: 6px;">STT</th>
-									<th style="width: 135px; text-align: left; padding: 6px 10px;">Lớp & GVCN</th>
+									<th style="width: 200px; min-width: 190px; text-align: left; padding: 6px 12px;">Lớp & GVCN</th>
 									<th
 										v-for="(tc, i) in getMergedPrintCriteria()"
 										:key="'tbl-th-' + tc.id"
@@ -440,7 +326,7 @@
 										:class="{ 'bg-blue-lighten-5': tc.isCustom }"
 									>
 										<!-- Nút Xóa tiêu chí bổ sung -->
-										<v-tooltip v-if="tc.isCustom && !isReadOnlyDay" text="Xóa tiêu chí này" location="top">
+										<v-tooltip v-if="tc.isCustom && canModifyCriteria" text="Xóa tiêu chí này" location="top">
 											<template #activator="{ props: delProps }">
 												<v-btn
 													v-bind="delProps"
@@ -464,14 +350,14 @@
 													style="user-select: none;"
 												>
 													<div class="font-weight-medium text-grey-darken-4 text-center px-0.5" style="font-size: 11.5px; line-height: 1.25;">
-														{{ (i + 1) + '. ' + getCriterionMainTitle(tc.ten) }}
+														{{ 'TC' + (i + 1) + ': ' + getCriterionMainTitle(tc.ten) }}
 													</div>
 													<div v-if="getCriterionSubTitle(tc.ten)" class="text-grey-darken-2 text-center px-0.5 mt-0.5" style="font-size: 10px; line-height: 1.2; font-weight: 500;">
 														{{ getCriterionSubTitle(tc.ten) }}
 													</div>
 												</div>
 											</template>
-											<span><strong>{{ (i + 1) + '. ' + getCriterionMainTitle(tc.ten) }}</strong> {{ getCriterionSubTitle(tc.ten) }}</span>
+											<span><strong>{{ 'TC' + (i + 1) + ': ' + getCriterionMainTitle(tc.ten) }}</strong> {{ getCriterionSubTitle(tc.ten) }}</span>
 											<div v-if="tc.isCustom" class="text-caption text-amber-lighten-3">
 												({{ tc.scope === 'class' ? (tc.tenLop ? 'Áp dụng riêng: Lớp ' + tc.tenLop : 'Áp dụng riêng 1 lớp') : 'Tiêu chí bổ sung cả khối' }})
 											</div>
@@ -498,27 +384,111 @@
 									</td>
 
 									<!-- Cột Lớp & GVCN & Trạng thái ngày -->
-									<td style="padding: 6px 12px;">
-										<div class="d-flex flex-column justify-center">
-											<div class="d-flex align-center ga-2">
-												<span class="font-weight-medium text-subtitle-2 text-primary" style="font-size: 14px; line-height: 22px;">{{ cls.TenLop }}</span>
-												<span
-													v-if="selectedDay === 2 || !cls.IsTuQuan"
-													class="table-status-badge badge-gvcn"
+									<!-- Cột Lớp & GVCN & Trạng thái ngày -->
+									<td style="padding: 6px 12px; width: 200px; min-width: 190px;">
+										<div class="d-flex flex-column justify-center" style="min-width: 175px;">
+											<!-- Dòng 1: Tên lớp + Badge trạng thái (Phân biệt 3 màu trực quan) -->
+											<div class="d-flex align-center justify-space-between ga-1">
+												<span class="font-weight-bold text-subtitle-2 text-primary" style="font-size: 14.5px; line-height: 22px;">{{ cls.TenLop }}</span>
+												
+												<!-- Thứ 2: Toàn trường GVCN sinh hoạt -->
+												<v-chip
+													v-if="selectedDay === 2"
+													size="x-small"
+													color="blue-grey-lighten-2"
+													variant="tonal"
+													class="font-weight-medium text-blue-grey-darken-3 px-1.5"
+													style="height: 20px; font-size: 11px;"
 												>
-													<v-icon size="13" class="me-1" color="blue-grey-darken-2">mdi-account-tie</v-icon>
+													<v-icon start size="12">mdi-account-tie</v-icon>
 													GVCN sinh hoạt
-												</span>
-												<span
-													v-else
-													class="table-status-badge badge-tuquan"
-												>
-													<v-icon size="13" class="me-1" color="indigo-darken-3">mdi-account-group</v-icon>
-													Tự quản
-												</span>
+												</v-chip>
+
+												<!-- Thứ 3 - Thứ 6: Trạng thái ngày -->
+												<template v-else>
+													<!-- 1. Quản sinh đã ghi nhận GVCN có mặt (Mã GV) -->
+													<v-chip
+														v-if="cls.GVCNCoMat"
+														size="x-small"
+														color="blue-grey-darken-2"
+														variant="flat"
+														class="font-weight-bold text-white px-2"
+														style="height: 20px; font-size: 11px;"
+													>
+														<v-icon start size="12" color="white">mdi-account-check</v-icon>
+														GV có mặt (GV)
+													</v-chip>
+
+													<!-- 2. Lớp đang Tự quản: Badge xanh lá Tự quản -->
+													<v-chip
+														v-else-if="cls.IsTuQuan"
+														size="x-small"
+														color="success"
+														variant="tonal"
+														class="font-weight-bold px-2"
+														style="height: 20px; font-size: 11px;"
+													>
+														<v-icon start size="11" color="success">mdi-shield-check</v-icon>
+														Lớp tự quản
+													</v-chip>
+
+													<!-- 3. Lớp không đăng ký tự quản: GVCN sinh hoạt cố định -->
+													<v-chip
+														v-else
+														size="x-small"
+														color="grey-lighten-1"
+														variant="tonal"
+														class="font-weight-medium text-grey-darken-3 px-1.5"
+														style="height: 20px; font-size: 11px;"
+													>
+														<v-icon start size="12" color="grey-darken-2">mdi-account-tie</v-icon>
+														GVCN sinh hoạt
+													</v-chip>
+												</template>
 											</div>
-											<div class="text-caption text-truncate text-medium-emphasis mt-0.5" style="max-width: 160px; font-size: 11.5px; line-height: 1.2;">
-												{{ cls.TenGVCN }}
+
+											<!-- Dòng 2: Tên GVCN + Nút thao tác của Quản sinh (Cố định, không rớt dòng) -->
+											<div class="d-flex align-center justify-space-between mt-1 ga-1" style="white-space: nowrap;">
+												<div
+													class="text-caption text-truncate text-medium-emphasis"
+													:title="cls.TenGVCN"
+													style="max-width: 105px; font-size: 11.5px; line-height: 1.2;"
+												>
+													{{ cls.TenGVCN }}
+												</div>
+
+												<!-- Nút thao tác nhanh Quản sinh -->
+												<template v-if="selectedDay !== 2 && !isReadOnlyDay">
+													<!-- Khi lớp đang tự quản: Nút bấm để ghi nhận GV có mặt -->
+													<v-btn
+														v-if="cls.IsTuQuan && !cls.GVCNCoMat"
+														size="x-small"
+														variant="flat"
+														color="blue-grey-lighten-4"
+														class="text-blue-grey-darken-4 font-weight-bold text-none px-1.5"
+														style="height: 20px; font-size: 10.5px; border: 1px solid #b0bec5;"
+														prepend-icon="mdi-account-check"
+														title="Bấm khi GVCN có mặt tại lớp lúc 07:15"
+														@click="toggleGvcnPresent(cls)"
+													>
+														GV có mặt
+													</v-btn>
+
+													<!-- Khi đã báo GV: Nút hoàn tác để đổi lại nếu bấm nhầm -->
+													<v-btn
+														v-else-if="cls.GVCNCoMat"
+														size="x-small"
+														variant="text"
+														color="primary"
+														class="font-weight-bold text-none px-1"
+														style="height: 20px; font-size: 10.5px;"
+														prepend-icon="mdi-undo"
+														title="Bấm để hoàn tác lại thành Lớp tự quản"
+														@click="toggleGvcnPresent(cls)"
+													>
+														Đổi lại
+													</v-btn>
+												</template>
 											</div>
 										</div>
 									</td>
@@ -529,27 +499,16 @@
 										:key="'tbl-tc-' + cls.LopID + '-' + tc.id"
 										style="text-align: center; padding: 4px 2px; width: 130px; min-width: 118px; max-width: 145px;"
 									>
-										<div v-if="selectedDay === 2 || !cls.IsTuQuan" class="text-medium-emphasis font-weight-medium" style="font-size: 12px;">
+										<div v-if="!cls.IsTuQuan" class="text-medium-emphasis font-weight-medium" style="font-size: 12px;">
 											—
 										</div>
 										<div v-else-if="isClassHavingCriteria(cls, tc)" class="d-inline-flex justify-center w-100">
-											<div class="score-group" :class="{ 'score-disabled': isReadOnlyDay }">
-												<button
-													type="button"
-													class="score-btn-item score-btn-t"
-													:class="{ 'score-active-t': findClassCriterion(cls, tc).score === 3 }"
-													:disabled="isReadOnlyDay"
-													title="Tốt (3 điểm)"
-													@click="setCriterionScore(cls, tc, 3)"
-												>
-													T
-												</button>
+											<div class="score-group">
 												<button
 													type="button"
 													class="score-btn-item score-btn-d"
-													:class="{ 'score-active-d': findClassCriterion(cls, tc).score === 2 }"
-													:disabled="isReadOnlyDay"
-													title="Đạt (2 điểm)"
+													:class="{ 'score-active-d': findClassCriterion(cls, tc).score !== 1 }"
+													title="Đạt"
 													@click="setCriterionScore(cls, tc, 2)"
 												>
 													Đ
@@ -558,8 +517,7 @@
 													type="button"
 													class="score-btn-item score-btn-cd"
 													:class="{ 'score-active-cd': findClassCriterion(cls, tc).score === 1 }"
-													:disabled="isReadOnlyDay"
-													title="Chưa đạt (1 điểm)"
+													title="Chưa đạt"
 													@click="setCriterionScore(cls, tc, 1)"
 												>
 													CĐ
@@ -573,16 +531,16 @@
 									<td style="padding: 4px 8px; min-width: 200px;">
 										<v-textarea
 											v-model="cls.GhiChuViPham"
-											:placeholder="selectedDay === 2 ? 'Thứ 2: GVCN sinh hoạt cùng lớp...' : (!cls.IsTuQuan ? 'GVCN sinh hoạt cùng lớp (Không chấm tự quản)...' : (isFutureDay ? 'Chưa đến ngày (Khóa nhận xét)...' : (isPastDay ? 'Ngày đã qua (Khóa không cho sửa)...' : 'Nhập ghi chú / nội dung vi phạm...')))"
+											:placeholder="!cls.IsTuQuan ? 'GVCN có mặt (Không chấm tự quản)...' : 'Nhập ghi chú / nội dung vi phạm...'"
 											density="compact"
 											variant="plain"
 											hide-details
 											auto-grow
 											rows="1"
 											max-rows="4"
-											:disabled="isReadOnlyDay || selectedDay === 2 || !cls.IsTuQuan"
+											:disabled="!cls.IsTuQuan"
 											class="compact-table-textarea"
-											:class="{ 'opacity-60': isReadOnlyDay || selectedDay === 2 || !cls.IsTuQuan }"
+											:class="{ 'opacity-60': !cls.IsTuQuan }"
 											style="font-size: 13px !important;"
 											:input-attrs="{ style: 'font-size: 13px !important; line-height: 1.4 !important;' }"
 											@update:model-value="onQsNoteChange"
@@ -591,13 +549,18 @@
 
 									<!-- Cột Xếp loại -->
 									<td style="text-align: center; padding: 4px;">
-										<span v-if="getClassDailyResult(cls).code === 'GVCN'" class="text-medium-emphasis font-weight-medium" style="font-size: 13px;">—</span>
+										<span
+											v-if="!cls.IsTuQuan || getClassDailyResult(cls).code === 'GVCN'"
+											class="table-rank-badge rank-gvcn font-weight-bold"
+										>
+											{{ selectedDay === 2 && !cls.IsTuQuan ? 'Chào cờ' : 'Không chấm' }}
+										</span>
 										<span
 											v-else
 											class="table-rank-badge"
 											:class="{
-												'rank-tot': getClassDailyResult(cls).code === 'T',
 												'rank-dat': getClassDailyResult(cls).code === 'D',
+												'rank-ccg': getClassDailyResult(cls).code === 'CCG',
 												'rank-chuadat': getClassDailyResult(cls).code === 'CD'
 											}"
 										>
@@ -623,107 +586,175 @@
 							'border-grey-lighten-2': !itemHasViolation(cls)
 						}"
 					>
-						<!-- Header Thẻ: Lớp, GVCN & Xếp loại -->
-						<div class="px-3 py-2.5 bg-grey-lighten-5 border-b d-flex align-center justify-space-between flex-wrap ga-2">
-							<div class="d-flex align-center ga-2">
-								<v-avatar color="primary" size="24" class="text-white text-caption font-weight-medium">
-									{{ idx + 1 }}
-								</v-avatar>
+						<!-- Header Thẻ: Lớp, GVCN & Xếp loại (Cấu trúc 2 tầng thoáng đãng, không bị chèn ép) -->
+						<div class="px-3 py-2.5 bg-grey-lighten-5 border-b">
+							<!-- Tầng 1: STT + Tên lớp & Badge Xếp loại ngày -->
+							<div class="d-flex align-center justify-space-between">
+								<div class="d-flex align-center ga-2">
+									<v-avatar color="primary" size="24" class="text-white text-caption font-weight-bold">
+										{{ idx + 1 }}
+									</v-avatar>
+									<span class="font-weight-bold text-subtitle-1 text-primary" style="font-size: 15px !important; line-height: 1.2;">
+										{{ cls.TenLop }}
+									</span>
+								</div>
+
+								<!-- Badge xếp loại trên Mobile Card -->
 								<div>
-									<div class="d-flex align-center ga-1.5">
-										<span class="font-weight-medium text-subtitle-2 text-primary">{{ cls.TenLop }}</span>
-										<span
-											v-if="selectedDay === 2 || !cls.IsTuQuan"
-											class="table-status-badge badge-gvcn"
-											style="height: 20px; font-size: 10.5px;"
-										>
-											<v-icon size="12" class="me-0.5" color="blue-grey-darken-2">mdi-account-tie</v-icon>
-											GVCN sinh hoạt
-										</span>
-										<span
-											v-else
-											class="table-status-badge badge-tuquan"
-											style="height: 20px; font-size: 10.5px;"
-										>
-											<v-icon size="12" class="me-0.5" color="indigo-darken-3">mdi-account-group</v-icon>
-											Tự quản
-										</span>
-									</div>
-									<div class="text-caption text-medium-emphasis" style="font-size: 11px;">
-										GVCN: {{ cls.TenGVCN }}
-									</div>
+									<span v-if="selectedDay === 2" class="text-medium-emphasis font-weight-medium text-caption">—</span>
+									<span
+										v-else-if="cls.GVCNCoMat"
+										class="table-rank-badge rank-gvcn font-weight-bold"
+										style="font-size: 11px;"
+									>
+										Không chấm
+									</span>
+									<span
+										v-else-if="!cls.IsTuQuan"
+										class="text-medium-emphasis font-weight-medium text-caption"
+									>
+										—
+									</span>
+									<span
+										v-else
+										class="table-rank-badge"
+										:class="{
+											'rank-dat': getClassDailyResult(cls).code === 'D',
+											'rank-ccg': getClassDailyResult(cls).code === 'CCG',
+											'rank-chuadat': getClassDailyResult(cls).code === 'CD'
+										}"
+									>
+										{{ getScoreBadgeText(cls) }}
+									</span>
 								</div>
 							</div>
 
-							<!-- Badge xếp loại trên Mobile Card -->
-							<div>
-								<span v-if="getClassDailyResult(cls).code === 'GVCN'" class="text-medium-emphasis font-weight-medium text-caption">—</span>
-								<span
-									v-else
-									class="table-rank-badge"
-									:class="{
-										'rank-tot': getClassDailyResult(cls).code === 'T',
-										'rank-dat': getClassDailyResult(cls).code === 'D',
-										'rank-chuadat': getClassDailyResult(cls).code === 'CD'
-									}"
-								>
-									{{ getScoreBadgeText(cls) }}
-								</span>
+							<!-- Tầng 2: Tên GVCN & Badge trạng thái + Nút GV có mặt -->
+							<div class="d-flex align-center justify-space-between mt-2 pt-1.5 border-t border-grey-lighten-3">
+								<div class="text-caption text-grey-darken-2" style="font-size: 11.5px;">
+									GVCN: <span class="font-weight-medium text-grey-darken-3">{{ cls.TenGVCN }}</span>
+								</div>
+
+								<div class="d-flex align-center ga-1.5 flex-shrink-0">
+									<span
+										v-if="selectedDay === 2"
+										class="table-status-badge badge-gvcn"
+										style="height: 22px; font-size: 10.5px;"
+									>
+										<v-icon size="12" class="me-0.5" color="blue-grey-darken-2">mdi-account-tie</v-icon>
+										GVCN sinh hoạt
+									</span>
+									<template v-else>
+										<!-- Khi đã ghi nhận GVCN có mặt -->
+										<v-chip
+											v-if="cls.GVCNCoMat"
+											size="x-small"
+											color="blue-grey-darken-2"
+											variant="flat"
+											class="font-weight-bold text-white px-2"
+											style="height: 22px; font-size: 10.5px;"
+										>
+											<v-icon start size="12" color="white">mdi-account-check</v-icon>
+											GV có mặt (GV)
+										</v-chip>
+
+										<!-- Khi đang Tự quản: Badge Tự quản + Nút GV có mặt -->
+										<template v-else-if="cls.IsTuQuan">
+											<v-chip
+												size="x-small"
+												color="success"
+												variant="tonal"
+												class="font-weight-bold px-2"
+												style="height: 22px; font-size: 10.5px;"
+											>
+												<v-icon start size="12" color="success">mdi-shield-check</v-icon>
+												Tự quản
+											</v-chip>
+											<v-btn
+												v-if="!isReadOnlyDay"
+												size="x-small"
+												variant="flat"
+												color="blue-grey-lighten-4"
+												class="text-blue-grey-darken-4 font-weight-bold text-none px-2"
+												style="height: 22px; font-size: 10.5px; border: 1px solid #b0bec5;"
+												prepend-icon="mdi-account-check"
+												@click="toggleGvcnPresent(cls)"
+											>
+												GV có mặt
+											</v-btn>
+										</template>
+
+										<!-- Lớp không đăng ký tự quản -->
+										<v-chip
+											v-else
+											size="x-small"
+											color="grey-lighten-1"
+											variant="tonal"
+											class="font-weight-medium text-grey-darken-3 px-2"
+											style="height: 22px; font-size: 10.5px;"
+										>
+											<v-icon start size="12" color="grey-darken-2">mdi-account-tie</v-icon>
+											GVCN sinh hoạt
+										</v-chip>
+									</template>
+								</div>
 							</div>
 						</div>
 
 						<!-- Nội dung chấm điểm trên Mobile -->
 						<div class="pa-3">
-							<!-- Nếu GVCN sinh hoạt / Thứ 2: Thông báo ngắn gọn -->
-							<div v-if="selectedDay === 2 || !cls.IsTuQuan" class="pa-2.5 rounded-lg bg-grey-lighten-4 text-center text-caption text-medium-emphasis">
-								<v-icon size="16" color="blue-grey" class="me-1">mdi-account-tie</v-icon>
-								GVCN trực tiếp sinh hoạt — Không chấm điểm tự quản
+							<!-- Nếu GVCN sinh hoạt / Thứ 2 / GVCN có mặt: Thông báo ngắn gọn -->
+							<div v-if="selectedDay === 2 || !cls.IsTuQuan || cls.GVCNCoMat" class="pa-2.5 rounded-lg bg-blue-grey-lighten-5 border border-blue-grey-lighten-4 d-flex align-center justify-space-between flex-wrap ga-2 text-caption text-blue-grey-darken-3">
+								<div class="d-flex align-center">
+									<v-icon size="16" color="blue-grey-darken-2" class="me-1.5">mdi-account-tie</v-icon>
+									<span>
+										{{ selectedDay === 2 ? 'Thứ Hai: Tiết sinh hoạt đầu tuần cùng GVCN' : (cls.GVCNCoMat ? 'Quản sinh ghi nhận: GVCN có mặt tại lớp (Mã "GV")' : 'Lớp không đăng ký tự quản — GVCN sinh hoạt trực tiếp') }}
+									</span>
+								</div>
+								<v-btn
+									v-if="cls.GVCNCoMat && selectedDay !== 2 && !isReadOnlyDay"
+									size="x-small"
+									variant="text"
+									color="primary"
+									class="text-none px-1 font-weight-bold"
+									@click="toggleGvcnPresent(cls)"
+								>
+									Đổi sang Tự quản
+								</v-btn>
 							</div>
 
-							<!-- Nếu lớp tự quản: Hiển thị từng tiêu chí bấm T - Đ - CĐ to rõ ngón tay dễ chạm -->
+							<!-- Nếu lớp tự quản: Hiển thị từng tiêu chí bấm Đ - CĐ dạng Segmented Control bo đều, dễ chạm -->
 							<div v-else class="d-flex flex-column ga-2">
 								<div
 									v-for="(tc, i) in getMergedPrintCriteria()"
 									:key="'m-tc-' + cls.LopID + '-' + tc.id"
-									class="pa-2 rounded-lg bg-grey-lighten-5 d-flex align-center justify-space-between ga-2"
+									class="pa-2.5 rounded-lg bg-grey-lighten-5 d-flex align-center justify-space-between ga-2 border border-grey-lighten-3"
 								>
-									<div class="flex-grow-1 pe-1">
-										<div class="font-weight-medium text-grey-darken-4 text-caption" style="line-height: 1.3;">
-											{{ (i + 1) + '. ' + getCriterionMainTitle(tc.ten) }}
+									<div class="flex-grow-1 pe-2">
+										<div class="font-weight-medium text-grey-darken-4 text-caption" style="line-height: 1.35; font-size: 12.5px;">
+											{{ 'TC' + (i + 1) + ': ' + getCriterionMainTitle(tc.ten) }}
 										</div>
-										<div v-if="getCriterionSubTitle(tc.ten)" class="text-caption text-grey-darken-1" style="font-size: 10.5px; line-height: 1.2;">
+										<div v-if="getCriterionSubTitle(tc.ten)" class="text-caption text-grey-darken-1 mt-0.5" style="font-size: 10.5px; line-height: 1.25;">
 											{{ getCriterionSubTitle(tc.ten) }}
 										</div>
 									</div>
 
-									<!-- Nút bấm điểm T - Đ - CĐ kích thước to, dễ bấm trên màn hình cảm ứng -->
-									<div class="score-group flex-shrink-0" :class="{ 'score-disabled': isReadOnlyDay }">
+									<!-- Nút bấm điểm Đ - CĐ dạng Segmented Control Pill -->
+									<div class="mobile-score-group flex-shrink-0">
 										<button
 											type="button"
-											class="score-btn-item score-btn-t"
-											:class="{ 'score-active-t': findClassCriterion(cls, tc).score === 3 }"
-											:disabled="isReadOnlyDay"
-											style="width: 32px; height: 32px; font-size: 13px;"
-											@click="setCriterionScore(cls, tc, 3)"
-										>
-											T
-										</button>
-										<button
-											type="button"
-											class="score-btn-item score-btn-d"
-											:class="{ 'score-active-d': findClassCriterion(cls, tc).score === 2 }"
-											:disabled="isReadOnlyDay"
-											style="width: 32px; height: 32px; font-size: 13px;"
+											class="mobile-score-btn mobile-score-btn-d"
+											:class="{ 'active': findClassCriterion(cls, tc).score !== 1 }"
+											title="Đạt"
 											@click="setCriterionScore(cls, tc, 2)"
 										>
 											Đ
 										</button>
 										<button
 											type="button"
-											class="score-btn-item score-btn-cd"
-											:class="{ 'score-active-cd': findClassCriterion(cls, tc).score === 1 }"
-											:disabled="isReadOnlyDay"
-											style="width: 32px; height: 32px; font-size: 13px;"
+											class="mobile-score-btn mobile-score-btn-cd"
+											:class="{ 'active': findClassCriterion(cls, tc).score === 1 }"
+											title="Chưa đạt"
 											@click="setCriterionScore(cls, tc, 1)"
 										>
 											CĐ
@@ -732,7 +763,7 @@
 								</div>
 
 								<!-- Ô nhận xét / ghi chú vi phạm trên Mobile -->
-								<div class="mt-1">
+								<div class="mt-2">
 									<div class="text-caption font-weight-medium text-grey-darken-3 mb-1">Ghi chú vi phạm / nhận xét:</div>
 									<v-textarea
 										v-model="cls.GhiChuViPham"
@@ -743,7 +774,6 @@
 										auto-grow
 										rows="1"
 										max-rows="3"
-										:disabled="isReadOnlyDay"
 										class="bg-white"
 										style="font-size: 12.5px;"
 										@update:model-value="onQsNoteChange"
@@ -758,30 +788,30 @@
 			<!-- TAB 2: GVCN ĐĂNG KÍ LỊCH TRỰC & THEO DÕI NỀ NẾP TUẦN -->
 			<v-window-item value="gvcn">
 				<!-- KHỐI 1: ĐĂNG KÍ LỊCH TRỰC DIỆN TUẦN -->
-				<v-card class="mb-3 pa-3" elevation="0" rounded="lg" border style="border-color: #eaecf0 !important;">
+				<v-card class="mb-3 pa-3" elevation="0" rounded="lg" style="border: 1px solid #f1f5f9 !important; background: #ffffff;">
 					<!-- Dòng 1: Thông tin lớp & Dropdown đổi lớp & Nút lưu -->
-					<div class="d-flex align-center justify-space-between flex-wrap ga-2 pb-2.5 mb-2.5 border-b" style="border-bottom-color: #f1f5f9 !important;">
+					<div class="d-flex align-center justify-space-between flex-wrap ga-2 pb-2.5 mb-2.5" style="border-bottom: 1px solid #f1f5f9 !important;">
 						<!-- Trái: Tên lớp, GVCN -->
 						<div class="d-flex align-center flex-wrap" style="gap: 12px;">
-							<v-avatar color="teal-lighten-5" size="36" class="border border-teal-lighten-3 elevation-1">
-								<v-icon color="teal-darken-2" size="20">mdi-google-classroom</v-icon>
+							<v-avatar size="32" rounded="lg" style="background: #f1f5f9;">
+								<v-icon color="teal-darken-1" size="18">mdi-google-classroom</v-icon>
 							</v-avatar>
 							<div>
 								<div class="d-flex align-center flex-wrap ga-2">
-									<span class="font-weight-medium text-subtitle-1 text-primary" style="font-size: 16px !important; line-height: 1.2;">
+									<span class="font-weight-bold" style="font-size: 15px !important; color: #1e293b; line-height: 1.2;">
 										Lớp {{ gvcnClassInfo.TenLop }}
 									</span>
 								</div>
-								<div class="text-caption text-medium-emphasis" style="font-size: 12px !important;">
+								<div class="text-caption text-medium-emphasis" style="font-size: 11.5px !important;">
 									GVCN: <span class="text-grey-darken-3 font-weight-medium">{{ gvcnClassInfo.TenGVCN }}</span> · Sĩ số: <span class="font-weight-medium">{{ gvcnClassInfo.SiSo }} học sinh</span>
 								</div>
 							</div>
 						</div>
 
-						<!-- Phải: Dropdown đổi lớp (chỉ hiện khi là BGH/Admin) & Badge & Nút Lưu -->
+						<!-- Phải: Dropdown đổi lớp (chỉ hiện khi là Quản sinh/BGH/Admin) & Badge -->
 						<div class="d-flex align-center ga-2 flex-wrap w-100 w-sm-auto justify-space-between justify-sm-end">
-							<!-- Dropdown đổi lớp: Chỉ hiển thị cho BGH/Admin -->
-							<div v-if="!isGVCNRole" class="flex-grow-1 flex-sm-grow-0" style="min-width: 240px; max-width: 100%;">
+							<!-- Dropdown đổi lớp: Tuyệt đối không hiển thị cho role GVCN (kể cả Admin đang test role GVCN) -->
+							<div v-if="showClassSelectorOnGvcn" class="flex-grow-1 flex-sm-grow-0" style="min-width: 220px; max-width: 100%;">
 								<v-select
 									v-model="selectedGvcnClassId"
 									:items="availableGvcnClasses"
@@ -797,49 +827,58 @@
 								/>
 							</div>
 
-							<!-- Nhóm Badge số buổi & Trạng thái Tự động lưu (Bỏ hẳn nút Lưu) -->
+							<!-- Nhóm Badge số buổi & Trạng thái Tự động lưu -->
 							<div class="d-flex align-center ga-2 flex-wrap flex-grow-1 flex-sm-grow-0 justify-space-between justify-sm-end w-100 w-sm-auto">
 								<v-chip
 									:color="gvcnTargetMet ? 'success' : 'warning'"
 									size="small"
-									class="font-weight-medium px-3 rounded-pill text-white flex-grow-1 flex-sm-grow-0 justify-center"
-									variant="flat"
+									variant="tonal"
+									class="font-weight-medium px-2.5 rounded-pill flex-grow-1 flex-sm-grow-0 justify-center"
+									style="font-size: 11.5px; height: 26px;"
 								>
-									<v-icon start size="14" color="white">{{ gvcnTargetMet ? 'mdi-check-circle' : 'mdi-alert-circle' }}</v-icon>
-									Tự quản: {{ gvcnTuQuanCount }}/4 ngày {{ gvcnTargetMet ? '(đạt chỉ tiêu ≥ 2)' : '(cần tối thiểu 2 ngày)' }}
+									<v-icon start size="13">{{ gvcnTargetMet ? 'mdi-check-circle' : 'mdi-alert-circle' }}</v-icon>
+									Tự quản: {{ gvcnTuQuanCount }}/4 ngày {{ gvcnTargetMet ? '(đạt ≥ 2)' : '(cần ≥ 2)' }}
 								</v-chip>
 
-								<!-- Trạng thái: Lịch sử tuần trước (Đã khóa) HOẶC Trạng thái tự động lưu -->
+								<!-- Trạng thái: Đã khóa đăng ký tuần (Từ T3 đến T6) HOẶC Trạng thái tự động lưu -->
 								<v-chip
-									v-if="isPastSelectedWeek"
-									color="blue-grey-darken-1"
+									v-if="isGvcnRegistrationLockedForSelectedWeek()"
+									color="blue-grey"
 									size="small"
 									variant="tonal"
-									class="font-weight-medium px-3 rounded-pill flex-grow-1 flex-sm-grow-0 justify-center"
-									style="min-height: 28px;"
+									class="font-weight-medium px-2.5 rounded-pill flex-grow-1 flex-sm-grow-0 justify-center"
+									style="font-size: 11.5px; height: 26px;"
 								>
-									<v-icon start size="15" color="blue-grey-darken-1">mdi-lock-outline</v-icon>
-									<span class="font-weight-medium">Lịch sử tuần trước (đã khóa)</span>
+									<v-icon start size="13">mdi-lock-outline</v-icon>
+									<span class="font-weight-medium">Đã khóa đăng ký (T3 - T6)</span>
 								</v-chip>
 								<v-chip
 									v-else
 									:color="autoSaveStatus === 'saving' ? 'amber-darken-3' : 'success'"
 									size="small"
-									:variant="autoSaveStatus === 'saving' ? 'flat' : 'tonal'"
-									class="font-weight-medium px-3 rounded-pill flex-grow-1 flex-sm-grow-0 justify-center"
-									style="transition: all 0.25s ease; min-height: 28px;"
+									variant="tonal"
+									class="font-weight-medium px-2.5 rounded-pill flex-grow-1 flex-sm-grow-0 justify-center"
+									style="font-size: 11.5px; height: 26px; transition: all 0.25s ease;"
 								>
 									<template v-if="autoSaveStatus === 'saving'">
-										<v-progress-circular indeterminate size="12" width="2" color="white" class="me-1.5" />
-										<span class="text-white font-weight-medium">Đang lưu...</span>
+										<v-progress-circular indeterminate size="10" width="2" color="amber-darken-3" class="me-1" />
+										<span class="font-weight-medium">Đang lưu...</span>
 									</template>
 									<template v-else>
-										<v-icon start size="15" color="success">mdi-cloud-check</v-icon>
-										<span class="font-weight-medium text-success-darken-2">Đã lưu tự động</span>
-										<span v-if="lastSavedTime" class="ms-1 text-caption text-grey-darken-1" style="font-size: 10.5px;">({{ lastSavedTime }})</span>
+										<v-icon start size="13" color="success">mdi-cloud-check-outline</v-icon>
+										<span class="font-weight-medium">Đã lưu tự động</span>
+										<span v-if="lastSavedTime" class="ms-1 text-caption text-grey-darken-1" style="font-size: 10px;">({{ lastSavedTime }})</span>
 									</template>
 								</v-chip>
 							</div>
+						</div>
+					</div>
+
+					<!-- Thông báo quy định thời gian đăng ký tuần (Clean minimal callout) -->
+					<div class="px-3 py-2 mb-2.5 d-flex align-center justify-space-between flex-wrap ga-2" style="background: #f8fafc; border-left: 3px solid #94a3b8; border-radius: 0 6px 6px 0; font-size: 11.5px; line-height: 1.45; color: #475569;">
+						<div class="d-flex align-center ga-2">
+							<v-icon size="15" color="blue-grey-darken-1">mdi-clock-lock-outline</v-icon>
+							<span><strong>Quy định:</strong> Mở đăng ký từ <strong>T7 tuần trước đến hết sáng T2</strong>. Khóa tự động từ <strong>T3 đến hết T6</strong>. Ngày không tự quản, GVCN sinh hoạt trực tiếp cùng lớp.</span>
 						</div>
 					</div>
 
@@ -864,19 +903,19 @@
 					</v-alert>
 
 					<!-- LƯỚI THỜI KHÓA BIỂU ĐĂNG KÍ (TKB GRID TRỰC QUAN) -->
-					<div class="mb-3 border rounded-lg overflow-hidden bg-white" style="border-color: #eaecf0 !important;">
+					<div class="mb-3 rounded-lg overflow-hidden bg-white" style="border: 1px solid #f1f5f9 !important;">
 						<!-- Tiêu đề các ngày trong tuần (TKB Header) -->
-						<div class="d-flex text-center border-b" style="background-color: #f8fafc; border-bottom-color: #f1f5f9 !important;">
+						<div class="d-flex text-center" style="background-color: #f8fafc; border-bottom: 1px solid #f1f5f9 !important;">
 							<div
 								v-for="day in gvcnWeekSchedule"
 								:key="'tkb-head-' + day.key"
-								class="flex-grow-1 py-1 px-0.5 border-e"
+								class="flex-grow-1 py-1.5 px-0.5"
 								:class="{
-									'bg-blue-grey-lighten-5 text-blue-grey-darken-3': day.key === 2,
-									'bg-indigo-lighten-5 text-primary font-weight-medium': day.key !== 2 && day.IsTuQuan,
+									'text-grey-darken-4 font-weight-bold': day.key === 2,
+									'text-success font-weight-medium': day.key !== 2 && day.IsTuQuan,
 									'text-grey-darken-3 font-weight-medium': day.key !== 2 && !day.IsTuQuan
 								}"
-								style="flex-basis: 0; min-width: 0;"
+								:style="day.key === 2 ? 'flex-basis: 0; min-width: 0; border-right: 1px solid #cbd5e1; background-color: #e2e8f0;' : 'flex-basis: 0; min-width: 0; border-right: 1px solid #f1f5f9;'"
 							>
 								<div class="d-flex align-center justify-center ga-0.5 font-weight-medium text-caption" style="font-size: 11.5px; line-height: 1.2;">
 									<span class="d-none d-sm-inline">{{ day.label }}</span>
@@ -893,28 +932,28 @@
 								<!-- 1. THỨ 2 CỐ ĐỊNH: Bắt buộc toàn trường GVCN sinh hoạt -->
 								<div
 									v-if="day.key === 2"
-									class="flex-grow-1 py-1 px-0.5 d-flex flex-column align-center justify-center border-e tkb-stripe-disabled"
-									style="flex-basis: 0; min-width: 0; cursor: not-allowed; user-select: none;"
+									class="flex-grow-1 py-1 px-0.5 d-flex flex-column align-center justify-center tkb-monday-cell"
+									style="flex-basis: 0; min-width: 0; cursor: not-allowed; user-select: none; border-right: 1px solid #cbd5e1;"
 									title="Thứ 2: Bắt buộc toàn trường GVCN sinh hoạt đầu tuần"
 									@click="showNotice('Thứ Hai bắt buộc GVCN sinh hoạt đầu tuần toàn trường, không áp dụng tự quản!', 'info')"
 								>
-									<div class="d-flex align-center ga-0.5 text-blue-grey-darken-2 font-weight-medium" style="font-size: 11px; line-height: 1.2;">
-										<v-icon size="12" color="blue-grey-darken-1">mdi-lock</v-icon>
+									<div class="d-flex align-center ga-0.5 text-grey-darken-3 font-weight-medium" style="font-size: 11px; line-height: 1.2;">
+										<v-icon size="12" color="grey-darken-2">mdi-lock</v-icon>
 										<span class="d-none d-sm-inline">GVCN sinh hoạt</span>
 										<span class="d-inline d-sm-none">GVCN</span>
 									</div>
-									<div class="text-caption text-medium-emphasis mt-0.5 d-none d-sm-block" style="font-size: 9.5px; line-height: 1;">
+									<div class="text-caption text-grey-darken-1 mt-0.5 d-none d-sm-block font-weight-medium" style="font-size: 9.5px; line-height: 1;">
 										(Cố định)
 									</div>
 								</div>
 
-								<!-- 2. NGÀY ĐÃ QUA TRONG QUÁ KHỨ -->
+								<!-- 2. TUẦN ĐÃ KHÓA ĐĂNG KÝ (KHÓA TỪ THỨ BA ĐẾN HẾT THỨ SÁU HOẶC QUÁ HẠN SÁNG THỨ HAI) -->
 								<div
-									v-else-if="isSpecificDayInPast(day.key)"
-									class="flex-grow-1 py-1 px-0.5 d-flex flex-column align-center justify-center border-e tkb-stripe-disabled"
-									style="flex-basis: 0; min-width: 0; cursor: not-allowed; user-select: none;"
-									:title="'Ngày ' + day.label + ' đã qua! Dữ liệu đã khóa lưu trữ lịch sử.'"
-									@click="showNotice('Ngày ' + day.label + ' đã qua! Dữ liệu đã khóa lưu trữ lịch sử, không thể chỉnh sửa.', 'info')"
+									v-else-if="isGvcnRegistrationLockedForSelectedWeek()"
+									class="flex-grow-1 py-1 px-0.5 d-flex flex-column align-center justify-center tkb-stripe-disabled"
+									style="flex-basis: 0; min-width: 0; cursor: not-allowed; user-select: none; border-right: 1px solid #f1f5f9;"
+									:title="getGvcnLockReasonMessage()"
+									@click="showNotice(getGvcnLockReasonMessage(), 'warning')"
 								>
 									<div class="d-flex align-center ga-0.5 font-weight-medium" :class="day.IsTuQuan ? 'text-teal-darken-3' : 'text-blue-grey-darken-2'" style="font-size: 11px; line-height: 1.2;">
 										<v-icon size="12" :color="day.IsTuQuan ? 'teal' : 'blue-grey-darken-1'">mdi-lock</v-icon>
@@ -926,29 +965,11 @@
 									</div>
 								</div>
 
-								<!-- 2.1 NGÀY HÔM NAY SAU 06:00 SÁNG -->
-								<div
-									v-else-if="isSpecificDayToday(day.key) && isPastGvcnCutoffTime()"
-									class="flex-grow-1 py-1 px-0.5 d-flex flex-column align-center justify-center border-e tkb-stripe-disabled"
-									style="flex-basis: 0; min-width: 0; cursor: not-allowed; user-select: none;"
-									:title="'Đã quá 06:00 sáng hôm nay (' + day.label + ')! Không thể đăng ký hoặc thay đổi lịch.'"
-									@click="showNotice('Đã quá 06:00 sáng hôm nay (' + day.label + ')! Không thể đăng ký hoặc thay đổi lịch theo quy định của nhà trường.', 'warning')"
-								>
-									<div class="d-flex align-center ga-0.5 font-weight-medium" :class="day.IsTuQuan ? 'text-teal-darken-3' : 'text-blue-grey-darken-2'" style="font-size: 11px; line-height: 1.2;">
-										<v-icon size="12" :color="day.IsTuQuan ? 'teal' : 'blue-grey-darken-1'">mdi-lock</v-icon>
-										<span class="d-none d-sm-inline">{{ day.IsTuQuan ? 'Lớp tự quản' : 'GVCN sinh hoạt' }}</span>
-										<span class="d-inline d-sm-none">{{ day.IsTuQuan ? 'Tự quản' : 'GVCN' }}</span>
-									</div>
-									<div class="text-caption text-medium-emphasis mt-0.5 d-none d-sm-block" style="font-size: 9px; line-height: 1;">
-										(Khóa 6h)
-									</div>
-								</div>
-
 								<!-- 2.5 LỚP ĐANG DÍNH CHẾ TÀI -->
 								<div
 									v-else-if="isClassBlocked(selectedGvcnClassId)"
-									class="flex-grow-1 py-1 px-0.5 d-flex flex-column align-center justify-center border-e bg-red-lighten-5 cursor-not-allowed"
-									style="flex-basis: 0; min-width: 0; user-select: none;"
+									class="flex-grow-1 py-1 px-0.5 d-flex flex-column align-center justify-center bg-red-lighten-5 cursor-not-allowed"
+									style="flex-basis: 0; min-width: 0; user-select: none; border-right: 1px solid #f1f5f9;"
 									@click="showNotice('Lớp đang chấp hành chế tài tạm dừng tự quản 01 tuần! GVCN bắt buộc phải quay lại có mặt trực tiếp 5/5 buổi hằng ngày lúc 7:15 để củng cố xây dựng lại nền nếp lớp.', 'warning')"
 								>
 									<div class="d-flex align-center ga-0.5 font-weight-medium text-error" style="font-size: 11px; line-height: 1.2;">
@@ -964,12 +985,12 @@
 								<!-- 3. NGÀY CHO PHÉP CHỌN & ĐÃ ĐĂNG KÍ TỰ QUẢN -->
 								<div
 									v-else-if="day.IsTuQuan"
-									class="flex-grow-1 py-1 px-0.5 d-flex flex-column align-center justify-center border-e tkb-cell-registered cursor-pointer transition-all"
-									style="flex-basis: 0; min-width: 0; user-select: none;"
+									class="flex-grow-1 py-1 px-0.5 d-flex flex-column align-center justify-center tkb-cell-registered cursor-pointer transition-all"
+									style="flex-basis: 0; min-width: 0; user-select: none; border-right: 1px solid #f1f5f9;"
 									title="Bấm để chuyển về GVCN sinh hoạt"
 									@click="toggleGvcnDay(day)"
 								>
-									<div class="d-flex align-center ga-0.5 text-success-darken-1 font-weight-medium" style="font-size: 11px; line-height: 1.2;">
+									<div class="d-flex align-center ga-0.5 text-success font-weight-medium" style="font-size: 11px; line-height: 1.2;">
 										<v-icon size="13" color="success">mdi-check-circle</v-icon>
 										<span class="d-none d-sm-inline">Lớp tự quản</span>
 										<span class="d-inline d-sm-none">Tự quản</span>
@@ -982,8 +1003,8 @@
 								<!-- 4. NGÀY CHO PHÉP CHỌN & CHƯA ĐĂNG KÍ (GVCN SINH HOẠT) -->
 								<div
 									v-else
-									class="flex-grow-1 py-1 px-0.5 d-flex flex-column align-center justify-center border-e tkb-cell-available cursor-pointer transition-all"
-									style="flex-basis: 0; min-width: 0; user-select: none;"
+									class="flex-grow-1 py-1 px-0.5 d-flex flex-column align-center justify-center tkb-cell-available cursor-pointer transition-all"
+									style="flex-basis: 0; min-width: 0; user-select: none; border-right: 1px solid #f1f5f9;"
 									:title="'Bấm vào để đăng kí tự quản cho ' + day.label"
 									@click="toggleGvcnDay(day)"
 								>
@@ -1002,13 +1023,13 @@
 						</div>
 
 						<!-- HÀNG 2: GHI CHÚ RIÊNG CHO TỪNG NGÀY (Gọn gàng 22px) -->
-						<div class="d-flex text-center border-t" style="background-color: #fafbfc; border-top-color: #f1f5f9 !important;">
+						<div class="d-flex text-center" style="background-color: #fafbfc; border-top: 1px solid #f1f5f9 !important;">
 							<div
 								v-for="day in gvcnWeekSchedule"
 								:key="'tkb-note-' + day.key"
-								class="flex-grow-1 py-1 px-1 border-e tkb-note-cell d-flex align-center justify-center"
-								:class="{ 'tkb-stripe-disabled': isDayGvcnLocked(day.key) }"
-								style="flex-basis: 0; min-width: 0;"
+								class="flex-grow-1 py-1 px-1 tkb-note-cell d-flex align-center justify-center"
+								:class="{ 'tkb-monday-note-cell': day.key === 2, 'tkb-stripe-disabled': day.key !== 2 && isDayGvcnLocked(day.key) }"
+								:style="day.key === 2 ? 'flex-basis: 0; min-width: 0; border-right: 1px solid #cbd5e1; background-color: #e2e8f0;' : 'flex-basis: 0; min-width: 0; border-right: 1px solid #f1f5f9;'"
 							>
 								<input
 									type="text"
@@ -1016,6 +1037,7 @@
 									:placeholder="day.key === 2 ? 'Cố định' : (isDayGvcnLocked(day.key) ? 'Đã khóa' : 'Ghi chú...')"
 									:disabled="isDayGvcnLocked(day.key)"
 									class="tkb-note-native-input"
+									:class="{ 'tkb-monday-input': day.key === 2 }"
 									@input="onNoteInput"
 								/>
 							</div>
@@ -1024,8 +1046,8 @@
 				</v-card>
 
 				<!-- KHỐI 2: NHẬT KÍ ĐÁNH GIÁ NỀ NẾP LỚP TRONG TUẦN (BẢNG NGANG GỌN GÀNG, 1 VIEW NHÌN THẤY TOÀN BỘ) -->
-				<v-card elevation="0" rounded="lg" class="overflow-hidden border" style="border-color: #eaecf0 !important;">
-					<div class="px-3 py-2 bg-grey-lighten-5 border-b d-flex align-center justify-space-between flex-wrap ga-2" style="border-bottom-color: #f1f5f9 !important;">
+				<v-card elevation="0" rounded="lg" class="overflow-hidden" style="border: 1px solid #f1f5f9 !important; background: #ffffff;">
+					<div class="px-3 py-2 d-flex align-center justify-space-between flex-wrap ga-2" style="background-color: #f8fafc; border-bottom: 1px solid #f1f5f9 !important;">
 						<div class="d-flex align-center ga-2 text-primary font-weight-bold" style="font-size: 13px;">
 							<v-icon size="18">mdi-clipboard-text-clock-outline</v-icon>
 							<span>Nhật ký quản sinh chấm điểm nề nếp lớp {{ gvcnClassInfo.TenLop }} — {{ selectedWeek ? selectedWeek.title : 'Tuần này' }}</span>
@@ -1034,32 +1056,32 @@
 							</v-chip>
 						</div>
 						<div class="text-caption text-medium-emphasis font-italic" style="font-size: 11px;">
-							[T] = Tốt · [Đ] = Đạt · [CĐ] = Cần cố gắng
+							[Đ] = Đạt · [CĐ] = Chưa đạt
 						</div>
 					</div>
 
 					<!-- Bảng Desktop (>= 960px) -->
 					<div class="d-none d-md-block table-responsive">
-						<table class="w-100 evaluation-master-table" style="font-size: 12.5px;">
+						<table class="w-100 evaluation-master-table" style="min-width: 960px; font-size: 12.5px;">
 							<thead>
-								<tr style="height: 38px;">
-									<th style="width: 120px; text-align: left; padding: 4px 10px;">Thứ & ngày</th>
-									<th style="width: 110px; text-align: center; padding: 4px;">Lịch GVCN</th>
-									<th style="width: 130px; min-width: 120px; text-align: center; padding: 6px 4px; vertical-align: middle;">
-										<div class="font-weight-medium text-grey-darken-4" style="font-size: 12px; line-height: 1.25;">1. Không gian lớp</div>
-										<div class="text-grey-darken-2 mt-0.5" style="font-size: 11px; line-height: 1.25; font-weight: 400;">(Mở cửa, VS, bàn ghế)</div>
+								<tr style="height: 40px;">
+									<th style="width: 120px; min-width: 120px; text-align: left; padding: 6px 10px; white-space: nowrap;">Thứ & ngày</th>
+									<th style="width: 140px; min-width: 140px; text-align: center; padding: 6px 8px; white-space: nowrap;">Lịch GVCN</th>
+									<th style="width: 105px; min-width: 100px; text-align: center; padding: 4px 6px; vertical-align: middle; white-space: nowrap;">
+										<div class="font-weight-medium text-grey-darken-3" style="font-size: 11.5px; line-height: 1.2;">TC1: Không gian</div>
+										<div class="text-grey-darken-1 mt-0.5" style="font-size: 10px; line-height: 1.1; font-weight: 400;">(Sạch sẽ, bảng, sàn)</div>
 									</th>
-									<th style="width: 165px; min-width: 145px; text-align: center; padding: 6px 4px; vertical-align: middle;">
-										<div class="font-weight-medium text-grey-darken-4" style="font-size: 12px; line-height: 1.25;">2. Nền nếp & chuẩn bị tâm thế học tập</div>
-										<div class="text-grey-darken-2 mt-0.5" style="font-size: 11px; line-height: 1.25; font-weight: 400;">(Sĩ số, tác phong, sách vở)</div>
+									<th style="width: 105px; min-width: 100px; text-align: center; padding: 4px 6px; vertical-align: middle; white-space: nowrap;">
+										<div class="font-weight-medium text-grey-darken-3" style="font-size: 11.5px; line-height: 1.2;">TC2: Nội dung</div>
+										<div class="text-grey-darken-1 mt-0.5" style="font-size: 10px; line-height: 1.1; font-weight: 400;">(Đọc sách, chủ đề)</div>
 									</th>
-									<th style="width: 130px; min-width: 120px; text-align: center; padding: 6px 4px; vertical-align: middle;">
-										<div class="font-weight-medium text-grey-darken-4" style="font-size: 12px; line-height: 1.25;">3. Sinh hoạt chủ đề</div>
-										<div class="text-grey-darken-2 mt-0.5" style="font-size: 11px; line-height: 1.25; font-weight: 400;">(Đúng 7:20, nghiêm túc)</div>
+									<th style="width: 105px; min-width: 100px; text-align: center; padding: 4px 6px; vertical-align: middle; white-space: nowrap;">
+										<div class="font-weight-medium text-grey-darken-3" style="font-size: 11.5px; line-height: 1.2;">TC3: Nề nếp</div>
+										<div class="text-grey-darken-1 mt-0.5" style="font-size: 10px; line-height: 1.1; font-weight: 400;">(Nghiêm túc, tích cực)</div>
 									</th>
-									<th style="width: 105px; text-align: center; padding: 4px 8px; border-left: 1px solid #e2e8f0 !important; border-right: 1px solid #e2e8f0 !important;">Xếp loại</th>
-									<th style="min-width: 250px; text-align: left; padding: 4px 14px;">Ghi chú vi phạm / nhận xét của Quản sinh</th>
-									<th style="width: 130px; text-align: left; padding: 4px 10px;">Quản sinh chấm</th>
+									<th style="width: 120px; min-width: 115px; text-align: center; padding: 6px 8px; white-space: nowrap;">Xếp loại</th>
+									<th style="min-width: 180px; text-align: left; padding: 6px 12px;">Ghi chú vi phạm / nhận xét</th>
+									<th style="width: 140px; min-width: 135px; text-align: left; padding: 6px 12px; white-space: nowrap;">Quản sinh chấm</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -1073,55 +1095,49 @@
 									<td class="font-weight-medium text-left" style="padding: 4px 10px;">
 										{{ log.ThuLabel }} ({{ log.Ngay }})
 									</td>
-									<td style="text-align: center; padding: 4px;">
-										<span v-if="log.ThuLabel === 'Thứ 2'" class="text-blue-grey-darken-2 font-weight-medium d-inline-flex align-center ga-1" style="font-size: 11.5px;">
+									<td style="text-align: center; padding: 4px 8px; white-space: nowrap;">
+										<span v-if="log.ThuLabel === 'Thứ 2'" class="text-blue-grey-darken-2 font-weight-medium d-inline-flex align-center ga-1" style="font-size: 11.5px; white-space: nowrap;">
 											<v-icon size="14" color="blue-grey">mdi-school</v-icon> SH đầu tuần
 										</span>
-										<span v-else-if="!log.IsTuQuan" class="text-grey-darken-2 font-weight-medium d-inline-flex align-center ga-1" style="font-size: 11.5px;">
+										<span v-else-if="!log.IsTuQuan" class="text-grey-darken-2 font-weight-medium d-inline-flex align-center ga-1" style="font-size: 11.5px; white-space: nowrap;">
 											<v-icon size="14" color="grey-darken-2">mdi-account-tie</v-icon> GVCN sinh hoạt
 										</span>
-										<span v-else class="text-indigo font-weight-medium d-inline-flex align-center ga-1" style="font-size: 11.5px;">
-											<v-icon size="14" color="indigo">mdi-account-group-outline</v-icon> Lớp tự quản
+										<span v-else class="text-success font-weight-medium d-inline-flex align-center ga-1" style="font-size: 11.5px; white-space: nowrap;">
+											<v-icon size="14" color="success">mdi-account-group-outline</v-icon> Lớp tự quản
 										</span>
 									</td>
-									<!-- TC1: Không gian -->
+									<!-- TC1 -->
 									<td style="text-align: center; padding: 4px;">
 										<span v-if="log.KetQua === 'CHUA_CHAM' || log.ThuLabel === 'Thứ 2' || !log.IsTuQuan" class="text-medium-emphasis">—</span>
 										<template v-else>
 											<v-chip v-if="getLogCritScore(log, 0) === 1" size="x-small" color="error" variant="flat" class="font-weight-bold px-1.5" style="height: 20px;">
 												CĐ
 											</v-chip>
-											<span v-else-if="getLogCritScore(log, 0) === 3" class="text-success font-weight-medium" style="font-size: 12px;">✓ Tốt</span>
-											<span v-else-if="getLogCritScore(log, 0) === 2" class="text-grey-darken-2 font-weight-medium" style="font-size: 12px;">Đạt</span>
-											<span v-else class="text-medium-emphasis">—</span>
+											<span v-else class="text-success font-weight-medium" style="font-size: 12px;">✓ Đạt</span>
 										</template>
 									</td>
-									<!-- TC2: Nền nếp -->
+									<!-- TC2 -->
 									<td style="text-align: center; padding: 4px;">
 										<span v-if="log.KetQua === 'CHUA_CHAM' || log.ThuLabel === 'Thứ 2' || !log.IsTuQuan" class="text-medium-emphasis">—</span>
 										<template v-else>
 											<v-chip v-if="getLogCritScore(log, 1) === 1" size="x-small" color="error" variant="flat" class="font-weight-bold px-1.5" style="height: 20px;">
 												CĐ
 											</v-chip>
-											<span v-else-if="getLogCritScore(log, 1) === 3" class="text-success font-weight-medium" style="font-size: 12px;">✓ Tốt</span>
-											<span v-else-if="getLogCritScore(log, 1) === 2" class="text-grey-darken-2 font-weight-medium" style="font-size: 12px;">Đạt</span>
-											<span v-else class="text-medium-emphasis">—</span>
+											<span v-else class="text-success font-weight-medium" style="font-size: 12px;">✓ Đạt</span>
 										</template>
 									</td>
-									<!-- TC3: Chủ đề -->
+									<!-- TC3 -->
 									<td style="text-align: center; padding: 4px;">
 										<span v-if="log.KetQua === 'CHUA_CHAM' || log.ThuLabel === 'Thứ 2' || !log.IsTuQuan" class="text-medium-emphasis">—</span>
 										<template v-else>
 											<v-chip v-if="getLogCritScore(log, 2) === 1" size="x-small" color="error" variant="flat" class="font-weight-bold px-1.5" style="height: 20px;">
 												CĐ
 											</v-chip>
-											<span v-else-if="getLogCritScore(log, 2) === 3" class="text-success font-weight-medium" style="font-size: 12px;">✓ Tốt</span>
-											<span v-else-if="getLogCritScore(log, 2) === 2" class="text-grey-darken-2 font-weight-medium" style="font-size: 12px;">Đạt</span>
-											<span v-else class="text-medium-emphasis">—</span>
+											<span v-else class="text-success font-weight-medium" style="font-size: 12px;">✓ Đạt</span>
 										</template>
 									</td>
 									<!-- Xếp loại -->
-									<td style="text-align: center; padding: 4px 8px; border-left: 1px solid #e2e8f0 !important; border-right: 1px solid #e2e8f0 !important;">
+									<td style="text-align: center; padding: 4px 6px;">
 										<v-chip
 											v-if="log.KetQua === 'CHUA_CHAM'"
 											size="x-small"
@@ -1141,24 +1157,31 @@
 										<v-chip
 											v-else
 											size="x-small"
-											:color="log.KetQua === 'T' ? 'success' : (log.KetQua === 'D' ? 'primary' : 'error')"
+											:color="log.KetQua === 'D' ? 'success' : (log.KetQua === 'CCG' ? 'amber-darken-3' : 'error')"
 											:variant="log.KetQua === 'CD' ? 'flat' : 'tonal'"
 											:class="log.KetQua === 'CD' ? 'font-weight-bold rounded-pill px-2' : 'font-weight-medium rounded-pill px-2'"
 										>
-											{{ log.KetQua === 'T' ? 'Tốt' : (log.KetQua === 'D' ? 'Đạt' : 'Chưa đạt') }}
+											{{ log.KetQua === 'D' ? 'Đạt (Đ)' : (log.KetQua === 'CCG' ? 'Cần cố gắng (CCG)' : 'Chưa đạt (CĐ)') }}
 										</v-chip>
 									</td>
-									<!-- Ghi chú vi phạm -->
-									<td class="text-left" style="padding: 4px 14px;">
-										<span v-if="log.NoiDungViPham" class="text-error font-weight-medium">
-											⚠️ {{ log.NoiDungViPham }}
-										</span>
+									<!-- Ghi chú vi phạm / nhận xét của Quản sinh -->
+									<td class="text-left" style="padding: 4px 12px;">
+										<template v-if="log.NoiDungViPham">
+											<span v-if="log.HasViolation" class="text-error font-weight-medium d-inline-flex align-center ga-1">
+												<v-icon size="14" color="error">mdi-alert-circle</v-icon>
+												{{ log.NoiDungViPham }}
+											</span>
+											<span v-else class="text-grey-darken-3 font-italic d-inline-flex align-center ga-1" style="font-size: 12.5px;">
+												<v-icon size="14" color="grey-darken-1">mdi-comment-text-outline</v-icon>
+												{{ log.NoiDungViPham }}
+											</span>
+										</template>
 										<span v-else class="text-medium-emphasis">—</span>
 									</td>
 									<!-- Quản sinh chấm -->
-									<td class="text-left text-medium-emphasis" style="padding: 4px 10px; font-size: 11px;">
+									<td class="text-left text-medium-emphasis" style="padding: 6px 12px; font-size: 12px; white-space: nowrap;">
 										<span v-if="log.ThuLabel === 'Thứ 2' || !log.IsTuQuan || log.KetQua === 'CHUA_CHAM'">—</span>
-										<span v-else>{{ log.NguoiCham || '—' }}</span>
+										<span v-else class="text-grey-darken-3 font-weight-medium">{{ log.NguoiCham || '—' }}</span>
 									</td>
 								</tr>
 								<tr v-if="gvcnClassHistory.length === 0">
@@ -1186,12 +1209,12 @@
 								<div class="d-flex align-center ga-1">
 									<span v-if="log.ThuLabel === 'Thứ 2'" class="text-caption text-blue-grey-darken-2 font-weight-medium">SH đầu tuần</span>
 									<span v-else-if="!log.IsTuQuan" class="text-caption text-grey-darken-2 font-weight-medium">GVCN sinh hoạt</span>
-									<span v-else class="text-caption text-indigo font-weight-medium">Lớp tự quản</span>
+									<span v-else class="text-caption text-success font-weight-medium">Lớp tự quản</span>
 									<v-chip v-if="log.KetQua === 'CHUA_CHAM'" size="x-small" color="grey-darken-1" variant="tonal" class="font-weight-medium rounded-pill px-2 ms-1">
 										Chưa diễn ra
 									</v-chip>
-									<v-chip v-else-if="log.ThuLabel !== 'Thứ 2' && log.IsTuQuan" size="x-small" :color="log.KetQua === 'T' ? 'success' : (log.KetQua === 'D' ? 'grey-darken-1' : 'error')" variant="flat" :class="log.KetQua === 'CD' ? 'font-weight-bold rounded-pill text-white px-2 ms-1' : 'font-weight-medium rounded-pill text-white px-2 ms-1'">
-										{{ log.KetQua === 'T' ? 'Tốt' : (log.KetQua === 'D' ? 'Đạt' : 'CĐ') }}
+									<v-chip v-else-if="log.ThuLabel !== 'Thứ 2' && log.IsTuQuan" size="x-small" :color="log.KetQua === 'D' ? 'success' : (log.KetQua === 'CCG' ? 'amber-darken-3' : 'error')" variant="flat" :class="log.KetQua === 'CD' ? 'font-weight-bold rounded-pill text-white px-2 ms-1' : 'font-weight-medium rounded-pill text-white px-2 ms-1'">
+										{{ log.KetQua === 'D' ? 'Đạt' : (log.KetQua === 'CCG' ? 'CCG' : 'CĐ') }}
 									</v-chip>
 								</div>
 							</div>
@@ -1205,37 +1228,38 @@
 							</div>
 							<div v-else class="d-flex flex-column ga-1.5 mb-2 pa-2 rounded bg-grey-lighten-5 border">
 								<div class="d-flex align-center justify-space-between" style="font-size: 11.5px;">
-									<span class="font-weight-medium text-grey-darken-3">1. Không gian lớp (Mở cửa, VS, bàn ghế)</span>
+									<span class="font-weight-medium text-grey-darken-3">TC1. Thông thoáng, ngăn nắp, sạch sẽ</span>
 									<span class="ms-2">
 										<v-chip v-if="getLogCritScore(log, 0) === 1" size="x-small" color="error" variant="flat" class="font-weight-bold px-1.5">CĐ</v-chip>
-										<span v-else-if="getLogCritScore(log, 0) === 3" class="text-success font-weight-medium">✓ Tốt</span>
-										<span v-else-if="getLogCritScore(log, 0) === 2" class="text-grey-darken-2 font-weight-medium">Đạt</span>
-										<span v-else class="text-medium-emphasis">—</span>
+										<span v-else class="text-success font-weight-medium">✓ Đạt</span>
 									</span>
 								</div>
 								<div class="d-flex align-center justify-space-between" style="font-size: 11.5px;">
-									<span class="font-weight-medium text-grey-darken-3">2. Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)</span>
+									<span class="font-weight-medium text-grey-darken-3">TC2. Hoạt động 15p có nội dung cụ thể</span>
 									<span class="ms-2">
 										<v-chip v-if="getLogCritScore(log, 1) === 1" size="x-small" color="error" variant="flat" class="font-weight-bold px-1.5">CĐ</v-chip>
-										<span v-else-if="getLogCritScore(log, 1) === 3" class="text-success font-weight-medium">✓ Tốt</span>
-										<span v-else-if="getLogCritScore(log, 1) === 2" class="text-grey-darken-2 font-weight-medium">Đạt</span>
-										<span v-else class="text-medium-emphasis">—</span>
+										<span v-else class="text-success font-weight-medium">✓ Đạt</span>
 									</span>
 								</div>
 								<div class="d-flex align-center justify-space-between" style="font-size: 11.5px;">
-									<span class="font-weight-medium text-grey-darken-3">3. Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)</span>
+									<span class="font-weight-medium text-grey-darken-3">TC3. Tập thể tham gia nghiêm túc, tích cực</span>
 									<span class="ms-2">
 										<v-chip v-if="getLogCritScore(log, 2) === 1" size="x-small" color="error" variant="flat" class="font-weight-bold px-1.5">CĐ</v-chip>
-										<span v-else-if="getLogCritScore(log, 2) === 3" class="text-success font-weight-medium">✓ Tốt</span>
-										<span v-else-if="getLogCritScore(log, 2) === 2" class="text-grey-darken-2 font-weight-medium">Đạt</span>
-										<span v-else class="text-medium-emphasis">—</span>
+										<span v-else class="text-success font-weight-medium">✓ Đạt</span>
 									</span>
 								</div>
 							</div>
 
-							<!-- Ghi chú vi phạm nếu có -->
-							<div v-if="log.NoiDungViPham" class="pa-2 rounded bg-red-lighten-4 border border-red-lighten-3 text-caption text-error font-weight-bold mb-1">
-								⚠️ {{ log.NoiDungViPham }}
+							<!-- Ghi chú vi phạm / nhận xét nếu có -->
+							<div
+								v-if="log.NoiDungViPham"
+								class="pa-2 rounded text-caption font-weight-medium mb-1 border d-flex align-start ga-1"
+								:class="log.HasViolation ? 'bg-red-lighten-5 border-red-lighten-3 text-error' : 'bg-grey-lighten-5 border-grey-lighten-2 text-grey-darken-3'"
+							>
+								<v-icon size="14" :color="log.HasViolation ? 'error' : 'grey-darken-2'" class="mt-0.5 flex-shrink-0">
+									{{ log.HasViolation ? 'mdi-alert-circle' : 'mdi-comment-text-outline' }}
+								</v-icon>
+								<span>{{ log.NoiDungViPham }}</span>
 							</div>
 
 							<div class="d-flex justify-end text-caption text-medium-emphasis" style="font-size: 10.5px;">
@@ -1275,23 +1299,37 @@
 						</div>
 
 						<!-- Nhóm nút In báo cáo & Sao chép nhanh gửi Zalo -->
-						<div class="d-flex align-center ga-2 ms-auto">
+						<!-- Nhóm nút In báo cáo & Sao chép nhanh gửi Zalo (Responsive trên Mobile không bị tràn hay cắt chữ) -->
+						<div class="d-flex align-center ga-1.5 ga-sm-2 ms-sm-auto w-100 w-sm-auto">
 							<v-btn
 								size="small"
 								variant="outlined"
 								color="primary"
 								prepend-icon="mdi-printer"
-								class="text-none font-weight-medium"
+								class="text-none font-weight-medium flex-grow-1 flex-sm-grow-0 px-2"
+								style="min-width: 0; font-size: 11.5px; height: 32px;"
 								@click="openPrintDialog(bghViewMode === 'month' ? 'bgh_summary' : 'daily')"
 							>
-								In phiếu / báo cáo
+								In phiếu<span class="d-none d-sm-inline ms-0.5"> / báo cáo</span>
+							</v-btn>
+							<v-btn
+								size="small"
+								variant="outlined"
+								color="success"
+								prepend-icon="mdi-file-excel-outline"
+								class="text-none font-weight-medium flex-grow-1 flex-sm-grow-0 px-2"
+								style="min-width: 0; font-size: 11.5px; height: 32px;"
+								@click="exportExcelReport"
+							>
+								Xuất Excel
 							</v-btn>
 							<v-btn
 								size="small"
 								variant="outlined"
 								color="grey-darken-3"
 								prepend-icon="mdi-share-variant-outline"
-								class="text-none font-weight-medium"
+								class="text-none font-weight-medium flex-grow-1 flex-sm-grow-0 px-2"
+								style="min-width: 0; font-size: 11.5px; height: 32px;"
 								@click="exportDailyReport"
 							>
 								Gửi Zalo
@@ -1319,11 +1357,7 @@
 								:disabled="isSpecificDayInFuture(d.val)"
 								class="text-none flex-grow-1 px-1 font-weight-medium"
 								style="flex: 1 1 0% !important; min-width: 0 !important; height: 100% !important;"
-								:style="{
-									opacity: isSpecificDayInFuture(d.val) ? 0.38 : 1,
-									cursor: isSpecificDayInFuture(d.val) ? 'not-allowed' : 'pointer'
-								}"
-								:title="isSpecificDayInFuture(d.val) ? 'Chưa tới ngày (chưa có dữ liệu)' : (d.label + ' (' + d.date + ')')"
+								:title="isSpecificDayInFuture(d.val) ? (d.label + ' (' + d.date + ') - Chưa diễn ra') : (d.label + ' (' + d.date + ')')"
 							>
 								<div class="text-center py-0.5 w-100">
 									<!-- Dòng 1: Thứ ở trên -->
@@ -1344,7 +1378,8 @@
 
 				<!-- 2. THANH CHỈ SỐ TỔNG HỢP (METRIC STRIP TỐI GIẢN THEO CHẾ ĐỘ XEM) -->
 				<v-card elevation="0" rounded="lg" class="mb-3 border bg-white px-3 py-2">
-					<div class="d-flex align-center justify-space-between flex-wrap ga-2 text-caption">
+					<!-- Giao diện Desktop (>= 600px): Dải ngang tinh tế có đường phân cách -->
+					<div class="d-none d-sm-flex align-center justify-space-between flex-wrap ga-2 text-caption">
 						<!-- Inline metrics khi xem theo Ngày -->
 						<div v-if="bghViewMode === 'day'" class="d-flex align-center ga-3 ga-sm-4 flex-wrap">
 							<div class="d-flex align-center">
@@ -1353,7 +1388,7 @@
 							</div>
 							<v-divider vertical class="my-1 d-none d-sm-block" />
 							<div class="d-flex align-center">
-								<span class="text-medium-emphasis me-1">Xếp loại Tốt:</span>
+								<span class="text-medium-emphasis me-1">Xếp loại Đạt (Đ):</span>
 								<span class="font-weight-bold text-success">{{ reportSummary.goodCount }} lớp</span>
 							</div>
 							<v-divider vertical class="my-1 d-none d-sm-block" />
@@ -1395,9 +1430,81 @@
 							</div>
 						</div>
 
-						<div class="text-caption text-medium-emphasis font-italic d-none d-md-block">
-							{{ bghViewMode === 'day' ? 'Dữ liệu chấm điểm trực tiếp từ Quản sinh khối' : 'Theo dõi nề nếp & thi đua 4 tuần trong tháng' }}
+						<div class="d-flex align-center ga-1.5 text-caption">
+							<template v-if="bghViewMode === 'day'">
+								<v-icon size="15" color="primary">mdi-account-check-outline</v-icon>
+								<span class="text-medium-emphasis">{{ bghActiveDay === 2 ? 'Quản sinh:' : 'Quản sinh chấm nề nếp:' }}</span>
+								<v-chip size="x-small" color="primary" variant="tonal" class="font-weight-bold">
+									{{ bghActiveDay === 2 ? 'Không chấm (GVCN sinh hoạt)' : (((dayClassesDetail && dayClassesDetail.length > 0 && dayClassesDetail[0].NguoiCham && dayClassesDetail[0].NguoiCham !== '—')) ? dayClassesDetail[0].NguoiCham : 'QS. Trần Tuấn') }}
+								</v-chip>
+							</template>
+							<template v-else>
+								<v-icon size="15" color="primary">mdi-shield-account-outline</v-icon>
+								<span class="text-medium-emphasis">Quản sinh phụ trách khối:</span>
+								<v-chip size="x-small" color="primary" variant="tonal" class="font-weight-bold">
+									QS. Trần Tuấn
+								</v-chip>
+							</template>
 						</div>
+					</div>
+
+					<!-- Giao diện Mobile (< 600px): Lưới 2x2 chỉ số ngăn nắp, thẳng thớm, không dồn chữ -->
+					<div class="d-flex d-sm-none flex-column ga-2 text-caption">
+						<template v-if="bghViewMode === 'day'">
+							<div class="d-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+								<div class="pa-2 bg-grey-lighten-5 rounded border d-flex flex-column">
+									<span class="text-grey-darken-1" style="font-size: 11px;">Tự quản:</span>
+									<span class="font-weight-bold text-grey-darken-4" style="font-size: 13px;">{{ reportSummary.tuQuanCount }}/{{ reportSummary.totalClasses }} lớp</span>
+								</div>
+								<div class="pa-2 bg-grey-lighten-5 rounded border d-flex flex-column">
+									<span class="text-grey-darken-1" style="font-size: 11px;">Xếp loại Đạt (Đ):</span>
+									<span class="font-weight-bold text-success" style="font-size: 13px;">{{ reportSummary.goodCount }} lớp</span>
+								</div>
+								<div class="pa-2 bg-grey-lighten-5 rounded border d-flex flex-column">
+									<span class="text-grey-darken-1" style="font-size: 11px;">Chưa đạt (CĐ):</span>
+									<span class="font-weight-bold" :class="reportSummary.violationCount > 0 ? 'text-error' : 'text-grey-darken-3'" style="font-size: 13px;">
+										{{ reportSummary.violationCount }} lớp
+									</span>
+								</div>
+								<div class="pa-2 bg-grey-lighten-5 rounded border d-flex flex-column">
+									<span class="text-grey-darken-1" style="font-size: 11px;">Đang xem:</span>
+									<span class="font-weight-bold text-grey-darken-4" style="font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ bghActiveDayLabel }}</span>
+								</div>
+							</div>
+							<div class="d-flex align-center justify-space-between pt-1 border-t border-grey-lighten-3" style="font-size: 11px;">
+								<span class="text-grey-darken-1">{{ bghActiveDay === 2 ? 'Quản sinh:' : 'Quản sinh chấm nề nếp:' }}</span>
+								<v-chip size="x-small" color="primary" variant="tonal" class="font-weight-bold" style="height: 20px;">
+									<v-icon start size="11">mdi-account-check</v-icon>
+									{{ bghActiveDay === 2 ? 'Không chấm (GVCN sinh hoạt)' : (((dayClassesDetail && dayClassesDetail.length > 0 && dayClassesDetail[0].NguoiCham && dayClassesDetail[0].NguoiCham !== '—')) ? dayClassesDetail[0].NguoiCham : 'QS. Trần Tuấn') }}
+								</v-chip>
+							</div>
+						</template>
+						<template v-else>
+							<div class="d-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+								<div class="pa-2 bg-grey-lighten-5 rounded border d-flex flex-column">
+									<span class="text-grey-darken-1" style="font-size: 11px;">Chu kỳ:</span>
+									<span class="font-weight-bold text-grey-darken-4" style="font-size: 12px;">4 tuần liên tiếp</span>
+								</div>
+								<div class="pa-2 bg-grey-lighten-5 rounded border d-flex flex-column">
+									<span class="text-grey-darken-1" style="font-size: 11px;">Khen thưởng:</span>
+									<span class="font-weight-bold text-success" style="font-size: 12px;">{{ monthlySummaryStats.khenThuongDetail }}</span>
+								</div>
+								<div class="pa-2 bg-grey-lighten-5 rounded border d-flex flex-column">
+									<span class="text-grey-darken-1" style="font-size: 11px;">Biểu dương:</span>
+									<span class="font-weight-bold text-grey-darken-4" style="font-size: 12px;">{{ monthlySummaryStats.bieuDuongDetail }}</span>
+								</div>
+								<div class="pa-2 bg-grey-lighten-5 rounded border d-flex flex-column">
+									<span class="text-grey-darken-1" style="font-size: 11px;">Tạm dừng TQ:</span>
+									<span class="font-weight-bold" :class="monthlySummaryStats.tamDungCount > 0 ? 'text-error' : 'text-grey-darken-4'" style="font-size: 12px;">{{ monthlySummaryStats.tamDungDetail }}</span>
+								</div>
+							</div>
+							<div class="d-flex align-center justify-space-between pt-1 border-t border-grey-lighten-3" style="font-size: 11px;">
+								<span class="text-grey-darken-1">Quản sinh khối:</span>
+								<v-chip size="x-small" color="primary" variant="tonal" class="font-weight-bold" style="height: 20px;">
+									QS. Trần Tuấn
+								</v-chip>
+							</div>
+						</template>
 					</div>
 				</v-card>
 
@@ -1458,13 +1565,14 @@
 									<tr class="bg-grey-lighten-5" style="height: 38px;">
 										<th class="text-center" style="width: 45px; padding: 6px;">STT</th>
 										<th class="text-left" style="width: 75px; padding: 6px 10px;">Lớp</th>
-										<th class="text-left" style="width: 175px; padding: 6px 10px;">GVCN</th>
-										<th class="text-center" style="width: 140px; padding: 6px 8px;">Hình thức 15p</th>
-										<th class="text-center" style="width: 130px; padding: 6px 8px;">GVCN có mặt (7:15)</th>
+										<th class="text-left" style="width: 165px; padding: 6px 10px;">GVCN</th>
+										<th class="text-center" style="width: 140px; padding: 6px 8px;">Quản sinh chấm</th>
+										<th class="text-center" style="width: 130px; padding: 6px 8px;">Hình thức 15p</th>
+										<th class="text-center" style="width: 125px; padding: 6px 8px;">GVCN có mặt (7:15)</th>
 										<th class="text-center" style="width: 110px; padding: 6px 8px;">Xếp loại ngày</th>
-										<th class="text-center" style="width: 95px; padding: 6px 4px;">TC1: K.Gian</th>
-										<th class="text-center" style="width: 95px; padding: 6px 4px;">TC2: Nề nếp</th>
-										<th class="text-center" style="width: 95px; padding: 6px 4px;">TC3: Chủ đề</th>
+										<th class="text-center" style="width: 90px; padding: 6px 4px;">TC1: K.Gian</th>
+										<th class="text-center" style="width: 90px; padding: 6px 4px;">TC2: Nội dung</th>
+										<th class="text-center" style="width: 90px; padding: 6px 4px;">TC3: Nghiêm túc</th>
 										<th class="text-left" style="padding: 6px 12px;">Ghi chú / Chi tiết vi phạm</th>
 									</tr>
 								</thead>
@@ -1482,20 +1590,27 @@
 											{{ row.TenGVCN }}
 										</td>
 										<td class="text-center" style="padding: 6px 8px;">
+											<v-chip v-if="row.IsTuQuan && row.NguoiCham && row.NguoiCham !== '—'" size="x-small" variant="tonal" color="primary" class="font-weight-medium">
+												<v-icon start size="12">mdi-account-check</v-icon>
+												{{ row.NguoiCham }}
+											</v-chip>
+											<span v-else class="text-medium-emphasis font-weight-medium" style="font-size: 13px;">—</span>
+										</td>
+										<td class="text-center" style="padding: 6px 8px;">
 											<span class="table-rank-badge" :class="row.IsTuQuan ? 'rank-dat' : 'rank-gvcn'">
-												{{ row.IsTuQuan ? 'Lớp tự quản' : 'GVCN sinh hoạt' }}
+												{{ row.IsTuQuan ? 'Lớp tự quản' : (row.GVCNCoMat ? 'GVCN có mặt (GV)' : 'GVCN sinh hoạt') }}
 											</span>
 										</td>
 										<td class="text-center" style="padding: 6px 8px;">
-											<span v-if="row.GVCNCoMat" class="text-success font-weight-medium d-flex align-center justify-center ga-1" style="font-size: 12px;">
-												<v-icon size="15" color="success">mdi-check-circle</v-icon> Có mặt
-											</span>
-											<span v-else-if="row.IsTuQuan" class="text-medium-emphasis" style="font-size: 11.5px;">
-												Lớp tự quản
-											</span>
-											<span v-else class="text-error font-weight-bold" style="font-size: 12px;">
-												Vắng mặt
-											</span>
+											<template v-if="!row.IsTuQuan">
+												<span v-if="row.GVCNCoMat" class="text-success font-weight-medium d-flex align-center justify-center ga-1" style="font-size: 12px;">
+													<v-icon size="15" color="success">mdi-check-circle</v-icon> Có mặt
+												</span>
+												<span v-else class="text-error font-weight-bold d-flex align-center justify-center ga-1" style="font-size: 12px;">
+													<v-icon size="15" color="error">mdi-close-circle</v-icon> Vắng mặt
+												</span>
+											</template>
+											<span v-else class="text-medium-emphasis font-weight-medium" style="font-size: 13px;">—</span>
 										</td>
 										<td class="text-center" style="padding: 6px 8px;">
 											<span v-if="row.Result.code === 'GVCN' || row.Result.code === '—' || !row.IsTuQuan" class="text-medium-emphasis font-weight-medium" style="font-size: 13px;">—</span>
@@ -1503,8 +1618,8 @@
 												v-else
 												class="table-rank-badge"
 												:class="{
-													'rank-tot': row.Result.code === 'T',
 													'rank-dat': row.Result.code === 'D',
+													'rank-ccg': row.Result.code === 'CCG',
 													'rank-chuadat': row.Result.code === 'CD'
 												}"
 											>
@@ -1516,9 +1631,9 @@
 											<span
 												v-else
 												class="table-rank-badge"
-												:class="row.TC1 === 3 ? 'rank-tot' : (row.TC1 === 1 ? 'rank-chuadat' : 'rank-dat')"
+												:class="row.TC1 === 1 ? 'rank-chuadat' : 'rank-dat'"
 											>
-												{{ row.TC1 === 3 ? 'Tốt' : (row.TC1 === 1 ? 'CĐ' : 'Đạt') }}
+												{{ row.TC1 === 1 ? 'CĐ' : 'Đạt' }}
 											</span>
 										</td>
 										<td class="text-center" style="padding: 6px 4px;">
@@ -1526,9 +1641,9 @@
 											<span
 												v-else
 												class="table-rank-badge"
-												:class="row.TC2 === 3 ? 'rank-tot' : (row.TC2 === 1 ? 'rank-chuadat' : 'rank-dat')"
+												:class="row.TC2 === 1 ? 'rank-chuadat' : 'rank-dat'"
 											>
-												{{ row.TC2 === 3 ? 'Tốt' : (row.TC2 === 1 ? 'CĐ' : 'Đạt') }}
+												{{ row.TC2 === 1 ? 'CĐ' : 'Đạt' }}
 											</span>
 										</td>
 										<td class="text-center" style="padding: 6px 4px;">
@@ -1536,9 +1651,9 @@
 											<span
 												v-else
 												class="table-rank-badge"
-												:class="row.TC3 === 3 ? 'rank-tot' : (row.TC3 === 1 ? 'rank-chuadat' : 'rank-dat')"
+												:class="row.TC3 === 1 ? 'rank-chuadat' : 'rank-dat'"
 											>
-												{{ row.TC3 === 3 ? 'Tốt' : (row.TC3 === 1 ? 'CĐ' : 'Đạt') }}
+												{{ row.TC3 === 1 ? 'CĐ' : 'Đạt' }}
 											</span>
 										</td>
 										<td class="text-left" style="padding: 6px 12px;">
@@ -1562,68 +1677,108 @@
 							v-for="row in dayClassesDetail"
 							:key="'m-bgh-row-' + row.LopID"
 							elevation="0"
-							rounded="lg"
+							rounded="xl"
 							class="border bg-white overflow-hidden"
-							:class="{ 'border-red-lighten-2 bg-red-lighten-5': row.HasViolation }"
+							:class="{ 'border-red-lighten-2 bg-red-lighten-5': row.HasViolation, 'border-grey-lighten-2': !row.HasViolation }"
 						>
-							<div class="px-3 py-2 bg-grey-lighten-5 border-b d-flex align-center justify-space-between flex-wrap ga-2">
-								<div class="d-flex align-center ga-2">
-									<v-avatar color="primary" size="24" class="text-white text-caption font-weight-bold">
-										{{ row.STT }}
-									</v-avatar>
+							<!-- Header Thẻ BGH Mobile: Cấu trúc 2 tầng thoáng đãng, không bị chèn ép -->
+							<div class="px-3 py-2.5 bg-grey-lighten-5 border-b">
+								<!-- Tầng 1: STT + Tên lớp & Badge Xếp loại ngày -->
+								<div class="d-flex align-center justify-space-between">
+									<div class="d-flex align-center ga-2">
+										<v-avatar color="primary" size="24" class="text-white text-caption font-weight-bold">
+											{{ row.STT }}
+										</v-avatar>
+										<span class="font-weight-bold text-subtitle-1 text-primary" style="font-size: 15px !important; line-height: 1.2;">
+											{{ row.TenLop }}
+										</span>
+									</div>
+
+									<!-- Badge xếp loại ngày -->
 									<div>
-										<span class="font-weight-bold text-subtitle-2 text-primary me-1">{{ row.TenLop }}</span>
-										<span class="text-caption text-medium-emphasis">({{ row.TenGVCN }})</span>
+										<span v-if="row.Result.code === 'GVCN' || row.Result.code === '—' || !row.IsTuQuan" class="text-medium-emphasis font-weight-medium text-caption">—</span>
+										<span
+											v-else
+											class="table-rank-badge font-weight-bold"
+											:class="{
+												'rank-dat': row.Result.code === 'D',
+												'rank-ccg': row.Result.code === 'CCG',
+												'rank-chuadat': row.Result.code === 'CD'
+											}"
+											style="font-size: 11px; height: 22px;"
+										>
+											{{ row.Result.text }}
+										</span>
 									</div>
 								</div>
-								<div class="d-flex align-center ga-1.5">
-									<span class="table-rank-badge" :class="row.IsTuQuan ? 'rank-dat' : 'rank-gvcn'" style="font-size: 11px;">
-										{{ row.IsTuQuan ? 'Tự quản' : 'GVCN sinh hoạt' }}
-									</span>
-									<span v-if="row.Result.code === 'GVCN' || row.Result.code === '—' || !row.IsTuQuan" class="text-medium-emphasis font-weight-medium text-caption">—</span>
+
+								<!-- Tầng 2: Tên GVCN & Badge trạng thái -->
+								<div class="d-flex align-center justify-space-between mt-2 pt-1.5 border-t border-grey-lighten-3">
+									<div class="text-caption text-grey-darken-2" style="font-size: 11.5px;">
+										GVCN: <span class="font-weight-medium text-grey-darken-3">{{ row.TenGVCN }}</span>
+									</div>
 									<span
-										v-else
-										class="table-rank-badge"
-										:class="{
-											'rank-tot': row.Result.code === 'T',
-											'rank-dat': row.Result.code === 'D',
-											'rank-chuadat': row.Result.code === 'CD'
-										}"
-										style="font-size: 11px;"
+										class="table-status-badge"
+										:class="row.IsTuQuan ? 'badge-tuquan' : 'badge-gvcn'"
+										style="height: 22px; font-size: 10.5px;"
 									>
-										{{ row.Result.text }}
+										<v-icon size="12" class="me-0.5" :color="row.IsTuQuan ? 'success' : 'blue-grey-darken-2'">
+											{{ row.IsTuQuan ? 'mdi-shield-check' : 'mdi-account-tie' }}
+										</v-icon>
+										{{ row.IsTuQuan ? 'Tự quản' : 'GVCN sinh hoạt' }}
 									</span>
 								</div>
 							</div>
 
-							<div class="pa-2.5 text-caption">
-								<div v-if="!row.IsTuQuan" class="text-medium-emphasis text-center py-1 font-italic">
-									GVCN trực tiếp sinh hoạt cùng lớp (Không chấm tự quản)
+							<!-- Thân thẻ BGH Mobile -->
+							<div class="pa-3 text-caption">
+								<div v-if="!row.IsTuQuan" class="pa-2 rounded-lg bg-blue-grey-lighten-5 border border-blue-grey-lighten-4 d-flex align-center text-caption text-blue-grey-darken-3">
+									<v-icon size="16" color="blue-grey-darken-2" class="me-1.5">mdi-account-tie</v-icon>
+									<span>GVCN trực tiếp sinh hoạt cùng lớp (Không chấm tự quản)</span>
 								</div>
-								<div v-else class="d-flex flex-column ga-1">
-									<div class="d-flex align-center justify-space-between py-0.5 border-b">
-										<span class="text-grey-darken-3">1. Không gian lớp:</span>
-										<span class="font-weight-bold" :class="row.TC1 === 3 ? 'text-success' : (row.TC1 === 1 ? 'text-error' : 'text-primary')">
-											{{ row.TC1 === 3 ? 'Tốt' : (row.TC1 === 1 ? 'Chưa đạt' : 'Đạt') }}
+								<div v-else class="d-flex flex-column ga-2">
+									<div class="d-flex align-center justify-space-between py-1 border-b border-grey-lighten-3">
+										<span class="text-grey-darken-3 font-weight-medium" style="font-size: 12px;">TC1: Không gian (Sạch sẽ, bảng, sàn):</span>
+										<span
+											class="table-rank-badge px-2"
+											:class="row.TC1 === 1 ? 'rank-chuadat' : 'rank-dat'"
+											style="font-size: 11px; height: 20px;"
+										>
+											{{ row.TC1 === 1 ? 'Chưa đạt' : 'Đạt' }}
 										</span>
 									</div>
-									<div class="d-flex align-center justify-space-between py-0.5 border-b">
-										<span class="text-grey-darken-3">2. Nền nếp học tập:</span>
-										<span class="font-weight-bold" :class="row.TC2 === 3 ? 'text-success' : (row.TC2 === 1 ? 'text-error' : 'text-primary')">
-											{{ row.TC2 === 3 ? 'Tốt' : (row.TC2 === 1 ? 'Chưa đạt' : 'Đạt') }}
+									<div class="d-flex align-center justify-space-between py-1 border-b border-grey-lighten-3">
+										<span class="text-grey-darken-3 font-weight-medium" style="font-size: 12px;">TC2: Nội dung (Đọc sách, chủ đề):</span>
+										<span
+											class="table-rank-badge px-2"
+											:class="row.TC2 === 1 ? 'rank-chuadat' : 'rank-dat'"
+											style="font-size: 11px; height: 20px;"
+										>
+											{{ row.TC2 === 1 ? 'Chưa đạt' : 'Đạt' }}
 										</span>
 									</div>
-									<div class="d-flex align-center justify-space-between py-0.5">
-										<span class="text-grey-darken-3">3. Sinh hoạt chủ đề:</span>
-										<span class="font-weight-bold" :class="row.TC3 === 3 ? 'text-success' : (row.TC3 === 1 ? 'text-error' : 'text-primary')">
-											{{ row.TC3 === 3 ? 'Tốt' : (row.TC3 === 1 ? 'Chưa đạt' : 'Đạt') }}
+									<div class="d-flex align-center justify-space-between py-1">
+										<span class="text-grey-darken-3 font-weight-medium" style="font-size: 12px;">TC3: Nề nếp (Nghiêm túc, tích cực):</span>
+										<span
+											class="table-rank-badge px-2"
+											:class="row.TC3 === 1 ? 'rank-chuadat' : 'rank-dat'"
+											style="font-size: 11px; height: 20px;"
+										>
+											{{ row.TC3 === 1 ? 'Chưa đạt' : 'Đạt' }}
 										</span>
 									</div>
 								</div>
 
+								<!-- Ghi chú vi phạm nếu có -->
 								<div v-if="row.GhiChuViPham" class="mt-2 pt-1.5 border-t text-caption" :class="row.HasViolation ? 'text-error font-weight-medium' : 'text-grey-darken-2'">
 									<v-icon size="14" :color="row.HasViolation ? 'error' : 'grey'">{{ row.HasViolation ? 'mdi-alert-circle' : 'mdi-information-outline' }}</v-icon>
-									{{ row.GhiChuViPham }}
+									Ghi chú: {{ row.GhiChuViPham }}
+								</div>
+
+								<!-- Footer: Quản sinh chấm -->
+								<div class="d-flex align-center justify-space-between mt-2 pt-1.5 border-t border-grey-lighten-3 text-grey-darken-1" style="font-size: 10.5px;">
+									<span>Quản sinh chấm / theo dõi:</span>
+									<span class="font-weight-medium text-grey-darken-3">{{ row.IsTuQuan && row.NguoiCham && row.NguoiCham !== '—' ? row.NguoiCham : '—' }}</span>
 								</div>
 							</div>
 						</v-card>
@@ -1659,7 +1814,12 @@
 						</div>
 
 						<div class="pa-3 bg-white">
-							<v-row dense>
+							<div v-if="!rewardClasses || !rewardClasses.length" class="text-center py-6 text-grey-darken-1 text-caption">
+								<v-icon size="36" color="grey-lighten-1" class="mb-2">mdi-calendar-clock</v-icon>
+								<div class="font-weight-bold text-subtitle-2 text-grey-darken-3">Chu kỳ đánh giá Tháng {{ currentEvaluationMonth }}/2026 chưa bắt đầu</div>
+								<div class="text-medium-emphasis mt-1">Dữ liệu thi đua và đề xuất khen thưởng sẽ được cập nhật tự động khi bước vào chu kỳ đánh giá.</div>
+							</div>
+							<v-row v-else dense>
 								<v-col v-for="item in rewardClasses" :key="'month-rw-' + item.LopID" cols="12" md="6">
 									<div class="pa-3 rounded-lg border bg-white d-flex flex-column ga-2 h-100">
 										<div class="d-flex align-center justify-space-between">
@@ -1685,7 +1845,7 @@
 										<div class="pa-2.5 bg-grey-lighten-5 rounded-lg">
 											<div class="text-caption text-grey-darken-3 font-weight-medium mb-1.5 d-flex align-center justify-space-between">
 												<span>Tiến độ 4 tuần:</span>
-												<span class="text-success font-weight-bold">Đã đạt {{ item.SoTuanTot || 1 }}/4 tuần Tốt</span>
+												<span class="text-success font-weight-bold">Đã đạt {{ item.SoTuanTot || 1 }}/4 tuần Đạt chuẩn</span>
 											</div>
 											<div class="d-flex align-center flex-wrap ga-1.5">
 												<span
@@ -1721,7 +1881,7 @@
 					</v-card>
 
 					<!-- BẢNG CHI TIẾT NỀ NẾP & ĐỐI SOÁT CÁC LỚP TOÀN KHỐI (HIỂN THỊ TRỰC TIẾP RA NGOÀI) -->
-					<v-card elevation="0" rounded="lg" class="border overflow-hidden bg-white">
+					<v-card id="bgh-khoi-evidence-table" elevation="0" rounded="lg" class="border overflow-hidden bg-white" style="scroll-margin-top: 80px;">
 						<div class="px-3 py-2 bg-grey-lighten-4 border-b">
 							<div class="d-flex align-center justify-space-between flex-wrap ga-2 mb-2">
 								<div class="d-flex align-center ga-2">
@@ -1730,16 +1890,28 @@
 										Chi tiết nề nếp các lớp toàn Khối {{ selectedKhoi || 6 }} — Tuần {{ outerMonthlySelectedWeekNum }} (Tháng {{ currentEvaluationMonth }}/2026)
 									</span>
 								</div>
-								<v-btn
-									size="small"
-									variant="outlined"
-									color="primary"
-									prepend-icon="mdi-printer"
-									class="text-none font-weight-medium ms-auto"
-									@click="printOuterKhoiEvidence"
-								>
-									In chi tiết toàn khối
-								</v-btn>
+								<div class="d-flex align-center ga-2 ms-auto">
+									<v-btn
+										size="small"
+										variant="outlined"
+										color="primary"
+										prepend-icon="mdi-printer"
+										class="text-none font-weight-medium"
+										@click="printOuterKhoiEvidence"
+									>
+										In chi tiết toàn khối
+									</v-btn>
+									<v-btn
+										size="small"
+										variant="outlined"
+										color="success"
+										prepend-icon="mdi-file-excel-outline"
+										class="text-none font-weight-medium"
+										@click="exportKhoiWeekExcel"
+									>
+										Xuất Excel tuần
+									</v-btn>
+								</div>
 							</div>
 
 							<!-- Thanh chọn Tuần (100% bề ngang trên mobile, có thể cuộn ngang hoặc bấm trực tiếp) -->
@@ -1756,7 +1928,7 @@
 										style="min-width: max-content;"
 									>
 										<v-btn
-											v-for="hw in monthEvaluationWeeks"
+											v-for="hw in monthEvaluationWeeks.filter(x => !x.isFuture)"
 											:key="'outer-btn-w-' + hw.weekNum"
 											:value="hw.weekNum"
 											size="small"
@@ -1802,12 +1974,13 @@
 									<tr
 										v-for="(row, rIdx) in monthlyClassRecords"
 										:key="'outer-khoi-row-' + row.LopID"
-										style="height: 48px;"
-										:class="{ 'bg-grey-lighten-5': rIdx % 2 === 1 }"
+										style="height: 48px; transition: all 0.3s ease;"
+										:class="{ 'bg-grey-lighten-5': rIdx % 2 === 1, 'bg-amber-lighten-5 font-weight-bold': highlightedClassId === row.LopID }"
+										:style="highlightedClassId === row.LopID ? 'box-shadow: inset 0 0 0 2px #f59e0b;' : ''"
 									>
 										<td class="text-center" style="padding: 6px;">{{ rIdx + 1 }}</td>
 										<td class="font-weight-medium text-left px-2">
-											<span :class="row.SoTuanCD > 0 ? 'text-error font-weight-medium' : 'text-grey-darken-4'">{{ row.TenLop }}</span>
+											<span :class="['CD', 'CHETAI'].includes((row.weeks.find(x => x.weekNum === outerMonthlySelectedWeekNum) || row.w1).status) ? 'text-error font-weight-bold' : 'text-grey-darken-4 font-weight-medium'">{{ row.TenLop }}</span>
 										</td>
 										<td class="text-left px-2 text-medium-emphasis">{{ row.TenGVCN }}</td>
 										<td
@@ -1816,12 +1989,15 @@
 											class="text-center px-1"
 											style="vertical-align: middle;"
 										>
-											<template v-if="d.tcText === '—' && d.rankText === '—'">
+											<template v-if="d.rankCode === 'CHETAI'">
+												<span class="text-error" title="Tạm dừng tự quản (Áp dụng chế tài)">—</span>
+											</template>
+											<template v-else-if="d.tcText === '—' && d.rankText === '—'">
 												<span class="text-medium-emphasis">—</span>
 											</template>
-											<template v-else-if="d.rankCode === 'CHETAI'">
+											<template v-else-if="d.rankCode === 'GV'">
 												<div class="d-flex flex-column align-center justify-center">
-													<span class="table-rank-badge rank-chuadat" style="font-size: 10px; padding: 1px 4px;">Chế tài</span>
+													<span class="table-rank-badge rank-gvcn" style="font-size: 10px; padding: 1px 6px;">GV</span>
 												</div>
 											</template>
 											<template v-else>
@@ -1875,12 +2051,13 @@
 								elevation="0"
 								rounded="xl"
 								class="mb-3 bg-white border"
-								:class="{ 'border-error': row.SoTuanCD > 0 }"
+								:class="{ 'border-error': ['CD', 'CHETAI'].includes((row.weeks.find(x => x.weekNum === outerMonthlySelectedWeekNum) || row.w1).status), 'border-warning bg-amber-lighten-5': highlightedClassId === row.LopID }"
+								:style="highlightedClassId === row.LopID ? 'box-shadow: 0 0 0 2px #f59e0b; transition: all 0.3s ease;' : 'transition: all 0.3s ease;'"
 							>
 								<div class="pa-3">
 									<div class="d-flex align-center justify-space-between mb-2">
 										<div class="d-flex align-center ga-2">
-											<span class="font-weight-medium text-subtitle-1" :class="row.SoTuanCD > 0 ? 'text-error font-weight-bold' : 'text-primary'">
+											<span class="font-weight-medium text-subtitle-1" :class="['CD', 'CHETAI'].includes((row.weeks.find(x => x.weekNum === outerMonthlySelectedWeekNum) || row.w1).status) ? 'text-error font-weight-bold' : 'text-grey-darken-4'">
 												{{ row.TenLop }}
 											</span>
 											<span class="text-body-2 text-medium-emphasis">({{ row.TenGVCN }})</span>
@@ -1901,11 +2078,14 @@
 												{{ d.dayNum === 2 ? 'T2' : (d.dayNum === 3 ? 'T3' : (d.dayNum === 4 ? 'T4' : (d.dayNum === 5 ? 'T5' : 'T6'))) }}
 											</div>
 											<div class="mt-0.5">
-												<template v-if="d.tcText === '—' && d.rankText === '—'">
+												<template v-if="d.rankCode === 'CHETAI'">
+													<span class="text-error" style="font-size: 11px;" title="Tạm dừng tự quản (Áp dụng chế tài)">—</span>
+												</template>
+												<template v-else-if="d.tcText === '—' && d.rankText === '—'">
 													<span class="text-medium-emphasis" style="font-size: 11px;">—</span>
 												</template>
-												<template v-else-if="d.rankCode === 'CHETAI'">
-													<span class="table-rank-badge rank-chuadat" style="font-size: 9px; padding: 0 2px;">Chế tài</span>
+												<template v-else-if="d.rankCode === 'GV'">
+													<span class="table-rank-badge rank-gvcn" style="font-size: 9px; padding: 0 4px;">GV</span>
 												</template>
 												<template v-else>
 													<span
@@ -1936,11 +2116,19 @@
 
 						<!-- Tổng kết nề nếp toàn khối ngoài bảng -->
 						<div class="pa-3 border-t text-caption bg-grey-lighten-5 text-grey-darken-3 d-flex align-center justify-space-between flex-wrap ga-2">
-							<div>
+							<div v-if="(monthEvaluationWeeks.find(x => x.weekNum === outerMonthlySelectedWeekNum) || {}).isOngoing">
+								<strong>Tổng hợp Tuần {{ outerMonthlySelectedWeekNum }}:</strong>
+								Khối {{ selectedKhoi || 6 }} đang trong tuần đánh giá thứ {{ outerMonthlySelectedWeekNum }}. Dữ liệu đối soát tự động theo tiến độ chấm điểm.
+							</div>
+							<div v-else-if="(monthEvaluationWeeks.find(x => x.weekNum === outerMonthlySelectedWeekNum) || {}).isFuture">
+								<strong>Tổng hợp Tuần {{ outerMonthlySelectedWeekNum }}:</strong>
+								Khối {{ selectedKhoi || 6 }} chưa bước vào tuần đánh giá thứ {{ outerMonthlySelectedWeekNum }} (Tháng {{ currentEvaluationMonth }}/2026).
+							</div>
+							<div v-else>
 								<strong>Tổng hợp kết quả Tuần {{ outerMonthlySelectedWeekNum }}:</strong>
 								Khối {{ selectedKhoi || 6 }} có
-								<strong class="text-success">{{ monthlyClassRecords.filter(r => (r.weeks.find(x => x.weekNum === outerMonthlySelectedWeekNum) || r.w1).status === 'T').length }} lớp Tốt</strong>,
-								<strong class="text-primary">{{ monthlyClassRecords.filter(r => (r.weeks.find(x => x.weekNum === outerMonthlySelectedWeekNum) || r.w1).status === 'D').length }} lớp Đạt</strong>,
+								<strong class="text-success">{{ monthlyClassRecords.filter(r => ['T', 'D'].includes((r.weeks.find(x => x.weekNum === outerMonthlySelectedWeekNum) || r.w1).status)).length }} lớp Đạt</strong>,
+								<strong class="text-primary">{{ monthlyClassRecords.filter(r => (r.weeks.find(x => x.weekNum === outerMonthlySelectedWeekNum) || r.w1).status === 'DT').length }} lớp Duy trì</strong>,
 								<strong class="text-error">{{ monthlyClassRecords.filter(r => ['CD', 'CHETAI'].includes((r.weeks.find(x => x.weekNum === outerMonthlySelectedWeekNum) || r.w1).status)).length }} lớp Chưa đạt/Chế tài</strong>.
 							</div>
 							<div class="text-medium-emphasis font-italic">
@@ -2022,7 +2210,9 @@
 
 							<div class="d-flex align-center ga-2 text-caption">
 								<span class="font-weight-medium" :class="evidenceDialog.classItem.SoTuanCD > 0 ? 'text-error' : 'text-success'">
-									Đạt {{ evidenceDialog.classItem.SoTuanTot }}/4 tuần Tốt (Đã xét Tuần 1)
+									<template v-if="currentEvaluationMonth === 9">Đạt {{ evidenceDialog.classItem.SoTuanTot }}/4 tuần Đạt (Đã xét 4/4 tuần)</template>
+									<template v-else-if="currentEvaluationMonth > 10">Đạt 0/4 tuần (Chu kỳ Tháng {{ currentEvaluationMonth }} chưa diễn ra)</template>
+									<template v-else>Đạt {{ evidenceDialog.classItem.SoTuanTot }}/4 tuần Đạt (Đã xét 3/4 tuần)</template>
 								</span>
 								<span class="text-grey-lighten-1">|</span>
 								<span class="font-weight-bold" :class="(evidenceDialog.classItem.DiemThiDua && evidenceDialog.classItem.DiemThiDua.startsWith('+')) ? 'text-success' : 'text-grey-darken-4'">
@@ -2069,13 +2259,13 @@
 											class="text-center px-1"
 											style="vertical-align: middle;"
 										>
-											<template v-if="d.tcText === '—' && d.rankText === '—'">
-												<span class="text-medium-emphasis">—</span>
-											</template>
-											<template v-else-if="d.rankCode === 'CHETAI'">
+											<template v-if="d.rankCode === 'CHETAI'">
 												<div class="d-flex flex-column align-center justify-center">
-													<span class="table-rank-badge rank-chuadat" style="font-size: 10px; padding: 1px 4px;">Chế tài</span>
+													<span class="text-error" title="Tạm dừng tự quản (Áp dụng chế tài)">—</span>
 												</div>
+											</template>
+											<template v-else-if="d.tcText === '—' && d.rankText === '—'">
+												<span class="text-medium-emphasis">—</span>
 											</template>
 											<template v-else>
 												<div class="d-flex flex-column align-center ga-0.5">
@@ -2189,31 +2379,36 @@
 						<!-- Kết luận đánh giá của lớp -->
 						<div class="pa-3 rounded-lg border text-caption" :class="evidenceDialog.classItem.SoTuanCD > 0 ? 'bg-red-lighten-5 border-red-lighten-4 text-grey-darken-4' : 'bg-grey-lighten-5 text-grey-darken-3'">
 							<div class="font-weight-medium mb-1 text-subtitle-2" :class="evidenceDialog.classItem.SoTuanCD > 0 ? 'text-error' : 'text-grey-darken-4'">
-								{{ currentEvaluationMonth === 9 ? 'Kết quả đánh giá Tháng 9/2026:' : 'Tiến độ đánh giá Tháng 10/2026:' }}
+								{{ currentEvaluationMonth === 9 ? 'Kết quả đánh giá Tháng 9/2026:' : (currentEvaluationMonth > 10 ? 'Tiến độ đánh giá Tháng ' + currentEvaluationMonth + '/2026:' : 'Tiến độ đánh giá Tháng 10/2026:') }}
 							</div>
 							<template v-if="currentEvaluationMonth === 9">
 								<div v-if="evidenceDialog.classItem.IsRewardEligible">
-									Lớp {{ evidenceDialog.classItem.TenLop }} đã xuất sắc hoàn thành trọn vẹn 4/4 tuần Tốt trong Tháng 9/2026. Đã chính thức được công nhận danh hiệu "Lớp tự quản tốt" và cộng thưởng <strong class="text-success">{{ evidenceDialog.classItem.DiemThiDua }}</strong>.
+									Lớp {{ evidenceDialog.classItem.TenLop }} đã hoàn thành trọn vẹn 4/4 tuần Đạt trong Tháng 9/2026. Đã chính thức được công nhận danh hiệu "Lớp tự quản tốt" và cộng thưởng <strong class="text-success">{{ evidenceDialog.classItem.DiemThiDua }}</strong>.
 								</div>
 								<div v-else-if="evidenceDialog.classItem.IsEffortReward">
-									Lớp {{ evidenceDialog.classItem.TenLop }} đã xuất sắc đạt 3/4 tuần Tốt trong Tháng 9/2026. Đã chính thức được tuyên dương danh hiệu "Biểu dương nỗ lực nề nếp" và cộng thưởng <strong class="text-success">{{ evidenceDialog.classItem.DiemThiDua }}</strong>.
+									Lớp {{ evidenceDialog.classItem.TenLop }} đã đạt 3/4 tuần Đạt trong Tháng 9/2026. Đã chính thức được tuyên dương danh hiệu "Biểu dương nỗ lực nề nếp" và cộng thưởng <strong class="text-success">{{ evidenceDialog.classItem.DiemThiDua }}</strong>.
 								</div>
 								<div v-else>
 									Lớp {{ evidenceDialog.classItem.TenLop }} đã hoàn thành chu kỳ thi đua nề nếp Tháng 9/2026 (đạt chuẩn nề nếp tự quản 15 phút đầu giờ).
 								</div>
 							</template>
+							<template v-else-if="currentEvaluationMonth > 10">
+								<div>
+									Chu kỳ đánh giá Tháng {{ currentEvaluationMonth }}/2026 ({{ monthCycleDateRange }}) chưa bắt đầu. Lớp {{ evidenceDialog.classItem.TenLop }} chưa phát sinh dữ liệu chấm nề nếp.
+								</div>
+							</template>
 							<template v-else>
 								<div v-if="evidenceDialog.classItem.IsLeading">
-									Lớp {{ evidenceDialog.classItem.TenLop }} đã xuất sắc đạt Tuần 1 Tốt (0 lỗi vi phạm) và đang dẫn đầu tiến độ thi đua. Tuần 2 đang theo dõi, Tuần 3 và 4 chưa tới. Danh hiệu "Lớp tự quản tốt" và điểm cộng (<span class="font-weight-medium text-success">{{ evidenceDialog.classItem.DiemThiDua }}</span>) sẽ được xét duyệt chính thức sau ngày 01/11/2026 khi kết thúc chu kỳ 4 tuần.
+									Lớp {{ evidenceDialog.classItem.TenLop }} đã hoàn thành {{ evidenceDialog.classItem.SoTuanTot }} tuần Đạt đã xét và đang dẫn đầu tiến độ thi đua. Tuần 4 đang diễn ra (26/10 – 01/11). Danh hiệu "Lớp tự quản tốt" và điểm cộng (<span class="font-weight-medium text-success">{{ evidenceDialog.classItem.DiemThiDua }}</span>) sẽ được xét duyệt chính thức sau ngày 01/11/2026 khi kết thúc chu kỳ 4 tuần.
 								</div>
 								<div v-else-if="evidenceDialog.classItem.IsRewardEligible">
-									Lớp {{ evidenceDialog.classItem.TenLop }} hoàn thành xuất sắc 4/4 tuần Tốt trong tháng 10. Đề xuất cộng <strong class="text-success">{{ evidenceDialog.classItem.DiemThiDua }}</strong> và công nhận danh hiệu "Lớp tự quản tốt".
+									Lớp {{ evidenceDialog.classItem.TenLop }} hoàn thành 4/4 tuần Đạt trong tháng 10. Đề xuất cộng <strong class="text-success">{{ evidenceDialog.classItem.DiemThiDua }}</strong> và công nhận danh hiệu "Lớp tự quản tốt".
 								</div>
 								<div v-else-if="evidenceDialog.classItem.SoTuanCD > 0">
-									Lớp {{ evidenceDialog.classItem.TenLop }} có <strong class="text-error">{{ evidenceDialog.classItem.SoTuanCD }} tuần Chưa đạt</strong> (Tuần 1 ghi nhận vi phạm nề nếp). Đã áp dụng chế tài: <strong class="text-error">Tạm dừng tự quản Tuần 2</strong> (GVCN trực tiếp quản lý và sinh hoạt 5/5 ngày để chấn chỉnh nề nếp).
+									Lớp {{ evidenceDialog.classItem.TenLop }} có <strong class="text-error">{{ evidenceDialog.classItem.SoTuanCD }} tuần Chưa đạt</strong> (Tuần 1 ghi nhận vi phạm nề nếp). Đã áp dụng chế tài: <strong class="text-error">Tạm dừng tự quản Tuần 2</strong>. Lớp đã chấn chỉnh và tham gia tự quản trở lại ở các tuần tiếp theo.
 								</div>
 								<div v-else>
-									Lớp {{ evidenceDialog.classItem.TenLop }} đã hoàn thành nề nếp Tuần 1 Đạt. Tuần 2 đang theo dõi; Tuần 3 và 4 chưa diễn ra. Tiếp tục duy trì nề nếp để tích lũy điểm thi đua tháng.
+									Lớp {{ evidenceDialog.classItem.TenLop }} đã hoàn thành các tuần đã xét. Tuần 4 đang diễn ra. Tiếp tục duy trì nề nếp để tích lũy điểm thi đua tháng.
 								</div>
 							</template>
 						</div>
@@ -2237,7 +2432,7 @@
 										style="min-width: max-content;"
 									>
 										<v-btn
-											v-for="hw in monthEvaluationWeeks"
+											v-for="hw in monthEvaluationWeeks.filter(x => !x.isFuture)"
 											:key="'modal-btn-w-' + hw.weekNum"
 											:value="hw.weekNum"
 											size="small"
@@ -2298,7 +2493,7 @@
 									>
 										<td class="text-center" style="padding: 6px;">{{ rIdx + 1 }}</td>
 										<td class="font-weight-medium text-left px-2">
-											<span :class="row.SoTuanCD > 0 ? 'text-error font-weight-bold' : 'text-grey-darken-4 font-weight-medium'">{{ row.TenLop }}</span>
+											<span :class="['CD', 'CHETAI'].includes((row.weeks.find(x => x.weekNum === evidenceDialog.selectedWeekNum) || row.w1).status) ? 'text-error font-weight-bold' : 'text-grey-darken-4 font-weight-medium'">{{ row.TenLop }}</span>
 										</td>
 										<td class="text-left px-2 text-medium-emphasis">{{ row.TenGVCN }}</td>
 										<td
@@ -2307,12 +2502,15 @@
 											class="text-center px-1"
 											style="vertical-align: middle;"
 										>
-											<template v-if="d.tcText === '—' && d.rankText === '—'">
+											<template v-if="d.rankCode === 'CHETAI'">
+												<span class="text-error" title="Tạm dừng tự quản (Áp dụng chế tài)">—</span>
+											</template>
+											<template v-else-if="d.tcText === '—' && d.rankText === '—'">
 												<span class="text-medium-emphasis">—</span>
 											</template>
-											<template v-else-if="d.rankCode === 'CHETAI'">
+											<template v-else-if="d.rankCode === 'GV'">
 												<div class="d-flex flex-column align-center justify-center">
-													<span class="table-rank-badge rank-chuadat" style="font-size: 10px; padding: 1px 4px;">Chế tài</span>
+													<span class="table-rank-badge rank-gvcn" style="font-size: 10px; padding: 1px 6px;">GV</span>
 												</div>
 											</template>
 											<template v-else>
@@ -2366,12 +2564,12 @@
 								elevation="0"
 								rounded="xl"
 								class="mb-3 bg-white border"
-								:class="{ 'border-error': row.SoTuanCD > 0 }"
+								:class="{ 'border-error': ['CD', 'CHETAI'].includes((row.weeks.find(x => x.weekNum === evidenceDialog.selectedWeekNum) || row.w1).status) }"
 							>
 								<div class="pa-3">
 									<div class="d-flex align-center justify-space-between mb-2">
 										<div class="d-flex align-center ga-2">
-											<span class="font-weight-medium text-subtitle-1" :class="row.SoTuanCD > 0 ? 'text-error font-weight-bold' : 'text-primary'">
+											<span class="font-weight-medium text-subtitle-1" :class="['CD', 'CHETAI'].includes((row.weeks.find(x => x.weekNum === evidenceDialog.selectedWeekNum) || row.w1).status) ? 'text-error font-weight-bold' : 'text-grey-darken-4'">
 												{{ row.TenLop }}
 											</span>
 											<span class="text-body-2 text-medium-emphasis">({{ row.TenGVCN }})</span>
@@ -2392,11 +2590,14 @@
 												{{ d.dayNum === 2 ? 'T2' : (d.dayNum === 3 ? 'T3' : (d.dayNum === 4 ? 'T4' : (d.dayNum === 5 ? 'T5' : 'T6'))) }}
 											</div>
 											<div class="mt-0.5">
-												<template v-if="d.tcText === '—' && d.rankText === '—'">
+												<template v-if="d.rankCode === 'CHETAI'">
+													<span class="text-error" style="font-size: 11px;" title="Tạm dừng tự quản (Áp dụng chế tài)">—</span>
+												</template>
+												<template v-else-if="d.tcText === '—' && d.rankText === '—'">
 													<span class="text-medium-emphasis" style="font-size: 11px;">—</span>
 												</template>
-												<template v-else-if="d.rankCode === 'CHETAI'">
-													<span class="table-rank-badge rank-chuadat" style="font-size: 9px; padding: 0 2px;">Chế tài</span>
+												<template v-else-if="d.rankCode === 'GV'">
+													<span class="table-rank-badge rank-gvcn" style="font-size: 9px; padding: 0 4px;">GV</span>
 												</template>
 												<template v-else>
 													<span
@@ -2427,11 +2628,19 @@
 
 						<!-- Tổng kết nề nếp toàn khối -->
 						<div class="pa-3 rounded-lg border text-caption bg-grey-lighten-5 text-grey-darken-3 d-flex align-center justify-space-between flex-wrap ga-2">
-							<div>
+							<div v-if="(monthEvaluationWeeks.find(x => x.weekNum === evidenceDialog.selectedWeekNum) || {}).isOngoing">
+								<strong>Tổng hợp Tuần {{ evidenceDialog.selectedWeekNum }}:</strong>
+								Khối {{ selectedKhoi || 6 }} đang trong tuần đánh giá thứ {{ evidenceDialog.selectedWeekNum }}. Dữ liệu đang được ghi nhận theo nhật ký Quản sinh.
+							</div>
+							<div v-else-if="(monthEvaluationWeeks.find(x => x.weekNum === evidenceDialog.selectedWeekNum) || {}).isFuture">
+								<strong>Tổng hợp Tuần {{ evidenceDialog.selectedWeekNum }}:</strong>
+								Khối {{ selectedKhoi || 6 }} chưa bước vào tuần đánh giá thứ {{ evidenceDialog.selectedWeekNum }} (Tháng {{ currentEvaluationMonth }}/2026).
+							</div>
+							<div v-else>
 								<strong>Tổng hợp kết quả Tuần {{ evidenceDialog.selectedWeekNum }}:</strong>
 								Khối {{ selectedKhoi || 6 }} có
-								<strong class="text-success">{{ monthlyClassRecords.filter(r => (r.weeks.find(x => x.weekNum === evidenceDialog.selectedWeekNum) || r.w1).status === 'T').length }} lớp Tốt</strong>,
-								<strong class="text-primary">{{ monthlyClassRecords.filter(r => (r.weeks.find(x => x.weekNum === evidenceDialog.selectedWeekNum) || r.w1).status === 'D').length }} lớp Đạt</strong>,
+								<strong class="text-success">{{ monthlyClassRecords.filter(r => ['T', 'D'].includes((r.weeks.find(x => x.weekNum === evidenceDialog.selectedWeekNum) || r.w1).status)).length }} lớp Đạt</strong>,
+								<strong class="text-primary">{{ monthlyClassRecords.filter(r => (r.weeks.find(x => x.weekNum === evidenceDialog.selectedWeekNum) || r.w1).status === 'DT').length }} lớp Duy trì</strong>,
 								<strong class="text-error">{{ monthlyClassRecords.filter(r => ['CD', 'CHETAI'].includes((r.weeks.find(x => x.weekNum === evidenceDialog.selectedWeekNum) || r.w1).status)).length }} lớp Chưa đạt/Chế tài</strong>.
 							</div>
 							<div class="text-medium-emphasis font-italic">
@@ -2665,25 +2874,31 @@
 							<template v-if="isBghRole || activeTab === 'baocao'">
 								<v-radio
 									value="daily"
-									label="Phiếu giám sát trong ngày (kèm kết quả Quản sinh đã đánh giá)"
+									label="Phiếu giám sát ngày (kèm kết quả QS)"
+									color="primary"
+									class="mr-sm-6 mr-3 mb-1 font-weight-medium"
+								/>
+								<v-radio
+									value="weekly_result"
+									label="Sổ theo dõi cả tuần (kèm kết quả QS)"
 									color="primary"
 									class="mr-sm-6 mr-3 mb-1 font-weight-medium"
 								/>
 								<v-radio
 									value="weekly"
-									label="Sổ giám sát cả tuần (kèm kết quả Quản sinh đánh giá các ngày)"
+									label="Sổ theo dõi cả tuần (phiếu trắng cho Sao đỏ)"
 									color="primary"
 									class="mr-sm-6 mr-3 mb-1 font-weight-medium"
 								/>
 								<v-radio
 									value="bgh_summary"
-									label="Báo cáo nề nếp tuần (Ban Giám hiệu - tổng hợp & xếp loại)"
+									label="Báo cáo nề nếp tuần (Ban Giám hiệu)"
 									color="primary"
-									class="mr-sm-6 mr-3 mb-1 font-weight-medium"
+									class="mb-1 font-weight-medium"
 								/>
 							</template>
 
-							<!-- 2. Khi ở tab Quản sinh: Bỏ báo cáo tuần, chỉ in phiếu đi chấm cho Sao đỏ -->
+							<!-- 2. Khi ở tab Quản sinh: -->
 							<template v-else>
 								<v-radio
 									value="daily"
@@ -2694,6 +2909,12 @@
 								<v-radio
 									value="weekly"
 									label="Sổ theo dõi cả tuần (phiếu trắng cho Sao đỏ đi chấm)"
+									color="teal"
+									class="mr-sm-6 mr-3 mb-1 font-weight-medium"
+								/>
+								<v-radio
+									value="weekly_result"
+									label="Sổ theo dõi cả tuần (kèm kết quả đã chấm)"
 									color="teal"
 									class="mb-1 font-weight-medium"
 								/>
@@ -2715,12 +2936,12 @@
 							<div>Người lập: <strong>Quản sinh khối</strong></div>
 						</div>
 
-						<!-- Thống kê nề nếp tuần -->
+						<!-- Thống kê nề nếp tuần theo chuẩn 22/10 -->
 						<div class="mb-3 pa-2 bg-blue-grey-lighten-5 rounded border text-caption d-flex align-center justify-space-between flex-wrap ga-2" style="font-size: 9.5pt;">
 							<div>Tổng số lớp: <strong>{{ bghWeeklyReportClasses.length }} lớp</strong></div>
-							<div>Đạt Tốt / Xuất sắc: <strong style="color: #2e7d32;">{{ bghWeeklyReportStats.totCount }} lớp</strong></div>
-							<div>Đạt: <strong style="color: #1565c0;">{{ bghWeeklyReportStats.datCount }} lớp</strong></div>
-							<div>Tạm dừng TQ / Nhắc nhở: <strong style="color: #c62828;">{{ bghWeeklyReportStats.blockedCount }} lớp</strong></div>
+							<div>Đạt (Đ) (+0.5đ): <strong style="color: #16a34a;">{{ bghWeeklyReportStats.datCount }} lớp</strong></div>
+							<div>Duy trì (DT): <strong style="color: #1565c0;">{{ bghWeeklyReportStats.duyTriCount }} lớp</strong></div>
+							<div>Chưa đạt / Dừng TQ: <strong style="color: #c62828;">{{ bghWeeklyReportStats.cdCount }} lớp</strong></div>
 						</div>
 
 						<div class="table-responsive">
@@ -2752,7 +2973,7 @@
 										<td style="font-size: 8pt; padding: 2px 4px;">{{ row.LichSummary }}</td>
 										<td v-for="d in row.daysResult" :key="d.dayVal" style="padding: 2px 3px; font-size: 8pt;">
 											<div :style="{ color: d.color, fontWeight: 'bold' }">
-												{{ d.code === 'CC' ? 'Chào cờ' : (d.code === 'CHETAI' ? 'Tạm dừng TQ' : (d.code === '—' || d.code === 'GV' ? '—' : ('[' + d.code + '] ' + d.statusText))) }}
+												{{ d.code === 'CC' ? 'Chào cờ' : (d.code === 'CHETAI' ? 'Tạm dừng TQ' : (d.code === 'GV' ? 'GV' : (d.code === '—' ? '—' : ('[' + d.code + '] ' + d.statusText)))) }}
 											</div>
 										</td>
 										<td style="padding: 2px 4px;">
@@ -2798,10 +3019,10 @@
 						<div class="text-center mb-3">
 							<div style="font-size: 13pt; font-weight: bold; text-transform: uppercase;">TRƯỜNG TH-THCS-THPT SONG NGỮ LẠC HỒNG</div>
 							<div style="font-size: 14pt; font-weight: bold; margin-top: 4px;">
-								{{ printDialog.mode === 'weekly' ? 'SỔ GIÁM SÁT 15 PHÚT TỰ QUẢN CẢ TUẦN' : 'PHIẾU GIÁM SÁT 15 PHÚT TỰ QUẢN ĐẦU GIỜ' }}
+								{{ (printDialog.mode === 'weekly' || printDialog.mode === 'weekly_result') ? 'SỔ GIÁM SÁT 15 PHÚT TỰ QUẢN CẢ TUẦN' : 'PHIẾU GIÁM SÁT 15 PHÚT TỰ QUẢN ĐẦU GIỜ' }}
 							</div>
 							<div style="font-size: 11pt; font-style: italic;">
-								{{ (isBghRole || activeTab === 'baocao') ? (printDialog.mode === 'weekly' ? '(Bản tổng hợp kết quả Quản sinh đánh giá các ngày trong tuần gửi Ban Giám Hiệu)' : '(Bản tổng hợp kết quả Quản sinh đánh giá gửi Ban Giám Hiệu)') : '(Dành cho Quản sinh khối & Đội Sao đỏ / Đoàn viên xung kích theo dõi)' }}
+								{{ printDialog.mode === 'weekly' ? '(Phiếu trắng dùng cho Quản sinh khối & Đội Sao đỏ / Đoàn viên xung kích theo dõi)' : ((printDialog.mode === 'weekly_result') ? '(Bản tổng hợp kết quả Quản sinh đánh giá các ngày trong tuần)' : ((isBghRole || activeTab === 'baocao') ? '(Bản tổng hợp kết quả Quản sinh đánh giá gửi Ban Giám Hiệu)' : '(Dành cho Quản sinh khối & Đội Sao đỏ / Đoàn viên xung kích theo dõi)')) }}
 							</div>
 						</div>
 
@@ -2812,15 +3033,15 @@
 						</div>
 
 						<div class="text-caption mb-2 text-medium-emphasis" style="font-style: italic; font-size: 10pt;">
-							* Hướng dẫn: Đánh giá từng phòng học: <strong>[T] = Tốt, [Đ] = Đạt, [CĐ] = Cần cố gắng</strong>. Ghi rõ nội dung vi phạm cụ thể vào cột Ghi chú.
+							* Hướng dẫn: Đánh giá từng phòng học: <strong>[Đ] = Đạt, [CĐ] = Chưa đạt</strong>. Ghi rõ mô tả cụ thể sự việc vào Bảng ghi nhận chi tiết (minh chứng).
 						</div>
 
 						<!-- Bảng ghi chú các tiêu chí (Legend) giúp tiêu đề bảng ngắn gọn, không bị co ép -->
 						<div class="mb-3 pa-2 bg-grey-lighten-4 rounded border text-caption" style="font-size: 8.5pt; line-height: 1.4;">
-							<div class="font-weight-bold text-grey-darken-3 mb-1">Nội dung chi tiết các tiêu chí chấm điểm:</div>
+							<div class="font-weight-bold text-grey-darken-3 mb-1">Nội dung chi tiết các tiêu chí (Hướng dẫn 22/10/2026):</div>
 							<div class="d-flex flex-wrap ga-x-4 ga-y-1">
 								<div v-for="(tc, i) in getMergedPrintCriteria()" :key="'legend-' + i">
-									<strong>TC{{ i + 1 }}:</strong> {{ tc.ten }}
+									<strong>{{ 'TC' + (i + 1) + ': ' + getCriterionMainTitle(tc.ten) }}</strong> {{ getCriterionSubTitle(tc.ten) }}
 								</div>
 							</div>
 						</div>
@@ -2834,7 +3055,7 @@
 										<th style="width: 65px; padding: 4px;">Lớp</th>
 										<th style="width: 130px; padding: 4px; text-align: left;">GVCN</th>
 										<th v-for="(tc, i) in getMergedPrintCriteria()" :key="i" style="padding: 4px; min-width: 100px;">
-											<div style="font-weight: bold;">{{ (i + 1) + '. ' + getCriterionMainTitle(tc.ten) }}</div>
+											<div style="font-weight: bold;">{{ 'TC' + (i + 1) + ': ' + getCriterionMainTitle(tc.ten) }}</div>
 											<div v-if="getCriterionSubTitle(tc.ten)" style="font-size: 7.5pt; font-weight: normal; color: #555; line-height: 1.2;">{{ getCriterionSubTitle(tc.ten) }}</div>
 										</th>
 										<th style="min-width: 130px; padding: 4px; text-align: left;">Ghi chú / Kí tên</th>
@@ -2856,30 +3077,34 @@
 											<!-- TRẠNG THÁI CHẾ TÀI HOẶC TỰ QUẢN -->
 											<template v-if="isClassBlocked(cls.LopID)">
 												<span style="color: #c62828; font-weight: bold; display: block; font-size: 8pt;">
-													[TẠM DỪNG TỰ QUẢN]
+													[DỪNG TỰ QUẢN]
 												</span>
 											</template>
-											<template v-else-if="selectedDay === 2 || !cls.IsTuQuan">
-												<span style="color: #546e7a; display: block; font-size: 8pt;">(GVCN sinh hoạt)</span>
+											<template v-else-if="selectedDay === 2">
+												<span style="color: #546e7a; display: block; font-size: 8pt;">(Sinh hoạt đầu tuần)</span>
+											</template>
+											<template v-else-if="cls.IsTuQuan">
+												<span style="color: #2e7d32; display: block; font-size: 8pt;">(Lớp tự quản)</span>
 											</template>
 											<template v-else>
-												<span style="color: #2e7d32; display: block; font-size: 8pt;">(Lớp tự quản)</span>
+												<span style="color: #546e7a; display: block; font-size: 8pt;">(Chưa đăng ký TQ)</span>
 											</template>
 										</td>
 										<td v-for="(tc, i) in getMergedPrintCriteria()" :key="i" style="padding: 2px 4px;">
-											<!-- NẾU THỨ 2 HOẶC LỚP BỊ TẠM DỪNG TỰ QUẢN HOẶC GVCN SINH HOẠT TRỰC TIẾP (KHÔNG CHẤM TỰ QUẢN) -->
-											<div v-if="isClassBlocked(cls.LopID) || selectedDay === 2 || !cls.IsTuQuan" style="color: #64748b; font-size: 11pt; font-weight: 500;">
+											<!-- NẾU THỨ 2 HOẶC LỚP BỊ TẠM DỪNG TỰ QUẢN -->
+											<div v-if="isClassBlocked(cls.LopID) || selectedDay === 2" style="color: #64748b; font-size: 11pt; font-weight: 500;">
 												—
 											</div>
-											<!-- NẾU LÀ NGÀY TỰ QUẢN CÓ CHẤM -->
-											<div v-else-if="isClassHavingCriteria(cls, tc)" style="white-space: nowrap; font-size: 8.5pt; display: inline-flex; gap: 4px; align-items: center; justify-content: center;">
+											<!-- BGH XEM HOẶC IN KÈM KẾT QUẢ: NẾU KHÔNG TỰ QUẢN THÌ HIỆN GẠCH NGANG -->
+											<div v-else-if="(isBghRole || activeTab === 'baocao') && !cls.IsTuQuan" style="color: #64748b; font-size: 11pt; font-weight: 500;">
+												—
+											</div>
+											<!-- NẾU CÓ TIÊU CHÍ CHẤM -->
+											<div v-else-if="isClassHavingCriteria(cls, tc)" style="white-space: nowrap; font-size: 8.5pt; display: inline-flex; gap: 6px; align-items: center; justify-content: center;">
 												<template v-if="isBghRole || activeTab === 'baocao'">
 													<!-- BGH: ĐÁNH DẤU VÀO THEO ĐÁNH GIÁ CỦA QUẢN SINH -->
-													<span :style="{ fontWeight: findClassCriterion(cls, tc).score === 3 ? 'bold' : 'normal', color: findClassCriterion(cls, tc).score === 3 ? '#2e7d32' : '#888' }">
-														{{ findClassCriterion(cls, tc).score === 3 ? '[✓] T' : '[ ] T' }}
-													</span>
-													<span :style="{ fontWeight: findClassCriterion(cls, tc).score === 2 ? 'bold' : 'normal', color: findClassCriterion(cls, tc).score === 2 ? '#1565c0' : '#888' }">
-														{{ findClassCriterion(cls, tc).score === 2 ? '[✓] Đ' : '[ ] Đ' }}
+													<span :style="{ fontWeight: findClassCriterion(cls, tc).score !== 1 ? 'bold' : 'normal', color: findClassCriterion(cls, tc).score !== 1 ? '#2e7d32' : '#888' }">
+														{{ findClassCriterion(cls, tc).score !== 1 ? '[✓] Đ' : '[ ] Đ' }}
 													</span>
 													<span :style="{ fontWeight: findClassCriterion(cls, tc).score === 1 ? 'bold' : 'normal', color: findClassCriterion(cls, tc).score === 1 ? '#c62828' : '#888' }">
 														{{ findClassCriterion(cls, tc).score === 1 ? '[✓] CĐ' : '[ ] CĐ' }}
@@ -2887,7 +3112,6 @@
 												</template>
 												<template v-else>
 													<!-- QUẢN SINH: PHIẾU TRẮNG CHO SAO ĐỎ ĐI CHẤM -->
-													<span>[ ] T</span>
 													<span>[ ] Đ</span>
 													<span>[ ] CĐ</span>
 												</template>
@@ -2906,114 +3130,215 @@
 								</tbody>
 							</table>
 
-							<!-- Bảng preview tuần -->
+							<!-- Bảng preview tuần CHUẨN MA TRẬN NGANG PHỤ LỤC A (VĂN BẢN 22/10) -->
 							<div v-else>
-								<div v-for="d in daysOfWeek" :key="'preview-weekly-' + d.val" class="mb-4">
-									<div class="d-flex align-center justify-space-between mb-1">
-										<div style="font-weight: bold; font-size: 10.5pt; text-transform: uppercase; color: #1565c0;">
-											► {{ d.label }} ({{ d.date }})
-										</div>
-										<div v-if="d.val === 2" class="text-caption text-grey-darken-1 font-italic" style="font-size: 8.5pt;">
-											* Tiết sinh hoạt đầu tuần cùng GVCN (Không chấm tự quản)
-										</div>
-									</div>
-									<table style="width: 100%; border-collapse: collapse; font-size: 9pt; text-align: center; border: 1px solid #333;" border="1">
+								<div class="mb-2" style="font-weight: bold; font-size: 11pt; color: #1565c0; text-transform: uppercase;">
+									Phần A. PHIẾU GIÁM SÁT HẰNG TUẦN (ÁP DỤNG TỪ THỨ BA ĐẾN THỨ SÁU)
+								</div>
+								<div style="overflow-x: auto;">
+									<table style="width: 100%; border-collapse: collapse; font-size: 8pt; text-align: center; border: 1px solid #333;" border="1">
 										<thead>
-											<tr style="background-color: #f2f2f2; height: 28px;">
-												<th style="width: 35px; padding: 3px;">STT</th>
-												<th style="width: 65px; padding: 3px;">Lớp</th>
-												<th style="width: 130px; padding: 3px; text-align: left;">GVCN</th>
-												<th v-for="(tc, i) in getMergedPrintCriteria()" :key="i" style="padding: 3px; min-width: 95px;">
-													<div style="font-weight: bold;">{{ (i + 1) + '. ' + getCriterionMainTitle(tc.ten) }}</div>
-													<div v-if="getCriterionSubTitle(tc.ten)" style="font-size: 7pt; font-weight: normal; color: #555; line-height: 1.2;">{{ getCriterionSubTitle(tc.ten) }}</div>
-												</th>
-												<th style="min-width: 125px; padding: 3px; text-align: left;">Ghi chú / Kí tên</th>
+											<tr style="background-color: #f2f2f2; height: 26px;">
+												<th rowspan="2" style="width: 28px; padding: 2px;">STT</th>
+												<th rowspan="2" style="width: 50px; padding: 2px;">Lớp</th>
+												<th colspan="4" style="padding: 2px;">THỨ BA<br><span style="font-size: 7pt; font-weight: normal;">({{ getDateStringForDay(3).split('-').slice(1).reverse().join('/') }})</span></th>
+												<th colspan="4" style="padding: 2px;">THỨ TƯ<br><span style="font-size: 7pt; font-weight: normal;">({{ getDateStringForDay(4).split('-').slice(1).reverse().join('/') }})</span></th>
+												<th colspan="4" style="padding: 2px;">THỨ NĂM<br><span style="font-size: 7pt; font-weight: normal;">({{ getDateStringForDay(5).split('-').slice(1).reverse().join('/') }})</span></th>
+												<th colspan="4" style="padding: 2px;">THỨ SÁU<br><span style="font-size: 7pt; font-weight: normal;">({{ getDateStringForDay(6).split('-').slice(1).reverse().join('/') }})</span></th>
+												<th colspan="5" style="padding: 2px; background-color: #e8eaf6;">TỔNG HỢP TUẦN</th>
+												<th rowspan="2" style="min-width: 90px; padding: 2px; text-align: left;">Ghi chú</th>
+											</tr>
+											<tr style="background-color: #f8fafc; height: 22px; font-size: 7pt;">
+												<th>TC1</th><th>TC2</th><th>TC3</th><th>KQ</th>
+												<th>TC1</th><th>TC2</th><th>TC3</th><th>KQ</th>
+												<th>TC1</th><th>TC2</th><th>TC3</th><th>KQ</th>
+												<th>TC1</th><th>TC2</th><th>TC3</th><th>KQ</th>
+												<th style="width: 42px;">Số ngày TQ</th>
+												<th style="width: 32px;">Số ngày Đ</th>
+												<th style="width: 38px;">Số ngày CCG</th>
+												<th style="width: 32px;">Số ngày CĐ</th>
+												<th style="width: 70px;">Xếp loại tuần</th>
 											</tr>
 										</thead>
 										<tbody>
 											<tr
-												v-for="(cls, idx) in getClassesForPrintDay(d.val)"
-												:key="'weekly-row-' + d.val + '-' + cls.LopID"
-												style="height: 34px;"
-												:style="{ backgroundColor: isClassBlocked(cls.LopID) ? '#fff5f5' : (idx % 2 === 1 ? '#fafafa' : '#ffffff') }"
+												v-for="(row, idx) in weeklyClassMatrix"
+												:key="'preview-matrix-row-' + row.LopID"
+												style="height: 26px;"
+												:style="{ backgroundColor: row.IsBlocked ? '#fff5f5' : (idx % 2 === 1 ? '#fafafa' : '#ffffff') }"
 											>
 												<td>{{ idx + 1 }}</td>
-												<td style="font-weight: bold; font-size: 9.5pt;" :style="{ color: isClassBlocked(cls.LopID) ? '#c62828' : 'inherit' }">
-													{{ cls.TenLop }}
-												</td>
-												<td style="font-size: 8.5pt; text-align: left; padding: 2px 5px;">
-													<div>{{ cls.TenGVCN }}</div>
-													<!-- TRẠNG THÁI CHẾ TÀI HOẶC TỰ QUẢN -->
-													<template v-if="isClassBlocked(cls.LopID)">
-														<span style="color: #c62828; font-weight: bold; display: block; font-size: 7.5pt;">
-															[TẠM DỪNG TỰ QUẢN]
-														</span>
-													</template>
-													<template v-else-if="d.val === 2 || !cls.IsTuQuan">
-														<span style="color: #546e7a; display: block; font-size: 7.5pt;">(GVCN sinh hoạt)</span>
-													</template>
-													<template v-else>
-														<span style="color: #2e7d32; display: block; font-size: 7.5pt;">(Lớp tự quản)</span>
-													</template>
-												</td>
-												<td v-for="(tc, i) in getMergedPrintCriteria()" :key="i" style="padding: 2px 4px;">
-													<!-- NẾU THỨ 2 HOẶC LỚP BỊ TẠM DỪNG TỰ QUẢN HOẶC GVCN SINH HOẶT TRỰC TIẾP (KHÔNG CHẤM TỰ QUẢN) -->
-													<div v-if="isClassBlocked(cls.LopID) || d.val === 2 || !cls.IsTuQuan" style="color: #64748b; font-size: 11pt; font-weight: 500;">
-														—
-													</div>
-													<!-- NẾU CÓ TIÊU CHÍ CHẤM -->
-													<div v-else-if="isClassHavingCriteria(cls, tc)" style="white-space: nowrap; font-size: 8pt; display: inline-flex; gap: 3px; align-items: center; justify-content: center;">
-														<template v-if="isBghRole || activeTab === 'baocao'">
-															<!-- BGH: ĐÁNH DẤU VÀO THEO ĐÁNH GIÁ CỦA QUẢN SINH CỦA NGÀY ĐÓ -->
-															<span :style="{ fontWeight: findClassCriterion(cls, tc).score === 3 ? 'bold' : 'normal', color: findClassCriterion(cls, tc).score === 3 ? '#2e7d32' : '#888' }">
-																{{ findClassCriterion(cls, tc).score === 3 ? '[✓] T' : '[ ] T' }}
-															</span>
-															<span :style="{ fontWeight: findClassCriterion(cls, tc).score === 2 ? 'bold' : 'normal', color: findClassCriterion(cls, tc).score === 2 ? '#1565c0' : '#888' }">
-																{{ findClassCriterion(cls, tc).score === 2 ? '[✓] Đ' : '[ ] Đ' }}
-															</span>
-															<span :style="{ fontWeight: findClassCriterion(cls, tc).score === 1 ? 'bold' : 'normal', color: findClassCriterion(cls, tc).score === 1 ? '#c62828' : '#888' }">
-																{{ findClassCriterion(cls, tc).score === 1 ? '[✓] CĐ' : '[ ] CĐ' }}
-															</span>
-														</template>
-														<template v-else>
-															<!-- QUẢN SINH: PHIẾU TRẮNG CHO SAO ĐỎ -->
-															<span>[ ] T</span>
-															<span>[ ] Đ</span>
-															<span>[ ] CĐ</span>
-														</template>
-													</div>
-													<span v-else style="color: #bbb;">—</span>
-												</td>
-												<td style="text-align: left; padding: 2px 5px; font-size: 8pt;">
-													<div v-if="isClassBlocked(cls.LopID)" style="color: #c62828; font-weight: bold;">
-														Tạm dừng tự quản 01 tuần (GVCN có mặt 5/5 buổi lúc 7:15)
-													</div>
-													<div v-else>
-														{{ cls.GhiChuViPham || '' }}
-													</div>
+												<td style="font-weight: bold;" :style="{ color: row.IsBlocked ? '#c62828' : 'inherit' }">{{ row.TenLop }}</td>
+												<!-- THỨ 3 -->
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 3).tc1 }}</td>
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 3).tc2 }}</td>
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 3).tc3 }}</td>
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}" :class="{ 'font-weight-bold': !row.IsBlocked }">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 3).kq }}</td>
+												<!-- THỨ 4 -->
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 4).tc1 }}</td>
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 4).tc2 }}</td>
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 4).tc3 }}</td>
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}" :class="{ 'font-weight-bold': !row.IsBlocked }">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 4).kq }}</td>
+												<!-- THỨ 5 -->
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 5).tc1 }}</td>
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 5).tc2 }}</td>
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 5).tc3 }}</td>
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}" :class="{ 'font-weight-bold': !row.IsBlocked }">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 5).kq }}</td>
+												<!-- THỨ 6 -->
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 6).tc1 }}</td>
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 6).tc2 }}</td>
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 6).tc3 }}</td>
+												<td :style="row.IsBlocked ? { background: 'repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px)' } : {}" :class="{ 'font-weight-bold': !row.IsBlocked }">{{ row.IsBlocked ? '' : getWeeklyMatrixCell(row, 6).kq }}</td>
+												<!-- TỔNG HỢP -->
+												<td>{{ printDialog.mode === 'weekly' ? '' : row.TuQuanCount }}</td>
+												<td style="color: #2e7d32; font-weight: bold;">{{ printDialog.mode === 'weekly' ? '' : (row.DatCount || '') }}</td>
+												<td style="color: #f59e0b; font-weight: bold;">{{ printDialog.mode === 'weekly' ? '' : (row.CcgCount || '') }}</td>
+												<td style="color: #c62828; font-weight: bold;">{{ printDialog.mode === 'weekly' ? '' : (row.CdCount || '') }}</td>
+												<td style="font-weight: bold;">{{ printDialog.mode === 'weekly' ? '' : row.XepLoaiTuan }}</td>
+												<td style="text-align: left; padding: 1px 4px; font-size: 7.5pt;" :style="{ color: row.IsBlocked ? '#c62828' : 'inherit' }">
+													{{ row.IsBlocked ? 'Chế tài do Tuần 1 Chưa đạt' : '' }}
 												</td>
 											</tr>
 										</tbody>
 									</table>
 								</div>
+
+								<!-- 2 Hộp chú thích chuẩn theo Phụ lục A -->
+								<div class="d-flex ga-2 mt-2" style="font-size: 8pt; line-height: 1.35;">
+									<div class="pa-2 border rounded" style="width: 50%; background-color: #fcfcfc;">
+										<div style="font-weight: bold; margin-bottom: 2px;">Kí hiệu ghi phiếu:</div>
+										<div>• Ô tiêu chí: <strong>Đ</strong> = Đạt; <strong>CĐ</strong> = Chưa đạt.</div>
+										<div>• Ô KQ ngày: <strong>Đ</strong> / <strong>CCG</strong> (Cần cố gắng) / <strong>CĐ</strong>.</div>
+										<div>• <strong>GV</strong> = Lớp đăng kí nhưng GVCN có mặt → không đánh giá, không tính là ngày tự quản (ghi "GV" vào ô KQ ngày).</div>
+										<div>• <strong>/</strong> = Lớp không đăng kí tự quản ngày đó (gạch chéo cả 4 ô của ngày).</div>
+										<div>• <strong>TC1:</strong> Lớp học thông thoáng, ngăn nắp; sàn, bảng sạch sẽ.</div>
+										<div>• <strong>TC2:</strong> Hoạt động 15 phút có nội dung cụ thể.</div>
+										<div>• <strong>TC3:</strong> Tập thể lớp tham gia nghiêm túc, tích cực.</div>
+									</div>
+									<div class="pa-2 border rounded" style="width: 50%; background-color: #fcfcfc;">
+										<div style="font-weight: bold; margin-bottom: 2px;">Cách xếp loại (Mục III của Hướng dẫn):</div>
+										<div>• <strong>Ngày:</strong> Đ = cả 3 TC Đạt; CCG = có 1 TC CĐ; CĐ = có từ 2 TC CĐ.</div>
+										<div>• <strong>Tuần (tính trên số ngày tự quản thực tế):</strong></div>
+										<div>- <strong>Đạt (Đ):</strong> từ 2 ngày trở lên và 100% số ngày xếp Đ → cộng 0,5 điểm thi đua.</div>
+										<div>- <strong>Chưa đạt (CĐ):</strong> ≥ 50% số ngày xếp CĐ → dừng tự quản tuần tiếp theo.</div>
+										<div>- <strong>Duy trì (DT):</strong> các trường hợp còn lại → không cộng điểm, tiếp tục tự quản.</div>
+										<div style="font-style: italic; color: #555;">* Ngày CCG không tính là ngày Đ khi xét mức Đạt, không tính là ngày CĐ khi xét mức Chưa đạt.</div>
+									</div>
+								</div>
+
+								<!-- PHẦN B. GHI NHẬN CHI TIẾT VÀ HƯỚNG DẪN ĐÁNH GIÁ (CHUẨN 22/10) -->
+								<div class="mt-3">
+									<div style="font-weight: bold; font-size: 10.5pt; color: #1565c0; margin-bottom: 3px;">
+										Phần B. GHI NHẬN CHI TIẾT VÀ HƯỚNG DẪN ĐÁNH GIÁ
+									</div>
+									<div style="font-weight: bold; font-size: 9pt;">
+										1. Bảng ghi nhận chi tiết các trường hợp Chưa đạt
+									</div>
+									<div style="font-style: italic; font-size: 8pt; color: #666; margin-bottom: 3px;">
+										(Ghi ngay khi phát hiện, mô tả khách quan, cụ thể – làm căn cứ khi GVCN phản hồi trước 11:00)
+									</div>
+									<table style="width: 100%; border-collapse: collapse; font-size: 8pt; text-align: center; border: 1px solid #333;" border="1">
+										<thead>
+											<tr style="background-color: #f2f2f2; height: 22px;">
+												<th style="width: 32px;">STT</th>
+												<th style="width: 95px;">Thứ / Ngày</th>
+												<th style="width: 55px;">Lớp</th>
+												<th style="width: 85px;">Tiêu chí CĐ</th>
+												<th style="text-align: left; padding-left: 6px;">Mô tả cụ thể sự việc (minh chứng)</th>
+												<th style="width: 100px;">Người ghi nhận</th>
+												<th style="width: 125px;">Quản sinh xác nhận đã báo GVCN</th>
+											</tr>
+										</thead>
+										<tbody>
+											<template v-if="printDialog.mode !== 'weekly' && getWeeklyViolationsForPrint().length > 0">
+												<tr v-for="v in getWeeklyViolationsForPrint()" :key="'v-' + v.stt" style="height: 24px;">
+													<td>{{ v.stt }}</td>
+													<td>{{ v.thuNgay }}</td>
+													<td style="font-weight: bold;">{{ v.lop }}</td>
+													<td style="color: #c62828; font-weight: bold;">{{ v.tieuChiCD }}</td>
+													<td style="text-align: left; padding-left: 6px;">{{ v.moTa }}</td>
+													<td>{{ v.nguoiGhi }}</td>
+													<td>{{ v.baoGVCN }}</td>
+												</tr>
+											</template>
+											<template v-else>
+												<tr v-for="n in 5" :key="'v-blank-' + n" style="height: 24px;">
+													<td>{{ n }}</td>
+													<td></td>
+													<td></td>
+													<td></td>
+													<td></td>
+													<td></td>
+													<td></td>
+												</tr>
+											</template>
+										</tbody>
+									</table>
+
+									<!-- 2. Biểu hiện cụ thể & 3. Quy trình ghi phiếu -->
+									<div class="mt-2" style="font-size: 7.5pt;">
+										<div style="font-weight: bold; font-size: 8.5pt; margin-bottom: 2px;">2. Biểu hiện cụ thể để xếp mức Đ/CĐ từng tiêu chí:</div>
+										<table style="width: 100%; border-collapse: collapse; font-size: 7.5pt; border: 1px solid #333;" border="1">
+											<thead>
+												<tr style="background-color: #f2f2f2; height: 20px; text-align: center;">
+													<th style="width: 28%;">Tiêu chí</th>
+													<th style="width: 36%;">Ghi "Đ" (Đạt) khi</th>
+													<th style="width: 36%;">Ghi "CĐ" (Chưa đạt) khi</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td style="padding: 2px 4px; font-weight: bold;">TC1. Lớp học thông thoáng, ngăn nắp; sàn, bảng sạch sẽ.</td>
+													<td style="padding: 2px 4px;">– Sàn sạch, không có rác; bảng đã được lau sạch.<br>– Bàn ghế, đồ dùng sắp xếp ngăn nắp.<br>– Lớp thông thoáng (cửa mở, đèn quạt phù hợp).</td>
+													<td style="padding: 2px 4px; color: #c62828;">– Còn rác trên sàn, hộc bàn; bảng chưa lau.<br>– Bàn ghế, đồ dùng lộn xộn.<br>– Lớp bí, thiếu thông thoáng.</td>
+												</tr>
+												<tr>
+													<td style="padding: 2px 4px; font-weight: bold;">TC2. Hoạt động 15 phút có nội dung cụ thể (đọc sách, chia sẻ...).</td>
+													<td style="padding: 2px 4px;">– Có nội dung cụ thể, rõ ràng.<br>– BCS điều hành đúng khung 5 phút nền nếp + 10 phút chủ đề, bắt đầu đúng 07:15.</td>
+													<td style="padding: 2px 4px; color: #c62828;">– Không có nội dung; học sinh ngồi tự do.<br>– Nội dung không rõ ràng hoặc lớp không bắt đầu hoạt động đúng giờ.</td>
+												</tr>
+												<tr>
+													<td style="padding: 2px 4px; font-weight: bold;">TC3. Tập thể lớp tham gia nghiêm túc, tích cực.</td>
+													<td style="padding: 2px 4px;">– Học sinh giữ trật tự, tập trung theo điều hành của BCS.<br>– Tích cực hưởng ứng, tham gia hoạt động.</td>
+													<td style="padding: 2px 4px; color: #c62828;">– Nhiều học sinh làm việc riêng, ồn ào, đi lại tự do.<br>– Không hợp tác với BCS lớp.</td>
+												</tr>
+											</tbody>
+										</table>
+
+										<div style="font-weight: bold; font-size: 8.5pt; margin-top: 4px; margin-bottom: 2px;">3. Quy trình ghi phiếu:</div>
+										<div style="line-height: 1.3; color: #333;">
+											1. Chiều thứ Hai: Nhận lịch đăng kí tự quản; ghi tên lớp, gạch chéo (/) các ngày lớp không đăng kí.<br>
+											2. 07:15 – 07:30 (thứ Ba – thứ Sáu): Đến từng lớp có đăng kí, ghi Đ/CĐ từng tiêu chí rồi ghi KQ ngày (Đ/CCG/CĐ). Nếu GVCN có mặt: ghi "GV", không đánh giá.<br>
+											3. Khi có tiêu chí CĐ: Ghi mô tả cụ thể sự việc vào Bảng ghi nhận chi tiết (mục 1).<br>
+											4. Trước 09:30: Quản sinh khối tổng hợp, thông báo kết quả ngày; GVCN phản hồi (nếu có) trước 11:00.<br>
+											5. Thứ Sáu (trước 16:00): Tổng hợp tuần, xếp loại tuần (Đ/DT/CĐ), kí xác nhận và thông báo kết quả.
+										</div>
+									</div>
+								</div>
+
+								<div class="d-flex justify-end mt-2" style="font-style: italic; font-size: 9pt;">
+									Trấn Biên, ngày ...... tháng 10 năm 2026
+								</div>
 							</div>
 						</div>
 
-						<!-- Kí tên cuối trang -->
-						<div class="d-flex justify-space-between mt-5 text-center" style="font-size: 11pt; page-break-inside: avoid;">
-							<div style="width: 45%;">
-								<div style="font-weight: bold;">
-									{{ (isBghRole || activeTab === 'baocao') ? 'NGƯỜI LẬP / QUẢN SINH KHỐI' : 'ĐỘI SAO ĐỎ / NGƯỜI CHẤM' }}
-								</div>
-								<div style="font-style: italic; font-size: 10pt;">(Kí và ghi rõ họ tên)</div>
-								<div style="height: 50px;"></div>
+						<!-- Kí tên cuối trang chuẩn Phụ lục A & B (22/10) -->
+						<div class="d-flex justify-space-between mt-5 text-center" style="font-size: 10.5pt; page-break-inside: avoid;">
+							<div style="width: 32%;">
+								<div style="font-weight: bold;">BÍ THƯ ĐOÀN – TPT ĐỘI</div>
+								<div style="font-style: italic; font-size: 9pt;">(Kí và ghi rõ họ tên)</div>
+								<div style="height: 45px;"></div>
+								<div style="font-weight: bold;">Lưu Quý Đồng</div>
 							</div>
-							<div style="width: 45%;">
-								<div style="font-weight: bold;">
-									{{ (isBghRole || activeTab === 'baocao') ? 'BAN GIÁM HIỆU DUYỆT' : 'QUẢN SINH KHỐI' }}
-								</div>
-								<div style="font-style: italic; font-size: 10pt;">(Kí và ghi rõ họ tên)</div>
-								<div style="height: 50px;"></div>
+							<div style="width: 32%;">
+								<div style="font-weight: bold;">QUẢN SINH KHỐI</div>
+								<div style="font-style: italic; font-size: 9pt;">(Kí và ghi rõ họ tên)</div>
+								<div style="height: 45px;"></div>
+							</div>
+							<div style="width: 32%;">
+								<div style="font-weight: bold;">NGƯỜI GIÁM SÁT</div>
+								<div style="font-style: italic; font-size: 9pt;">(Sao đỏ / ĐV xung kích)</div>
+								<div style="height: 45px;"></div>
 							</div>
 						</div>
 					</div>
@@ -3046,6 +3371,10 @@
 			isLoading: false,
 			isSaving: false,
 			currentUserName: 'Quản sinh khối',
+			currentUserCode: '',
+			currentUserAccount: '',
+			myHomeroomClasses: [],
+			isRealAdmin: false,
 			currentSystemRight: 4, // 4: Quản sinh, 1: GVCN, 3: BGH, 9: Admin
 			userRoles: [
 				{ id: 4, name: 'Quản sinh', color: 'primary', icon: 'mdi-clipboard-check-outline', description: 'Chấm điểm & xem báo cáo nề nếp khối' },
@@ -3077,14 +3406,15 @@
 			],
 			selectedDay: 2,
 			bghSelectedDay: null,
+			highlightedClassId: null,
 
 			currentClasses: [],
 
-			// 3 Tiêu chí cơ bản chuẩn theo mẫu hướng dẫn (Buổi sáng 7:15 - 7:30)
+			// 3 Tiêu chí cơ bản chuẩn: Không gian, Nội dung, Nề nếp
 			baseCriteria: [
-				{ id: 'c1', ten: '1. Không gian lớp (Mở cửa, VS, bàn ghế)', shortTitle: 'Không gian lớp (Mở cửa, VS, bàn ghế)', score: 3, isCustom: false },
-				{ id: 'c2', ten: '2. Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)', shortTitle: 'Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)', score: 3, isCustom: false },
-				{ id: 'c3', ten: '3. Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)', shortTitle: 'Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)', score: 3, isCustom: false }
+				{ id: 'c1', ten: 'TC1: Không gian (Sạch sẽ, bảng, sàn)', shortTitle: 'TC1: Không gian', score: 2, isCustom: false },
+				{ id: 'c2', ten: 'TC2: Nội dung (Đọc sách, chủ đề)', shortTitle: 'TC2: Nội dung', score: 2, isCustom: false },
+				{ id: 'c3', ten: 'TC3: Nề nếp (Nghiêm túc, tích cực)', shortTitle: 'TC3: Nề nếp', score: 2, isCustom: false }
 			],
 
 			// Tiêu chí bổ sung theo ngày riêng biệt: { 'YYYY-MM-DD': { global: [], byClass: {} } }
@@ -3103,6 +3433,8 @@
 			// Giả lập giờ kiểm thử (null: giờ thực tế hệ thống)
 			mockHourOverride: null,
 			mockMinuteOverride: 0,
+			mockDateOverride: null,
+			mockScenarioName: '',
 
 			// Dialog thêm tiêu chí
 			criteriaDialog: {
@@ -3135,6 +3467,8 @@
 				LopID: '2719',
 				TenLop: '06A',
 				TenGVCN: 'Nguyễn Thảo Nguyên',
+				MaGVCN: 'NV0000134',
+				Account: 'nguyennt',
 				SiSo: 36,
 				TrangThaiLop: 1,
 				GhiChuDangKy: ''
@@ -3148,9 +3482,7 @@
 			],
 			gvcnClassHistory: [],
 
-			penaltyOverrides: {
-				'2722': true // Mặc định lớp 06D đang dính chế tài tạm dừng tự quản
-			},
+			penaltyOverrides: {},
 			baseStreaksByClass: {
 				'2719': 4, // 06A
 				'2720': 2, // 06B
@@ -3191,14 +3523,15 @@
 		},
 		availableWeekList() {
 			if (!this.weekList || !this.weekList.length) return [];
-			// Cho phép xem lịch sử các tuần trước từ tháng 9 trở đi, tuần hiện tại, và xem trước tối đa 1 tuần kế tiếp
 			var nowMs = new Date().getTime();
 			var curIdx = this.weekList.findIndex(w => nowMs >= w.startMs && nowMs <= w.endMs);
 			if (curIdx === -1) {
 				curIdx = this.weekList.findIndex(w => w.startDate === '2026-10-12');
 				if (curIdx === -1) curIdx = 0;
 			}
-			var maxIdx = Math.min(this.weekList.length - 1, curIdx + 1);
+			// Ở tab Báo cáo & Thi đua: ẨN LUÔN tuần sau, chỉ hiển thị tối đa đến tuần hiện tại (curIdx)
+			// Ở tab Quản sinh hoặc GVCN: Cho phép xem trước 1 tuần kế tiếp (curIdx + 1) để đăng ký và in phiếu
+			var maxIdx = (this.activeTab === 'baocao') ? curIdx : Math.min(this.weekList.length - 1, curIdx + 1);
 			return this.weekList.filter(function(w, idx) {
 				return idx <= maxIdx && (w.month >= 9 || w.month <= 6);
 			});
@@ -3301,7 +3634,11 @@
 			return this.isSpecificDayInPast(this.selectedDay);
 		},
 		isReadOnlyDay() {
-			return this.isBghRole || this.isFutureDay || this.isPastDay || this.isTodayQsLocked;
+			// Mở toàn bộ quy tắc chặn cho Quản sinh để mọi người demo tự do
+			return false;
+		},
+		canModifyCriteria() {
+			return !this.isBghRole;
 		},
 		currentClassKhoi() {
 			var cid = this.gvcnClassInfo.LopID;
@@ -3318,6 +3655,8 @@
 						LopID: item.LopID,
 						TenLop: item.TenLop,
 						TenGVCN: item.TenGVCN,
+						MaGVCN: item.MaGVCN,
+						Account: item.Account,
 						SiSo: item.SiSo,
 						Khoi: k,
 						label: 'Lớp ' + item.TenLop + ' — ' + item.TenGVCN
@@ -3326,8 +3665,34 @@
 			});
 			return all;
 		},
-		availableGvcnClasses() {
+		myGvcnClasses() {
+			if (this.isGVCNRole) {
+				if (this.myHomeroomClasses && this.myHomeroomClasses.length > 0) {
+					return this.myHomeroomClasses;
+				}
+				var uId = (this.currentUserCode || '').toUpperCase();
+				var userAcc = (this.currentUserAccount || '').toLowerCase();
+				var teacherName = (this.currentUserName || '').toLowerCase().trim();
+				var list = this.allSchoolClasses.filter(function(c) {
+					return (c.MaGVCN && c.MaGVCN.toUpperCase() === uId) ||
+						(c.Account && c.Account.toLowerCase() === userAcc) ||
+						(c.TenGVCN && teacherName && (c.TenGVCN.toLowerCase() === teacherName || teacherName.includes(c.TenGVCN.toLowerCase())));
+				});
+				if (list.length) return list;
+				var currentSelected = this.allSchoolClasses.find(c => String(c.LopID) === String(this.selectedGvcnClassId));
+				return currentSelected ? [currentSelected] : (this.allSchoolClasses.slice(0, 1));
+			}
+			if (this.isRealAdmin) return this.allSchoolClasses;
 			return this.allSchoolClasses;
+		},
+		availableGvcnClasses() {
+			if (this.isGVCNRole) return this.myGvcnClasses;
+			if (this.isRealAdmin) return this.allSchoolClasses;
+			return this.allSchoolClasses;
+		},
+		showClassSelectorOnGvcn() {
+			// GVCN tuyệt đối không được đổi lớp. Chỉ Quản sinh / BGH / Admin (khi không ở vai trò GVCN) mới thấy selector để hỗ trợ
+			return !this.isGVCNRole;
 		},
 		tuQuanClassesCount() {
 			if (!this.currentClasses) return 0;
@@ -3344,7 +3709,7 @@
 			var that = this;
 			var goodCount = classes ? classes.filter(function(c) {
 				var res = that.getClassDailyResult(c);
-				return res.code === 'T';
+				return res.code === 'D' || res.code === 'T';
 			}).length : 0;
 			var violationCount = classes ? classes.filter(function(c) { return that.itemHasViolation(c); }).length : 0;
 			var tuQuanCount = classes ? classes.filter(function(c) { return c.IsTuQuan; }).length : 0;
@@ -3409,12 +3774,11 @@
 				var sched = that.getScheduleForClass(cls.LopID);
 				var totalTuQuanDays = sched ? sched.filter(function(s) { return s.key !== 2 && s.IsTuQuan; }).length : 2;
 				var cdCount = violationsInWeek.length;
-				// Quy định khách hàng (Mục 2a): Tuần tự quản bị ghi nhận chưa đạt (CĐ) -> Tạm dừng tự quản 01 tuần tháng tiếp theo
-				var isThresholdMet = (cdCount > 0);
+				var isBlocked = that.isClassBlocked(cls.LopID);
 				var hasPenaltyOverride = that.penaltyOverrides && (that.penaltyOverrides[cls.LopID] !== undefined);
-				var isApplied = hasPenaltyOverride ? that.penaltyOverrides[cls.LopID] : isThresholdMet;
+				var isApplied = hasPenaltyOverride ? that.penaltyOverrides[cls.LopID] : isBlocked;
 
-				if (cdCount > 0 || hasPenaltyOverride) {
+				if (isBlocked || isApplied) {
 					result.push({
 						LopID: cls.LopID,
 						TenLop: cls.TenLop,
@@ -3422,7 +3786,7 @@
 						TenGVCN: cls.TenGVCN,
 						SoLanViPham: cdCount,
 						TotalTuQuanDays: totalTuQuanDays,
-						IsThresholdMet: isThresholdMet,
+						IsThresholdMet: isBlocked,
 						IsApplied: isApplied,
 						TrangThaiText: isApplied ? 'Tạm dừng tự quản' : 'Đã hủy chế tài',
 						TrangThaiColor: isApplied ? 'error' : 'grey-darken-1',
@@ -3441,19 +3805,63 @@
 			return parseInt(this.selectedWeek.startDate.split('-')[0], 10) || 2026;
 		},
 		monthCycleDateRange() {
-			if (this.currentEvaluationMonth === 9) {
+			var m = this.currentEvaluationMonth;
+			if (m === 9) {
 				return '07/09/2026 – 04/10/2026';
+			}
+			if (m === 10) {
+				return '05/10/2026 – 01/11/2026';
+			}
+			if (m === 11) {
+				return '02/11/2026 – 29/11/2026';
+			}
+			if (m === 12) {
+				return '30/11/2026 – 27/12/2026';
+			}
+			var mWeeks = (this.weekList || []).filter(w => w.month === m);
+			if (mWeeks.length) {
+				var startW = mWeeks[0];
+				var endW = mWeeks[mWeeks.length - 1];
+				var formatD = function(str) {
+					var p = (str || '').split('-');
+					return p.length === 3 ? (p[2] + '/' + p[1] + '/' + p[0]) : str;
+				};
+				return formatD(startW.startDate) + ' – ' + formatD(endW.endDate);
 			}
 			return '05/10/2026 – 01/11/2026';
 		},
 		monthProgressDescription() {
-			if (this.currentEvaluationMonth === 9) {
+			var m = this.currentEvaluationMonth;
+			var nowMs = new Date().getTime();
+			var realWeek = (this.weekList || []).find(w => nowMs >= w.startMs && nowMs <= w.endMs);
+			var realWeekNum = realWeek ? realWeek.weekNum : 4;
+			var realMonth = realWeek ? realWeek.month : 10;
+
+			if (m === 9) {
 				return 'Chu kỳ Tháng 9/2026 đã hoàn thành trọn vẹn 4/4 tuần đánh giá (07/09 – 04/10/2026). Đã hoàn tất xét duyệt khen thưởng và cộng điểm thi đua (+02 điểm) cho các lớp tự quản tốt tháng 9.';
 			}
-			return 'Đã kết thúc Tuần 1 (05/10 - 11/10). Tuần 2 đang diễn ra (hôm nay Thứ Hai, 12/10). Tuần 3 và 4 chưa tới. Danh hiệu thi đua và điểm cộng (+02 điểm) sẽ được xét duyệt chính thức sau ngày 01/11/2026 khi kết thúc đủ chu kỳ 4 tuần.';
+			if (m > realMonth) {
+				return 'Chu kỳ Tháng ' + m + '/2026 chưa diễn ra (' + this.monthCycleDateRange + '). Dữ liệu đối soát tự quản và xét duyệt thi đua sẽ bắt đầu được ghi nhận khi bước vào tuần đánh giá đầu tiên của tháng.';
+			}
+			if (m < realMonth) {
+				return 'Chu kỳ Tháng ' + m + '/2026 đã kết thúc (' + this.monthCycleDateRange + '). Đã hoàn tất xét duyệt khen thưởng và cộng điểm thi đua.';
+			}
+			// m === realMonth (hiện tại là Tháng 10/2026)
+			if (realWeekNum === 4) {
+				return 'Đã hoàn thành 3/4 tuần đánh giá (Tuần 1, 2, 3). Tuần 4 đang diễn ra (26/10 – 01/11/2026). Danh hiệu thi đua và điểm cộng (+02 điểm) sẽ được xét duyệt chính thức sau ngày 01/11/2026 khi kết thúc đủ chu kỳ 4 tuần.';
+			} else if (realWeekNum === 3) {
+				return 'Đã hoàn thành Tuần 1, 2. Tuần 3 đang diễn ra (19/10 – 25/10/2026). Tuần 4 chưa tới. Danh hiệu thi đua và điểm cộng sẽ được xét duyệt sau ngày 01/11/2026.';
+			}
+			return 'Đã kết thúc Tuần 1 (05/10 - 11/10). Tuần 2 đang diễn ra (12/10 – 18/10/2026). Tuần 3 và 4 chưa tới. Danh hiệu thi đua và điểm cộng (+02 điểm) sẽ được xét duyệt chính thức sau ngày 01/11/2026 khi kết thúc đủ chu kỳ 4 tuần.';
 		},
 		monthlySummaryStats() {
-			if (this.currentEvaluationMonth === 9) {
+			var m = this.currentEvaluationMonth;
+			var nowMs = new Date().getTime();
+			var realWeek = (this.weekList || []).find(w => nowMs >= w.startMs && nowMs <= w.endMs);
+			var realWeekNum = realWeek ? realWeek.weekNum : 4;
+			var realMonth = realWeek ? realWeek.month : 10;
+
+			if (m === 9) {
 				return {
 					labelKhenThuong: 'Khen thưởng "Lớp tự quản tốt":',
 					khenThuongCount: 2,
@@ -3463,6 +3871,30 @@
 					bieuDuongDetail: '2 lớp (06E, 06G)',
 					tamDungCount: 0,
 					tamDungDetail: '0 lớp'
+				};
+			}
+			if (m > realMonth) {
+				return {
+					labelKhenThuong: 'Dẫn đầu tiến độ:',
+					khenThuongCount: 0,
+					khenThuongDetail: '0 lớp (Chu kỳ chưa bắt đầu)',
+					showBieuDuong: false,
+					bieuDuongCount: 0,
+					bieuDuongDetail: '—',
+					tamDungCount: 0,
+					tamDungDetail: '0 lớp'
+				};
+			}
+			if (realWeekNum >= 3) {
+				return {
+					labelKhenThuong: 'Dẫn đầu tiến độ (' + (realWeekNum - 1) + ' tuần Đạt):',
+					khenThuongCount: 4,
+					khenThuongDetail: '4 lớp (06A, 06C, 06E, 06G)',
+					showBieuDuong: false,
+					bieuDuongCount: 0,
+					bieuDuongDetail: 'Xét sau 01/11',
+					tamDungCount: 0,
+					tamDungDetail: '0 lớp (06D đã chấn chỉnh xong)'
 				};
 			}
 			return {
@@ -3478,20 +3910,91 @@
 		},
 		monthEvaluationWeeks() {
 			var m = this.currentEvaluationMonth;
-			if (m === 9) {
-				return [
-					{ weekNum: 1, label: 'Tuần 1', dates: '07/09 - 13/09', isPast: true, isOngoing: false, isFuture: false, statusText: '(Đã xét)', statusClass: 'text-success' },
-					{ weekNum: 2, label: 'Tuần 2', dates: '14/09 - 20/09', isPast: true, isOngoing: false, isFuture: false, statusText: '(Đã xét)', statusClass: 'text-success' },
-					{ weekNum: 3, label: 'Tuần 3', dates: '21/09 - 27/09', isPast: true, isOngoing: false, isFuture: false, statusText: '(Đã xét)', statusClass: 'text-success' },
-					{ weekNum: 4, label: 'Tuần 4', dates: '28/09 - 04/10', isPast: true, isOngoing: false, isFuture: false, statusText: '(Đã xét)', statusClass: 'text-success' }
-				];
+			var nowMs = new Date().getTime();
+			var curWeek = (this.weekList || []).find(w => nowMs >= w.startMs && nowMs <= w.endMs);
+			var realMonth = curWeek ? curWeek.month : 10;
+			var realWeekNum = curWeek ? curWeek.weekNum : 4;
+
+			var weeksDef = [];
+			var mWeeks = (this.weekList || []).filter(w => w.month === m);
+			if (mWeeks.length) {
+				weeksDef = mWeeks.slice(0, 4).map(function(w) {
+					var p1 = (w.startDate || '').split('-');
+					var p2 = (w.endDate || '').split('-');
+					var dStr = (p1[2] + '/' + p1[1]) + ' - ' + (p2[2] + '/' + p2[1]);
+					return {
+						weekNum: w.weekNum,
+						label: 'Tuần ' + w.weekNum,
+						dates: dStr
+					};
+				});
+			} else {
+				if (m === 9) {
+					weeksDef = [
+						{ weekNum: 1, label: 'Tuần 1', dates: '07/09 - 13/09' },
+						{ weekNum: 2, label: 'Tuần 2', dates: '14/09 - 20/09' },
+						{ weekNum: 3, label: 'Tuần 3', dates: '21/09 - 27/09' },
+						{ weekNum: 4, label: 'Tuần 4', dates: '28/09 - 04/10' }
+					];
+				} else if (m === 11) {
+					weeksDef = [
+						{ weekNum: 1, label: 'Tuần 1', dates: '02/11 - 08/11' },
+						{ weekNum: 2, label: 'Tuần 2', dates: '09/11 - 15/11' },
+						{ weekNum: 3, label: 'Tuần 3', dates: '16/11 - 22/11' },
+						{ weekNum: 4, label: 'Tuần 4', dates: '23/11 - 29/11' }
+					];
+				} else {
+					weeksDef = [
+						{ weekNum: 1, label: 'Tuần 1', dates: '05/10 - 11/10' },
+						{ weekNum: 2, label: 'Tuần 2', dates: '12/10 - 18/10' },
+						{ weekNum: 3, label: 'Tuần 3', dates: '19/10 - 25/10' },
+						{ weekNum: 4, label: 'Tuần 4', dates: '26/10 - 01/11' }
+					];
+				}
 			}
-			return [
-				{ weekNum: 1, label: 'Tuần 1', dates: '05/10 - 11/10', isPast: true, isOngoing: false, isFuture: false, statusText: '(Đã xét)', statusClass: 'text-success' },
-				{ weekNum: 2, label: 'Tuần 2', dates: '12/10 - 18/10', isPast: false, isOngoing: true, isFuture: false, statusText: '(Đang diễn ra)', statusClass: 'text-blue-darken-2' },
-				{ weekNum: 3, label: 'Tuần 3', dates: '19/10 - 25/10', isPast: false, isOngoing: false, isFuture: true, statusText: '(Chưa tới)', statusClass: 'text-medium-emphasis' },
-				{ weekNum: 4, label: 'Tuần 4', dates: '26/10 - 01/11', isPast: false, isOngoing: false, isFuture: true, statusText: '(Chưa tới)', statusClass: 'text-medium-emphasis' }
-			];
+
+			return weeksDef.map(function(w) {
+				var isPast = false;
+				var isOngoing = false;
+				var isFuture = false;
+				var statusText = '';
+				var statusClass = '';
+
+				if (realMonth > m) {
+					isPast = true;
+					statusText = '(Đã xét)';
+					statusClass = 'text-success';
+				} else if (realMonth < m) {
+					isFuture = true;
+					statusText = '(Chưa tới)';
+					statusClass = 'text-medium-emphasis';
+				} else {
+					if (w.weekNum < realWeekNum) {
+						isPast = true;
+						statusText = '(Đã xét)';
+						statusClass = 'text-success';
+					} else if (w.weekNum === realWeekNum) {
+						isOngoing = true;
+						statusText = '(Đang diễn ra)';
+						statusClass = 'text-blue-darken-2';
+					} else {
+						isFuture = true;
+						statusText = '(Chưa tới)';
+						statusClass = 'text-medium-emphasis';
+					}
+				}
+
+				return {
+					weekNum: w.weekNum,
+					label: w.label,
+					dates: w.dates,
+					isPast: isPast,
+					isOngoing: isOngoing,
+					isFuture: isFuture,
+					statusText: statusText,
+					statusClass: statusClass
+				};
+			});
 		},
 		monthWeeksList() {
 			return this.monthEvaluationWeeks.map(function(w) {
@@ -3526,18 +4029,18 @@
 					var makeDays = function(rank) {
 						return [
 							{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' },
-							{ dayNum: 3, label: 'Thứ 3', tcText: 'T  T  T', rankText: 'T', rankCode: 'T', tcColor: '#16a34a' },
-							{ dayNum: 4, label: 'Thứ 4', tcText: (rank === 'T' ? 'T  T  T' : 'T  Đ  T'), rankText: (rank === 'T' ? 'T' : 'Đ'), rankCode: (rank === 'T' ? 'T' : 'D'), tcColor: (rank === 'T' ? '#16a34a' : '#2563eb') },
-							{ dayNum: 5, label: 'Thứ 5', tcText: (rank === 'T' ? 'T  T  T' : 'T  Đ  T'), rankText: (rank === 'T' ? 'T' : 'Đ'), rankCode: (rank === 'T' ? 'T' : 'D'), tcColor: (rank === 'T' ? '#16a34a' : '#2563eb') },
-							{ dayNum: 6, label: 'Thứ 6', tcText: 'T  T  T', rankText: 'T', rankCode: 'T', tcColor: '#16a34a' }
+							{ dayNum: 3, label: 'Thứ 3', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+							{ dayNum: 4, label: 'Thứ 4', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+							{ dayNum: 5, label: 'Thứ 5', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+							{ dayNum: 6, label: 'Thứ 6', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' }
 						];
 					};
 
 					if (isAorC) {
-						w1 = { weekNum: 1, label: 'Tuần 1', dates: '07/09 - 13/09', status: 'T', text: 'Tốt', detail: '4/4 ngày tốt', violations: 0, note: '', isPast: true, days: makeDays('T') };
-						w2 = { weekNum: 2, label: 'Tuần 2', dates: '14/09 - 20/09', status: 'T', text: 'Tốt', detail: '4/4 ngày tốt', violations: 0, note: '', isPast: true, days: makeDays('T') };
-						w3 = { weekNum: 3, label: 'Tuần 3', dates: '21/09 - 27/09', status: 'T', text: 'Tốt', detail: '4/4 ngày tốt', violations: 0, note: '', isPast: true, days: makeDays('T') };
-						w4 = { weekNum: 4, label: 'Tuần 4', dates: '28/09 - 04/10', status: 'T', text: 'Tốt', detail: '4/4 ngày tốt', violations: 0, note: '', isPast: true, days: makeDays('T') };
+						w1 = { weekNum: 1, label: 'Tuần 1', dates: '07/09 - 13/09', status: 'D', text: 'Đạt (Đ)', detail: '4/4 ngày Đạt', violations: 0, note: '', isPast: true, days: makeDays('D') };
+						w2 = { weekNum: 2, label: 'Tuần 2', dates: '14/09 - 20/09', status: 'D', text: 'Đạt (Đ)', detail: '4/4 ngày Đạt', violations: 0, note: '', isPast: true, days: makeDays('D') };
+						w3 = { weekNum: 3, label: 'Tuần 3', dates: '21/09 - 27/09', status: 'D', text: 'Đạt (Đ)', detail: '4/4 ngày Đạt', violations: 0, note: '', isPast: true, days: makeDays('D') };
+						w4 = { weekNum: 4, label: 'Tuần 4', dates: '28/09 - 04/10', status: 'D', text: 'Đạt (Đ)', detail: '4/4 ngày Đạt', violations: 0, note: '', isPast: true, days: makeDays('D') };
 
 						return {
 							STT: idx + 1,
@@ -3550,7 +4053,7 @@
 							weeks: [w1, w2, w3, w4],
 							SoTuanTot: 4,
 							SoTuanCD: 0,
-							XepLoaiThang: 'Xuất sắc',
+							XepLoaiThang: 'Đạt chuẩn',
 							IsLeading: false,
 							IsRewardEligible: true,
 							IsEffortReward: false,
@@ -3559,10 +4062,10 @@
 							DanhHieu: 'Đạt chuẩn: Lớp tự quản tốt tháng 9'
 						};
 					} else if (isEorG) {
-						w1 = { weekNum: 1, label: 'Tuần 1', dates: '07/09 - 13/09', status: 'T', text: 'Tốt', detail: '3/4 ngày tốt', violations: 0, note: '', isPast: true, days: makeDays('T') };
-						w2 = { weekNum: 2, label: 'Tuần 2', dates: '14/09 - 20/09', status: 'T', text: 'Tốt', detail: '3/4 ngày tốt', violations: 0, note: '', isPast: true, days: makeDays('T') };
-						w3 = { weekNum: 3, label: 'Tuần 3', dates: '21/09 - 27/09', status: (cls.TenLop === '06E' ? 'T' : 'D'), text: (cls.TenLop === '06E' ? 'Tốt' : 'Đạt'), detail: '3/4 ngày tốt', violations: 0, note: '', isPast: true, days: makeDays(cls.TenLop === '06E' ? 'T' : 'D') };
-						w4 = { weekNum: 4, label: 'Tuần 4', dates: '28/09 - 04/10', status: (cls.TenLop === '06E' ? 'D' : 'T'), text: (cls.TenLop === '06E' ? 'Đạt' : 'Tốt'), detail: '3/4 ngày tốt', violations: 0, note: '', isPast: true, days: makeDays(cls.TenLop === '06E' ? 'D' : 'T') };
+						w1 = { weekNum: 1, label: 'Tuần 1', dates: '07/09 - 13/09', status: 'D', text: 'Đạt (Đ)', detail: '3/4 ngày Đạt', violations: 0, note: '', isPast: true, days: makeDays('D') };
+						w2 = { weekNum: 2, label: 'Tuần 2', dates: '14/09 - 20/09', status: 'D', text: 'Đạt (Đ)', detail: '3/4 ngày Đạt', violations: 0, note: '', isPast: true, days: makeDays('D') };
+						w3 = { weekNum: 3, label: 'Tuần 3', dates: '21/09 - 27/09', status: 'D', text: 'Đạt (Đ)', detail: '3/4 ngày Đạt', violations: 0, note: '', isPast: true, days: makeDays('D') };
+						w4 = { weekNum: 4, label: 'Tuần 4', dates: '28/09 - 04/10', status: 'D', text: 'Đạt (Đ)', detail: '3/4 ngày Đạt', violations: 0, note: '', isPast: true, days: makeDays('D') };
 
 						return {
 							STT: idx + 1,
@@ -3575,7 +4078,7 @@
 							weeks: [w1, w2, w3, w4],
 							SoTuanTot: 3,
 							SoTuanCD: 0,
-							XepLoaiThang: 'Tốt',
+							XepLoaiThang: 'Đạt chuẩn',
 							IsLeading: false,
 							IsRewardEligible: false,
 							IsEffortReward: true,
@@ -3584,10 +4087,10 @@
 							DanhHieu: 'Biểu dương: Nỗ lực nề nếp tự quản'
 						};
 					} else {
-						w1 = { weekNum: 1, label: 'Tuần 1', dates: '07/09 - 13/09', status: 'D', text: 'Đạt', detail: '2/4 ngày tốt', violations: 0, note: '', isPast: true, days: makeDays('D') };
-						w2 = { weekNum: 2, label: 'Tuần 2', dates: '14/09 - 20/09', status: 'D', text: 'Đạt', detail: '2/4 ngày tốt', violations: 0, note: '', isPast: true, days: makeDays('D') };
-						w3 = { weekNum: 3, label: 'Tuần 3', dates: '21/09 - 27/09', status: 'D', text: 'Đạt', detail: '2/4 ngày tốt', violations: 0, note: '', isPast: true, days: makeDays('D') };
-						w4 = { weekNum: 4, label: 'Tuần 4', dates: '28/09 - 04/10', status: 'D', text: 'Đạt', detail: '2/4 ngày tốt', violations: 0, note: '', isPast: true, days: makeDays('D') };
+						w1 = { weekNum: 1, label: 'Tuần 1', dates: '07/09 - 13/09', status: 'D', text: 'Đạt (Đ)', detail: '2/4 ngày Đạt', violations: 0, note: '', isPast: true, days: makeDays('D') };
+						w2 = { weekNum: 2, label: 'Tuần 2', dates: '14/09 - 20/09', status: 'D', text: 'Đạt (Đ)', detail: '2/4 ngày Đạt', violations: 0, note: '', isPast: true, days: makeDays('D') };
+						w3 = { weekNum: 3, label: 'Tuần 3', dates: '21/09 - 27/09', status: 'D', text: 'Đạt (Đ)', detail: '2/4 ngày Đạt', violations: 0, note: '', isPast: true, days: makeDays('D') };
+						w4 = { weekNum: 4, label: 'Tuần 4', dates: '28/09 - 04/10', status: 'D', text: 'Đạt (Đ)', detail: '2/4 ngày Đạt', violations: 0, note: '', isPast: true, days: makeDays('D') };
 
 						return {
 							STT: idx + 1,
@@ -3612,175 +4115,311 @@
 				});
 			}
 
+			var nowMs = new Date().getTime();
+			var realWeek = (that.weekList || []).find(w => nowMs >= w.startMs && nowMs <= w.endMs);
+			var realMonth = realWeek ? realWeek.month : 10;
+
+			// =================== CÁC THÁNG TƯƠNG LAI CHƯA TỚI (VÍ DỤ THÁNG 11) ===================
+			if (m > realMonth) {
+				return classList.map(function(cls, idx) {
+					var makeEmptyDays = function() {
+						return [
+							{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
+							{ dayNum: 3, label: 'Thứ 3', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
+							{ dayNum: 4, label: 'Thứ 4', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
+							{ dayNum: 5, label: 'Thứ 5', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
+							{ dayNum: 6, label: 'Thứ 6', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' }
+						];
+					};
+					var makeEmptyWeek = function(wNum) {
+						var curW = (that.monthEvaluationWeeks || []).find(function(x) { return x.weekNum === wNum; }) || {};
+						return {
+							weekNum: wNum,
+							label: 'Tuần ' + wNum,
+							dates: curW.dates || '',
+							status: 'FUTURE',
+							text: 'Chưa diễn ra',
+							detail: '',
+							violations: 0,
+							note: '—',
+							isFuture: true,
+							isPast: false,
+							isCurrent: false,
+							days: makeEmptyDays()
+						};
+					};
+					var w1 = makeEmptyWeek(1), w2 = makeEmptyWeek(2), w3 = makeEmptyWeek(3), w4 = makeEmptyWeek(4);
+					return {
+						STT: idx + 1,
+						LopID: cls.LopID,
+						TenLop: cls.TenLop,
+						TenKhoi: 'Khối ' + k,
+						TenGVCN: cls.TenGVCN,
+						SiSo: cls.SiSo || 36,
+						w1: w1,
+						w2: w2,
+						w3: w3,
+						w4: w4,
+						weeks: [w1, w2, w3, w4],
+						SoTuanTot: 0,
+						SoTuanCD: 0,
+						XepLoaiThang: 'Chưa đánh giá',
+						IsLeading: false,
+						IsRewardEligible: false,
+						IsEffortReward: false,
+						DeXuatKhenThuong: 'Chưa diễn ra',
+						DiemThiDua: '0 điểm',
+						DanhHieu: ''
+					};
+				});
+			}
+
 			// =================== CHU KỲ THÁNG 10 (TIẾN ĐỘ THỜI GIAN THỰC TẾ) ===================
 			return classList.map(function(cls, idx) {
 				var streak = (that.baseStreaksByClass && that.baseStreaksByClass[cls.LopID]) || 0;
 				var isBlockedThisWeek = that.weeklyBlockedClasses.some(function(b) { return b.LopID === cls.LopID && b.IsApplied; });
 				var effectiveStreak = isBlockedThisWeek ? 0 : streak;
 
-				// Cấu trúc 4 tuần Tháng 10 theo đúng tiến độ thời gian thực tế:
-				// - Tuần 1 (05/10 - 11/10): ĐÃ KẾT THÚC (Đã có kết quả chính thức)
-				// - Tuần 2 (12/10 - 18/10): TUẦN HIỆN TẠI (Đang diễn ra - hôm nay Thứ 2)
-				// - Tuần 3 (19/10 - 25/10): CHƯA DIỄN RA (Chưa tới)
-				// - Tuần 4 (26/10 - 01/11): CHƯA DIỄN RA (Chưa tới)
+				var nowMs = new Date().getTime();
+				var realWeek = (that.weekList || []).find(w => nowMs >= w.startMs && nowMs <= w.endMs);
+				var realWeekNum = realWeek ? realWeek.weekNum : 4;
+				var week4Obj = (that.weekList || []).find(w => w.month === 10 && w.weekNum === 4);
 				var w1, w2, w3, w4;
 
-				// 1. Tuần 1 (Đã hoàn thành):
-				if (['06A', '06C', '06E', '06G'].includes(cls.TenLop)) {
-					var detailStr = (cls.TenLop === '06A') ? '4/4 ngày tốt' : '3/4 ngày tốt';
-					w1 = { weekNum: 1, label: 'Tuần 1', dates: '05/10 - 11/10', status: 'T', text: 'Tốt', detail: detailStr, violations: 0, note: '', isPast: true };
-				} else if (cls.TenLop === '06D') {
-					w1 = { weekNum: 1, label: 'Tuần 1', dates: '05/10 - 11/10', status: 'CD', text: 'Chưa đạt', detail: '2 ngày CĐ', violations: 2, note: 'Vi phạm nề nếp 2 buổi (T4, T5) - Tạm dừng tự quản Tuần 2', isPast: true };
-				} else {
-					w1 = { weekNum: 1, label: 'Tuần 1', dates: '05/10 - 11/10', status: 'D', text: 'Đạt', detail: '2/4 ngày tốt', violations: 0, note: '', isPast: true };
-				}
-
-				// Chi tiết 5 ngày trong Tuần 1: Thứ 2 không đánh giá tự quản (GVCN sinh hoạt); Thứ 3-6 tự quản
-				var days1 = [];
-				if (cls.TenLop === '06A') {
-					days1 = [
-						{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' },
-						{ dayNum: 3, label: 'Thứ 3', tcText: 'T  T  T', rankText: 'T', rankCode: 'T', tcColor: '#16a34a' },
-						{ dayNum: 4, label: 'Thứ 4', tcText: 'T  T  T', rankText: 'T', rankCode: 'T', tcColor: '#16a34a' },
-						{ dayNum: 5, label: 'Thứ 5', tcText: 'T  T  T', rankText: 'T', rankCode: 'T', tcColor: '#16a34a' },
-						{ dayNum: 6, label: 'Thứ 6', tcText: 'T  T  T', rankText: 'T', rankCode: 'T', tcColor: '#16a34a' }
-					];
-				} else if (['06C', '06E', '06G'].includes(cls.TenLop)) {
-					days1 = [
-						{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' },
-						{ dayNum: 3, label: 'Thứ 3', tcText: 'T  T  T', rankText: 'T', rankCode: 'T', tcColor: '#16a34a' },
-						{ dayNum: 4, label: 'Thứ 4', tcText: 'T  T  T', rankText: 'T', rankCode: 'T', tcColor: '#16a34a' },
-						{ dayNum: 5, label: 'Thứ 5', tcText: 'T  T  T', rankText: 'T', rankCode: 'T', tcColor: '#16a34a' },
-						{ dayNum: 6, label: 'Thứ 6', tcText: 'T  Đ  T', rankText: 'Đ', rankCode: 'D', tcColor: '#2563eb' }
-					];
-				} else if (cls.TenLop === '06D') {
-					days1 = [
-						{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' },
-						{ dayNum: 3, label: 'Thứ 3', tcText: 'T  T  T', rankText: 'T', rankCode: 'T', tcColor: '#16a34a' },
-						{ dayNum: 4, label: 'Thứ 4', tcText: 'T  CĐ  T', rankText: 'CĐ', rankCode: 'CD', tcColor: '#dc2626' },
-						{ dayNum: 5, label: 'Thứ 5', tcText: 'T  CĐ  CĐ', rankText: 'CĐ', rankCode: 'CD', tcColor: '#dc2626' },
-						{ dayNum: 6, label: 'Thứ 6', tcText: 'T  T  T', rankText: 'T', rankCode: 'T', tcColor: '#16a34a' }
-					];
-				} else {
-					days1 = [
-						{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' },
-						{ dayNum: 3, label: 'Thứ 3', tcText: 'T  T  T', rankText: 'T', rankCode: 'T', tcColor: '#16a34a' },
-						{ dayNum: 4, label: 'Thứ 4', tcText: 'T  Đ  T', rankText: 'Đ', rankCode: 'D', tcColor: '#2563eb' },
-						{ dayNum: 5, label: 'Thứ 5', tcText: 'T  Đ  T', rankText: 'Đ', rankCode: 'D', tcColor: '#2563eb' },
-						{ dayNum: 6, label: 'Thứ 6', tcText: 'T  T  T', rankText: 'T', rankCode: 'T', tcColor: '#16a34a' }
+				function makeFutureWeekDays() {
+					return [
+						{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
+						{ dayNum: 3, label: 'Thứ 3', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
+						{ dayNum: 4, label: 'Thứ 4', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
+						{ dayNum: 5, label: 'Thứ 5', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
+						{ dayNum: 6, label: 'Thứ 6', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' }
 					];
 				}
-				w1.days = days1;
 
-				// 2. Tuần 2 (Tuần hiện tại - đang diễn ra):
-				if (cls.TenLop === '06D') {
-					w2 = { weekNum: 2, label: 'Tuần 2', dates: '12/10 - 18/10', status: 'CHETAI', text: 'Chế tài TQ', detail: 'GVCN sinh hoạt', violations: 0, note: 'Chấp hành chế tài: GVCN trực tiếp quản lý và sinh hoạt lớp 5/5 ngày', isCurrent: true };
-					w2.days = [
-						{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: 'Chế tài', rankCode: 'CHETAI', tcColor: '#dc2626' },
-						{ dayNum: 3, label: 'Thứ 3', tcText: '—', rankText: 'Chế tài', rankCode: 'CHETAI', tcColor: '#dc2626' },
-						{ dayNum: 4, label: 'Thứ 4', tcText: '—', rankText: 'Chế tài', rankCode: 'CHETAI', tcColor: '#dc2626' },
-						{ dayNum: 5, label: 'Thứ 5', tcText: '—', rankText: 'Chế tài', rankCode: 'CHETAI', tcColor: '#dc2626' },
-						{ dayNum: 6, label: 'Thứ 6', tcText: '—', rankText: 'Chế tài', rankCode: 'CHETAI', tcColor: '#dc2626' }
-					];
-				} else {
-					// Lấy dữ liệu thực tế các ngày trong Tuần 2 (12/10 - 18/10):
-					// T2 là ngày sinh hoạt đầu tuần / GVCN có mặt; các ngày T3..T6 lấy theo snapshot chấm của Quản sinh
-					var week2Days = [];
-					var w2Violations = [];
-					var w2Notes = [];
+				function makeOngoingWeekDays(targetWeek) {
+					var weekDays = [];
+					var violations = [];
+					var notes = [];
+					var tgtW = targetWeek || week4Obj || that.selectedWeek;
 
 					for (var dVal = 2; dVal <= 6; dVal++) {
 						var dLabel = dVal === 2 ? 'Thứ 2' : (dVal === 3 ? 'Thứ 3' : (dVal === 4 ? 'Thứ 4' : (dVal === 5 ? 'Thứ 5' : 'Thứ 6')));
-						if (that.isSpecificDayInFuture(dVal)) {
-							week2Days.push({ dayNum: dVal, label: dLabel, tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' });
+						var dateStr = that.getDateStringForDay(dVal, tgtW);
+						var parts = dateStr.split('-');
+						var dayDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+						dayDate.setHours(0, 0, 0, 0);
+						var today = new Date();
+						today.setHours(0, 0, 0, 0);
+						var isFutureDay = dayDate.getTime() > today.getTime();
+
+						if (isFutureDay) {
+							weekDays.push({ dayNum: dVal, label: dLabel, tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' });
 						} else if (dVal === 2) {
 							// Thứ 2: Sinh hoạt đầu tuần, GVCN sinh hoạt cùng lớp
-							week2Days.push({ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' });
+							weekDays.push({ dayNum: 2, label: dLabel, tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' });
 						} else {
 							// Lấy snapshot chấm điểm thực tế của Quản sinh cho lớp trong ngày dVal
-							var dateStr = that.getDateStringForDay(dVal);
 							var sKey = dateStr + '_' + cls.LopID;
 							var snap = that.dailySnapshots[sKey];
 							if (snap && snap.IsSaved) {
 								if (!snap.IsTuQuan) {
-									week2Days.push({ dayNum: dVal, label: dLabel, tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' });
+									weekDays.push({ dayNum: dVal, label: dLabel, tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' });
 								} else {
 									var tcs = snap.TieuChiList || [];
-									var s1 = tcs[0] ? tcs[0].score : 3;
-									var s2 = tcs[1] ? tcs[1].score : 3;
-									var s3 = tcs[2] ? tcs[2].score : 3;
-									var tcText = (s1 === 3 ? 'T' : (s1 === 1 ? 'CĐ' : 'Đ')) + '  ' +
-									             (s2 === 3 ? 'T' : (s2 === 1 ? 'CĐ' : 'Đ')) + '  ' +
-									             (s3 === 3 ? 'T' : (s3 === 1 ? 'CĐ' : 'Đ'));
-									var rCode = (s1 === 1 || s2 === 1 || s3 === 1) ? 'CD' : ((s1 === 3 && s2 === 3 && s3 === 3) ? 'T' : 'D');
-									var rText = rCode === 'T' ? 'T' : (rCode === 'D' ? 'Đ' : 'CĐ');
-									var rColor = rCode === 'T' ? '#16a34a' : (rCode === 'D' ? '#2563eb' : '#dc2626');
-									week2Days.push({ dayNum: dVal, label: dLabel, tcText: tcText, rankText: rText, rankCode: rCode, tcColor: rColor });
+									var s1 = tcs[0] ? tcs[0].score : 2;
+									var s2 = tcs[1] ? tcs[1].score : 2;
+									var s3 = tcs[2] ? tcs[2].score : 2;
+									var tcText = (s1 === 1 ? 'CĐ' : 'Đ') + '  ' +
+									             (s2 === 1 ? 'CĐ' : 'Đ') + '  ' +
+									             (s3 === 1 ? 'CĐ' : 'Đ');
+									var cdC = (s1 === 1 ? 1 : 0) + (s2 === 1 ? 1 : 0) + (s3 === 1 ? 1 : 0);
+									var rCode = cdC >= 2 ? 'CD' : (cdC === 1 ? 'CCG' : 'D');
+									var rText = rCode === 'D' ? 'Đ' : (rCode === 'CCG' ? 'CCG' : 'CĐ');
+									var rColor = rCode === 'D' ? '#16a34a' : (rCode === 'CCG' ? '#d97706' : '#dc2626');
+									weekDays.push({ dayNum: dVal, label: dLabel, tcText: tcText, rankText: rText, rankCode: rCode, tcColor: rColor });
 
-									if (rCode === 'CD') {
-										w2Violations.push(dLabel);
+									if (rCode === 'CD' || rCode === 'CCG') {
+										violations.push(dLabel);
 									}
 									if (snap.GhiChuViPham && snap.GhiChuViPham.trim()) {
-										w2Notes.push(dLabel + ': ' + snap.GhiChuViPham.trim());
+										notes.push(dLabel + ': ' + snap.GhiChuViPham.trim());
 									}
 								}
 							} else {
-								week2Days.push({ dayNum: dVal, label: dLabel, tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' });
+								weekDays.push({ dayNum: dVal, label: dLabel, tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' });
 							}
 						}
 					}
 
-					var dynamicNote = '';
-					if (w2Notes.length > 0) {
-						dynamicNote = w2Notes.join('; ');
-					} else if (w2Violations.length > 0) {
-						dynamicNote = 'Ghi nhận vi phạm ngày ' + w2Violations.join(', ');
+					var dynNote = '';
+					if (notes.length > 0) {
+						dynNote = notes.join('; ');
+					} else if (violations.length > 0) {
+						dynNote = 'Ghi nhận ngày ' + violations.join(', ');
 					}
 
-					w2 = {
-						weekNum: 2,
-						label: 'Tuần 2',
-						dates: '12/10 - 18/10',
-						status: 'CURRENT',
-						text: 'Đang diễn ra',
-						detail: '',
-						violations: w2Violations.length,
-						note: dynamicNote,
-						isCurrent: true,
-						days: week2Days
+					return {
+						days: weekDays,
+						violations: violations.length,
+						note: dynNote
 					};
 				}
 
-				// 3. Tuần 3 (Chưa diễn ra):
-				w3 = { weekNum: 3, label: 'Tuần 3', dates: '19/10 - 25/10', status: 'FUTURE', text: 'Chưa diễn ra', detail: '', violations: 0, note: '', isFuture: true };
-				w3.days = [
-					{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
-					{ dayNum: 3, label: 'Thứ 3', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
-					{ dayNum: 4, label: 'Thứ 4', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
-					{ dayNum: 5, label: 'Thứ 5', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
-					{ dayNum: 6, label: 'Thứ 6', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' }
-				];
+				// 1. Tuần 1 (05/10 - 11/10): ĐÃ KẾT THÚC
+				if (['06A', '06C', '06E', '06G'].includes(cls.TenLop)) {
+					var detailStr = (cls.TenLop === '06A') ? '4/4 ngày Đạt' : '3/4 ngày Đạt';
+					w1 = { weekNum: 1, label: 'Tuần 1', dates: '05/10 - 11/10', status: 'D', text: 'Đạt (Đ)', detail: detailStr, violations: 0, note: '', isPast: true };
+				} else if (cls.TenLop === '06D') {
+					w1 = { weekNum: 1, label: 'Tuần 1', dates: '05/10 - 11/10', status: 'CD', text: 'Chưa đạt', detail: '2 ngày CĐ', violations: 2, note: 'Vi phạm nề nếp 2 buổi (T4, T5) - Tạm dừng tự quản Tuần 2', isPast: true };
+				} else {
+					w1 = { weekNum: 1, label: 'Tuần 1', dates: '05/10 - 11/10', status: 'D', text: 'Đạt (Đ)', detail: '2/4 ngày Đạt', violations: 0, note: '', isPast: true };
+				}
 
-				// 4. Tuần 4 (Chưa diễn ra):
-				w4 = { weekNum: 4, label: 'Tuần 4', dates: '26/10 - 01/11', status: 'FUTURE', text: 'Chưa diễn ra', detail: '', violations: 0, note: '', isFuture: true };
-				w4.days = [
-					{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
-					{ dayNum: 3, label: 'Thứ 3', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
-					{ dayNum: 4, label: 'Thứ 4', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
-					{ dayNum: 5, label: 'Thứ 5', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' },
-					{ dayNum: 6, label: 'Thứ 6', tcText: '—', rankText: '—', rankCode: 'FUTURE', tcColor: '#94a3b8' }
-				];
+				var days1 = [];
+				if (cls.TenLop === '06A' || ['06C', '06E', '06G'].includes(cls.TenLop)) {
+					days1 = [
+						{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' },
+						{ dayNum: 3, label: 'Thứ 3', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+						{ dayNum: 4, label: 'Thứ 4', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+						{ dayNum: 5, label: 'Thứ 5', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+						{ dayNum: 6, label: 'Thứ 6', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' }
+					];
+				} else if (cls.TenLop === '06D') {
+					days1 = [
+						{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' },
+						{ dayNum: 3, label: 'Thứ 3', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+						{ dayNum: 4, label: 'Thứ 4', tcText: 'Đ  CĐ  Đ', rankText: 'CCG', rankCode: 'CCG', tcColor: '#d97706' },
+						{ dayNum: 5, label: 'Thứ 5', tcText: 'Đ  CĐ  CĐ', rankText: 'CĐ', rankCode: 'CD', tcColor: '#dc2626' },
+						{ dayNum: 6, label: 'Thứ 6', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' }
+					];
+				} else {
+					days1 = [
+						{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' },
+						{ dayNum: 3, label: 'Thứ 3', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+						{ dayNum: 4, label: 'Thứ 4', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+						{ dayNum: 5, label: 'Thứ 5', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+						{ dayNum: 6, label: 'Thứ 6', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' }
+					];
+				}
+				w1.days = days1;
+
+				// 2. Tuần 2 (12/10 - 18/10):
+				if (realWeekNum > 2) {
+					if (cls.TenLop === '06D') {
+						w2 = { weekNum: 2, label: 'Tuần 2', dates: '12/10 - 18/10', status: 'CHETAI', text: 'Tạm dừng TQ', detail: 'Chế tài Tuần 2', violations: 0, note: 'Chế tài do Tuần 1 Chưa đạt', isPast: true };
+						w2.days = [
+							{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' },
+							{ dayNum: 3, label: 'Thứ 3', tcText: '—', rankText: '—', rankCode: 'CHETAI', tcColor: '#dc2626' },
+							{ dayNum: 4, label: 'Thứ 4', tcText: '—', rankText: '—', rankCode: 'CHETAI', tcColor: '#dc2626' },
+							{ dayNum: 5, label: 'Thứ 5', tcText: '—', rankText: '—', rankCode: 'CHETAI', tcColor: '#dc2626' },
+							{ dayNum: 6, label: 'Thứ 6', tcText: '—', rankText: '—', rankCode: 'CHETAI', tcColor: '#dc2626' }
+						];
+					} else {
+						w2 = { weekNum: 2, label: 'Tuần 2', dates: '12/10 - 18/10', status: 'D', text: 'Đạt (Đ)', detail: '4/4 ngày Đạt', violations: 0, note: '', isPast: true };
+						w2.days = [
+							{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' },
+							{ dayNum: 3, label: 'Thứ 3', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+							{ dayNum: 4, label: 'Thứ 4', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+							{ dayNum: 5, label: 'Thứ 5', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+							{ dayNum: 6, label: 'Thứ 6', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' }
+						];
+					}
+				} else if (realWeekNum === 2) {
+					if (cls.TenLop === '06D') {
+						w2 = { weekNum: 2, label: 'Tuần 2', dates: '12/10 - 18/10', status: 'CHETAI', text: 'Tạm dừng TQ', detail: '', violations: 0, note: 'Chế tài do Tuần 1 Chưa đạt', isCurrent: true };
+						w2.days = [
+							{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' },
+							{ dayNum: 3, label: 'Thứ 3', tcText: '—', rankText: '—', rankCode: 'CHETAI', tcColor: '#dc2626' },
+							{ dayNum: 4, label: 'Thứ 4', tcText: '—', rankText: '—', rankCode: 'CHETAI', tcColor: '#dc2626' },
+							{ dayNum: 5, label: 'Thứ 5', tcText: '—', rankText: '—', rankCode: 'CHETAI', tcColor: '#dc2626' },
+							{ dayNum: 6, label: 'Thứ 6', tcText: '—', rankText: '—', rankCode: 'CHETAI', tcColor: '#dc2626' }
+						];
+					} else {
+						var live2 = makeOngoingWeekDays();
+						w2 = {
+							weekNum: 2,
+							label: 'Tuần 2',
+							dates: '12/10 - 18/10',
+							status: 'CURRENT',
+							text: 'Đang diễn ra',
+							detail: '',
+							violations: live2.violations,
+							note: live2.note,
+							isCurrent: true,
+							days: live2.days
+						};
+					}
+				} else {
+					w2 = { weekNum: 2, label: 'Tuần 2', dates: '12/10 - 18/10', status: 'FUTURE', text: 'Chưa diễn ra', detail: '', violations: 0, note: '', isFuture: true, days: makeFutureWeekDays() };
+				}
+
+				// 3. Tuần 3 (19/10 - 25/10):
+				if (realWeekNum > 3) {
+					w3 = { weekNum: 3, label: 'Tuần 3', dates: '19/10 - 25/10', status: 'D', text: 'Đạt (Đ)', detail: cls.TenLop === '06D' ? '3/4 ngày Đạt' : '4/4 ngày Đạt', violations: 0, note: cls.TenLop === '06D' ? 'Đã hoàn thành chấn chỉnh nề nếp' : '', isPast: true };
+					w3.days = [
+						{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' },
+						{ dayNum: 3, label: 'Thứ 3', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+						{ dayNum: 4, label: 'Thứ 4', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+						{ dayNum: 5, label: 'Thứ 5', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+						{ dayNum: 6, label: 'Thứ 6', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' }
+					];
+				} else if (realWeekNum === 3) {
+					var live3 = makeOngoingWeekDays();
+					w3 = {
+						weekNum: 3,
+						label: 'Tuần 3',
+						dates: '19/10 - 25/10',
+						status: 'CURRENT',
+						text: 'Đang diễn ra',
+						detail: '',
+						violations: live3.violations,
+						note: live3.note,
+						isCurrent: true,
+						days: live3.days
+					};
+				} else {
+					w3 = { weekNum: 3, label: 'Tuần 3', dates: '19/10 - 25/10', status: 'FUTURE', text: 'Chưa diễn ra', detail: '', violations: 0, note: '', isFuture: true, days: makeFutureWeekDays() };
+				}
+
+				// 4. Tuần 4 (26/10 - 01/11):
+				if (realWeekNum === 4) {
+					var live4 = makeOngoingWeekDays(week4Obj);
+					w4 = {
+						weekNum: 4,
+						label: 'Tuần 4',
+						dates: '26/10 - 01/11',
+						status: 'CURRENT',
+						text: 'Đang diễn ra',
+						detail: '',
+						violations: live4.violations,
+						note: live4.note,
+						isCurrent: true,
+						days: live4.days
+					};
+				} else if (realWeekNum > 4) {
+					w4 = { weekNum: 4, label: 'Tuần 4', dates: '26/10 - 01/11', status: 'D', text: 'Đạt (Đ)', detail: '4/4 ngày Đạt', violations: 0, note: '', isPast: true };
+					w4.days = [
+						{ dayNum: 2, label: 'Thứ 2', tcText: '—', rankText: '—', rankCode: 'NONE', tcColor: '#94a3b8' },
+						{ dayNum: 3, label: 'Thứ 3', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+						{ dayNum: 4, label: 'Thứ 4', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+						{ dayNum: 5, label: 'Thứ 5', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' },
+						{ dayNum: 6, label: 'Thứ 6', tcText: 'Đ  Đ  Đ', rankText: 'Đ', rankCode: 'D', tcColor: '#16a34a' }
+					];
+				} else {
+					w4 = { weekNum: 4, label: 'Tuần 4', dates: '26/10 - 01/11', status: 'FUTURE', text: 'Chưa diễn ra', detail: '', violations: 0, note: '', isFuture: true, days: makeFutureWeekDays() };
+				}
 
 				var weeks = [w1, w2, w3, w4];
-				var totCount = (w1.status === 'T' ? 1 : 0);
-				var cdCount = (w1.status === 'CD' ? 1 : 0);
+				var completedWeeks = weeks.filter(function(w) { return w.isPast; });
+				var datCount = completedWeeks.filter(function(w) { return w.status === 'T' || w.status === 'D'; }).length;
+				var cdCount = completedWeeks.filter(function(w) { return w.status === 'CD' || w.status === 'CHETAI'; }).length;
 
-				var isLeading = (totCount === 1 && cdCount === 0);
-				var isBlocked = (cdCount > 0);
+				var isLeading = (datCount >= 3 && cdCount === 0);
+				var isBlocked = (w4.status === 'CHETAI');
 
-				var xepLoaiThang = isBlocked ? 'Chế tài Tuần 2' : 'Đang theo dõi';
-				var deXuatKhenThuong = isLeading ? 'Ứng viên danh hiệu (+02 đ dự kiến)' : (isBlocked ? 'Tạm dừng tự quản Tuần 2' : 'Đang tích lũy thi đua');
-				var diemThiDua = isLeading ? '+02 điểm dự kiến' : '0 điểm';
+				var xepLoaiThang = isBlocked ? 'Dừng TQ Tuần 4' : (isLeading ? 'Dẫn đầu tiến độ' : 'Đang duy trì');
+				var deXuatKhenThuong = isLeading ? 'Đạt 3/3 tuần đã xét (+1,5 đ thi đua)' : (cdCount > 0 ? 'Đã chấn chỉnh nề nếp' : 'Đang theo dõi');
+				var diemThiDua = isLeading ? '+1,5 điểm / 3 tuần' : '+1,0 điểm';
 
 				return {
 					STT: idx + 1,
@@ -3794,7 +4433,7 @@
 					w3: w3,
 					w4: w4,
 					weeks: weeks,
-					SoTuanTot: totCount,
+					SoTuanTot: datCount,
 					SoTuanCD: cdCount,
 					XepLoaiThang: xepLoaiThang,
 					IsLeading: isLeading,
@@ -3802,13 +4441,20 @@
 					IsEffortReward: false,
 					DeXuatKhenThuong: deXuatKhenThuong,
 					DiemThiDua: diemThiDua,
-					DanhHieu: isLeading ? 'Ứng viên: Lớp tự quản tốt' : ''
+					DanhHieu: isLeading ? 'Lớp dẫn đầu tiến độ (3 tuần Đạt)' : ''
 				};
 			});
 		},
 		rewardClasses() {
 			var that = this;
 			var m = this.currentEvaluationMonth;
+			var nowMs = new Date().getTime();
+			var realWeek = (that.weekList || []).find(w => nowMs >= w.startMs && nowMs <= w.endMs);
+			var realMonth = realWeek ? realWeek.month : 10;
+
+			if (m > realMonth) {
+				return [];
+			}
 
 			if (m === 9) {
 				var list9 = this.monthlyClassRecords.filter(function(r) { return r.IsRewardEligible || r.IsEffortReward; });
@@ -3821,7 +4467,7 @@
 						SiSo: r.SiSo,
 						SoTuanTot: r.SoTuanTot,
 						SoTuanCD: r.SoTuanCD,
-						TrangThai: r.IsRewardEligible ? 'Đã hoàn thành 4/4 tuần Tốt' : 'Đã hoàn thành 3/4 tuần Tốt',
+						TrangThai: r.IsRewardEligible ? 'Đã hoàn thành 4/4 tuần Đạt' : 'Đã hoàn thành 3/4 tuần Đạt',
 						DanhHieu: r.DanhHieu,
 						DiemThiDua: r.DiemThiDua,
 						IsRewardEligible: r.IsRewardEligible,
@@ -3840,6 +4486,7 @@
 			}
 
 			var list = this.monthlyClassRecords.filter(function(r) { return r.IsLeading; });
+			var curWeekNum = (this.selectedWeek && this.selectedWeek.weekNum) ? this.selectedWeek.weekNum : 4;
 			return list.map(function(r) {
 				return {
 					LopID: r.LopID,
@@ -3849,7 +4496,7 @@
 					SiSo: r.SiSo,
 					SoTuanTot: r.SoTuanTot,
 					SoTuanCD: r.SoTuanCD,
-					TrangThai: 'Đang dẫn đầu chu kỳ: Tuần 1 đạt Tốt (0 lỗi)',
+					TrangThai: curWeekNum >= 3 ? ('Đang dẫn đầu chu kỳ: Đạt ' + r.SoTuanTot + '/' + r.SoTuanTot + ' tuần đã xét') : 'Đang dẫn đầu chu kỳ: Tuần 1 Đạt (0 lỗi)',
 					DanhHieu: 'Ứng viên tiềm năng: Lớp tự quản tốt',
 					DiemThiDua: '+02 điểm dự kiến',
 					IsRewardEligible: false,
@@ -3875,10 +4522,10 @@
 			return classList.map(function(cls, idx) {
 				var sched = that.getScheduleForClass(cls.LopID);
 				var daysRes = {};
-				var totCount = 0;
 				var datCount = 0;
+				var ccgCount = 0;
 				var cdCount = 0;
-				var tuQuanCount = 0;
+				var tuQuanCount = 0; // Số ngày tự quản thực tế
 
 				that.daysOfWeek.forEach(function(d) {
 					if (that.isSpecificDayInFuture(d.val)) {
@@ -3889,33 +4536,49 @@
 					var found = dayClasses.find(function(c) { return String(c.LopID) === String(cls.LopID); });
 					var res = found ? that.getClassDailyResult(found, d.val) : { code: 'GVCN', text: '—', color: 'blue-grey' };
 					daysRes[d.val] = res;
-					if (found && found.IsTuQuan && d.val !== 2) {
+
+					// Chỉ tính ngày Tự quản thực tế (Thứ 3 - Thứ 6 và GVCN không có mặt)
+					if (found && found.IsTuQuan && !found.GVCNCoMat && d.val !== 2) {
 						tuQuanCount++;
-						if (res.code === 'T') totCount++;
-						else if (res.code === 'D') datCount++;
+						if (res.code === 'D') datCount++;
+						else if (res.code === 'CCG') ccgCount++;
 						else if (res.code === 'CD') cdCount++;
 					}
 				});
 
 				var isBlocked = that.isClassBlocked(cls.LopID);
-				var hasEvaluated = (totCount + datCount + cdCount > 0);
+				var hasEvaluated = (datCount + ccgCount + cdCount > 0);
 				var xepLoaiTuann = '—';
 				var colorTuann = 'medium-emphasis';
+				var bonusPoints = 0;
 
+				var futureCount = that.daysOfWeek.filter(function(d) {
+					return d.val !== 2 && that.isSpecificDayInFuture(d.val);
+				}).length;
+
+				// Chuẩn văn bản 22/10/2026:
+				// Đánh giá hằng tuần (tính trên số ngày tự quản thực tế):
+				// - Đạt (Đ): Có từ 02 ngày tự quản thực tế trở lên và 100% số ngày xếp Đạt -> Cộng 0,5 điểm thi đua
+				// - Chưa đạt (CĐ): Từ 50% số ngày tự quản thực tế xếp CĐ trở lên -> Dừng tự quản tuần tiếp theo
+				// - Duy trì (DT): Các trường hợp còn lại -> Không cộng điểm, lớp tiếp tục tự quản
 				if (isBlocked) {
-					xepLoaiTuann = 'Tạm dừng tự quản';
+					xepLoaiTuann = 'Dừng tự quản';
 					colorTuann = 'error';
 				} else if (!hasEvaluated || tuQuanCount === 0) {
 					xepLoaiTuann = '—';
 					colorTuann = 'medium-emphasis';
-				} else if (cdCount > 0) {
-					xepLoaiTuann = 'Chưa đạt';
+				} else if (tuQuanCount > 0 && (cdCount / tuQuanCount) >= 0.5) {
+					xepLoaiTuann = 'Chưa đạt (CĐ)';
 					colorTuann = 'error';
-				} else if (totCount >= 3) {
-					xepLoaiTuann = 'Tốt';
+				} else if (futureCount > 0 && tuQuanCount < 2 && cdCount === 0) {
+					xepLoaiTuann = 'Đang diễn ra';
+					colorTuann = 'info';
+				} else if (tuQuanCount >= 2 && datCount === tuQuanCount) {
+					xepLoaiTuann = 'Đạt (Đ)';
 					colorTuann = 'success';
+					bonusPoints = 0.5;
 				} else {
-					xepLoaiTuann = 'Đạt';
+					xepLoaiTuann = 'Duy trì (DT)';
 					colorTuann = 'primary';
 				}
 
@@ -3932,11 +4595,12 @@
 					day6: daysRes[6] || { code: 'FUTURE', text: '—', color: 'grey' },
 					TuQuanCount: tuQuanCount,
 					TargetMet: tuQuanCount >= 2,
-					TotCount: totCount,
 					DatCount: datCount,
+					CcgCount: ccgCount,
 					CdCount: cdCount,
 					XepLoaiTuan: xepLoaiTuann,
 					XepLoaiColor: colorTuann,
+					BonusPoints: bonusPoints,
 					IsBlocked: isBlocked
 				};
 			});
@@ -3951,7 +4615,7 @@
 				var tcs = cls.TieuChiList || [];
 				var isTq = isMonday ? false : (cls.IsTuQuan !== undefined ? !!cls.IsTuQuan : true);
 				// Thứ 2 hoặc khi GVCN sinh hoạt cố định thì GVCN luôn luôn có mặt điều hành
-				var gvcnPresent = (isMonday || !isTq) ? true : (cls.GVCNCoMat !== undefined ? !!cls.GVCNCoMat : true);
+				var gvcnPresent = (isMonday || !isTq) ? true : (cls.GVCNCoMat !== undefined ? !!cls.GVCNCoMat : false);
 				return {
 					STT: idx + 1,
 					LopID: cls.LopID,
@@ -3966,6 +4630,7 @@
 					TC2: (isMonday || !isTq) ? null : (tcs[1] ? tcs[1].score : 3),
 					TC3: (isMonday || !isTq) ? null : (tcs[2] ? tcs[2].score : 3),
 					GhiChuViPham: (isMonday || !isTq) ? '' : (cls.GhiChuViPham || ''),
+					NguoiCham: (isMonday || !isTq) ? '' : (cls.NguoiCham || (cls.RawItem && cls.RawItem.NguoiCham) || (that.currentUserName ? ('QS. ' + that.currentUserName) : 'QS. Trần Tuấn')),
 					RawItem: cls
 				};
 			});
@@ -3998,6 +4663,12 @@
 		isBghOrAdmin() {
 			return [3, 5, 9].includes(this.currentSystemRight);
 		},
+		canSwitchRole() {
+			return !!this.isRealAdmin;
+		},
+		isDevOrAdminRole() {
+			return this.currentSystemRight === 9 || this.currentSystemRight === 5;
+		},
 		currentRoleInfo() {
 			var sr = this.currentSystemRight;
 			var found = this.userRoles.find(function(r) { return r.id === sr; });
@@ -4028,30 +4699,34 @@
 		},
 		bghWeeklyReportStats() {
 			var classes = this.bghWeeklyReportClasses || [];
-			var tot = 0;
 			var dat = 0;
+			var duyTri = 0;
 			var blocked = 0;
 			classes.forEach(function(c) {
-				if (c.isApplied) {
+				if (c.isApplied || c.xepLoaiTuan === 'Tạm dừng TQ' || c.xepLoaiTuan === 'Chưa đạt (CĐ)' || c.xepLoaiTuan === 'Chưa đạt') {
 					blocked++;
-				} else if (c.xepLoaiTuan === 'Xuất sắc' || c.xepLoaiTuan === 'Tốt') {
-					tot++;
-				} else if (c.xepLoaiTuan === 'Đạt') {
+				} else if (c.xepLoaiTuan === 'Đạt (Đ)' || c.xepLoaiTuan === 'Đạt') {
 					dat++;
-				} else if (c.xepLoaiTuan === 'Cần nhắc nhở') {
-					blocked++;
+				} else {
+					duyTri++;
 				}
 			});
 			return {
 				total: classes.length,
-				totCount: tot,
 				datCount: dat,
-				blockedCount: blocked
+				duyTriCount: duyTri,
+				cdCount: blocked
 			};
 		}
 	},
 	watch: {
 		activeTab(newTab) {
+			if (newTab) {
+				try {
+					sessionStorage.setItem('lastActiveTab', newTab);
+					localStorage.setItem('lastActiveTab', newTab);
+				} catch (e) {}
+			}
 			if (this.qsAutoSaveTimer) {
 				clearTimeout(this.qsAutoSaveTimer);
 				this.autoSaveDailyEvaluation(0);
@@ -4062,12 +4737,23 @@
 				var curIdx = this.weekList.findIndex(function(w) { return nowMs >= w.startMs && nowMs <= w.endMs; });
 				if (curIdx === -1) curIdx = 0;
 				this.selectedWeek = this.weekList[curIdx] || this.availableWeekList[this.availableWeekList.length - 1];
+				this.onWeekSelected();
 			}
-			if (newTab === 'gvcn') {
+			if (newTab === 'quansinh') {
+				this.loadClassesForCurrentDay();
+			} else if (newTab === 'gvcn') {
 				if (this.selectedGvcnClassId) {
 					this.loadGvcnScheduleForClass(this.selectedGvcnClassId);
 					this.loadGvcnHistoryForClass(this.selectedGvcnClassId);
 				}
+			}
+		},
+		selectedGvcnClassId(newVal) {
+			if (newVal) {
+				try {
+					sessionStorage.setItem('lastSelectedGvcnClassId', String(newVal));
+					localStorage.setItem('lastSelectedGvcnClassId', String(newVal));
+				} catch (e) {}
 			}
 		},
 		currentSystemRight(newVal) {
@@ -4095,6 +4781,10 @@
 			return nowMs >= w.startMs && nowMs <= w.endMs;
 		});
 		this.selectedWeek = currentWeek || this.weekList[0];
+		if (this.selectedWeek && this.selectedWeek.weekNum) {
+			this.outerMonthlySelectedWeekNum = this.selectedWeek.weekNum;
+			this.evidenceDialog.selectedWeekNum = this.selectedWeek.weekNum;
+		}
 		this.updateDaysForSelectedWeek();
 		// Tự động nhận diện Thứ hôm nay trong tuần (Thứ 2 đến Thứ 6)
 		var currentDayOfWeek = new Date().getDay(); // 0: CN, 1: T2, 2: T3, 3: T4, 4: T5, 5: T6, 6: T7
@@ -4108,13 +4798,123 @@
 		this.loadSnapshotsFromLocalStorage();
 		this.ensureClass06DThursdaySnapshot();
 		this.loadClassesForCurrentDay();
+		this.gvcnClassInfo.TrangThaiLop = this.isClassBlocked(this.selectedGvcnClassId) ? 2 : 1;
 		this.loadGvcnScheduleForClass(this.selectedGvcnClassId);
 		this.loadGvcnHistoryForClass(this.selectedGvcnClassId);
 		var now = new Date();
 		this.lastSavedTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
 		this.qsLastSavedTime = this.lastSavedTime;
+		this.fetchWeekDataFromApi();
+	},
+	mounted() {
+		this.initUserRole();
+		this.fetchWeekDataFromApi();
 	},
 	methods: {
+		callApi(endpoint, params, callback) {
+			try {
+				if (typeof ajaxCALL === 'function') {
+					ajaxCALL(endpoint, params, function(res) {
+						if (typeof callback === 'function') {
+							callback(res);
+						}
+					});
+				} else if (typeof ajaxCALLPromise === 'function') {
+					ajaxCALLPromise(endpoint, params).then(function(res) {
+						if (typeof callback === 'function') {
+							callback(res);
+						}
+					}).catch(function(err) {
+						console.warn('API error (' + endpoint + '):', err);
+						if (typeof callback === 'function') {
+							callback(null);
+						}
+					});
+				} else {
+					if (typeof callback === 'function') {
+						callback(null);
+					}
+				}
+			} catch (e) {
+				console.warn('Error invoking API ' + endpoint + ':', e);
+				if (typeof callback === 'function') {
+					callback(null);
+				}
+			}
+		},
+		fetchWeekDataFromApi() {
+			if (!this.selectedWeek) return;
+			var that = this;
+			var curWeek = this.selectedWeek;
+			var weekId = curWeek.id;
+			var startDate = curWeek.startDate;
+			var endDate = curWeek.endDate;
+
+			// 1. Tải lịch tự quản của tất cả các lớp trong tuần từ database backend
+			this.callApi('lms/TuQuan_DangKyLich_Get', { StartDate: startDate, TuanHocID: weekId }, function(res) {
+				var rows = res;
+				if (res && res.data) rows = res.data;
+				if (Array.isArray(rows) && rows.length > 0) {
+					var groups = {};
+					rows.forEach(function(r) {
+						var k = (r.TuanHocID || weekId) + '_' + r.LopID;
+						if (!groups[k]) groups[k] = [];
+						groups[k].push({
+							key: r.key || r.Thu,
+							label: r.label,
+							date: r.date,
+							IsTuQuan: (r.IsTuQuan === true || r.IsTuQuan === 1 || r.IsTuQuan === '1'),
+							CoMat: (r.CoMat === true || r.CoMat === 1 || r.CoMat === '1'),
+							isFixed: (r.key === 2 || r.Thu === 2),
+							GhiChu: r.GhiChu || ''
+						});
+					});
+					for (var cacheKey in groups) {
+						that.gvcnSchedulesByClass[cacheKey] = groups[cacheKey];
+					}
+					that.saveSchedulesToLocalStorage();
+					if (that.selectedGvcnClassId) {
+						that.loadGvcnScheduleForClass(that.selectedGvcnClassId);
+					}
+					that.evalUpdateVersion++;
+				}
+			});
+
+			// 2. Tải toàn bộ đánh giá nề nếp của Quản sinh trong tuần từ database backend
+			this.callApi('lms/TuQuan_DanhGiaNgay_Get', { StartDate: startDate, EndDate: endDate }, function(res) {
+				var rows = res;
+				if (res && res.data) rows = res.data;
+				if (Array.isArray(rows) && rows.length > 0) {
+					rows.forEach(function(r) {
+						var snapKey = r.NgayYMD + '_' + r.LopID;
+						var tieuChi = [];
+						try {
+							if (typeof r.TieuChiList === 'string') {
+								tieuChi = JSON.parse(r.TieuChiList);
+							} else if (Array.isArray(r.TieuChiList)) {
+								tieuChi = r.TieuChiList;
+							}
+						} catch (e) {}
+
+						that.dailySnapshots[snapKey] = {
+							TieuChiList: tieuChi,
+							GhiChuViPham: r.GhiChuViPham || '',
+							IsTuQuan: (r.IsTuQuan === true || r.IsTuQuan === 1 || r.IsTuQuan === '1'),
+							GVCNCoMat: (r.GVCNCoMat === true || r.GVCNCoMat === 1 || r.GVCNCoMat === '1'),
+							IsSaved: true,
+							NguoiCham: r.NguoiCham || 'Quản sinh khối'
+						};
+					});
+					that.dailySnapshots = Object.assign({}, that.dailySnapshots);
+					that.saveSnapshotsToLocalStorage();
+					that.evalUpdateVersion++;
+					that.loadClassesForCurrentDay();
+					if (that.selectedGvcnClassId) {
+						that.loadGvcnHistoryForClass(that.selectedGvcnClassId);
+					}
+				}
+			});
+		},
 		formatCurrentTime() {
 			var now = new Date();
 			var hh = String(now.getHours()).padStart(2, '0');
@@ -4133,7 +4933,7 @@
 		saveSchedulesToLocalStorage() {
 			try {
 				if (typeof window !== 'undefined' && window.localStorage) {
-					window.localStorage.setItem('lhbs_gvcn_schedules_cache_v2', JSON.stringify(this.gvcnSchedulesByClass));
+					window.localStorage.setItem('lhbs_gvcn_schedules_cache_v4', JSON.stringify(this.gvcnSchedulesByClass));
 				}
 			} catch (e) {
 				console.warn('Cannot write localStorage:', e);
@@ -4142,11 +4942,17 @@
 		loadSchedulesFromLocalStorage() {
 			try {
 				if (typeof window !== 'undefined' && window.localStorage) {
-					// Dọn dẹp cache cũ để tránh nạp lại mặc định Thứ 3, Thứ 5
+					// Dọn dẹp cache cũ để tránh nạp lại cấu hình tự động đăng ký trước đó
 					if (window.localStorage.getItem('lhbs_gvcn_schedules_cache')) {
 						window.localStorage.removeItem('lhbs_gvcn_schedules_cache');
 					}
-					var raw = window.localStorage.getItem('lhbs_gvcn_schedules_cache_v2');
+					if (window.localStorage.getItem('lhbs_gvcn_schedules_cache_v2')) {
+						window.localStorage.removeItem('lhbs_gvcn_schedules_cache_v2');
+					}
+					if (window.localStorage.getItem('lhbs_gvcn_schedules_cache_v3')) {
+						window.localStorage.removeItem('lhbs_gvcn_schedules_cache_v3');
+					}
+					var raw = window.localStorage.getItem('lhbs_gvcn_schedules_cache_v4');
 					if (raw) {
 						var parsed = JSON.parse(raw);
 						if (parsed && typeof parsed === 'object') {
@@ -4194,18 +5000,41 @@
 			this.autoSaveStatus = 'saving';
 			clearTimeout(this.autoSaveTimer);
 
+			// Đồng bộ ngay tức thì bộ nhớ cache in-memory để các tab Quản sinh / Báo cáo thấy ngay
+			this.gvcnSchedulesByClass[cacheKey] = JSON.parse(JSON.stringify(this.gvcnWeekSchedule));
+			this.saveSchedulesToLocalStorage();
+
 			var that = this;
 			var wait = (delayMs !== undefined) ? delayMs : 400;
 			this.autoSaveTimer = setTimeout(function() {
-				that.gvcnSchedulesByClass[cacheKey] = JSON.parse(JSON.stringify(that.gvcnWeekSchedule));
-				that.saveSchedulesToLocalStorage();
-
 				that.lastSavedTime = that.formatCurrentTime();
 				that.autoSaveStatus = 'saved';
+
+				// GỌI API LƯU VÀO DATABASE BACKEND
+				// Khi lưu lịch GVCN: ưu tiên lưu mã/tài khoản của GVCN phụ trách lớp đó
+				// (để nếu Admin thao tác hộ thì hệ thống vẫn ghi nhận là GVCN của lớp đó thực hiện)
+				var gvcnUserCode = (that.gvcnClassInfo && (that.gvcnClassInfo.Account || that.gvcnClassInfo.MaGVCN))
+					|| (function() {
+						if (!that.allSchoolClasses) return null;
+						var c = that.allSchoolClasses.find(function(x) { return String(x.LopID) === String(lopId); });
+						return c ? (c.Account || c.MaGVCN || c.TenGVCN) : null;
+					})()
+					|| that.currentUserCode || that.currentUserName || 'GVCN';
+
+				var payload = {
+					LopID: parseInt(lopId, 10),
+					TuanHocID: parseInt(weekId, 10),
+					StartDate: (that.selectedWeek && that.selectedWeek.startDate) ? that.selectedWeek.startDate : '',
+					EndDate: (that.selectedWeek && that.selectedWeek.endDate) ? that.selectedWeek.endDate : '',
+					ScheduleJson: JSON.stringify(that.gvcnWeekSchedule),
+					UserCode: gvcnUserCode
+				};
+				that.callApi('lms/TuQuan_DangKyLich_Save', payload, function(res) {
+					console.log('[API TuQuan_DangKyLich_Save]:', res);
+				});
 			}, wait);
 		},
 		autoSaveDailyEvaluation(delayMs) {
-			if (this.isReadOnlyDay || this.selectedDay === 2) return;
 			var wait = (delayMs !== undefined) ? delayMs : 400;
 			this.qsAutoSaveStatus = 'saving';
 			clearTimeout(this.qsAutoSaveTimer);
@@ -4221,8 +5050,9 @@
 						TieuChiList: JSON.parse(JSON.stringify(c.TieuChiList)),
 						GhiChuViPham: c.GhiChuViPham,
 						IsTuQuan: c.IsTuQuan,
+						GVCNCoMat: !!c.GVCNCoMat,
 						IsSaved: true,
-						NguoiCham: c.NguoiCham || 'Quản sinh khối'
+						NguoiCham: c.NguoiCham || that.currentUserName || 'Quản sinh khối'
 					};
 				});
 				if (that.dailyWorkingState[dateStr]) {
@@ -4236,10 +5066,65 @@
 				if (that.selectedGvcnClassId) {
 					that.loadGvcnHistoryForClass(that.selectedGvcnClassId);
 				}
+
+				// GỌI API LƯU ĐÁNH GIÁ VÀO DATABASE BACKEND
+				var evalsToSave = that.currentClasses.map(function(c) {
+					var xepLoai = 'DAT';
+					var cdCount = 0;
+					if (c.TieuChiList) {
+						c.TieuChiList.forEach(function(tc) {
+							if (tc.score === 1) cdCount++;
+						});
+					}
+					if (cdCount >= 2) xepLoai = 'CD';
+					else if (cdCount === 1) xepLoai = 'CCG';
+
+					return {
+						LopID: parseInt(c.LopID, 10),
+						IsTuQuan: !!c.IsTuQuan,
+						GVCNCoMat: !!c.GVCNCoMat,
+						TieuChiList: c.TieuChiList,
+						GhiChuViPham: c.GhiChuViPham || '',
+						NguoiCham: c.NguoiCham || that.currentUserName || 'Quản sinh khối',
+						XepLoai: xepLoai
+					};
+				});
+
+				var payload = {
+					Ngay: dateStr,
+					TuanHocID: (that.selectedWeek && that.selectedWeek.id) ? that.selectedWeek.id : 1,
+					EvaluationsJson: JSON.stringify(evalsToSave),
+					UserCode: that.currentUserCode || that.currentUserName || 'Quản sinh khối'
+				};
+				that.callApi('lms/TuQuan_DanhGiaNgay_Save', payload, function(res) {
+					console.log('[API TuQuan_DanhGiaNgay_Save]:', res);
+				});
 			}, wait);
 		},
+		toggleGvcnPresent(cls) {
+			if (!cls) return;
+
+			var isCurrentlyPresent = !!cls.GVCNCoMat || !cls.IsTuQuan;
+			if (isCurrentlyPresent) {
+				// Chuyển lại thành Lớp tự quản để Quản sinh chấm điểm
+				cls.GVCNCoMat = false;
+				cls.IsTuQuan = true;
+				if (cls.GhiChuViPham && cls.GhiChuViPham.indexOf('GVCN có mặt') !== -1) {
+					cls.GhiChuViPham = '';
+				}
+				this.showNotice('Lớp ' + cls.TenLop + ': Đã chuyển lại thành Lớp tự quản', 'info');
+			} else {
+				// Đánh dấu GVCN có mặt (Ghi nhận "GV" theo Hướng dẫn 22/10)
+				cls.GVCNCoMat = true;
+				cls.IsTuQuan = false;
+				this.showNotice('Đã ghi nhận Lớp ' + cls.TenLop + ': GVCN có mặt (GV) — Không đánh giá tự quản', 'success');
+			}
+
+			this.currentClasses = [...this.currentClasses];
+			this.evalUpdateVersion++;
+			this.autoSaveDailyEvaluation(200);
+		},
 		onQsNoteChange() {
-			if (this.isReadOnlyDay || this.selectedDay === 2) return;
 			this.evalUpdateVersion++;
 			this.autoSaveDailyEvaluation(600);
 		},
@@ -4247,7 +5132,15 @@
 			this.autoSaveGvcnSchedule(400);
 		},
 		initUserRole() {
-			var user = (typeof vueData !== 'undefined' && vueData && vueData.user) ? vueData.user : null;
+			var user = (typeof vueData !== 'undefined' && vueData && vueData.user)
+				? vueData.user
+				: (typeof window !== 'undefined' && window.vueData && window.vueData.user ? window.vueData.user : null);
+			if (!user) {
+				try {
+					var storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+					if (storedUser) user = JSON.parse(storedUser);
+				} catch (e) {}
+			}
 			if (user) {
 				var sr = user.SystemRight;
 				if (Array.isArray(sr) && sr.length > 0) {
@@ -4259,15 +5152,179 @@
 				if (user.FullName || user.DisplayName) {
 					this.currentUserName = user.FullName || user.DisplayName;
 				}
-				if (this.currentSystemRight === 1) {
-					this.activeTab = 'gvcn';
-					if (user.LopID) {
-						this.selectedGvcnClassId = String(user.LopID);
+
+				var uId = String(user.UserID || user.MaNhanVien || user.UserCode || user.UserName || user.Account || '').trim().toUpperCase();
+				this.currentUserCode = uId;
+				var userAcc = String(user.Account || user.UserName || '').trim().toLowerCase();
+				this.currentUserAccount = userAcc;
+
+				// Kiểm tra vai trò Admin thực tế (chỉ Admin thực sự mới được thấy nút chuyển vai trò)
+				// Ban Giám hiệu (3, 5), Quản sinh (4), Giáo viên chủ nhiệm (1) trên máy thực tế KHÔNG BAO GIỜ THẤY nút này.
+				var realSr = (sr != null && !isNaN(Number(sr))) ? Number(sr) : 0;
+				var isAdm = false;
+				if (realSr === 9 || user.SystemRight === 9 || user.IsSuperAdmin === 1 || user.IsSuperAdmin === true || ['DEV000054', 'NA0000022'].includes(uId)) {
+					isAdm = true;
+				}
+				if ([1, 3, 4, 5].includes(realSr) && !['DEV000054', 'NA0000022'].includes(uId)) {
+					isAdm = false;
+				}
+				this.isRealAdmin = isAdm;
+
+				var that = this;
+
+				// 1. Nhận diện sơ bộ từ danh sách lớp có sẵn trong client (chỉ áp dụng cho tài khoản giáo viên, KHÔNG gán cho Admin)
+				var matchedClasses = [];
+				if (!isAdm) {
+					if (uId) {
+						matchedClasses = this.allSchoolClasses.filter(function(c) {
+							return (c.MaGVCN && c.MaGVCN.toUpperCase() === uId) ||
+								(c.Account && c.Account.toUpperCase() === uId);
+						});
 					}
-				} else if (this.currentSystemRight === 3 || this.currentSystemRight === 5) {
-					this.activeTab = 'baocao';
+					if (!matchedClasses.length && userAcc) {
+						matchedClasses = this.allSchoolClasses.filter(function(c) {
+							return (c.Account && c.Account.toLowerCase() === userAcc) ||
+								(c.MaGVCN && c.MaGVCN.toLowerCase() === userAcc);
+						});
+					}
+					if (!matchedClasses.length && user.LopID) {
+						matchedClasses = this.allSchoolClasses.filter(function(c) {
+							return String(c.LopID) === String(user.LopID);
+						});
+					}
+					if (!matchedClasses.length) {
+						var teacherName = (this.currentUserName || user.FullName || user.DisplayName || '').toLowerCase().trim();
+						if (teacherName) {
+							matchedClasses = this.allSchoolClasses.filter(function(c) {
+								var gvName = (c.TenGVCN || '').toLowerCase().trim();
+								return gvName && (gvName === teacherName || teacherName.includes(gvName) || gvName.includes(teacherName));
+							});
+						}
+					}
+				}
+
+				if (matchedClasses.length > 0) {
+					this.myHomeroomClasses = matchedClasses;
+					if (this.currentSystemRight === 1 || user.SystemRight === 1 || !this.isBghOrAdmin) {
+						this.currentSystemRight = 1;
+						this.activeTab = 'gvcn';
+					}
+					var target = matchedClasses[0];
+					this.selectedGvcnClassId = String(target.LopID);
+					this.gvcnClassInfo.LopID = target.LopID;
+					this.gvcnClassInfo.TenLop = target.TenLop;
+					this.gvcnClassInfo.TenGVCN = target.TenGVCN;
+					this.gvcnClassInfo.SiSo = target.SiSo;
+					this.gvcnClassInfo.TrangThaiLop = this.isClassBlocked(target.LopID) ? 2 : 1;
+					if (target.Khoi) {
+						this.selectedKhoi = target.Khoi;
+					}
+					if (!this.currentUserName || this.currentUserName === 'Quản sinh khối') {
+						this.currentUserName = target.TenGVCN;
+					}
 				} else {
-					this.activeTab = 'quansinh';
+					this.myHomeroomClasses = [];
+					var savedTab = null;
+					var savedClassId = null;
+					try {
+						savedTab = sessionStorage.getItem('lastActiveTab') || localStorage.getItem('lastActiveTab');
+						savedClassId = sessionStorage.getItem('lastSelectedGvcnClassId') || localStorage.getItem('lastSelectedGvcnClassId');
+					} catch (e) {}
+
+					if (savedTab) {
+						this.activeTab = savedTab;
+					} else if (this.currentSystemRight === 3 || this.currentSystemRight === 5) {
+						this.activeTab = 'baocao';
+					} else if (this.currentSystemRight === 1) {
+						this.activeTab = 'gvcn';
+					} else {
+						this.activeTab = 'quansinh';
+					}
+
+					// Với Admin / Quản sinh: Khôi phục lớp đã chọn trước đó (nếu có) hoặc mặc định lớp đầu tiên (06A)
+					var defaultClass = null;
+					if (savedClassId) {
+						defaultClass = this.allSchoolClasses.find(function(c) { return String(c.LopID) === String(savedClassId); });
+					}
+					if (!defaultClass && this.allSchoolClasses && this.allSchoolClasses.length > 0) {
+						defaultClass = this.allSchoolClasses[0];
+					}
+
+					if (defaultClass) {
+						this.selectedGvcnClassId = String(defaultClass.LopID);
+						this.gvcnClassInfo.LopID = defaultClass.LopID;
+						this.gvcnClassInfo.TenLop = defaultClass.TenLop;
+						this.gvcnClassInfo.TenGVCN = defaultClass.TenGVCN;
+						this.gvcnClassInfo.MaGVCN = defaultClass.MaGVCN || '';
+						this.gvcnClassInfo.Account = defaultClass.Account || '';
+						this.gvcnClassInfo.SiSo = defaultClass.SiSo;
+						this.gvcnClassInfo.TrangThaiLop = this.isClassBlocked(defaultClass.LopID) ? 2 : 1;
+						if (defaultClass.Khoi) {
+							this.selectedKhoi = defaultClass.Khoi;
+						}
+					}
+				}
+
+				// 2. Gọi API lms/Lop_Get_ByGVCN của hệ thống để xác nhận chính xác từ Database máy chủ (chỉ dành cho giáo viên, không áp dụng cho Admin)
+				if (!isAdm) {
+					this.callApi('lms/Lop_Get_ByGVCN', { NienKhoa: 2026 }, function(res) {
+						var rows = res;
+						if (res && res.data) rows = res.data;
+						if (Array.isArray(rows) && rows.length > 0) {
+							var serverList = [];
+							rows.forEach(function(r) {
+								// Nếu TenLop từ DB là nhóm tổ hợp (như 10A1, 10A2, 11B1, 11B2, 12C1, 12C2), quy về lớp gốc 10A, 11B, 12C
+								var baseName = (r.TenLop || '').replace(/[12]$/, '').trim();
+								var found = that.allSchoolClasses.find(function(c) {
+									return String(c.LopID) === String(r.LopID) ||
+										c.TenLop.toLowerCase() === (r.TenLop || '').toLowerCase() ||
+										c.TenLop.toLowerCase() === baseName.toLowerCase();
+								});
+								if (found) {
+									if (!serverList.some(function(x) { return String(x.LopID) === String(found.LopID); })) {
+										serverList.push(found);
+									}
+								} else {
+									serverList.push({
+										LopID: String(r.LopID),
+										TenLop: r.TenLop,
+										TenGVCN: that.currentUserName,
+										Khoi: r.KhoiID,
+										label: 'Lớp ' + r.TenLop + (that.currentUserName ? ' — ' + that.currentUserName : '')
+									});
+								}
+							});
+
+							that.myHomeroomClasses = serverList;
+
+							// Nếu không phải BGH/Admin thì chuyển ngay về chế độ GVCN của lớp này
+							if (!that.isBghOrAdmin) {
+								that.currentSystemRight = 1;
+								that.activeTab = 'gvcn';
+							}
+
+							var currentTarget = serverList.find(function(c) {
+								return String(c.LopID) === String(that.selectedGvcnClassId);
+							}) || serverList[0];
+
+							if (currentTarget) {
+								that.selectedGvcnClassId = String(currentTarget.LopID);
+								that.gvcnClassInfo.LopID = currentTarget.LopID;
+								that.gvcnClassInfo.TenLop = currentTarget.TenLop;
+								that.gvcnClassInfo.TenGVCN = currentTarget.TenGVCN;
+								that.gvcnClassInfo.SiSo = currentTarget.SiSo;
+								that.gvcnClassInfo.TrangThaiLop = that.isClassBlocked(currentTarget.LopID) ? 2 : 1;
+								if (currentTarget.Khoi) {
+									that.selectedKhoi = currentTarget.Khoi;
+								}
+								if (!that.currentUserName || that.currentUserName === 'Quản sinh khối') {
+									that.currentUserName = currentTarget.TenGVCN;
+								}
+								that.loadGvcnScheduleForClass(currentTarget.LopID);
+								that.loadGvcnHistoryForClass(currentTarget.LopID);
+							}
+						}
+					});
 				}
 			}
 		},
@@ -4284,7 +5341,17 @@
 					this.selectedWeek = this.weekList[curIdx];
 					this.onWeekSelected();
 				}
-				var gvClass = this.allSchoolClasses.find(function(c) { return c.TenLop === '06A'; }) || this.allSchoolClasses[0];
+				var curClassId = this.selectedGvcnClassId;
+				try {
+					curClassId = curClassId || sessionStorage.getItem('lastSelectedGvcnClassId') || localStorage.getItem('lastSelectedGvcnClassId');
+				} catch (e) {}
+				var gvClass = null;
+				if (curClassId) {
+					gvClass = this.allSchoolClasses.find(function(c) { return String(c.LopID) === String(curClassId); });
+				}
+				if (!gvClass) {
+					gvClass = this.allSchoolClasses.find(function(c) { return c.TenLop === '06A'; }) || this.allSchoolClasses[0];
+				}
 				if (gvClass) {
 					this.onGvcnClassChanged(gvClass.LopID);
 				} else if (this.selectedGvcnClassId) {
@@ -4335,7 +5402,7 @@
 				             String(curEnd.getMonth() + 1).padStart(2, '0') + '-' +
 				             String(curEnd.getDate()).padStart(2, '0');
 
-				var title = 'Tuần ' + weekInMonth + ' - Tháng ' + month + ' - (' + d1 + ' - ' + d2 + ')';
+				var title = 'Tuần ' + weekInMonth + ' - Tháng ' + month + ' (' + d1 + ' - ' + d2 + ')';
 
 				list.push({
 					id: id++,
@@ -4366,7 +5433,7 @@
 			return yyyy + '-' + mm + '-' + dd;
 		},
 		saveWorkingStateForDate(dateStr) {
-			if (this.isReadOnlyDay || !dateStr || !this.currentClasses || this.currentClasses.length === 0) return;
+			if (this.isPastDay || this.isTodayQsLocked || this.isBghRole || !dateStr || !this.currentClasses || this.currentClasses.length === 0) return;
 			var that = this;
 			var k = this.selectedKhoi || 6;
 			var list = this.getRealClassesByKhoi(k);
@@ -4378,10 +5445,6 @@
 			}
 		},
 		onDayChanged(newDay) {
-			if (this.isSpecificDayInFuture(newDay)) {
-				this.selectedDay = this.realTodayDayVal;
-				return;
-			}
 			if (this.currentActiveDateStr) {
 				this.saveWorkingStateForDate(this.currentActiveDateStr);
 			}
@@ -4394,18 +5457,20 @@
 				this.saveWorkingStateForDate(this.currentActiveDateStr);
 			}
 			this.updateDaysForSelectedWeek();
-			if (this.isSpecificDayInFuture(this.selectedDay)) {
-				this.selectedDay = this.realTodayDayVal;
-			}
-			if (this.bghSelectedDay && this.isSpecificDayInFuture(this.bghSelectedDay)) {
-				this.bghSelectedDay = this.realTodayDayVal;
-			}
 			this.currentActiveDateStr = this.getDateStringForDay(this.selectedDay);
 			if (this.selectedWeek && this.selectedWeek.weekNum) {
 				this.outerMonthlySelectedWeekNum = this.selectedWeek.weekNum;
 				this.evidenceDialog.selectedWeekNum = this.selectedWeek.weekNum;
 			}
 			this.loadClassesForCurrentDay();
+			if (this.selectedGvcnClassId) {
+				if (this.gvcnClassInfo) {
+					this.gvcnClassInfo.TrangThaiLop = this.isClassBlocked(this.selectedGvcnClassId) ? 2 : 1;
+				}
+				this.loadGvcnScheduleForClass(this.selectedGvcnClassId);
+				this.loadGvcnHistoryForClass(this.selectedGvcnClassId);
+			}
+			this.fetchWeekDataFromApi();
 		},
 		updateDaysForSelectedWeek() {
 			var startStr = (this.selectedWeek && this.selectedWeek.startDate) || '2026-10-05';
@@ -4457,12 +5522,14 @@
 			return !this.isSpecificDayInPast(dayVal) && !this.isSpecificDayInFuture(dayVal);
 		},
 		getCurrentTimeForRules() {
-			if (this.mockHourOverride !== null && this.mockHourOverride !== undefined) {
-				var d = new Date();
-				d.setHours(this.mockHourOverride, this.mockMinuteOverride || 0, 0, 0);
-				return d;
+			var d = new Date();
+			if (this.mockDateOverride) {
+				d = new Date(this.mockDateOverride.getTime());
 			}
-			return new Date();
+			if (this.mockHourOverride !== null && this.mockHourOverride !== undefined) {
+				d.setHours(this.mockHourOverride, this.mockMinuteOverride || 0, 0, 0);
+			}
+			return d;
 		},
 		isPastQsCutoffTime() {
 			var now = this.getCurrentTimeForRules();
@@ -4471,15 +5538,54 @@
 			return (hours > 9) || (hours === 9 && minutes >= 30);
 		},
 		isPastGvcnCutoffTime() {
-			var now = this.getCurrentTimeForRules();
-			return now.getHours() >= 6;
+			return this.isGvcnRegistrationLockedForSelectedWeek();
+		},
+		isGvcnRegistrationLockedForSelectedWeek() {
+			// Mở toàn quyền đăng ký cho demo
+			return false;
+		},
+		getGvcnLockReasonMessage() {
+			return '';
 		},
 		isDayGvcnLocked(dayKey) {
-			if (dayKey === 2) return true;
-			if (this.isPastSelectedWeek) return true;
-			if (this.isSpecificDayInPast(dayKey)) return true;
-			if (this.isSpecificDayToday(dayKey) && this.isPastGvcnCutoffTime()) return true;
+			// Mở toàn quyền đăng ký cho demo
 			return false;
+		},
+		setMockDateAndHour(scenario, hour) {
+			if (!scenario) {
+				this.mockDateOverride = null;
+				this.mockScenarioName = '';
+				this.mockHourOverride = null;
+				this.mockMinuteOverride = 0;
+				this.evalUpdateVersion++;
+				this.showNotice('Đã chuyển về thời gian thực tế hệ thống', 'info');
+				return;
+			}
+			var startStr = (this.selectedWeek && this.selectedWeek.startDate) || '2026-10-05';
+			var parts = startStr.split('-');
+			var monday = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+			if (scenario === 'monday_morning') {
+				// Sáng Thứ Hai lúc 09:00 (trong khung mở đăng ký)
+				var d = new Date(monday.getTime());
+				d.setHours(hour || 9, 0, 0, 0);
+				this.mockDateOverride = d;
+				this.mockScenarioName = 'monday_morning';
+				this.mockHourOverride = hour || 9;
+				this.mockMinuteOverride = 0;
+				this.evalUpdateVersion++;
+				this.showNotice('Giả lập: Sáng Thứ Hai (09:00) — Đang mở đăng ký tuần cho GVCN', 'info');
+			} else if (scenario === 'midweek_morning') {
+				// Thứ Tư trong tuần (Thứ Ba đến Thứ Sáu: đã khóa đăng ký GVCN)
+				var d = new Date(monday.getTime() + 2 * 24 * 60 * 60 * 1000);
+				d.setHours(hour || 8, 0, 0, 0);
+				this.mockDateOverride = d;
+				this.mockScenarioName = 'midweek_morning';
+				this.mockHourOverride = hour || 8;
+				this.mockMinuteOverride = 0;
+				this.evalUpdateVersion++;
+				var label = (hour >= 10) ? 'Thứ Tư (10:00) — Khóa đăng ký GVCN và khóa Quản sinh chấm (> 09:30)' : 'Thứ Tư (08:00) — Khóa đăng ký GVCN (T3-T6), Mở Quản sinh chấm';
+				this.showNotice('Giả lập: ' + label, 'info');
+			}
 		},
 		setMockTime(hour, minute) {
 			this.mockHourOverride = hour;
@@ -4533,9 +5639,9 @@
 					IsTuQuan: false,
 					GVCNCoMat: true,
 					TieuChiList: [
-						{ id: 'c1', ten: '1. Không gian lớp (Mở cửa, VS, bàn ghế)', shortTitle: 'Không gian lớp (Mở cửa, VS, bàn ghế)', score: 3, isCustom: false },
-						{ id: 'c2', ten: '2. Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)', shortTitle: 'Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)', score: 3, isCustom: false },
-						{ id: 'c3', ten: '3. Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)', shortTitle: 'Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)', score: 3, isCustom: false }
+						{ id: 'c1', ten: 'TC1: Không gian (Sạch sẽ, bảng, sàn)', shortTitle: 'TC1: Không gian', score: 3, isCustom: false },
+						{ id: 'c2', ten: 'TC2: Nội dung (Đọc sách, chủ đề)', shortTitle: 'TC2: Nội dung', score: 3, isCustom: false },
+						{ id: 'c3', ten: 'TC3: Nề nếp (Nghiêm túc, tích cực)', shortTitle: 'TC3: Nề nếp', score: 3, isCustom: false }
 					],
 					GhiChuViPham: '',
 					IsSaved: true,
@@ -4545,7 +5651,7 @@
 				that.dailySnapshots[legacyKey] = snap;
 			});
 
-			// 2. Snapshot Thứ 3 (06/10/2026): Nền nếp Tốt, tất cả các lớp đạt Tốt (kể cả 06D)
+			// 2. Snapshot Thứ 3 (06/10/2026): Nền nếp Đạt, tất cả các lớp Đạt chuẩn (kể cả 06D)
 			classList.forEach(function(item) {
 				var keyT3 = '2026-10-06_' + item.LopID;
 				var legacyKey = '3_' + item.LopID;
@@ -4553,9 +5659,9 @@
 					IsTuQuan: true,
 					GVCNCoMat: false,
 					TieuChiList: [
-						{ id: 'c1', ten: '1. Không gian lớp (Mở cửa, VS, bàn ghế)', shortTitle: 'Không gian lớp (Mở cửa, VS, bàn ghế)', score: 3, isCustom: false },
-						{ id: 'c2', ten: '2. Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)', shortTitle: 'Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)', score: 3, isCustom: false },
-						{ id: 'c3', ten: '3. Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)', shortTitle: 'Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)', score: 3, isCustom: false }
+						{ id: 'c1', ten: 'TC1: Không gian (Sạch sẽ, bảng, sàn)', shortTitle: 'TC1: Không gian', score: 3, isCustom: false },
+						{ id: 'c2', ten: 'TC2: Nội dung (Đọc sách, chủ đề)', shortTitle: 'TC2: Nội dung', score: 3, isCustom: false },
+						{ id: 'c3', ten: 'TC3: Nề nếp (Nghiêm túc, tích cực)', shortTitle: 'TC3: Nề nếp', score: 3, isCustom: false }
 					],
 					GhiChuViPham: '',
 					IsSaved: true,
@@ -4565,7 +5671,7 @@
 				that.dailySnapshots[legacyKey] = snap;
 			});
 
-			// 3. Snapshot Thứ 4 (07/10/2026): Nền nếp Tốt, tất cả các lớp đạt Tốt (kể cả 06D)
+			// 3. Snapshot Thứ 4 (07/10/2026): Nền nếp Đạt, tất cả các lớp Đạt chuẩn (kể cả 06D)
 			classList.forEach(function(item) {
 				var keyT4 = '2026-10-07_' + item.LopID;
 				var legacyKey = '4_' + item.LopID;
@@ -4573,9 +5679,9 @@
 					IsTuQuan: true,
 					GVCNCoMat: false,
 					TieuChiList: [
-						{ id: 'c1', ten: '1. Không gian lớp (Mở cửa, VS, bàn ghế)', shortTitle: 'Không gian lớp (Mở cửa, VS, bàn ghế)', score: 3, isCustom: false },
-						{ id: 'c2', ten: '2. Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)', shortTitle: 'Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)', score: 3, isCustom: false },
-						{ id: 'c3', ten: '3. Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)', shortTitle: 'Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)', score: 3, isCustom: false }
+						{ id: 'c1', ten: 'TC1: Không gian (Sạch sẽ, bảng, sàn)', shortTitle: 'TC1: Không gian', score: 3, isCustom: false },
+						{ id: 'c2', ten: 'TC2: Nội dung (Đọc sách, chủ đề)', shortTitle: 'TC2: Nội dung', score: 3, isCustom: false },
+						{ id: 'c3', ten: 'TC3: Nề nếp (Nghiêm túc, tích cực)', shortTitle: 'TC3: Nề nếp', score: 3, isCustom: false }
 					],
 					GhiChuViPham: '',
 					IsSaved: true,
@@ -4594,9 +5700,9 @@
 					IsTuQuan: true,
 					GVCNCoMat: false,
 					TieuChiList: [
-						{ id: 'c1', ten: '1. Không gian lớp (Mở cửa, VS, bàn ghế)', shortTitle: 'Không gian lớp (Mở cửa, VS, bàn ghế)', score: is06D ? 1 : 3, isCustom: false },
-						{ id: 'c2', ten: '2. Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)', shortTitle: 'Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)', score: is06D ? 1 : 3, isCustom: false },
-						{ id: 'c3', ten: '3. Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)', shortTitle: 'Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)', score: 3, isCustom: false }
+						{ id: 'c1', ten: 'TC1: Không gian (Sạch sẽ, bảng, sàn)', shortTitle: 'TC1: Không gian', score: is06D ? 1 : 3, isCustom: false },
+						{ id: 'c2', ten: 'TC2: Nội dung (Đọc sách, chủ đề)', shortTitle: 'TC2: Nội dung', score: 3, isCustom: false },
+						{ id: 'c3', ten: 'TC3: Nề nếp (Nghiêm túc, tích cực)', shortTitle: 'TC3: Nề nếp', score: is06D ? 1 : 3, isCustom: false }
 					],
 					GhiChuViPham: is06D ? 'Sọt rác đầy chưa đổ, cuối lớp còn nhiều rác giấy vụn; 4 học sinh chưa làm bài tập' : '',
 					IsSaved: true,
@@ -4611,9 +5717,9 @@
 				IsTuQuan: true,
 				GVCNCoMat: false,
 				TieuChiList: [
-					{ id: 'c1', ten: '1. Không gian lớp (Mở cửa, VS, bàn ghế)', shortTitle: 'Không gian lớp (Mở cửa, VS, bàn ghế)', score: 1, isCustom: false },
-					{ id: 'c2', ten: '2. Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)', shortTitle: 'Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)', score: 1, isCustom: false },
-					{ id: 'c3', ten: '3. Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)', shortTitle: 'Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)', score: 3, isCustom: false }
+					{ id: 'c1', ten: 'TC1: Không gian (Sạch sẽ, bảng, sàn)', shortTitle: 'TC1: Không gian', score: 1, isCustom: false },
+					{ id: 'c2', ten: 'TC2: Nội dung (Đọc sách, chủ đề)', shortTitle: 'TC2: Nội dung', score: 3, isCustom: false },
+					{ id: 'c3', ten: 'TC3: Nề nếp (Nghiêm túc, tích cực)', shortTitle: 'TC3: Nề nếp', score: 1, isCustom: false }
 				],
 				GhiChuViPham: 'Sọt rác đầy chưa đổ, cuối lớp còn nhiều rác giấy vụn; 4 học sinh chưa làm bài tập',
 				IsSaved: true,
@@ -4625,64 +5731,64 @@
 		getRealClassesByKhoi(khoiId) {
 			var allRealClasses = {
 				6: [
-					{"LopID": "2719", "TenLop": "06A", "TenGVCN": "Nguyễn Thảo Nguyên", "SiSo": 36},
-					{"LopID": "2720", "TenLop": "06B", "TenGVCN": "Chu Thùy Diệu My", "SiSo": 35},
-					{"LopID": "2721", "TenLop": "06C", "TenGVCN": "Lê Thị Hòa", "SiSo": 36},
-					{"LopID": "2722", "TenLop": "06D", "TenGVCN": "Nguyễn Ngọc Bảo Trâm", "SiSo": 35},
-					{"LopID": "2723", "TenLop": "06E", "TenGVCN": "Phạm Thị Oanh", "SiSo": 36},
-					{"LopID": "2724", "TenLop": "06F", "TenGVCN": "Lê Thị Thúy Ly", "SiSo": 35},
-					{"LopID": "2725", "TenLop": "06G", "TenGVCN": "Trần Thuỳ Dung", "SiSo": 36},
-					{"LopID": "2726", "TenLop": "06H", "TenGVCN": "Lê Thị Thanh Thủy", "SiSo": 35}
+					{"LopID": "2719", "TenLop": "06A", "TenGVCN": "Nguyễn Thảo Nguyên", "MaGVCN": "NV0000738", "Account": "PHC", "SiSo": 27},
+					{"LopID": "2720", "TenLop": "06B", "TenGVCN": "Chu Thùy Diệu My", "MaGVCN": "NV0000353", "Account": "yennth", "SiSo": 28},
+					{"LopID": "2721", "TenLop": "06C", "TenGVCN": "Lê Thị Hoà", "MaGVCN": "NV0001332", "Account": "hoalt", "SiSo": 29},
+					{"LopID": "2722", "TenLop": "06D", "TenGVCN": "Nguyễn Ngọc Bảo Trâm", "MaGVCN": "NV0000786", "Account": "TSN", "SiSo": 29},
+					{"LopID": "2723", "TenLop": "06E", "TenGVCN": "Phạm Thị Oanh", "MaGVCN": "NV0000371", "Account": "chientran", "SiSo": 27},
+					{"LopID": "2724", "TenLop": "06F", "TenGVCN": "Lê Thị Thúy Ly", "MaGVCN": "NV0000788", "Account": "TXH", "SiSo": 27},
+					{"LopID": "2725", "TenLop": "06G", "TenGVCN": "Trần Thuỳ Dung", "MaGVCN": "NV0000825", "Account": "TXH", "SiSo": 28},
+					{"LopID": "2726", "TenLop": "06H", "TenGVCN": "Lê Thị Thanh Thủy", "MaGVCN": "NV0000082", "Account": "NV0000197", "SiSo": 27}
 				],
 				7: [
-					{"LopID": "2670", "TenLop": "07A", "TenGVCN": "Nguyễn Thị Lành", "SiSo": 36},
-					{"LopID": "2669", "TenLop": "07B", "TenGVCN": "Nguyễn Thị Thanh Thùy", "SiSo": 35},
-					{"LopID": "2668", "TenLop": "07C", "TenGVCN": "Nguyễn Thị Sen", "SiSo": 36},
-					{"LopID": "2667", "TenLop": "07D", "TenGVCN": "Nguyễn Thị Mai", "SiSo": 35},
-					{"LopID": "2666", "TenLop": "07E", "TenGVCN": "Nguyễn Trần Gia Hân", "SiSo": 36},
-					{"LopID": "2665", "TenLop": "07F", "TenGVCN": "Cao Thị Lan Hương", "SiSo": 35},
-					{"LopID": "2664", "TenLop": "07G", "TenGVCN": "Trần Thị Toàn", "SiSo": 36},
-					{"LopID": "2663", "TenLop": "07H", "TenGVCN": "Lê Nguyễn Anh Thư", "SiSo": 35}
+					{"LopID": "2670", "TenLop": "07A", "TenGVCN": "Nguyễn Thị Lành", "MaGVCN": "NV0000517", "Account": "lanhnt", "SiSo": 29},
+					{"LopID": "2669", "TenLop": "07B", "TenGVCN": "Nguyễn Thị Thanh Thùy", "MaGVCN": "NV0000675", "Account": "TSN", "SiSo": 28},
+					{"LopID": "2668", "TenLop": "07C", "TenGVCN": "Nguyễn Thị Sen", "MaGVCN": "NV0001090", "Account": "NV0000197", "SiSo": 28},
+					{"LopID": "2667", "TenLop": "07D", "TenGVCN": "Nguyễn Thị Mai", "MaGVCN": "NV0001291", "Account": "maint", "SiSo": 29},
+					{"LopID": "2666", "TenLop": "07E", "TenGVCN": "Nguyễn Trần Gia Hân", "MaGVCN": "NV0001089", "Account": "NV0000197", "SiSo": 29},
+					{"LopID": "2665", "TenLop": "07F", "TenGVCN": "Cao Thị Lan Hương", "MaGVCN": "NV0001187", "Account": "huongctl", "SiSo": 29},
+					{"LopID": "2664", "TenLop": "07G", "TenGVCN": "Trần Thị Toàn", "MaGVCN": "NV0001413", "Account": "toantt", "SiSo": 28},
+					{"LopID": "2663", "TenLop": "07H", "TenGVCN": "Lê Nguyễn Anh Thư", "MaGVCN": "NV0001223", "Account": "thulna", "SiSo": 29}
 				],
 				8: [
-					{"LopID": "2662", "TenLop": "08A", "TenGVCN": "Nguyễn Kim Bảo Khánh", "SiSo": 35},
-					{"LopID": "2661", "TenLop": "08B", "TenGVCN": "Đỗ Hoài Lượng", "SiSo": 35},
-					{"LopID": "2660", "TenLop": "08C", "TenGVCN": "Nguyễn Mai Khanh", "SiSo": 35},
-					{"LopID": "2659", "TenLop": "08D", "TenGVCN": "Phạm Minh Trường", "SiSo": 35},
-					{"LopID": "2658", "TenLop": "08E", "TenGVCN": "Nguyễn Thị Thắm", "SiSo": 35},
-					{"LopID": "2657", "TenLop": "08F", "TenGVCN": "Trần Thị Thanh Dung", "SiSo": 35}
+					{"LopID": "2662", "TenLop": "08A", "TenGVCN": "Nguyễn Kim Bảo Khánh", "MaGVCN": "NV0000750", "Account": "TSN", "SiSo": 29},
+					{"LopID": "2661", "TenLop": "08B", "TenGVCN": "Đỗ Hoài Lượng", "MaGVCN": "NV0000475", "Account": "yennth", "SiSo": 29},
+					{"LopID": "2660", "TenLop": "08C", "TenGVCN": "Nguyễn Mai Khanh", "MaGVCN": "NV0000979", "Account": "TTN", "SiSo": 29},
+					{"LopID": "2659", "TenLop": "08D", "TenGVCN": "Phạm Minh Trường", "MaGVCN": "NV0000278", "Account": "yennth", "SiSo": 29},
+					{"LopID": "2658", "TenLop": "08E", "TenGVCN": "Nguyễn Thị Thắm", "MaGVCN": "NV0000415", "Account": "yennth", "SiSo": 29},
+					{"LopID": "2657", "TenLop": "08F", "TenGVCN": "Trần Thị Thanh Dung", "MaGVCN": "NV0001057", "Account": "NV0000197", "SiSo": 30}
 				],
 				9: [
-					{"LopID": "2656", "TenLop": "09A", "TenGVCN": "Nguyễn Hoài Giang", "SiSo": 36},
-					{"LopID": "2655", "TenLop": "09B", "TenGVCN": "Phạm Thị Linh", "SiSo": 35},
-					{"LopID": "2654", "TenLop": "09C", "TenGVCN": "Nguyễn Thị Trí", "SiSo": 36},
-					{"LopID": "2653", "TenLop": "09D", "TenGVCN": "Trần Văn Hạnh", "SiSo": 35},
-					{"LopID": "2652", "TenLop": "09E", "TenGVCN": "Đỗ Thị Thanh Huyền", "SiSo": 36},
-					{"LopID": "2651", "TenLop": "09F", "TenGVCN": "Nguyễn Thị Phương Nam", "SiSo": 35},
-					{"LopID": "2650", "TenLop": "09G", "TenGVCN": "Lưu Gia Tuệ", "SiSo": 36},
-					{"LopID": "2649", "TenLop": "09H", "TenGVCN": "Lê Hồng Linh", "SiSo": 35}
+					{"LopID": "2656", "TenLop": "09A", "TenGVCN": "Nguyễn Hoài Giang", "MaGVCN": "NV0000524", "Account": "yennth", "SiSo": 27},
+					{"LopID": "2655", "TenLop": "09B", "TenGVCN": "Phạm Thị Linh", "MaGVCN": "NV0000037", "Account": "chientran", "SiSo": 27},
+					{"LopID": "2654", "TenLop": "09C", "TenGVCN": "Nguyễn Thị Trí", "MaGVCN": "NV0000283", "Account": "chientran", "SiSo": 29},
+					{"LopID": "2653", "TenLop": "09D", "TenGVCN": "Trần Văn Hạnh", "MaGVCN": "NV0000791", "Account": "TTT", "SiSo": 26},
+					{"LopID": "2652", "TenLop": "09E", "TenGVCN": "Đỗ Thị Thanh Huyền", "MaGVCN": "NV0000673", "Account": "TTT", "SiSo": 27},
+					{"LopID": "2651", "TenLop": "09F", "TenGVCN": "Nguyễn Thị Phương Nam", "MaGVCN": "NV0001121", "Account": "NV0000197", "SiSo": 27},
+					{"LopID": "2650", "TenLop": "09G", "TenGVCN": "Lưu Gia Tuệ", "MaGVCN": "NV0001030", "Account": "NV0000968", "SiSo": 29},
+					{"LopID": "2649", "TenLop": "09H", "TenGVCN": "Lê Hồng Linh", "MaGVCN": "NV0000787", "Account": "TXH", "SiSo": 26}
 				],
 				10: [
-					{"LopID": "2727", "TenLop": "10A", "TenGVCN": "Lê Thị Hạnh", "SiSo": 38},
-					{"LopID": "2281", "TenLop": "10B", "TenGVCN": "Hà Thị Hằng", "SiSo": 38},
-					{"LopID": "2282", "TenLop": "10C", "TenGVCN": "La Gia Nghi", "SiSo": 38},
-					{"LopID": "2283", "TenLop": "10D", "TenGVCN": "Lê Văn Hải", "SiSo": 38},
-					{"LopID": "2284", "TenLop": "10E", "TenGVCN": "Triệu Quang Vĩnh", "SiSo": 38},
-					{"LopID": "2285", "TenLop": "10F", "TenGVCN": "Huỳnh Phạm Quế Anh", "SiSo": 38}
+					{"LopID": "2727", "TenLop": "10A", "TenGVCN": "Lê Thị Hạnh", "MaGVCN": "NV0000693", "Account": "TTN", "SiSo": 29},
+					{"LopID": "2281", "TenLop": "10B", "TenGVCN": "Hà Thị Hằng", "MaGVCN": "NV0000684", "Account": "TTT", "SiSo": 33},
+					{"LopID": "2282", "TenLop": "10C", "TenGVCN": "La Gia Nghi", "MaGVCN": "NV0000479", "Account": "2018-09-14 10:09:00", "SiSo": 33},
+					{"LopID": "2283", "TenLop": "10D", "TenGVCN": "Lê Văn Hải", "MaGVCN": "NV0000408", "Account": "yennth", "SiSo": 31},
+					{"LopID": "2284", "TenLop": "10E", "TenGVCN": "Triệu Quang Vĩnh", "MaGVCN": "NV0000397", "Account": "yennth", "SiSo": 35},
+					{"LopID": "2285", "TenLop": "10F", "TenGVCN": "Huỳnh Phạm Quế Anh", "MaGVCN": "NV0000824", "Account": "TXH", "SiSo": 31}
 				],
 				11: [
-					{"LopID": "2286", "TenLop": "11A", "TenGVCN": "Nguyễn Thị Thu Mai", "SiSo": 36},
-					{"LopID": "2647", "TenLop": "11B", "TenGVCN": "Trần Thanh Tâm", "SiSo": 36},
-					{"LopID": "2289", "TenLop": "11C", "TenGVCN": "Lê Thanh Điền", "SiSo": 36},
-					{"LopID": "2290", "TenLop": "11D", "TenGVCN": "Phạm Phi Cường", "SiSo": 36},
-					{"LopID": "2291", "TenLop": "11E", "TenGVCN": "Tô Hoàng Thật", "SiSo": 36}
+					{"LopID": "2286", "TenLop": "11A", "TenGVCN": "Nguyễn Thị Thu Mai", "MaGVCN": "NV0000951", "Account": "NV0000197", "SiSo": 55},
+					{"LopID": "2647", "TenLop": "11B", "TenGVCN": "Trần Thanh Tâm", "MaGVCN": "NV0001370", "Account": "T.Anh", "SiSo": 36},
+					{"LopID": "2289", "TenLop": "11C", "TenGVCN": "Lê Thanh Điền", "MaGVCN": "NV0000021", "Account": "chientran", "SiSo": 48},
+					{"LopID": "2290", "TenLop": "11D", "TenGVCN": "Phạm Phi Cường", "MaGVCN": "NV0000347", "Account": "yennth", "SiSo": 52},
+					{"LopID": "2291", "TenLop": "11E", "TenGVCN": "Tô Hoàng Thật", "MaGVCN": "NV0000291", "Account": "yennth", "SiSo": 53}
 				],
 				12: [
-					{"LopID": "2277", "TenLop": "12A", "TenGVCN": "Nguyễn Quốc Việt", "SiSo": 35},
-					{"LopID": "2292", "TenLop": "12B", "TenGVCN": "Biện Thị Kim Thắm", "SiSo": 35},
-					{"LopID": "2641", "TenLop": "12C", "TenGVCN": "Nguyễn Thị Thảo Loan", "SiSo": 35},
-					{"LopID": "2295", "TenLop": "12D", "TenGVCN": "Nguyễn Thị Bích Hạnh", "SiSo": 35},
-					{"LopID": "2296", "TenLop": "12E", "TenGVCN": "Nguyễn Thị Bích Ngọc", "SiSo": 35}
+					{"LopID": "2277", "TenLop": "12A", "TenGVCN": "Nguyễn Quốc Việt", "MaGVCN": "NV0000292", "Account": "chientran", "SiSo": 29},
+					{"LopID": "2292", "TenLop": "12B", "TenGVCN": "Biện Thị Kim Thắm", "MaGVCN": "NV0000031", "Account": "chientran", "SiSo": 57},
+					{"LopID": "2641", "TenLop": "12C", "TenGVCN": "Nguyễn Thị Thảo Loan", "MaGVCN": "NV0000177", "Account": "chientran", "SiSo": 35},
+					{"LopID": "2295", "TenLop": "12D", "TenGVCN": "Nguyễn Thị Bích Hạnh", "MaGVCN": "NV0000903", "Account": "TXH", "SiSo": 59},
+					{"LopID": "2296", "TenLop": "12E", "TenGVCN": "Nguyễn Thị Bích Ngọc", "MaGVCN": "NV0000244", "Account": "yennth", "SiSo": 56}
 				]
 			};
 			return allRealClasses[khoiId] || allRealClasses[6];
@@ -4695,7 +5801,7 @@
 			if (!this.gvcnSchedulesByClass[cacheKey]) {
 				try {
 					if (typeof window !== 'undefined' && window.localStorage) {
-						var raw = window.localStorage.getItem('lhbs_gvcn_schedules_cache_v2');
+						var raw = window.localStorage.getItem('lhbs_gvcn_schedules_cache_v4');
 						if (raw) {
 							var parsed = JSON.parse(raw);
 							if (parsed && parsed[cacheKey]) {
@@ -4712,7 +5818,9 @@
 				var monday = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
 				var dayLabels = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6'];
 				var is06D = (String(lopId) === '2722');
-				var isWeek1 = (!curWeek || curWeek.startDate === '2026-10-05');
+				var isWeek1 = (!curWeek || curWeek.startDate === '2026-10-05' || curWeek.weekNum === 1);
+				var isWeek2 = (curWeek && (curWeek.startDate === '2026-10-12' || curWeek.weekNum === 2));
+				var isWeek3 = (curWeek && (curWeek.startDate === '2026-10-19' || curWeek.weekNum === 3));
 
 				var weekDays = [];
 				for (var i = 0; i < 5; i++) {
@@ -4750,8 +5858,31 @@
 							coMat = !is06A;
 							ghiChu = is06A ? 'Ban cán sự điều hành' : '';
 						}
+					} else if (isWeek2) {
+						if (is06D) {
+							// Tuần 2: Lớp 06D chấp hành chế tài tạm dừng tự quản 01 tuần
+							isTuQuan = false;
+							coMat = true;
+							ghiChu = 'GVCN có mặt (Chế tài)';
+						} else {
+							isTuQuan = true;
+							coMat = false;
+							ghiChu = 'Ban cán sự điều hành';
+						}
+					} else if (isWeek3) {
+						if (is06D) {
+							// Tuần 3: 06D đã hoàn thành củng cố, tự quản 3 buổi (Thứ 3, 4, 5) đạt yêu cầu
+							isTuQuan = (i === 1 || i === 2 || i === 3);
+							coMat = !isTuQuan;
+							ghiChu = isTuQuan ? 'Ban cán sự điều hành' : '';
+						} else {
+							isTuQuan = true;
+							coMat = false;
+							ghiChu = 'Ban cán sự điều hành';
+						}
 					} else {
-						// Mặc định KHÔNG chọn ngày tự quản nào để GVCN tự chủ động chọn chỗ đăng ký
+						// Tuần 4 (đang mở đăng ký) và các tuần mới: MẶC ĐỊNH KHÔNG TỰ ĐĂNG KÝ
+						// Để GVCN tự chủ động chọn các ngày đăng ký tự quản (Thứ 3 đến Thứ 6)
 						isTuQuan = false;
 						coMat = true;
 						ghiChu = '';
@@ -4794,9 +5925,10 @@
 				}
 			}
 			var dayVal = this.selectedDay;
+			var isBlocked = this.isClassBlocked(item.LopID);
 			var sched = this.getScheduleForClass(item.LopID);
 			var daySched = sched ? sched.find(function(s) { return s.key === dayVal; }) : null;
-			var isTuQuan = (dayVal !== 2) && daySched ? !!daySched.IsTuQuan : false;
+			var isTuQuan = (dayVal !== 2) && !isBlocked && daySched ? !!daySched.IsTuQuan : false;
 			return {
 				LopID: item.LopID,
 				TenLop: item.TenLop,
@@ -4805,7 +5937,7 @@
 				TieuChiList: criteria,
 				GhiChuViPham: '',
 				IsSaved: false,
-				NguoiCham: 'Quản sinh khối'
+				NguoiCham: isTuQuan ? 'Quản sinh khối' : '—'
 			};
 		},
 		loadClassesForCurrentDay() {
@@ -4831,29 +5963,47 @@
 					if (snap) {
 						var sched = that.getScheduleForClass(item.LopID);
 						var daySched = sched ? sched.find(function(s) { return s.key === dayVal; }) : null;
-						var isTuQuan = (dayVal !== 2) && (snap.IsTuQuan !== undefined ? !!snap.IsTuQuan : (daySched ? !!daySched.IsTuQuan : false));
-						if (item.TenLop === '06D' && dayVal === 5) {
-							isTuQuan = true;
+						var isBlocked = that.isClassBlocked(item.LopID);
+						var isWeek1Historical = (that.selectedWeek && that.selectedWeek.startDate === '2026-10-05');
+
+						// Quyền quyết định Tự quản hay GVCN sinh hoạt thuộc về lịch đăng ký của GVCN (daySched):
+						// Nếu GVCN không đăng ký tự quản -> Luôn là GVCN sinh hoạt, Quản sinh không chấm điểm
+						var gvcnDangKyTuQuan = (dayVal !== 2) && !isBlocked && (daySched ? !!daySched.IsTuQuan : (isWeek1Historical && snap.IsTuQuan !== undefined ? !!snap.IsTuQuan : false));
+						if (isWeek1Historical && item.TenLop === '06D' && dayVal === 5) {
+							gvcnDangKyTuQuan = true;
 						}
-						if (dayVal !== 2 && (snap.GhiChuViPham || (snap.TieuChiList && snap.TieuChiList.some(function(tc) { return tc.score === 1; })))) {
-							isTuQuan = true;
-						}
+
+						// Quản sinh chỉ ghi nhận có mặt đột xuất khi lớp có đăng ký tự quản nhưng GVCN vẫn có mặt tại lớp
+						var isGvcnPresent = gvcnDangKyTuQuan && (snap.GVCNCoMat !== undefined ? !!snap.GVCNCoMat : false);
+						var isTuQuan = gvcnDangKyTuQuan && !isGvcnPresent;
+
 						return {
 							LopID: item.LopID,
 							TenLop: item.TenLop,
 							TenGVCN: item.TenGVCN,
 							IsTuQuan: isTuQuan,
-							TieuChiList: JSON.parse(JSON.stringify(snap.TieuChiList)),
-							GhiChuViPham: snap.GhiChuViPham || '',
+							GVCNCoMat: isGvcnPresent,
+							TieuChiList: JSON.parse(JSON.stringify(snap.TieuChiList || [])),
+							GhiChuViPham: isTuQuan ? (snap.GhiChuViPham || '') : '',
 							IsSaved: true,
-							NguoiCham: snap.NguoiCham || 'Quản sinh khối'
+							NguoiCham: isTuQuan ? (snap.NguoiCham || 'Quản sinh khối') : '—'
 						};
 					}
 					return that.createFreshClassItem(item, dateStr);
 				});
 			} else if (this.dailyWorkingState[dateStr] && this.dailyWorkingState[dateStr].length > 0) {
-				// Priority 2: Nếu ngày này có working state (đang chấm dở hoặc đã thêm tiêu chí riêng trong phiên này)
-				this.currentClasses = JSON.parse(JSON.stringify(this.dailyWorkingState[dateStr]));
+				// Priority 2: Nếu ngày này có working state (đồng bộ IsTuQuan mới nhất từ lịch GVCN)
+				var stateClasses = JSON.parse(JSON.stringify(this.dailyWorkingState[dateStr]));
+				stateClasses.forEach(function(c) {
+					var sched = that.getScheduleForClass(c.LopID);
+					var daySched = sched ? sched.find(function(s) { return s.key === dayVal; }) : null;
+					var isBlocked = that.isClassBlocked(c.LopID);
+					var gvcnDangKyTuQuan = (dayVal !== 2) && !isBlocked && (daySched ? !!daySched.IsTuQuan : c.IsTuQuan);
+					var isGvcnPresent = gvcnDangKyTuQuan && !!c.GVCNCoMat;
+					c.IsTuQuan = gvcnDangKyTuQuan && !isGvcnPresent;
+					c.GVCNCoMat = isGvcnPresent;
+				});
+				this.currentClasses = stateClasses;
 			} else {
 				// Priority 3: Khởi tạo mới từ baseCriteria (3 tiêu chí chuẩn) + tiêu chí riêng của chính ngày này nếu có
 				this.currentClasses = list.map(function(item, idx) {
@@ -4877,20 +6027,29 @@
 						return String(c.LopID) === String(that.selectedGvcnClassId);
 					});
 				}
-				var target = currentSelected || list[0];
-				that.selectedGvcnClassId = target.LopID;
-				that.gvcnClassInfo.LopID = target.LopID;
-				that.gvcnClassInfo.TenLop = target.TenLop;
-				that.gvcnClassInfo.TenGVCN = target.TenGVCN;
-				that.gvcnClassInfo.SiSo = target.SiSo;
-				that.gvcnClassInfo.TrangThaiLop = that.isClassBlocked(target.LopID) ? 2 : 1;
-				that.loadGvcnScheduleForClass(target.LopID);
-				that.loadGvcnHistoryForClass(target.LopID);
+				// Nếu là GVCN thì luôn giữ lớp của GVCN, không tự động nhảy về list[0]
+				var target = currentSelected || (that.isGVCNRole ? null : list[0]);
+				if (target) {
+					that.selectedGvcnClassId = target.LopID;
+					that.gvcnClassInfo.LopID = target.LopID;
+					that.gvcnClassInfo.TenLop = target.TenLop;
+					that.gvcnClassInfo.TenGVCN = target.TenGVCN;
+					that.gvcnClassInfo.MaGVCN = target.MaGVCN || '';
+					that.gvcnClassInfo.Account = target.Account || '';
+					that.gvcnClassInfo.SiSo = target.SiSo;
+					that.gvcnClassInfo.TrangThaiLop = that.isClassBlocked(target.LopID) ? 2 : 1;
+					that.loadGvcnScheduleForClass(target.LopID);
+					that.loadGvcnHistoryForClass(target.LopID);
+				}
 			}
 		},
 		onGvcnClassChanged(newClassId) {
 			if (!newClassId) return;
 			this.selectedGvcnClassId = String(newClassId);
+			try {
+				sessionStorage.setItem('lastSelectedGvcnClassId', String(newClassId));
+				localStorage.setItem('lastSelectedGvcnClassId', String(newClassId));
+			} catch (e) {}
 			var found = this.allSchoolClasses.find(function(c) {
 				return String(c.LopID) === String(newClassId);
 			});
@@ -4898,6 +6057,8 @@
 				this.gvcnClassInfo.LopID = found.LopID;
 				this.gvcnClassInfo.TenLop = found.TenLop;
 				this.gvcnClassInfo.TenGVCN = found.TenGVCN;
+				this.gvcnClassInfo.MaGVCN = found.MaGVCN || '';
+				this.gvcnClassInfo.Account = found.Account || '';
 				this.gvcnClassInfo.SiSo = found.SiSo;
 				this.gvcnClassInfo.TrangThaiLop = this.isClassBlocked(found.LopID) ? 2 : 1;
 				if (found.Khoi && found.Khoi !== this.selectedKhoi) {
@@ -4915,6 +6076,36 @@
 				if (d.GhiChu === undefined) d.GhiChu = '';
 			});
 			this.gvcnWeekSchedule = sched;
+
+			var that = this;
+			var curWeek = this.selectedWeek;
+			var weekId = curWeek ? curWeek.id : 1;
+			var startDate = curWeek ? curWeek.startDate : '';
+			var cacheKey = weekId + '_' + lopId;
+
+			this.callApi('lms/TuQuan_DangKyLich_Get', { LopID: parseInt(lopId, 10), StartDate: startDate, TuanHocID: parseInt(weekId, 10) }, function(res) {
+				var data = res;
+				if (res && res.data) data = res.data;
+				if (Array.isArray(data) && data.length > 0) {
+					var loadedSched = JSON.parse(JSON.stringify(that.gvcnWeekSchedule));
+					data.forEach(function(row) {
+						var dayKey = row.key || row.Thu;
+						var found = loadedSched.find(function(d) { return d.key === dayKey; });
+						if (found) {
+							found.IsTuQuan = (row.IsTuQuan === true || row.IsTuQuan === 1 || row.IsTuQuan === '1');
+							found.CoMat = (row.CoMat === true || row.CoMat === 1 || row.CoMat === '1');
+							if (row.GhiChu !== undefined && row.GhiChu !== null) {
+								found.GhiChu = row.GhiChu;
+							}
+						}
+					});
+					that.gvcnWeekSchedule = loadedSched;
+					that.gvcnSchedulesByClass[cacheKey] = JSON.parse(JSON.stringify(loadedSched));
+					that.saveSchedulesToLocalStorage();
+					that.loadGvcnHistoryForClass(lopId);
+					that.evalUpdateVersion++;
+				}
+			});
 		},
 		getGvcnNoteForDay(dayKey) {
 			if (!this.gvcnWeekSchedule) return '';
@@ -4943,6 +6134,7 @@
 						TieuChiList: [],
 						KetQua: 'GVCN',
 						NoiDungViPham: '',
+						HasViolation: false,
 						NguoiCham: '—'
 					});
 					continue;
@@ -4969,16 +6161,10 @@
 					}
 				}
 
-				// Xác định trạng thái tự quản hay GVCN sinh hoạt
-				var isTuQuan = false;
-				if (classData && classData.IsTuQuan !== undefined) {
-					isTuQuan = !!classData.IsTuQuan;
-				} else if (sDay) {
-					isTuQuan = !!sDay.IsTuQuan;
-				}
-
-				// Trường hợp đặc biệt 06D vào Thứ 5 Tuần 1 (08/10/2026) vi phạm
-				if (String(lopId) === '2722' && dateStr === '2026-10-08') {
+				// Xác định trạng thái tự quản hay GVCN sinh hoạt: Lịch đăng ký của GVCN (sDay) là căn cứ quyết định
+				var isWeek1Hist = (that.selectedWeek && that.selectedWeek.startDate === '2026-10-05');
+				var isTuQuan = (dayNum !== 2) && sDay ? !!sDay.IsTuQuan : false;
+				if (isWeek1Hist && String(lopId) === '2722' && dateStr === '2026-10-08') {
 					isTuQuan = true;
 				}
 
@@ -4990,12 +6176,13 @@
 						Ngay: sDay.date,
 						IsTuQuan: false,
 						TieuChiList: isFuture ? [] : [
-							{ ten: 'Không gian lớp (Mở cửa, VS, bàn ghế)', score: 3 },
-							{ ten: 'Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)', score: 3 },
-							{ ten: 'Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)', score: 3 }
+							{ ten: 'TC1: Không gian (Sạch sẽ, bảng, sàn)', score: 3 },
+							{ ten: 'TC2: Nội dung (Đọc sách, chủ đề)', score: 3 },
+							{ ten: 'TC3: Nề nếp (Nghiêm túc, tích cực)', score: 3 }
 						],
 						KetQua: 'GVCN',
 						NoiDungViPham: '',
+						HasViolation: false,
 						NguoiCham: '—'
 					});
 				} else if (isFuture || !classData || (!classData.IsSaved && (!classData.TieuChiList || !classData.TieuChiList.length))) {
@@ -5008,23 +6195,26 @@
 						TieuChiList: [],
 						KetQua: 'CHUA_CHAM',
 						NoiDungViPham: '',
+						HasViolation: false,
 						NguoiCham: isFuture ? '—' : 'Chưa chấm'
 					});
 				} else {
 					// Quản sinh ĐÃ CHẤM: Đọc trực tiếp tiêu chí, xếp loại và ghi chú từ Quản sinh
 					var tcs = classData.TieuChiList || [];
 					var cdCount = tcs.filter(function(tc) { return tc.score === 1; }).length;
-					var totCount = tcs.filter(function(tc) { return tc.score === 3; }).length;
 					var ghiChu = classData.GhiChuViPham || '';
 
-					var ketQua = 'T';
-					if (cdCount >= 2 || (cdCount >= 1 && ghiChu)) {
+					// Chuẩn văn bản 22/10/2026: Đạt (0 CĐ), Cần cố gắng (1 CĐ), Chưa đạt (>= 2 CĐ)
+					var ketQua = 'D';
+					if (cdCount >= 2) {
 						ketQua = 'CD';
-					} else if (cdCount === 1 || totCount < 2) {
-						ketQua = 'D';
+					} else if (cdCount === 1) {
+						ketQua = 'CCG';
 					} else {
-						ketQua = 'T';
+						ketQua = 'D';
 					}
+
+					var hasViolation = (cdCount > 0);
 
 					history.push({
 						Thu: dayNum,
@@ -5034,6 +6224,7 @@
 						TieuChiList: JSON.parse(JSON.stringify(tcs)),
 						KetQua: ketQua,
 						NoiDungViPham: ghiChu,
+						HasViolation: hasViolation,
 						NguoiCham: classData.NguoiCham || 'QS. Trần Tuấn'
 					});
 				}
@@ -5041,8 +6232,8 @@
 			this.gvcnClassHistory = history;
 		},
 		openAddCriteriaDialog(targetClass) {
-			if (this.isReadOnlyDay) {
-				var msg = this.isPastDay ? 'Ngày đã qua! Dữ liệu đã khóa lưu trữ lịch sử, không thể thêm tiêu chí.' : 'Chưa đến ngày đánh giá! Không thể thêm tiêu chí cho ngày trong tương lai.';
+			if (!this.canModifyCriteria) {
+				var msg = this.isPastDay ? 'Ngày đã qua! Dữ liệu đã khóa lưu trữ lịch sử, không thể thêm tiêu chí.' : (this.isTodayQsLocked ? 'Hệ thống đã khóa sau 09:30, không thể thêm tiêu chí.' : (this.selectedDay === 2 ? 'Thứ 2 toàn trường sinh hoạt cùng GVCN, không áp dụng tiêu chí.' : 'Không thể thêm tiêu chí.'));
 				this.showNotice(msg, 'warning');
 				return;
 			}
@@ -5064,8 +6255,8 @@
 			this.criteriaDialog.shortTitle = sug.ten;
 		},
 		confirmAddCriteria() {
-			if (this.isReadOnlyDay) {
-				var msg = this.isPastDay ? 'Ngày đã qua! Dữ liệu đã khóa lưu trữ lịch sử, không thể thêm tiêu chí.' : 'Chưa đến ngày đánh giá!';
+			if (!this.canModifyCriteria) {
+				var msg = this.isPastDay ? 'Ngày đã qua! Dữ liệu đã khóa lưu trữ lịch sử, không thể thêm tiêu chí.' : (this.isTodayQsLocked ? 'Hệ thống đã khóa sau 09:30, không thể thêm tiêu chí.' : (this.selectedDay === 2 ? 'Thứ 2 toàn trường sinh hoạt cùng GVCN, không áp dụng tiêu chí.' : 'Không thể thêm tiêu chí.'));
 				this.showNotice(msg, 'warning');
 				return;
 			}
@@ -5118,8 +6309,8 @@
 			this.autoSaveDailyEvaluation(300);
 		},
 		removeCustomCriterion(tc) {
-			if (this.isReadOnlyDay) {
-				var msg = this.isPastDay ? 'Ngày đã qua! Dữ liệu đã khóa lưu trữ lịch sử, không thể xóa tiêu chí.' : 'Chưa đến ngày đánh giá!';
+			if (!this.canModifyCriteria) {
+				var msg = this.isPastDay ? 'Ngày đã qua! Dữ liệu đã khóa lưu trữ lịch sử, không thể xóa tiêu chí.' : 'Không thể xóa tiêu chí.';
 				this.showNotice(msg, 'warning');
 				return;
 			}
@@ -5156,8 +6347,8 @@
 			this.showNotice('Đã xóa tiêu chí "' + title + '" của ' + this.currentDayLabel + '!', 'info');
 		},
 		removeCriteria(classItem, tcId) {
-			if (this.isReadOnlyDay) {
-				var msg = this.isPastDay ? 'Ngày đã qua! Dữ liệu đã khóa lưu trữ lịch sử, không thể xóa tiêu chí.' : 'Chưa đến ngày đánh giá!';
+			if (!this.canModifyCriteria) {
+				var msg = this.isPastDay ? 'Ngày đã qua! Dữ liệu đã khóa lưu trữ lịch sử, không thể xóa tiêu chí.' : 'Không thể xóa tiêu chí.';
 				this.showNotice(msg, 'warning');
 				return;
 			}
@@ -5179,59 +6370,89 @@
 			var all = this.getMergedPrintCriteria();
 			return all.filter(function(tc) { return tc.isCustom; });
 		},
-		isClassBlocked(lopId) {
+		isClassBlocked(lopId, targetWeek) {
 			if (!lopId) return false;
 			var idStr = String(lopId);
+			var week = targetWeek || this.selectedWeek;
+			var weekNum = (week && week.weekNum) ? week.weekNum : null;
+			var startStr = (week && week.startDate) ? week.startDate : '';
+			var month = (week && week.month) ? week.month : 10;
+
+			// 1. Kiểm tra penaltyOverrides thủ công nếu có override theo week_lopId hoặc lopId
+			var weekKey = (startStr || ('w' + weekNum));
+			var overrideWithWeek = weekKey + '_' + idStr;
+			if (this.penaltyOverrides && this.penaltyOverrides[overrideWithWeek] !== undefined) {
+				return !!this.penaltyOverrides[overrideWithWeek];
+			}
 			if (this.penaltyOverrides && this.penaltyOverrides[idStr] !== undefined) {
 				return !!this.penaltyOverrides[idStr];
 			}
-			var found = this.weeklyBlockedClasses ? this.weeklyBlockedClasses.find(function(b) {
-				return String(b.LopID) === idStr;
-			}) : null;
-			return found ? !!found.IsApplied : false;
+
+			// 2. Quy chế nề nếp tự quản 15 phút (Mục 2a):
+			// "Tuần tự quản trước bị ghi nhận Chưa đạt (CĐ) -> Tạm dừng tự quản 01 tuần tiếp theo.
+			// GVCN bắt buộc phải quay lại có mặt trực tiếp 5/5 buổi hằng ngày lúc 7:15 để củng cố.
+			// Sau khi củng cố, nếu được đánh giá lớp đạt yêu cầu, GVCN tiếp tục đăng kí cho lớp tự quản."
+			//
+			// Áp dụng với dữ liệu thực tế mẫu:
+			// - Lớp 06D (2722) vi phạm nề nếp vào Thứ 5 (08/10) Tuần 1 Tháng 10 và bị xếp Chưa đạt (CĐ).
+			// - Do đó, lớp 06D chỉ chấp hành chế tài tạm dừng tự quản đúng 01 tuần tiếp theo tại TUẦN 2 (12/10 - 18/10/2026).
+			// - Sang TUẦN 3 (19/10 - 25/10) và TUẦN 4 (26/10 - 01/11): Chế tài 01 tuần đã kết thúc, lớp đã củng cố đạt yêu cầu,
+			//   GVCN tiếp tục đăng ký tự quản bình thường (không bị chế tài, không bị khóa đăng ký).
+			if (idStr === '2722') {
+				if (month === 10 && (weekNum === 2 || startStr === '2026-10-12')) {
+					return true;
+				}
+				return false;
+			}
+
+			return false;
 		},
 		getClassDailyResult(item, dayVal) {
 			var dVal = (dayVal !== undefined) ? dayVal : (this.activeTab === 'baocao' && this.bghViewMode === 'day' ? this.bghActiveDay : this.selectedDay);
 			if (!item) return { code: 'GVCN', text: '—', color: 'blue-grey' };
-			// Thứ Hai (ngày 2), hoặc lớp không tự quản (GVCN sinh hoạt):
-			if (dVal === 2 || !item.IsTuQuan) {
-				return { code: 'GVCN', text: '—', color: 'blue-grey', label: 'Không tính tự quản' };
+			// Lớp không tự quản (GVCN sinh hoạt / GVCN có mặt):
+			if (!item.IsTuQuan || item.GVCNCoMat) {
+				return { code: 'GVCN', text: dVal === 2 ? 'Chào cờ' : 'Không chấm', color: 'blue-grey', label: 'Không tính tự quản' };
 			}
 			if (!item.TieuChiList || !item.TieuChiList.length) {
-				return { code: 'T', text: 'Tốt', color: 'success' };
+				return { code: 'D', text: 'Đạt', color: 'success' };
 			}
+			// Tính số tiêu chí Chưa đạt (score === 1)
 			var cdCount = item.TieuChiList.filter(function(tc) { return tc.score === 1; }).length;
-			var totCount = item.TieuChiList.filter(function(tc) { return tc.score === 3; }).length;
-			var datCount = item.TieuChiList.filter(function(tc) { return tc.score === 2; }).length;
 
-			// Chưa đạt (CĐ): Có từ 2 tiêu chí CĐ trở lên vào ngày Tự quản (hoặc 1 CĐ kèm ghi chú vi phạm cụ thể)
-			if (cdCount >= 2 || (cdCount >= 1 && item.GhiChuViPham && item.GhiChuViPham.trim())) {
+			// Chuẩn văn bản 22/10/2026:
+			// Đạt (Đ): Cả 03 tiêu chí Đạt (cdCount === 0)
+			// Cần cố gắng (CCG): Có 01 tiêu chí Chưa đạt (cdCount === 1)
+			// Chưa đạt (CĐ): Có từ 02 tiêu chí Chưa đạt trở lên (cdCount >= 2)
+			if (cdCount >= 2) {
 				return { code: 'CD', text: 'Chưa đạt', color: 'error' };
 			}
-			// Tốt (T): Cả 3 tiêu chí Tốt (hoặc 2 Tốt + 1 Đạt, 0 CĐ) vào ngày Tự quản
-			if (cdCount === 0 && (totCount === item.TieuChiList.length || (totCount >= 2 && datCount === 1))) {
-				return { code: 'T', text: 'Tốt', color: 'success' };
+			if (cdCount === 1) {
+				return { code: 'CCG', text: 'Cần cố gắng', color: 'amber-darken-3' };
 			}
-			// Đạt (Đ): Có 2–3 tiêu chí từ Đạt trở lên, tối đa 1 CĐ vào ngày Tự quản
-			return { code: 'D', text: 'Đạt', color: 'primary' };
+			return { code: 'D', text: 'Đạt', color: 'success' };
 		},
 		itemHasViolation(item, dayVal) {
 			var dVal = (dayVal !== undefined) ? dayVal : (this.activeTab === 'baocao' && this.bghViewMode === 'day' ? this.bghActiveDay : this.selectedDay);
-			if (!item || dVal === 2 || !item.IsTuQuan) return false;
+			if (!item || !item.IsTuQuan || item.GVCNCoMat) return false;
 			var res = this.getClassDailyResult(item, dVal);
-			return res.code === 'CD';
+			return res.code === 'CD' || res.code === 'CCG';
 		},
 		openRewardEvidenceDialog(item) {
-			if (!item) {
-				this.openKhoiEvidenceDialog();
-				return;
-			}
-			var found = this.monthlyClassRecords.find(function(r) { return String(r.LopID) === String(item.LopID); });
-			this.evidenceDialog.classItem = found || item;
-			this.evidenceDialog.selectedClassId = (found || item).LopID;
-			this.evidenceDialog.viewMode = 'class';
-			this.evidenceDialog.selectedWeekNum = (this.selectedWeek && this.selectedWeek.weekNum) ? this.selectedWeek.weekNum : 1;
-			this.evidenceDialog.show = true;
+			if (!item) return;
+			var targetLopId = item.LopID;
+			this.highlightedClassId = targetLopId;
+			this.outerMonthlySelectedWeekNum = (this.currentEvaluationMonth === 9 ? 4 : ((this.selectedWeek && this.selectedWeek.weekNum) || 4));
+			this.$nextTick(function() {
+				var el = document.getElementById('bgh-khoi-evidence-table');
+				if (el) {
+					el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				}
+			});
+			var that = this;
+			setTimeout(function() {
+				that.highlightedClassId = null;
+			}, 3500);
 		},
 		openKhoiEvidenceDialog() {
 			if (this.monthlyClassRecords && this.monthlyClassRecords.length > 0) {
@@ -5268,7 +6489,7 @@
 			html += '<div style="text-align: center; font-size: 11pt; font-style: italic; margin-bottom: 12px;">Tháng ' + this.currentEvaluationMonth + '/2026 (' + this.monthCycleDateRange + ')</div>';
 			html += '<div style="margin-bottom: 10px; font-size: 11pt;">';
 			html += '<strong>Lớp:</strong> ' + cls.TenLop + ' (' + (cls.TenKhoi || 'Khối 6') + ') &nbsp;&nbsp;|&nbsp;&nbsp; <strong>GVCN:</strong> ' + cls.TenGVCN + ' &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Sĩ số:</strong> ' + (cls.SiSo || 36) + ' HS<br>';
-			html += '<strong>Tiến độ tháng:</strong> Đạt ' + cls.SoTuanTot + '/4 tuần Tốt &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Điểm thi đua:</strong> ' + (cls.DiemThiDua || '0 điểm') + ' &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Tiến độ:</strong> ' + (cls.XepLoaiThang || 'Đang theo dõi');
+			html += '<strong>Tiến độ tháng:</strong> Đạt ' + cls.SoTuanTot + '/4 tuần Đạt &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Điểm thi đua:</strong> ' + (cls.DiemThiDua || '0 điểm') + ' &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Tiến độ:</strong> ' + (cls.XepLoaiThang || 'Đang theo dõi');
 			html += '</div>';
 			html += '<table><thead><tr>';
 			html += '<th style="width: 55px;">Tuần</th><th style="width: 90px;">Thời gian</th><th style="width: 55px;">Thứ 2</th><th style="width: 55px;">Thứ 3</th><th style="width: 55px;">Thứ 4</th><th style="width: 55px;">Thứ 5</th><th style="width: 55px;">Thứ 6</th><th style="width: 85px;">Kết quả tuần</th><th>Ghi chú vi phạm trong tuần</th><th style="width: 75px;">Trạng thái</th>';
@@ -5278,12 +6499,12 @@
 				html += '<td class="text-center"><strong>' + w.label + '</strong></td>';
 				html += '<td class="text-center" style="font-size: 9.5pt;">' + w.dates + '/2026</td>';
 				(w.days || []).forEach(function(d) {
-					if (d.tcText === '—' && d.rankText === '—') {
+					if (d.rankCode === 'CHETAI') {
+						html += '<td class="text-center" style="color: #c62828;">—</td>';
+					} else if (d.tcText === '—' && d.rankText === '—') {
 						html += '<td class="text-center" style="color: #888;">—</td>';
-					} else if (d.rankCode === 'CHETAI') {
-						html += '<td class="text-center"><span style="color:#c62828; font-size: 8.5pt; font-weight:bold;">Chế tài</span></td>';
 					} else {
-						var color = (d.rankCode === 'T' ? '#2e7d32' : (d.rankCode === 'D' ? '#1565c0' : '#c62828'));
+						var color = (d.rankCode === 'T' || d.rankCode === 'D' ? '#16a34a' : '#c62828');
 						html += '<td class="text-center" style="font-size: 8.5pt; padding: 4px 2px;"><strong style="letter-spacing: 0.5px;">' + d.tcText + '</strong><br><strong style="color:' + color + ';">' + d.rankText + '</strong></td>';
 					}
 				});
@@ -5291,8 +6512,8 @@
 				html += '<td class="text-center"><strong>' + w.text + '</strong>' + detailStr + '</td>';
 				html += '<td style="font-size: 9.5pt;' + (w.note && w.note !== '—' ? ' color: #c62828; font-weight: bold;' : ' color: #666;') + '">' + (w.note || '—') + '</td>';
 				var danhGiaCol = '';
-				if (w.status === 'T') danhGiaCol = '<strong style="color:#2e7d32;">Đạt Tốt</strong>';
-				else if (w.status === 'D') danhGiaCol = '<span style="color:#1565c0;">Đạt</span>';
+				if (w.status === 'T' || w.status === 'D') danhGiaCol = '<strong style="color:#16a34a;">Đạt (Đ)</strong>';
+				else if (w.status === 'DT') danhGiaCol = '<span style="color:#1565c0;">Duy trì (DT)</span>';
 				else if (w.status === 'CD') danhGiaCol = '<strong style="color:#c62828;">Chưa đạt</strong>';
 				else if (w.status === 'CHETAI') danhGiaCol = '<strong style="color:#c62828;">Chế tài TQ</strong>';
 				else if (w.status === 'CURRENT') danhGiaCol = '<span style="color:#0284c7;">Đang diễn ra</span>';
@@ -5305,21 +6526,24 @@
 			html += '<strong>Tiến độ đánh giá:</strong> ';
 			if (this.currentEvaluationMonth === 9) {
 				if (cls.IsRewardEligible) {
-					html += 'Lớp hoàn thành xuất sắc 4/4 tuần Tốt trong Tháng 9/2026. Đạt danh hiệu "Lớp tự quản tốt" và cộng ' + cls.DiemThiDua + '.';
+					html += 'Lớp hoàn thành trọn vẹn 4/4 tuần Đạt trong Tháng 9/2026. Đạt danh hiệu "Lớp tự quản tốt" và cộng ' + cls.DiemThiDua + '.';
 				} else if (cls.IsEffortReward) {
-					html += 'Lớp hoàn thành tốt 3/4 tuần Tốt trong Tháng 9/2026. Tuyên dương danh hiệu "Biểu dương nỗ lực nề nếp" và cộng ' + cls.DiemThiDua + '.';
+					html += 'Lớp hoàn thành 3/4 tuần Đạt trong Tháng 9/2026. Tuyên dương danh hiệu "Biểu dương nỗ lực nề nếp" và cộng ' + cls.DiemThiDua + '.';
 				} else {
 					html += 'Lớp hoàn thành chu kỳ thi đua nề nếp Tháng 9/2026.';
 				}
+			} else if (this.currentEvaluationMonth > 10) {
+				html += 'Chu kỳ đánh giá Tháng ' + this.currentEvaluationMonth + '/2026 chưa bắt đầu. Lớp chưa phát sinh dữ liệu chấm nề nếp.';
 			} else {
+				var curWeekNum = (this.selectedWeek && this.selectedWeek.weekNum) ? this.selectedWeek.weekNum : 4;
 				if (cls.IsLeading) {
-					html += 'Lớp hoàn thành xuất sắc Tuần 1 Tốt (0 lỗi vi phạm) và đang dẫn đầu thi đua tháng 10. Tuần 2 đang theo dõi, Tuần 3-4 chưa diễn ra. Danh hiệu và điểm cộng (' + cls.DiemThiDua + ') sẽ được xét duyệt chính thức sau ngày 01/11/2026 khi kết thúc chu kỳ 4 tuần.';
+					html += 'Lớp hoàn thành ' + cls.SoTuanTot + ' tuần Đạt đã xét và đang dẫn đầu thi đua Tháng 10. Tuần ' + curWeekNum + ' đang diễn ra. Danh hiệu và điểm cộng (' + cls.DiemThiDua + ') sẽ được xét duyệt chính thức sau ngày 01/11/2026 khi kết thúc chu kỳ 4 tuần.';
 				} else if (cls.IsRewardEligible) {
-					html += 'Lớp hoàn thành xuất sắc 4/4 tuần Tốt. Đề xuất cộng ' + cls.DiemThiDua + ' và trao danh hiệu "Lớp tự quản tốt".';
+					html += 'Lớp hoàn thành 4/4 tuần Đạt. Đề xuất cộng ' + cls.DiemThiDua + ' và trao danh hiệu "Lớp tự quản tốt".';
 				} else if (cls.SoTuanCD > 0) {
-					html += 'Lớp có ' + cls.SoTuanCD + ' tuần Chưa đạt (Tuần 1 ghi nhận vi phạm nề nếp). Đã áp dụng chế tài: Tạm dừng tự quản Tuần 2 (GVCN trực tiếp sinh hoạt 5/5 ngày để chấn chỉnh nề nếp).';
+					html += 'Lớp có ' + cls.SoTuanCD + ' tuần Chưa đạt (Tuần 1 ghi nhận vi phạm nề nếp). Đã áp dụng chế tài Tạm dừng tự quản Tuần 2. Lớp đã chấn chỉnh nề nếp và tham gia tự quản tốt ở các tuần tiếp theo.';
 				} else {
-					html += 'Lớp hoàn thành nhiệm vụ nề nếp Tuần 1 Đạt. Tuần 2 đang theo dõi, Tuần 3 và 4 chưa diễn ra.';
+					html += 'Lớp hoàn thành nhiệm vụ nề nếp các tuần đã xét. Tuần ' + curWeekNum + ' đang theo dõi.';
 				}
 			}
 			html += '</div>';
@@ -5397,10 +6621,10 @@
 				html += '<td class="text-center"><strong>' + row.TenLop + '</strong></td>';
 				html += '<td>' + row.TenGVCN + '</td>';
 				(w.days || []).forEach(function(d) {
-					if (d.tcText === '—' && d.rankText === '—') {
+					if (d.rankCode === 'CHETAI') {
+						html += '<td class="text-center" style="color: #c62828;">—</td>';
+					} else if (d.tcText === '—' && d.rankText === '—') {
 						html += '<td class="text-center" style="color: #888;">—</td>';
-					} else if (d.rankCode === 'CHETAI') {
-						html += '<td class="text-center"><span style="color:#c62828; font-size: 8pt; font-weight:bold;">Chế tài</span></td>';
 					} else {
 						var color = (d.rankCode === 'T' ? '#2e7d32' : (d.rankCode === 'D' ? '#1565c0' : '#c62828'));
 						html += '<td class="text-center" style="font-size: 8pt; padding: 3px 1px;"><strong style="letter-spacing: 0.5px;">' + d.tcText + '</strong><br><strong style="color:' + color + ';">' + d.rankText + '</strong></td>';
@@ -5410,8 +6634,8 @@
 				html += '<td class="text-center"><strong>' + w.text + '</strong>' + detailStr + '</td>';
 				html += '<td style="font-size: 9pt;' + (w.note && w.note !== '—' ? ' color: #c62828; font-weight: bold;' : ' color: #666;') + '">' + (w.note || '—') + '</td>';
 				var danhGiaCol = '';
-				if (w.status === 'T') danhGiaCol = '<strong style="color:#2e7d32;">Đạt Tốt</strong>';
-				else if (w.status === 'D') danhGiaCol = '<span style="color:#1565c0;">Đạt</span>';
+				if (w.status === 'T' || w.status === 'D') danhGiaCol = '<strong style="color:#16a34a;">Đạt (Đ)</strong>';
+				else if (w.status === 'DT') danhGiaCol = '<span style="color:#1565c0;">Duy trì (DT)</span>';
 				else if (w.status === 'CD') danhGiaCol = '<strong style="color:#c62828;">Chưa đạt</strong>';
 				else if (w.status === 'CHETAI') danhGiaCol = '<strong style="color:#c62828;">Chế tài TQ</strong>';
 				else if (w.status === 'CURRENT') danhGiaCol = '<span style="color:#0284c7;">Đang diễn ra</span>';
@@ -5436,21 +6660,335 @@
 				setTimeout(function() {
 					try { printWin.focus(); printWin.print(); } catch (err) { console.error(err); }
 				}, 400);
+			} else {
+				var iframe = document.getElementById('tu-quan-print-iframe');
+				if (!iframe) {
+					iframe = document.createElement('iframe');
+					iframe.id = 'tu-quan-print-iframe';
+					iframe.style.position = 'fixed';
+					iframe.style.right = '0';
+					iframe.style.bottom = '0';
+					iframe.style.width = '0';
+					iframe.style.height = '0';
+					iframe.style.border = 'none';
+					document.body.appendChild(iframe);
+				}
+				var doc = iframe.contentWindow.document;
+				doc.open();
+				doc.write(html);
+				doc.close();
+				setTimeout(function() {
+					try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch (err) { console.error(err); }
+				}, 400);
 			}
 		},
 		printOuterKhoiEvidence() {
 			this.evidenceDialog.selectedWeekNum = this.outerMonthlySelectedWeekNum || 1;
 			this.printKhoiEvidence();
 		},
+		ensureXLSXLoaded() {
+			return new Promise(function(resolve, reject) {
+				if (window.XLSX) {
+					resolve(window.XLSX);
+					return;
+				}
+				var script = document.createElement('script');
+				script.src = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
+				script.onload = function() { resolve(window.XLSX); };
+				script.onerror = function() { reject(new Error('Không thể tải thư viện XLSX. Vui lòng kiểm tra kết nối mạng.')); };
+				document.head.appendChild(script);
+			});
+		},
+		async exportExcelReport() {
+			try {
+				var XLSX = await this.ensureXLSXLoaded();
+				if (!XLSX) {
+					this.showNotice('Không tìm thấy thư viện xuất Excel (XLSX).', 'error');
+					return;
+				}
+				if (this.bghViewMode === 'day') {
+					this.exportDailyExcel(XLSX);
+				} else {
+					this.exportMonthlyExcel(XLSX);
+				}
+			} catch (err) {
+				console.error('Lỗi xuất Excel:', err);
+				this.showNotice('Có lỗi xảy ra khi xuất file Excel: ' + (err.message || err), 'error');
+			}
+		},
+		exportDailyExcel(XLSX) {
+			var k = this.selectedKhoi || 6;
+			var dayObj = this.bghActiveDayObj || {};
+			var dayLabel = dayObj.label || ('Thứ ' + this.bghActiveDay);
+			var dayDate = dayObj.date || '';
+			var dateStr = this.getDateStringForDay(this.bghActiveDay);
+			var criteria = this.getMergedPrintCriteria();
+
+			var headerRow1 = ['TRƯỜNG TH-THCS-THPT SONG NGỮ LẠC HỒNG - BÁO CÁO NỀ NẾP 15 PHÚT TỰ QUẢN ĐẦU GIỜ'];
+			var headerRow2 = ['Khối: ' + k + ' | Ngày: ' + dayLabel + ' (' + dayDate + ') | Thời gian xuất: ' + this.formatCurrentTime()];
+			var headerRow3 = [];
+
+			var tableHeaders = ['STT', 'Lớp', 'GVCN', 'Sĩ số', 'Hình thức'];
+			criteria.forEach(function(tc, idx) {
+				tableHeaders.push((idx + 1) + '. ' + (tc.shortTitle || tc.ten));
+			});
+			tableHeaders.push('Ghi chú vi phạm / Nhận xét', 'Xếp loại', 'Người kiểm tra');
+
+			var dataRows = (this.dayClassesDetail || []).map(function(row) {
+				var tcValues = criteria.map(function(tc) {
+					if (!row.IsTuQuan) return '—';
+					var raw = row.RawItem;
+					var found = raw && raw.TieuChiList ? raw.TieuChiList.find(function(t) { return t.id === tc.id; }) : null;
+					if (!found) return '—';
+					return found.score === 1 ? 'Chưa đạt' : 'Đạt';
+				});
+
+				var xepLoai = '—';
+				if (!row.IsTuQuan) {
+					xepLoai = 'GVCN sinh hoạt';
+				} else if (row.Result && row.Result.text) {
+					xepLoai = row.Result.text;
+				}
+
+				var nguoiCham = (row.RawItem && row.RawItem.NguoiCham) || 'Quản sinh khối';
+
+				return [
+					row.STT,
+					row.TenLop,
+					row.TenGVCN,
+					row.SiSo || 36,
+					row.IsTuQuan ? 'Tự quản' : 'GVCN sinh hoạt',
+					...tcValues,
+					row.GhiChuViPham || '',
+					xepLoai,
+					nguoiCham
+				];
+			});
+
+			var aoa = [headerRow1, headerRow2, headerRow3, tableHeaders, ...dataRows];
+			var worksheet = XLSX.utils.aoa_to_sheet(aoa);
+
+			worksheet['!merges'] = [
+				{ s: { r: 0, c: 0 }, e: { r: 0, c: tableHeaders.length - 1 } },
+				{ s: { r: 1, c: 0 }, e: { r: 1, c: tableHeaders.length - 1 } }
+			];
+
+			var colWidths = [
+				{ wch: 6 },
+				{ wch: 10 },
+				{ wch: 22 },
+				{ wch: 8 },
+				{ wch: 16 }
+			];
+			criteria.forEach(function() {
+				colWidths.push({ wch: 22 });
+			});
+			colWidths.push(
+				{ wch: 35 },
+				{ wch: 14 },
+				{ wch: 18 }
+			);
+			worksheet['!cols'] = colWidths;
+
+			var workbook = XLSX.utils.book_new();
+			var safeDate = dateStr.replace(/-/g, '');
+			XLSX.utils.book_append_sheet(workbook, worksheet, ('Ngay_' + dayLabel.replace(/\s+/g, '')).slice(0, 31));
+
+			var fileName = 'Bao_Cao_Ne_Nep_Khoi_' + k + '_' + dayLabel.replace(/\s+/g, '_') + '_' + safeDate + '.xlsx';
+			XLSX.writeFile(workbook, fileName);
+			this.showNotice('Xuất file Excel báo cáo ngày thành công: ' + fileName, 'success');
+		},
+		buildWeekDetailWorksheet(XLSX, k, m, weekNum) {
+			var weekDays = this.getKhoiDetailWeekDays(weekNum);
+			var curWeekObj = (this.monthEvaluationWeeks || []).find(function(x) { return x.weekNum === weekNum; });
+			var weekDates = curWeekObj ? curWeekObj.dates : '';
+			var weekLabelWithDates = 'TUẦN ' + weekNum + (weekDates ? ' (' + weekDates + ')' : '');
+
+			var hRow1 = ['CHI TIẾT ĐỐI SOÁT NỀ NẾP CÁC LỚP TOÀN KHỐI ' + k + ' — ' + weekLabelWithDates + ' (THÁNG ' + m + '/2026)'];
+			var hRow2 = ['Thời gian xuất: ' + this.formatCurrentTime()];
+			var hRow3 = [];
+
+			var headers = ['STT', 'Lớp', 'GVCN'];
+			weekDays.forEach(function(d) {
+				headers.push(d.label + ' (' + d.date + ')');
+			});
+			headers.push('Kết quả tuần', 'Ghi chú vi phạm trong tuần', 'Trạng thái');
+
+			var rows = (this.monthlyClassRecords || []).map(function(row, idx) {
+				var w = (row.weeks && row.weeks.find(function(x) { return x.weekNum === weekNum; })) || {};
+				var dayTexts = (w.days || []).map(function(d) {
+					if (!d || (d.tcText === '—' && d.rankText === '—')) return '—';
+					if (d.rankCode === 'CHETAI') return 'Chế tài';
+					return (d.tcText ? d.tcText + ' - ' : '') + (d.rankText || '—');
+				});
+				while (dayTexts.length < 5) dayTexts.push('—');
+
+				var stText = '';
+				if (w.status === 'T' || w.status === 'D') stText = 'Đạt (Đ)';
+				else if (w.status === 'DT') stText = 'Duy trì (DT)';
+				else if (w.status === 'CD') stText = 'Chưa đạt';
+				else if (w.status === 'CHETAI') stText = 'Chế tài TQ';
+				else if (w.status === 'CURRENT') stText = 'Đang diễn ra';
+				else stText = 'Chưa tới';
+
+				return [
+					idx + 1,
+					row.TenLop,
+					row.TenGVCN,
+					...dayTexts,
+					w.text || '—',
+					w.note && w.note !== '—' ? w.note : '',
+					stText
+				];
+			});
+
+			var aoa = [hRow1, hRow2, hRow3, headers, ...rows];
+			var ws = XLSX.utils.aoa_to_sheet(aoa);
+			ws['!merges'] = [
+				{ s: { r: 0, c: 0 }, e: { r: 0, c: headers.length - 1 } },
+				{ s: { r: 1, c: 0 }, e: { r: 1, c: headers.length - 1 } }
+			];
+			var colWidths = [
+				{ wch: 6 },
+				{ wch: 10 },
+				{ wch: 22 }
+			];
+			weekDays.forEach(function() { colWidths.push({ wch: 18 }); });
+			colWidths.push(
+				{ wch: 18 },
+				{ wch: 38 },
+				{ wch: 16 }
+			);
+			ws['!cols'] = colWidths;
+
+			var tabDateStr = weekDates ? (' (' + weekDates.replace(/\//g, '.') + ')') : '';
+			var sheetTabName = ('Tuần ' + weekNum + tabDateStr).slice(0, 31);
+
+			return { ws: ws, tabName: sheetTabName };
+		},
+		exportMonthlyExcel(XLSX) {
+			var k = this.selectedKhoi || 6;
+			var m = this.currentEvaluationMonth;
+			var workbook = XLSX.utils.book_new();
+
+			// SHEET 1: TỔNG HỢP THI ĐUA THÁNG
+			var h1Row1 = ['TRƯỜNG TH-THCS-THPT SONG NGỮ LẠC HỒNG - BẢNG TỔNG HỢP THI ĐUA 15 PHÚT TỰ QUẢN'];
+			var h1Row2 = ['Khối: ' + k + ' | Chu kỳ: Tháng ' + m + '/2026 (' + this.monthCycleDateRange + ') | Thời gian xuất: ' + this.formatCurrentTime()];
+			var h1Row3 = [];
+
+			var w1Dates = (this.monthEvaluationWeeks && this.monthEvaluationWeeks[0]) ? (' (' + this.monthEvaluationWeeks[0].dates + ')') : '';
+			var w2Dates = (this.monthEvaluationWeeks && this.monthEvaluationWeeks[1]) ? (' (' + this.monthEvaluationWeeks[1].dates + ')') : '';
+			var w3Dates = (this.monthEvaluationWeeks && this.monthEvaluationWeeks[2]) ? (' (' + this.monthEvaluationWeeks[2].dates + ')') : '';
+			var w4Dates = (this.monthEvaluationWeeks && this.monthEvaluationWeeks[3]) ? (' (' + this.monthEvaluationWeeks[3].dates + ')') : '';
+
+			var headersSheet1 = [
+				'STT', 'Lớp', 'GVCN', 'Sĩ số',
+				'Tuần 1' + w1Dates,
+				'Tuần 2' + w2Dates,
+				'Tuần 3' + w3Dates,
+				'Tuần 4' + w4Dates,
+				'Số tuần Đạt (Đ)', 'Số tuần Duy trì (DT)', 'Số tuần Chưa đạt (CĐ)',
+				'Điểm thi đua', 'Xếp loại tháng', 'Khen thưởng / Ghi chú'
+			];
+
+			var rowsSheet1 = (this.monthlyClassRecords || []).map(function(cls, idx) {
+				var wList = cls.weeks || [];
+				var w1 = wList[0] || {};
+				var w2 = wList[1] || {};
+				var w3 = wList[2] || {};
+				var w4 = wList[3] || {};
+
+				var note = '';
+				if (cls.IsRewardEligible) note = 'Khen thưởng tự quản Đạt chuẩn';
+				else if (cls.IsEffortReward) note = 'Biểu dương nỗ lực';
+				else if (cls.IsLeading) note = 'Dẫn đầu tiến độ';
+				else if (cls.SoTuanChuaDat >= 2) note = 'Tạm dừng tự quản (2 tuần CĐ)';
+
+				return [
+					idx + 1,
+					cls.TenLop,
+					cls.TenGVCN,
+					cls.SiSo || 36,
+					w1.text || '—',
+					w2.text || '—',
+					w3.text || '—',
+					w4.text || '—',
+					cls.SoTuanTot || 0,
+					cls.SoTuanDat || 0,
+					cls.SoTuanChuaDat || 0,
+					cls.DiemThiDua || '0 điểm',
+					cls.XepLoaiThang || 'Đang theo dõi',
+					note
+				];
+			});
+
+			var aoaSheet1 = [h1Row1, h1Row2, h1Row3, headersSheet1, ...rowsSheet1];
+			var ws1 = XLSX.utils.aoa_to_sheet(aoaSheet1);
+			ws1['!merges'] = [
+				{ s: { r: 0, c: 0 }, e: { r: 0, c: headersSheet1.length - 1 } },
+				{ s: { r: 1, c: 0 }, e: { r: 1, c: headersSheet1.length - 1 } }
+			];
+			ws1['!cols'] = [
+				{ wch: 6 },
+				{ wch: 10 },
+				{ wch: 22 },
+				{ wch: 8 },
+				{ wch: 20 },
+				{ wch: 20 },
+				{ wch: 20 },
+				{ wch: 20 },
+				{ wch: 12 },
+				{ wch: 12 },
+				{ wch: 16 },
+				{ wch: 14 },
+				{ wch: 18 },
+				{ wch: 30 }
+			];
+			XLSX.utils.book_append_sheet(workbook, ws1, ('Tổng hợp Tháng ' + m).slice(0, 31));
+
+			var fileName = 'Bao_Cao_Thi_Dua_Khoi_' + k + '_Thang_' + m + '.xlsx';
+			XLSX.writeFile(workbook, fileName);
+			this.showNotice('Xuất file Excel tổng hợp thi đua tháng thành công: ' + fileName, 'success');
+		},
+		async exportKhoiWeekExcel() {
+			try {
+				var XLSX = await this.ensureXLSXLoaded();
+				if (!XLSX) {
+					this.showNotice('Không tìm thấy thư viện xuất Excel (XLSX).', 'error');
+					return;
+				}
+				var k = this.selectedKhoi || 6;
+				var m = this.currentEvaluationMonth;
+				var weekNum = this.outerMonthlySelectedWeekNum || 1;
+				var workbook = XLSX.utils.book_new();
+
+				var weekSheetData = this.buildWeekDetailWorksheet(XLSX, k, m, weekNum);
+				XLSX.utils.book_append_sheet(workbook, weekSheetData.ws, weekSheetData.tabName);
+
+				var curWeekObj = (this.monthEvaluationWeeks || []).find(function(x) { return x.weekNum === weekNum; });
+				var weekDates = curWeekObj ? curWeekObj.dates : '';
+				var safeDates = weekDates ? ('_' + weekDates.replace(/\s+/g, '').replace(/\//g, '-')) : '';
+
+				var fileName = 'Chi_Tiet_Ne_Nep_Khoi_' + k + '_Tuan_' + weekNum + safeDates + '_Thang_' + m + '.xlsx';
+				XLSX.writeFile(workbook, fileName);
+				this.showNotice('Xuất file Excel Tuần ' + weekNum + ' thành công: ' + fileName, 'success');
+			} catch (err) {
+				console.error('Lỗi xuất Excel tuần:', err);
+				this.showNotice('Có lỗi xảy ra khi xuất file Excel: ' + (err.message || err), 'error');
+			}
+		},
 		getKhoiDetailWeekDays(weekNum) {
 			var w = weekNum || 1;
 			var m = this.currentEvaluationMonth;
-			var startDates = (m === 9) ? {
-				1: '2026-09-07', 2: '2026-09-14', 3: '2026-09-21', 4: '2026-09-28'
-			} : {
-				1: '2026-10-05', 2: '2026-10-12', 3: '2026-10-19', 4: '2026-10-26'
-			};
-			var startStr = startDates[w] || (m === 9 ? '2026-09-07' : '2026-10-05');
+			var startDates;
+			if (m === 9) {
+				startDates = { 1: '2026-09-07', 2: '2026-09-14', 3: '2026-09-21', 4: '2026-09-28' };
+			} else if (m === 11) {
+				startDates = { 1: '2026-11-02', 2: '2026-11-09', 3: '2026-11-16', 4: '2026-11-23' };
+			} else {
+				startDates = { 1: '2026-10-05', 2: '2026-10-12', 3: '2026-10-19', 4: '2026-10-26' };
+			}
+			var startStr = startDates[w] || (m === 9 ? '2026-09-07' : (m === 11 ? '2026-11-02' : '2026-10-05'));
 			var p = startStr.split('-');
 			var d = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
 			var labels = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6'];
@@ -5535,108 +7073,232 @@
 			return this.getClassDailyResult(item).text;
 		},
 		formatCriterionText(val) {
-			if (val === 3) return 'Tốt';
-			if (val === 2) return 'Đạt';
-			if (val === 1) return 'Cần cố gắng';
+			if (val === 2 || val === 3) return 'Đạt';
+			if (val === 1) return 'Chưa đạt';
 			return '—';
 		},
+		getWeeklyMatrixCell(row, dVal) {
+			if (row.IsBlocked) {
+				return { isBlocked: true, tc1: '', tc2: '', tc3: '', kq: '' };
+			}
+			// 1. Kiểm tra đăng ký lịch cuối cùng của GVCN cho ngày dVal
+			var sched = this.getScheduleForClass(row.LopID);
+			var daySched = sched ? sched.find(function(s) { return s.key === dVal; }) : null;
+			var isRegisteredTuQuan = !!(daySched && daySched.IsTuQuan);
+
+			// 2. Nếu ngày này lớp KHÔNG đăng ký tự quản (hoặc GVCN chọn có mặt sinh hoạt trực tiếp)
+			// => GẠCH CHÉO (/) cả 4 ô để Sao đỏ biết hôm đó GVCN có mặt, không đi chấm
+			if (!isRegisteredTuQuan) {
+				return {
+					isNotRegistered: true,
+					isTuQuan: false,
+					tc1: '/',
+					tc2: '/',
+					tc3: '/',
+					kq: '/'
+				};
+			}
+
+			// 3. Nếu ngày này GVCN CÓ đăng ký tự quản:
+			// A. Ở chế độ "Phiếu trắng cho Sao đỏ đi chấm" (weekly):
+			//    => Để ô trống hoàn toàn để Sao đỏ đến lớp ghi Đ / CĐ vào
+			if (this.printDialog.mode === 'weekly') {
+				return {
+					isBlank: true,
+					isTuQuan: true,
+					tc1: '',
+					tc2: '',
+					tc3: '',
+					kq: ''
+				};
+			}
+
+			// B. Ở chế độ "kèm kết quả đã chấm" (weekly_result):
+			var dayClasses = this.getClassesForPrintDay(dVal);
+			var found = dayClasses.find(function(c) { return String(c.LopID) === String(row.LopID); });
+			var hasEvaluated = found && (found.IsSaved || (found.TieuChiList && found.TieuChiList.some(function(tc) { return tc.score === 1; })) || (found.GhiChuViPham && found.GhiChuViPham.trim()));
+
+			if (found && hasEvaluated) {
+				var res = this.getClassDailyResult(found, dVal);
+				var tcs = found.TieuChiList || [];
+				var s1 = tcs[0] ? tcs[0].score : 2;
+				var s2 = tcs[1] ? tcs[1].score : 2;
+				var s3 = tcs[2] ? tcs[2].score : 2;
+				return {
+					hasEvaluated: true,
+					isTuQuan: true,
+					tc1: s1 === 1 ? 'CĐ' : 'Đ',
+					tc2: s2 === 1 ? 'CĐ' : 'Đ',
+					tc3: s3 === 1 ? 'CĐ' : 'Đ',
+					kq: res.code
+				};
+			}
+
+			// Ngày tự quản nhưng chưa đến lượt chấm / chưa chấm: để ô trống
+			return {
+				isPending: true,
+				isTuQuan: true,
+				tc1: '',
+				tc2: '',
+				tc3: '',
+				kq: ''
+			};
+		},
+		getClassDayPrintData(lopId, dVal) {
+			var isBlocked = this.isClassBlocked(lopId);
+			var dayClasses = this.getClassesForPrintDay(dVal);
+			var found = dayClasses.find(function(c) { return String(c.LopID) === String(lopId); });
+			if (isBlocked) {
+				return { tc1: '—', tc2: '—', tc3: '—', kq: 'GV', isBlocked: true };
+			}
+			if (found && found.GVCNCoMat) {
+				return { tc1: '—', tc2: '—', tc3: '—', kq: 'GV', isGvcnPresent: true };
+			}
+			// Nếu lớp có đánh giá thực tế đã lưu/đã chấm:
+			var hasEvaluated = found && (found.IsSaved || (found.TieuChiList && found.TieuChiList.some(function(tc) { return tc.score === 1; })) || (found.GhiChuViPham && found.GhiChuViPham.trim()));
+			if (found && found.IsTuQuan && hasEvaluated) {
+				var res = this.getClassDailyResult(found, dVal);
+				var tcs = found.TieuChiList || [];
+				var s1 = tcs[0] ? tcs[0].score : 2;
+				var s2 = tcs[1] ? tcs[1].score : 2;
+				var s3 = tcs[2] ? tcs[2].score : 2;
+				return {
+					tc1: s1 === 1 ? 'CĐ' : 'Đ',
+					tc2: s2 === 1 ? 'CĐ' : 'Đ',
+					tc3: s3 === 1 ? 'CĐ' : 'Đ',
+					kq: res.code,
+					isTuQuan: true
+				};
+			}
+			// Nếu chưa đánh giá hoặc ngày chưa đến: để '—' chứ tuyệt đối KHÔNG gạch chéo '/' làm hiểu nhầm chưa chấm đã gạch
+			return { tc1: '—', tc2: '—', tc3: '—', kq: '—', isPending: true };
+		},
+		getWeeklyViolationsForPrint() {
+			var that = this;
+			var list = [];
+			var idx = 1;
+			[3, 4, 5, 6].forEach(function(dVal) {
+				var dayClasses = that.getClassesForPrintDay(dVal);
+				var dLabel = (dVal === 3 ? 'Thứ 3' : (dVal === 4 ? 'Thứ 4' : (dVal === 5 ? 'Thứ 5' : 'Thứ 6')));
+				var dateStr = that.getDateStringForDay(dVal);
+				var dateDM = dateStr ? (dateStr.split('-')[2] + '/' + dateStr.split('-')[1]) : '';
+
+				dayClasses.forEach(function(cls) {
+					if (cls.IsTuQuan && !cls.GVCNCoMat && !that.isClassBlocked(cls.LopID)) {
+						var hasCd = false;
+						if (cls.TieuChiList) {
+							cls.TieuChiList.forEach(function(tc, tcIdx) {
+								if (tc.score === 1) {
+									hasCd = true;
+									list.push({
+										stt: idx++,
+										thuNgay: dLabel + ' (' + dateDM + ')',
+										lop: cls.TenLop,
+										tieuChiCD: 'TC' + (tcIdx + 1),
+										moTa: cls.GhiChuViPham || ('Chưa đạt ' + tc.ten),
+										nguoiGhi: cls.NguoiCham || (that.currentUserName ? ('QS. ' + that.currentUserName) : 'Quản sinh khối'),
+										baoGVCN: 'Đã báo qua LMS (09:30)'
+									});
+								}
+							});
+						}
+						// Nếu có ghi chú vi phạm cụ thể nhưng không chọn riêng tiêu chí nào
+						if (!hasCd && cls.GhiChuViPham && cls.GhiChuViPham.trim()) {
+							list.push({
+								stt: idx++,
+								thuNgay: dLabel + ' (' + dateDM + ')',
+								lop: cls.TenLop,
+								tieuChiCD: 'Nhắc nhở',
+								moTa: cls.GhiChuViPham.trim(),
+								nguoiGhi: cls.NguoiCham || (that.currentUserName ? ('QS. ' + that.currentUserName) : 'Quản sinh khối'),
+								baoGVCN: 'Đã báo qua LMS (09:30)'
+							});
+						}
+					}
+				});
+			});
+			return list;
+		},
 		markAllGood() {
-			if (this.isReadOnlyDay) {
-				var msg = this.isPastDay ? 'Ngày đã qua! Dữ liệu đã được khóa lưu trữ lịch sử, không thể chỉnh sửa.' : 'Chưa đến ngày đánh giá! Không thể chấm điểm cho ngày trong tương lai.';
-				this.showNotice(msg, 'warning');
-				return;
+			var hasExistingViolation = this.currentClasses.some(function(c) {
+				return (c.TieuChiList && c.TieuChiList.some(function(tc) { return tc.score === 1; })) || (c.GhiChuViPham && c.GhiChuViPham.trim());
+			});
+			if (hasExistingViolation) {
+				if (!confirm('Khối đang có lớp ghi nhận Chưa đạt hoặc có Ghi chú vi phạm. Bạn có chắc muốn đặt lại TOÀN BỘ các lớp thành ĐẠT không?')) {
+					return;
+				}
 			}
 			this.currentClasses.forEach(function(item) {
 				if (item.TieuChiList) {
 					item.TieuChiList.forEach(function(tc) {
-						tc.score = 3;
+						tc.score = 2; // Đạt
 					});
 				}
 				item.GhiChuViPham = '';
 			});
 			this.evalUpdateVersion++;
-			this.showNotice('Đã đặt tất cả tiêu chí của các lớp thành TỐT!', 'info');
+			this.showNotice('Đã đánh giá tất cả tiêu chí của các lớp thành ĐẠT!', 'info');
 			this.autoSaveDailyEvaluation(150);
 		},
 		saveDailyEvaluation() {
-			if (this.isReadOnlyDay) {
-				var msg = this.isPastDay ? 'Ngày đã qua! Dữ liệu đã được khóa lưu trữ lịch sử, không thể lưu đè.' : 'Chưa đến ngày đánh giá! Không thể lưu kết quả cho ngày trong tương lai.';
-				this.showNotice(msg, 'warning');
-				return;
-			}
-			this.isSaving = true;
-			this.qsAutoSaveStatus = 'saving';
-			var that = this;
-			var dayVal = this.selectedDay;
-			var dateStr = this.getDateStringForDay(dayVal);
-
-			setTimeout(function() {
-				that.isSaving = false;
-				// Lưu snapshot cho toàn bộ các lớp vào ngày hiện tại
-				that.currentClasses.forEach(function(c) {
-					c.IsSaved = true;
-					var snapshotKey = dateStr + '_' + c.LopID;
-					that.dailySnapshots[snapshotKey] = {
-						TieuChiList: JSON.parse(JSON.stringify(c.TieuChiList)),
-						GhiChuViPham: c.GhiChuViPham,
-						IsTuQuan: c.IsTuQuan,
-						IsSaved: true,
-						NguoiCham: c.NguoiCham || 'Quản sinh khối'
-					};
-				});
-				if (that.dailyWorkingState[dateStr]) {
-					delete that.dailyWorkingState[dateStr];
-				}
-				that.dailySnapshots = Object.assign({}, that.dailySnapshots);
-				that.evalUpdateVersion++;
-				that.saveSnapshotsToLocalStorage();
-				that.qsLastSavedTime = that.formatCurrentTime();
-				that.qsAutoSaveStatus = 'saved';
-				if (that.selectedGvcnClassId) {
-					that.loadGvcnHistoryForClass(that.selectedGvcnClassId);
-				}
-				that.showNotice('Đã lưu kết quả đánh giá ngày ' + that.currentDayLabel + ' thành công!', 'success');
-			}, 300);
+			this.autoSaveDailyEvaluation(0);
+			this.showNotice('Đã lưu kết quả đánh giá ngày ' + this.currentDayLabel + ' thành công!', 'success');
 		},
 		toggleGvcnDay(day) {
-			if (day.key === 2) {
-				this.showNotice('Thứ Hai là ngày sinh hoạt đầu tuần cùng GVCN, quy định không áp dụng tự quản!', 'info');
-				return;
-			}
-			if (this.isPastSelectedWeek || this.isSpecificDayInPast(day.key)) {
-				this.showNotice('Tuần này hoặc ngày này đã qua! Dữ liệu đã được khóa lưu trữ lịch sử, không thể chỉnh sửa.', 'warning');
-				return;
-			}
-			if (this.isSpecificDayToday(day.key) && this.isPastGvcnCutoffTime()) {
-				this.showNotice('Đã quá 06:00 sáng hôm nay (' + day.label + ')! Không thể đăng ký hoặc thay đổi lịch theo quy định của nhà trường.', 'warning');
-				return;
-			}
-			if (this.gvcnClassInfo.TrangThaiLop === 2 || this.isClassBlocked(this.selectedGvcnClassId)) {
-				this.showNotice('Lớp ' + this.gvcnClassInfo.TenLop + ' đang chấp hành chế tài tạm dừng tự quản, bắt buộc GVCN sinh hoạt và quản lý nề nếp 5/5 buổi!', 'warning');
-				return;
-			}
 			day.IsTuQuan = !day.IsTuQuan;
 			day.CoMat = !day.IsTuQuan;
-			this.autoSaveGvcnSchedule();
+
+			// 1. Cập nhật ngay tức thì vào cache tuần
+			var weekId = this.selectedWeek ? this.selectedWeek.id : 1;
+			var lopId = this.selectedGvcnClassId;
+			var cacheKey = weekId + '_' + lopId;
+			this.gvcnSchedulesByClass[cacheKey] = JSON.parse(JSON.stringify(this.gvcnWeekSchedule));
+			this.saveSchedulesToLocalStorage();
+
+			// 2. Cập nhật snapshot ngày & working state của Quản sinh cho ngày này
+			var targetDateStr = this.getDateStringForDay(day.key);
+			var snapKey = targetDateStr + '_' + lopId;
+			if (this.dailySnapshots[snapKey]) {
+				this.dailySnapshots[snapKey].IsTuQuan = day.IsTuQuan;
+				this.dailySnapshots[snapKey].GVCNCoMat = false;
+				if (!day.IsTuQuan) {
+					this.dailySnapshots[snapKey].NguoiCham = '—';
+				} else if (!this.dailySnapshots[snapKey].NguoiCham || this.dailySnapshots[snapKey].NguoiCham === '—') {
+					this.dailySnapshots[snapKey].NguoiCham = this.currentUserName ? ('QS. ' + this.currentUserName) : 'Quản sinh khối';
+				}
+			}
+			if (this.dailyWorkingState[targetDateStr]) {
+				var dwClass = this.dailyWorkingState[targetDateStr].find(function(c) { return String(c.LopID) === String(lopId); });
+				if (dwClass) {
+					dwClass.IsTuQuan = day.IsTuQuan;
+					dwClass.GVCNCoMat = false;
+					if (!day.IsTuQuan) dwClass.NguoiCham = '—';
+				}
+			}
+
+			// 3. Nếu đang mở đúng ngày này trong currentClasses thì đồng bộ ngay
+			if (this.selectedDay === day.key) {
+				var curCls = this.currentClasses.find(function(c) { return String(c.LopID) === String(lopId); });
+				if (curCls) {
+					curCls.IsTuQuan = day.IsTuQuan;
+					curCls.GVCNCoMat = false;
+					if (!day.IsTuQuan) curCls.NguoiCham = '—';
+					this.currentClasses = [...this.currentClasses];
+				}
+			}
+
+			this.autoSaveGvcnSchedule(0);
 			this.loadGvcnHistoryForClass(this.selectedGvcnClassId);
 			this.showNotice('Đã tự động lưu ' + day.label + ' (' + (day.IsTuQuan ? 'Lớp tự quản' : 'GVCN sinh hoạt') + ')', 'success');
 		},
 		saveGvcnSchedule() {
-			if (this.gvcnClassInfo && this.gvcnClassInfo.TrangThaiLop === 2 && this.gvcnTuQuanCount > 0) {
-				this.showNotice('Không thể lưu! Lớp đang bị tạm dừng tự quản (bị xếp loại CĐ tuần trước), bắt buộc GVCN phải có mặt đủ 5/5 buổi trực tiếp.', 'error');
-				return;
-			}
-			if (this.gvcnTuQuanCount < 2) {
-				this.showNotice('Chưa đủ chỉ tiêu! Quy định mới (08/10) yêu cầu GVCN đăng kí cho lớp tự quản tối thiểu 02 buổi/tuần (từ Thứ 3 đến Thứ 6). Vui lòng chọn thêm trước khi lưu!', 'error');
-				return;
-			}
 			this.isSaving = true;
 			var that = this;
+			that.autoSaveGvcnSchedule(0);
 			setTimeout(function() {
-				that.autoSaveGvcnSchedule();
 				that.isSaving = false;
 				that.showNotice('Đã lưu thành công đăng kí tự quản tuần này cho lớp ' + that.gvcnClassInfo.TenLop + ' (' + that.gvcnTuQuanCount + ' ngày tự quản)!', 'success');
-			}, 200);
+			}, 300);
 		},
 		exportDailyReport() {
 			var isBgh = (this.activeTab === 'baocao');
@@ -5654,7 +7316,7 @@
 			} else {
 				text += '- Tổng số lớp tự quản hôm nay: ' + tuQuanCount + '/' + classes.length + ' lớp.\n';
 				if (violations.length === 0) {
-					text += '- Kết quả: 100% các lớp tự quản duy trì nền nếp Tốt/Đạt sáng nay, không có lớp nào bị Chưa đạt.\n';
+					text += '- Kết quả: 100% các lớp tự quản duy trì nền nếp Đạt sáng nay, không có lớp nào Chưa đạt.\n';
 				} else {
 					text += '- Lớp tự quản Chưa đạt (có ≥ 2 tiêu chí CĐ):\n';
 					violations.forEach(function(v) {
@@ -5687,8 +7349,8 @@
 			var sched = that.getScheduleForClass(cls.LopID);
 			var daysResult = [];
 			var violations = [];
-			var totCount = 0;
 			var datCount = 0;
+			var ccgCount = 0;
 			var cdCount = 0;
 			var tuQuanCount = 0;
 
@@ -5738,21 +7400,25 @@
 				} else if (daySched) {
 					isTuQuan = !!daySched.IsTuQuan;
 				}
-				// Nếu Quản sinh đã chấm điểm hoặc có ghi chú vi phạm thì xác nhận là tự quản
-				if (classData && classData.TieuChiList && (classData.TieuChiList.some(function(tc) { return tc.score === 1; }) || classData.GhiChuViPham)) {
+				// Nếu Quản sinh đã chấm điểm hoặc có ghi chú vi phạm thì xác nhận là tự quản (trừ khi GVCN có mặt)
+				if (classData && !classData.GVCNCoMat && classData.TieuChiList && (classData.TieuChiList.some(function(tc) { return tc.score === 1; }) || classData.GhiChuViPham)) {
 					isTuQuan = true;
+				}
+				if (classData && classData.GVCNCoMat) {
+					isTuQuan = false;
 				}
 
 				if (!isTuQuan || that.isSpecificDayInFuture(dayVal)) {
+					var isGvcnPresent = !!(classData && classData.GVCNCoMat);
 					daysResult.push({
 						dayVal: dayVal,
 						dayLabel: d.label,
 						date: d.date,
 						isTuQuan: false,
-						statusText: '—',
-						code: '—',
-						color: '#757575',
-						bg: '#f5f5f5',
+						statusText: isGvcnPresent ? 'GV (Có mặt)' : '—',
+						code: isGvcnPresent ? 'GV' : '—',
+						color: isGvcnPresent ? '#546e7a' : '#757575',
+						bg: isGvcnPresent ? '#eceff1' : '#f5f5f5',
 						ghiChu: '',
 						gvcnCoMat: true
 					});
@@ -5778,23 +7444,21 @@
 					return;
 				}
 
-				// Tính kết quả theo tiêu chí Quản sinh đã chấm
+				// Tính kết quả theo tiêu chí Quản sinh đã chấm (Chuẩn văn bản 22/10/2026)
 				var tcs = classData.TieuChiList || [];
 				var cdInDay = tcs.filter(function(tc) { return tc.score === 1; }).length;
-				var totInDay = tcs.filter(function(tc) { return tc.score === 3; }).length;
 				var ghiChu = classData.GhiChuViPham || '';
 
-				var resCode = 'T';
-				var resText = 'Tốt';
-				var resColor = '#2e7d32';
-				var resBg = '#e8f5e9';
+				var resCode = 'D';
+				var resText = 'Đạt';
+				var resColor = '#16a34a';
+				var resBg = '#ecfdf5';
 
-				var datInDay = tcs.filter(function(tc) { return tc.score === 2; }).length;
-				var isDayCd = cdInDay >= 2 || (cdInDay >= 1 && ghiChu && ghiChu.trim());
-				var isDayTot = (cdInDay === 0) && (totInDay === tcs.length || (totInDay >= 2 && datInDay === 1));
+				var isDayCd = (cdInDay >= 2);
+				var isDayCcg = (cdInDay === 1);
 
 				if (isDayCd) {
-					// Tiêu chí Chưa đạt
+					// Tiêu chí Chưa đạt (có >= 2 tiêu chí CĐ)
 					resCode = 'CD';
 					resText = 'Chưa đạt';
 					resColor = '#c62828';
@@ -5809,26 +7473,32 @@
 						viPhamList: violatedItems,
 						ghiChu: ghiChu || 'Không đạt yêu cầu tự quản'
 					});
-				} else if (!isDayTot) {
+				} else if (isDayCcg) {
+					// Cần cố gắng (có 1 tiêu chí CĐ)
+					resCode = 'CCG';
+					resText = 'Cần cố gắng';
+					resColor = '#d97706';
+					resBg = '#fffbeb';
+					ccgCount++;
+
+					var ccgItems = tcs.filter(function(tc) { return tc.score === 1; }).map(function(tc, idx) { return that.formatCriterionItem(tc, idx); });
+					var ccgBadges = ccgItems.map(function(vi) { return vi.badgeText; }).join('; ');
+					violations.push({
+						day: d.label + ' (' + d.date + ')',
+						tieuChi: ccgBadges || 'Lưu ý nề nếp',
+						viPhamList: ccgItems,
+						ghiChu: ghiChu || 'Cần cố gắng chấn chỉnh'
+					});
+				} else {
+					// Đạt (cả 3 tiêu chí Đạt)
 					resCode = 'D';
 					resText = 'Đạt';
-					resColor = '#1565c0';
-					resBg = '#e3f2fd';
+					resColor = '#16a34a';
+					resBg = '#ecfdf5';
 					datCount++;
-					if (ghiChu) {
-						violations.push({
-							day: d.label + ' (' + d.date + ')',
-							tieuChi: 'Lưu ý nề nếp',
-							ghiChu: ghiChu
-						});
-					}
-				} else {
-					resCode = 'T';
-					resText = 'Tốt';
-					resColor = '#2e7d32';
-					resBg = '#e8f5e9';
-					totCount++;
 				}
+
+				var isGvcnPresent = (classData && classData.GVCNCoMat !== undefined) ? !!classData.GVCNCoMat : false;
 
 				daysResult.push({
 					dayVal: dayVal,
@@ -5845,17 +7515,20 @@
 				});
 			});
 
-			// Xếp loại tuần & Chế tài theo quy định khách hàng (Mục 2a): Tuần tự quản bị ghi nhận chưa đạt (CĐ)
-			var isBlocked = (cdCount > 0);
+			// Xếp loại tuần theo chuẩn văn bản 22/10/2026:
+			// - Đạt (Đ): Có từ 02 ngày tự quản thực tế trở lên và 100% số ngày xếp Đạt -> Cộng 0,5 điểm thi đua
+			// - Chưa đạt (CĐ): Từ 50% số ngày tự quản thực tế xếp CĐ trở lên -> Dừng tự quản tuần tiếp theo
+			// - Duy trì (DT): Các trường hợp còn lại -> Không cộng điểm, lớp tiếp tục tự quản
+			var isBlocked = that.isClassBlocked(cls.LopID);
 			var hasPenaltyOverride = that.penaltyOverrides && (that.penaltyOverrides[cls.LopID] !== undefined);
-			var isApplied = hasPenaltyOverride ? that.penaltyOverrides[cls.LopID] : (isBlocked || that.isClassBlocked(cls.LopID));
+			var isApplied = hasPenaltyOverride ? that.penaltyOverrides[cls.LopID] : isBlocked;
 
-			var hasEvaluated = (totCount + datCount + cdCount > 0);
+			var hasEvaluated = (datCount + ccgCount + cdCount > 0);
 			var xepLoaiTuan = '—';
 			var xepLoaiColor = '#757575';
 			var xepLoaiBg = '#f5f5f5';
 
-			if (isApplied || that.isClassBlocked(cls.LopID)) {
+			if (isApplied || isBlocked) {
 				xepLoaiTuan = 'Tạm dừng TQ';
 				xepLoaiColor = '#c62828';
 				xepLoaiBg = '#ffebee';
@@ -5870,16 +7543,16 @@
 				xepLoaiTuan = '—';
 				xepLoaiColor = '#757575';
 				xepLoaiBg = '#f5f5f5';
-			} else if (cdCount > 0) {
-				xepLoaiTuan = 'Chưa đạt';
+			} else if (tuQuanCount > 0 && (cdCount / tuQuanCount) >= 0.5) {
+				xepLoaiTuan = 'Chưa đạt (CĐ)';
 				xepLoaiColor = '#c62828';
 				xepLoaiBg = '#ffebee';
-			} else if (totCount === tuQuanCount && tuQuanCount > 0) {
-				xepLoaiTuan = 'Xuất sắc';
-				xepLoaiColor = '#1b5e20';
-				xepLoaiBg = '#e8f5e9';
+			} else if (tuQuanCount >= 2 && datCount === tuQuanCount) {
+				xepLoaiTuan = 'Đạt (Đ)';
+				xepLoaiColor = '#16a34a';
+				xepLoaiBg = '#ecfdf5';
 			} else {
-				xepLoaiTuan = 'Đạt';
+				xepLoaiTuan = 'Duy trì (DT)';
 				xepLoaiColor = '#1565c0';
 				xepLoaiBg = '#e3f2fd';
 			}
@@ -5902,8 +7575,8 @@
 				TenGVCN: cls.TenGVCN,
 				LichSummary: lichSummary,
 				tuQuanCount: tuQuanCount,
-				totCount: totCount,
 				datCount: datCount,
+				ccgCount: ccgCount,
 				cdCount: cdCount,
 				hasEvaluated: hasEvaluated,
 				daysResult: daysResult,
@@ -5918,9 +7591,9 @@
 			if (mode && typeof mode === 'string') {
 				this.printDialog.mode = mode;
 			} else if (this.activeTab === 'baocao' || this.isBghRole) {
-				this.printDialog.mode = 'bgh_summary';
+				this.printDialog.mode = 'weekly_result';
 			} else {
-				this.printDialog.mode = 'daily';
+				this.printDialog.mode = 'weekly';
 			}
 			this.printDialog.show = true;
 		},
@@ -5942,11 +7615,10 @@
 				if (snap) {
 					var sched = that.getScheduleForClass(item.LopID);
 					var daySched = sched ? sched.find(function(s) { return s.key === dayVal; }) : null;
-					var isTuQuan = (dayVal !== 2) && (snap.IsTuQuan !== undefined ? !!snap.IsTuQuan : (daySched ? !!daySched.IsTuQuan : false));
-					if (item.TenLop === '06D' && dayVal === 5) {
-						isTuQuan = true;
-					}
-					if (dayVal !== 2 && (snap.GhiChuViPham || (snap.TieuChiList && snap.TieuChiList.some(function(tc) { return tc.score === 1; })))) {
+					var isBlocked = that.isClassBlocked(item.LopID);
+					var isWeek1Hist = (that.selectedWeek && that.selectedWeek.startDate === '2026-10-05');
+					var isTuQuan = (dayVal !== 2) && !isBlocked && (daySched ? !!daySched.IsTuQuan : (isWeek1Hist && snap.IsTuQuan !== undefined ? !!snap.IsTuQuan : false));
+					if (isWeek1Hist && item.TenLop === '06D' && dayVal === 5) {
 						isTuQuan = true;
 					}
 					return {
@@ -5954,14 +7626,17 @@
 						TenLop: item.TenLop,
 						TenGVCN: item.TenGVCN,
 						IsTuQuan: isTuQuan,
+						GVCNCoMat: isTuQuan ? false : (daySched && daySched.IsTuQuan && !!snap.GVCNCoMat),
 						TieuChiList: JSON.parse(JSON.stringify(snap.TieuChiList || [])),
 						GhiChuViPham: snap.GhiChuViPham || '',
+						NguoiCham: snap.NguoiCham || item.NguoiCham || (that.currentUserName ? ('QS. ' + that.currentUserName) : 'QS. Trần Tuấn'),
 						IsSaved: true
 					};
 				}
 				var sched = that.getScheduleForClass(item.LopID);
 				var daySched = sched ? sched.find(function(s) { return s.key === dayVal; }) : null;
-				var isTuQuan = (dayVal !== 2) && (daySched ? !!daySched.IsTuQuan : false);
+				var isBlocked = that.isClassBlocked(item.LopID);
+				var isTuQuan = (dayVal !== 2) && !isBlocked && (daySched ? !!daySched.IsTuQuan : false);
 				return {
 					LopID: item.LopID,
 					TenLop: item.TenLop,
@@ -5969,6 +7644,7 @@
 					IsTuQuan: isTuQuan,
 					TieuChiList: JSON.parse(JSON.stringify(that.baseCriteria)),
 					GhiChuViPham: '',
+					NguoiCham: item.NguoiCham || (that.currentUserName ? ('QS. ' + that.currentUserName) : 'QS. Trần Tuấn'),
 					IsSaved: false
 				};
 			});
@@ -5999,7 +7675,7 @@
 			return found || { score: 3 };
 		},
 		setCriterionScore(cls, tc, score) {
-			if (this.isReadOnlyDay || this.selectedDay === 2 || !cls.IsTuQuan) return;
+			if (!cls.IsTuQuan) return;
 			var crit = this.findClassCriterion(cls, tc);
 			if (crit) {
 				crit.score = score;
@@ -6009,17 +7685,18 @@
 		},
 		getCriterionFullName(name) {
 			if (!name) return '';
-			if (name.indexOf('Không gian') !== -1) {
-				return 'Không gian lớp (Mở cửa, VS, bàn ghế)';
+			var s = name.toLowerCase();
+			if (s.indexOf('không gian') !== -1 || s.indexOf('sạch sẽ') !== -1 || s.indexOf('bàn ghế') !== -1 || s.indexOf('tc1') !== -1 || s.indexOf('thông thoáng') !== -1) {
+				return 'Không gian (Sạch sẽ, bảng, sàn)';
 			}
-			if (name.indexOf('Nền nếp') !== -1 || name.indexOf('Nề nếp') !== -1) {
-				return 'Nền nếp & chuẩn bị tâm thế học tập (Sĩ số, tác phong, sách vở)';
+			if (s.indexOf('nội dung') !== -1 || s.indexOf('đọc sách') !== -1 || s.indexOf('chủ đề') !== -1 || s.indexOf('tc2') !== -1) {
+				return 'Nội dung (Đọc sách, chủ đề)';
 			}
-			if (name.indexOf('chủ đề') !== -1 || name.indexOf('Chủ đề') !== -1) {
-				return 'Sinh hoạt chủ đề (Đúng 7:20, nghiêm túc)';
+			if (s.indexOf('nề nếp') !== -1 || s.indexOf('nền nếp') !== -1 || s.indexOf('nghiêm túc') !== -1 || s.indexOf('tâm thế') !== -1 || s.indexOf('tc3') !== -1 || s.indexOf('tác phong') !== -1) {
+				return 'Nề nếp (Nghiêm túc, tích cực)';
 			}
-			// Tiêu chí bổ sung: bỏ số thứ tự "1. ", "4. " nếu có, giữ nguyên tên đầy đủ
-			return name.replace(/^[0-9]+[.\s-]+\s*/, '').trim();
+			// Tiêu chí bổ sung: bỏ số thứ tự "1. ", "4. ", "TC1: " nếu có, giữ nguyên tên đầy đủ
+			return name.replace(/^(TC)?[0-9]+[.:\s-]+\s*/i, '').trim();
 		},
 		getShortCriterionTitle(name) {
 			return this.getCriterionFullName(name);
@@ -6091,9 +7768,9 @@
 
 				html += '<div style="background-color: #f0f4f8; border: 1px solid #b0bec5; padding: 6px 12px; margin: 6px 0; font-size: 9.5pt; display: flex; justify-content: space-between; border-radius: 4px;">';
 				html += '<div>Tổng số lớp: <strong>' + stats.total + ' lớp</strong></div>';
-				html += '<div>Đạt Tốt / Xuất sắc: <strong style="color: #2e7d32;">' + stats.totCount + ' lớp</strong></div>';
-				html += '<div>Đạt: <strong style="color: #1565c0;">' + stats.datCount + ' lớp</strong></div>';
-				html += '<div>Tạm dừng TQ / Nhắc nhở: <strong style="color: #c62828;">' + stats.blockedCount + ' lớp</strong></div>';
+				html += '<div>Đạt (Đ) (+0.5đ): <strong style="color: #16a34a;">' + stats.datCount + ' lớp</strong></div>';
+				html += '<div>Duy trì (DT): <strong style="color: #1565c0;">' + stats.duyTriCount + ' lớp</strong></div>';
+				html += '<div>Chưa đạt / Dừng TQ: <strong style="color: #c62828;">' + stats.cdCount + ' lớp</strong></div>';
 				html += '</div>';
 
 				html += '<table><thead><tr style="background-color: #e8eaf6; height: 32px;">';
@@ -6142,141 +7819,269 @@
 				html += '<div style="width: 45%;"><strong>BAN GIÁM HIỆU DUYỆT</strong><br><i>(Kí và ghi rõ họ tên)</i></div>';
 				html += '</div>';
 			} else {
-				var printTitle = (mode === 'weekly') ? 'SỔ GIÁM SÁT 15 PHÚT TỰ QUẢN CẢ TUẦN' : 'PHIẾU GIÁM SÁT 15 PHÚT TỰ QUẢN ĐẦU GIỜ';
-				html += '<h2>TRƯỜNG TH-THCS-THPT SONG NGỮ LẠC HỒNG</h2>';
-				html += '<h3>' + printTitle + '</h3>';
-				var subText = (self.isBghRole || self.activeTab === 'baocao')
-					? (mode === 'weekly' ? '(Bản tổng hợp kết quả Quản sinh đánh giá các ngày trong tuần gửi Ban Giám Hiệu)' : '(Bản tổng hợp kết quả Quản sinh đánh giá gửi Ban Giám Hiệu)')
-					: '(Dành cho Quản sinh khối & Đội Sao đỏ / Đoàn viên xung kích)';
-				html += '<div style="text-align: center; font-style: italic; font-size: 10.5pt;">' + subText + '</div>';
-				
-				html += '<div class="meta-row">';
-				var displayKhoi = khoiName.startsWith('Khối') ? khoiName : ('Khối: ' + khoiName);
-				html += '<div><strong>' + displayKhoi + '</strong></div>';
-				html += '<div>' + weekTitle + '</div>';
-				if (mode === 'daily') {
-					html += '<div>Ngày chấm: <strong>' + dayLabel + '</strong></div>';
-				}
-				html += '</div>';
-
-				// Bảng ghi chú các tiêu chí (Legend)
-				html += '<div class="legend-box">';
-				html += '<strong>Nội dung tiêu chí:</strong> ';
-				var legendItems = criteriaList.map(function(tc, idx) {
-					return '<strong>TC' + (idx + 1) + ':</strong> ' + tc.ten;
-				});
-				html += legendItems.join(' &nbsp; | &nbsp; ');
-				html += '<div style="font-style: italic; font-size: 8.5pt; margin-top: 2px;">* Đánh giá từng phòng: [T] = Tốt, [Đ] = Đạt, [CĐ] = Cần cố gắng. Chi tiết vi phạm ghi cột Ghi chú.</div>';
-				html += '</div>';
-
 				var isBghPrint = (self.isBghRole || self.activeTab === 'baocao');
 
 				if (mode === 'daily') {
+					html += '<div style="text-align: center;">';
+					html += '<div style="font-size: 11pt; font-weight: bold; text-transform: uppercase;">TRƯỜNG TH-THCS-THPT SONG NGỮ LẠC HỒNG</div>';
+					html += '<div style="font-size: 9pt; font-style: italic;">Đoàn TNCS Hồ Chí Minh – Liên đội THCS Lạc Hồng</div>';
+					html += '<h2 style="margin: 4px 0; font-size: 13pt; text-transform: uppercase;">PHIẾU GIÁM SÁT "15 PHÚT TỰ QUẢN ĐẦU GIỜ"</h2>';
+					html += '<div style="font-size: 9pt; font-style: italic;">(Áp dụng từ thứ Ba đến thứ Sáu – Dành cho Quản sinh khối, Sao đỏ, Đoàn viên xung kích)</div>';
+					html += '</div>';
+
+					html += '<div class="meta-row" style="font-size: 10pt; margin: 6px 0;">';
+					var displayKhoiDaily = khoiName.startsWith('Khối') ? khoiName : ('Khối: ' + khoiName);
+					html += '<div><strong>' + displayKhoiDaily + '</strong></div>';
+					html += '<div>' + weekTitle + '</div>';
+					html += '<div>Ngày chấm: <strong>' + dayLabel + '</strong></div>';
+					html += '</div>';
+
+					html += '<div class="legend-box">';
+					html += '<strong>Nội dung tiêu chí:</strong> ';
+					var legendItems = criteriaList.map(function(tc, idx) {
+						return '<strong>TC' + (idx + 1) + ':</strong> ' + tc.ten;
+					});
+					html += legendItems.join(' &nbsp; | &nbsp; ');
+					html += '<div style="font-style: italic; font-size: 8.5pt; margin-top: 2px;">* Quy định đánh giá: [Đ] = Đạt, [CĐ] = Chưa đạt. Xếp loại ngày: Đạt (cả 3 TC Đạt); Cần cố gắng (có 1 TC Chưa đạt); Chưa đạt (từ 2 TC Chưa đạt trở lên).</div>';
+					html += '</div>';
+
 					html += '<table><thead><tr>';
 					html += '<th style="width: 38px;">STT</th><th style="width: 70px;">Lớp</th><th style="width: 140px; text-align: left; padding-left: 6px;">GVCN</th>';
 					criteriaList.forEach(function(tc, idx) {
 						var sub = self.getCriterionSubTitle(tc.ten);
-						html += '<th style="min-width: 100px;"><div style="font-weight: bold;">' + (idx + 1) + '. ' + self.getCriterionMainTitle(tc.ten) + '</div>' + (sub ? '<div style="font-size: 7.5pt; font-weight: normal; color: #555; line-height: 1.2;">' + sub + '</div>' : '') + '</th>';
+						html += '<th style="min-width: 100px;"><div style="font-weight: bold;">TC' + (idx + 1) + ': ' + self.getCriterionMainTitle(tc.ten) + '</div>' + (sub ? '<div style="font-size: 7.5pt; font-weight: normal; color: #555; line-height: 1.2;">' + sub + '</div>' : '') + '</th>';
 					});
 					html += '<th style="min-width: 140px; text-align: left; padding-left: 6px;">Ghi chú vi phạm / Kí tên</th></tr></thead><tbody>';
 
 					classes.forEach(function(cls, idx) {
 						var isBlocked = self.isClassBlocked(cls.LopID);
 						var rowBg = isBlocked ? 'background-color: #fff5f5;' : '';
-						html += '<tr style="height: 38px;' + rowBg + '">';
+						html += '<tr style="height: 36px;' + rowBg + '">';
 						html += '<td>' + (idx + 1) + '</td>';
 						html += '<td style="font-weight: bold; font-size: 10.5pt;' + (isBlocked ? ' color: #c62828;' : '') + '">' + cls.TenLop + '</td>';
 						var gvcnSub = '';
 						if (isBlocked) {
 							gvcnSub = ' <span style="color:#c62828; font-weight:bold; font-size:8.5pt; display:block;">[TẠM DỪNG TỰ QUẢN]</span>';
-						} else if (self.selectedDay === 2 || !cls.IsTuQuan) {
-							gvcnSub = ' <span style="color:#546e7a; font-size:8.5pt; display:block;">(GVCN sinh hoạt)</span>';
-						} else {
+						} else if (self.selectedDay === 2) {
+							gvcnSub = ' <span style="color:#546e7a; font-size:8.5pt; display:block;">(Sinh hoạt đầu tuần)</span>';
+						} else if (cls.IsTuQuan) {
 							gvcnSub = ' <span style="color:#2e7d32; font-size:8.5pt; display:block;">(Lớp tự quản)</span>';
+						} else {
+							gvcnSub = ' <span style="color:#546e7a; font-size:8.5pt; display:block;">(Chưa đăng ký TQ)</span>';
 						}
 						html += '<td class="text-left" style="font-size: 9.5pt; padding-left: 6px;"><div>' + cls.TenGVCN + '</div>' + gvcnSub + '</td>';
 						criteriaList.forEach(function(tc) {
 							var hasTc = cls.TieuChiList ? cls.TieuChiList.some(function(x) { return x.id === tc.id; }) : true;
 							html += '<td>';
-							if (isBlocked || self.selectedDay === 2 || !cls.IsTuQuan) {
+							if (isBlocked) {
+								html += '<span style="color:#c62828; font-size:11pt; font-weight:500;">—</span>';
+							} else if (self.selectedDay === 2) {
+								html += '<span style="color:#64748b; font-size:11pt; font-weight:500;">—</span>';
+							} else if (isBghPrint && !cls.IsTuQuan) {
 								html += '<span style="color:#64748b; font-size:11pt; font-weight:500;">—</span>';
 							} else if (hasTc) {
 								if (isBghPrint) {
 									var sc = self.findClassCriterion(cls, tc).score;
-									var tStr = (sc === 3) ? '<strong style="color:#2e7d32;">[✓] T</strong>' : '<span style="color:#888;">[ ] T</span>';
-									var dStr = (sc === 2) ? '<strong style="color:#1565c0;">[✓] Đ</strong>' : '<span style="color:#888;">[ ] Đ</span>';
+									var dStr = (sc !== 1) ? '<strong style="color:#2e7d32;">[✓] Đ</strong>' : '<span style="color:#888;">[ ] Đ</span>';
 									var cdStr = (sc === 1) ? '<strong style="color:#c62828;">[✓] CĐ</strong>' : '<span style="color:#888;">[ ] CĐ</span>';
-									html += '<div class="cb-group">' + tStr + ' ' + dStr + ' ' + cdStr + '</div>';
+									html += '<div class="cb-group">' + dStr + ' ' + cdStr + '</div>';
 								} else {
-									html += '<div class="cb-group"><span>[ ] T</span><span>[ ] Đ</span><span>[ ] CĐ</span></div>';
+									html += '<div class="cb-group"><span>[ ] Đ</span><span>[ ] CĐ</span></div>';
 								}
 							} else {
 								html += '<span style="color:#bbb;">—</span>';
 							}
 							html += '</td>';
 						});
-						var noteTxt = isBlocked ? 'Tạm dừng tự quản 01 tuần (GVCN có mặt 5/5 buổi lúc 7:15)' : (cls.GhiChuViPham || '');
+						var noteTxt = isBlocked ? 'Chế tài do Tuần 1 Chưa đạt' : (cls.GhiChuViPham || '');
 						html += '<td class="text-left" style="font-size: 9pt; padding-left: 6px;' + (isBlocked ? ' color:#c62828; font-weight:bold;' : '') + '">' + noteTxt + '</td>';
 						html += '</tr>';
 					});
 					html += '</tbody></table>';
-				} else {
-					days.forEach(function(d) {
-						var dayClasses = self.getClassesForPrintDay(d.val);
-						html += '<div style="margin-top: 14px; font-weight: bold; font-size: 11pt; text-transform: uppercase; color: #1565c0;">► ' + d.label + ' (' + d.date + ')</div>';
-						if (d.val === 2) {
-							html += '<div style="font-size: 8.5pt; font-style: italic; color: #666; margin-bottom: 3px;">* Tiết sinh hoạt đầu tuần cùng GVCN (Không chấm tự quản)</div>';
-						}
-						html += '<table><thead><tr>';
-						html += '<th style="width: 35px;">STT</th><th style="width: 65px;">Lớp</th><th style="width: 130px; text-align: left; padding-left: 6px;">GVCN</th>';
-						criteriaList.forEach(function(tc, idx) {
-							var sub = self.getCriterionSubTitle(tc.ten);
-							html += '<th style="min-width: 95px;"><div style="font-weight: bold;">' + (idx + 1) + '. ' + self.getCriterionMainTitle(tc.ten) + '</div>' + (sub ? '<div style="font-size: 7pt; font-weight: normal; color: #555; line-height: 1.2;">' + sub + '</div>' : '') + '</th>';
-						});
-						html += '<th style="min-width: 130px; text-align: left; padding-left: 6px;">Ghi chú vi phạm / Kí tên</th></tr></thead><tbody>';
-						dayClasses.forEach(function(cls, idx) {
-							var isBlocked = self.isClassBlocked(cls.LopID);
-							var rowBg = isBlocked ? 'background-color: #fff5f5;' : '';
-							html += '<tr style="height: 32px;' + rowBg + '">';
-							html += '<td>' + (idx + 1) + '</td>';
-							html += '<td style="font-weight: bold;' + (isBlocked ? ' color: #c62828;' : '') + '">' + cls.TenLop + '</td>';
-							var gvcnSub = '';
-							if (isBlocked) {
-								gvcnSub = ' <span style="color:#c62828; font-size:7.5pt; display:block; font-weight:bold;">[TẠM DỪNG TỰ QUẢN]</span>';
-							} else if (d.val === 2 || !cls.IsTuQuan) {
-								gvcnSub = ' <span style="color:#546e7a; font-size:7.5pt; display:block;">(GVCN sinh hoạt)</span>';
-							} else {
-								gvcnSub = ' <span style="color:#2e7d32; font-size:7.5pt; display:block;">(Lớp tự quản)</span>';
-							}
-							html += '<td class="text-left" style="font-size: 9pt; padding-left: 6px;"><div>' + cls.TenGVCN + '</div>' + gvcnSub + '</td>';
-							criteriaList.forEach(function(tc) {
-								html += '<td>';
-								if (isBlocked || d.val === 2 || !cls.IsTuQuan) {
-									html += '<span style="color:#64748b; font-size:11pt; font-weight:500;">—</span>';
-								} else if (isBghPrint) {
-									var sc = self.findClassCriterion(cls, tc).score;
-									var tStr = (sc === 3) ? '<strong style="color:#2e7d32;">[✓] T</strong>' : '<span style="color:#888;">[ ] T</span>';
-									var dStr = (sc === 2) ? '<strong style="color:#1565c0;">[✓] Đ</strong>' : '<span style="color:#888;">[ ] Đ</span>';
-									var cdStr = (sc === 1) ? '<strong style="color:#c62828;">[✓] CĐ</strong>' : '<span style="color:#888;">[ ] CĐ</span>';
-									html += '<div class="cb-group">' + tStr + ' ' + dStr + ' ' + cdStr + '</div>';
-								} else {
-									html += '<div class="cb-group"><span>[ ] T</span><span>[ ] Đ</span><span>[ ] CĐ</span></div>';
-								}
-								html += '</td>';
-							});
-							var noteTxt = isBlocked ? 'Tạm dừng tự quản 01 tuần (GVCN có mặt 5/5 buổi lúc 7:15)' : (cls.GhiChuViPham || '');
-							html += '<td class="text-left" style="font-size: 8pt; padding-left: 4px;' + (isBlocked ? ' color:#c62828; font-weight:bold;' : '') + '">' + noteTxt + '</td></tr>';
-						});
-						html += '</tbody></table>';
-					});
-				}
 
-				var signLeft = isBghPrint ? 'NGƯỜI LẬP / QUẢN SINH KHỐI' : 'ĐỘI SAO ĐỎ / ĐOÀN VIÊN XUNG KÍCH';
-				var signRight = isBghPrint ? 'BAN GIÁM HIỆU DUYỆT' : 'QUẢN SINH KHỐI';
-				html += '<div class="sign-block">';
-				html += '<div style="width: 45%;"><strong>' + signLeft + '</strong><br><i>(Kí và ghi rõ họ tên)</i></div>';
-				html += '<div style="width: 45%;"><strong>' + signRight + '</strong><br><i>(Kí và ghi rõ họ tên)</i></div>';
-				html += '</div>';
+					html += '<div style="text-align: right; margin-top: 15px; font-style: italic; font-size: 10pt;">Trấn Biên, ngày ...... tháng 10 năm 2026</div>';
+
+					html += '<div class="sign-block" style="display: flex; justify-content: space-between; margin-top: 15px; text-align: center; font-size: 10.5pt; page-break-inside: avoid;">';
+					html += '<div style="width: 32%;"><strong>BÍ THƯ ĐOÀN – TPT ĐỘI</strong><br><i style="font-size: 9pt;">(Ký xác nhận)</i><div style="height: 45px;"></div><strong>Lưu Quý Đồng</strong></div>';
+					html += '<div style="width: 32%;"><strong>QUẢN SINH KHỐI</strong><br><i style="font-size: 9pt;">(Ký và ghi rõ họ tên)</i><div style="height: 45px;"></div></div>';
+					html += '<div style="width: 32%;"><strong>NGƯỜI GIÁM SÁT</strong><br><i style="font-size: 9pt;">(Sao đỏ / ĐV xung kích)</i><div style="height: 45px;"></div></div>';
+					html += '</div>';
+				} else {
+					// MODE WEEKLY / WEEKLY_RESULT: CHUẨN MA TRẬN PHỤ LỤC A & B (VĂN BẢN 22/10/2026)
+					var isBlankWeekly = (self.printDialog.mode === 'weekly');
+					var isCapThpt = (self.selectedKhoi >= 10);
+					var capText = isCapThpt ? '☐ THCS &nbsp; ☑ THPT' : '☑ THCS &nbsp; ☐ THPT';
+					var weekDatesText = self.selectedWeek ? (self.selectedWeek.startDate + ' đến ' + self.selectedWeek.endDate) : '';
+					var weekNumText = self.selectedWeek ? self.selectedWeek.weekNum : 2;
+
+					html += '<div style="text-align: center;">';
+					html += '<div style="font-size: 11pt; font-weight: bold; text-transform: uppercase;">TRƯỜNG TH-THCS-THPT SONG NGỮ LẠC HỒNG</div>';
+					html += '<div style="font-size: 9pt; font-style: italic;">Đoàn TNCS Hồ Chí Minh – Liên đội THCS Lạc Hồng</div>';
+					html += '<h2 style="margin: 4px 0; font-size: 13pt; text-transform: uppercase;">PHỤ LỤC: PHIẾU GIÁM SÁT "15 PHÚT TỰ QUẢN ĐẦU GIỜ"</h2>';
+					var subNoticeWeekly = isBlankWeekly
+						? '(Phiếu trắng dùng cho Quản sinh khối, sao đỏ, đoàn viên xung kích từ thứ Ba đến thứ Sáu)'
+						: '(Bản tổng hợp kết quả Quản sinh đánh giá 15 phút tự quản cả tuần)';
+					html += '<div style="font-size: 8.5pt; font-style: italic;">' + subNoticeWeekly + '</div>';
+					html += '<h3 style="color: #1565c0; margin: 4px 0; font-size: 11pt;">Phần A. PHIẾU GIÁM SÁT HẰNG TUẦN</h3>';
+					html += '</div>';
+
+					html += '<div class="meta-row" style="font-size: 9.5pt; margin-top: 4px; margin-bottom: 6px;">';
+					html += '<div>Khối: <strong>' + (self.selectedKhoi || 6) + '</strong></div>';
+					html += '<div>Cấp: <strong>' + capText + '</strong></div>';
+					html += '<div>Tuần: <strong>' + weekNumText + '</strong></div>';
+					html += '<div>Từ ngày: <strong>' + weekDatesText + '</strong></div>';
+					html += '<div>Người giám sát: <strong>Quản sinh khối / Sao đỏ</strong></div>';
+					html += '</div>';
+
+					// BẢNG MA TRẬN PHẦN A
+					var d3Str = self.getDateStringForDay(3).split('-').slice(1).reverse().join('/');
+					var d4Str = self.getDateStringForDay(4).split('-').slice(1).reverse().join('/');
+					var d5Str = self.getDateStringForDay(5).split('-').slice(1).reverse().join('/');
+					var d6Str = self.getDateStringForDay(6).split('-').slice(1).reverse().join('/');
+
+					html += '<table style="font-size: 8pt; width: 100%; border-collapse: collapse;">';
+					html += '<thead>';
+					html += '<tr style="background-color: #f2f2f2; height: 26px;">';
+					html += '<th rowspan="2" style="width: 28px;">STT</th>';
+					html += '<th rowspan="2" style="width: 55px;">Lớp</th>';
+					html += '<th colspan="4">THỨ BA<br><span style="font-size: 7pt; font-weight: normal;">(' + d3Str + ')</span></th>';
+					html += '<th colspan="4">THỨ TƯ<br><span style="font-size: 7pt; font-weight: normal;">(' + d4Str + ')</span></th>';
+					html += '<th colspan="4">THỨ NĂM<br><span style="font-size: 7pt; font-weight: normal;">(' + d5Str + ')</span></th>';
+					html += '<th colspan="4">THỨ SÁU<br><span style="font-size: 7pt; font-weight: normal;">(' + d6Str + ')</span></th>';
+					html += '<th colspan="5" style="background-color: #e8eaf6;">TỔNG HỢP TUẦN</th>';
+					html += '<th rowspan="2" style="min-width: 90px; text-align: left; padding-left: 4px;">Ghi chú</th>';
+					html += '</tr>';
+					html += '<tr style="background-color: #f8fafc; height: 22px; font-size: 7pt;">';
+					html += '<th>TC1</th><th>TC2</th><th>TC3</th><th>KQ</th>';
+					html += '<th>TC1</th><th>TC2</th><th>TC3</th><th>KQ</th>';
+					html += '<th>TC1</th><th>TC2</th><th>TC3</th><th>KQ</th>';
+					html += '<th>TC1</th><th>TC2</th><th>TC3</th><th>KQ</th>';
+					html += '<th style="width: 42px;">Số ngày TQ</th>';
+					html += '<th style="width: 32px;">Số ngày Đ</th>';
+					html += '<th style="width: 38px;">Số ngày CCG</th>';
+					html += '<th style="width: 32px;">Số ngày CĐ</th>';
+					html += '<th style="width: 70px;">Xếp loại tuần</th>';
+					html += '</tr>';
+					html += '</thead><tbody>';
+
+					var matrix = self.weeklyClassMatrix;
+					matrix.forEach(function(row, idx) {
+						var bg = row.IsBlocked ? 'background-color: #fff5f5;' : (idx % 2 === 1 ? 'background-color: #fafafa;' : '');
+						var clsColor = row.IsBlocked ? 'color: #c62828;' : '';
+						html += '<tr style="height: 26px; ' + bg + '">';
+						html += '<td>' + (idx + 1) + '</td>';
+						html += '<td style="font-weight: bold; ' + clsColor + '">' + row.TenLop + '</td>';
+						[3, 4, 5, 6].forEach(function(dVal) {
+							if (row.IsBlocked) {
+								var stripeStyle = 'background: repeating-linear-gradient(-45deg, #f8fafc, #f8fafc 4px, #e2e8f0 4px, #e2e8f0 8px);';
+								html += '<td style="' + stripeStyle + '"></td>';
+								html += '<td style="' + stripeStyle + '"></td>';
+								html += '<td style="' + stripeStyle + '"></td>';
+								html += '<td style="' + stripeStyle + '"></td>';
+							} else {
+								var cell = self.getWeeklyMatrixCell(row, dVal);
+								html += '<td>' + cell.tc1 + '</td>';
+								html += '<td>' + cell.tc2 + '</td>';
+								html += '<td>' + cell.tc3 + '</td>';
+								html += '<td style="font-weight: bold;">' + cell.kq + '</td>';
+							}
+						});
+						if (isBlankWeekly) {
+							// TRÊN PHIẾU TRẮNG: CÁC CỘT TỔNG HỢP TUẦN ĐỂ TRỐNG ĐỂ TỔNG HỢP BẰNG TAY CUỐI TUẦN
+							html += '<td></td>';
+							html += '<td></td>';
+							html += '<td></td>';
+							html += '<td></td>';
+							html += '<td></td>';
+							var noteStr = row.IsBlocked ? 'Tạm dừng tự quản 01 tuần' : '';
+							html += '<td class="text-left" style="font-size: 7.5pt; padding-left: 4px;' + (row.IsBlocked ? ' color:#c62828;' : '') + '">' + noteStr + '</td>';
+						} else {
+							html += '<td>' + row.TuQuanCount + '</td>';
+							html += '<td style="color: #2e7d32; font-weight: bold;">' + row.DatCount + '</td>';
+							html += '<td style="color: #f59e0b; font-weight: bold;">' + row.CcgCount + '</td>';
+							html += '<td style="color: #c62828; font-weight: bold;">' + row.CdCount + '</td>';
+							html += '<td style="font-weight: bold;">' + row.XepLoaiTuan + '</td>';
+							var noteStr = row.IsBlocked ? 'Tạm dừng tự quản 01 tuần' : '';
+							html += '<td class="text-left" style="font-size: 7.5pt; padding-left: 4px;' + (row.IsBlocked ? ' color:#c62828;' : '') + '">' + noteStr + '</td>';
+						}
+						html += '</tr>';
+					});
+					html += '</tbody></table>';
+
+					// 2 HỘP HƯỚNG DẪN
+					html += '<div style="display: flex; gap: 8px; margin-top: 6px; font-size: 7.5pt; line-height: 1.35;">';
+					html += '<div style="width: 50%; border: 1px solid #ccc; padding: 4px 6px; background-color: #fcfcfc;">';
+					html += '<strong>Kí hiệu ghi phiếu:</strong><br>';
+					html += '• Ô tiêu chí: <strong>Đ</strong> = Đạt; <strong>CĐ</strong> = Chưa đạt.<br>';
+					html += '• Ô KQ ngày: <strong>Đ</strong> / <strong>CCG</strong> (Cần cố gắng) / <strong>CĐ</strong>.<br>';
+					html += '• <strong>GV</strong> = Lớp đăng kí nhưng GVCN có mặt → không đánh giá, không tính là ngày tự quản.<br>';
+					html += '• <strong>/</strong> = Lớp không đăng kí tự quản ngày đó (gạch chéo cả 4 ô của ngày).<br>';
+					html += '• <strong>TC1:</strong> Lớp thông thoáng, ngăn nắp; sàn, bảng sạch sẽ.<br>';
+					html += '• <strong>TC2:</strong> Hoạt động 15 phút có nội dung cụ thể.<br>';
+					html += '• <strong>TC3:</strong> Tập thể lớp tham gia nghiêm túc, tích cực.';
+					html += '</div>';
+					html += '<div style="width: 50%; border: 1px solid #ccc; padding: 4px 6px; background-color: #fcfcfc;">';
+					html += '<strong>Cách xếp loại (Mục III của Hướng dẫn):</strong><br>';
+					html += '• <strong>Ngày:</strong> Đ = cả 3 TC Đạt; CCG = có 1 TC CĐ; CĐ = có từ 2 TC CĐ.<br>';
+					html += '• <strong>Tuần (tính trên số ngày tự quản thực tế):</strong><br>';
+					html += '- <strong>Đạt (Đ):</strong> từ 2 ngày trở lên và 100% số ngày xếp Đ → cộng 0,5 điểm thi đua.<br>';
+					html += '- <strong>Chưa đạt (CĐ):</strong> ≥ 50% số ngày xếp CĐ → dừng tự quản tuần tiếp theo.<br>';
+					html += '- <strong>Duy trì (DT):</strong> các trường hợp còn lại → không cộng điểm, tiếp tục tự quản.<br>';
+					html += '<i style="color:#555;">* Ngày CCG không tính là ngày Đ khi xét mức Đạt, không tính là ngày CĐ khi xét mức Chưa đạt.</i>';
+					html += '</div></div>';
+
+					// PHẦN B
+					html += '<div style="margin-top: 8px; page-break-inside: avoid;">';
+					html += '<div style="font-weight: bold; font-size: 10.5pt; color: #1565c0;">Phần B. GHI NHẬN CHI TIẾT VÀ HƯỚNG DẪN ĐÁNH GIÁ</div>';
+					html += '<div style="font-weight: bold; font-size: 9pt; margin-top: 2px;">1. Bảng ghi nhận chi tiết các trường hợp Chưa đạt</div>';
+					html += '<div style="font-style: italic; font-size: 7.5pt; color: #666; margin-bottom: 2px;">(Ghi ngay khi phát hiện, mô tả khách quan, cụ thể – làm căn cứ khi GVCN phản hồi trước 11:00)</div>';
+					
+					html += '<table style="font-size: 7.5pt; width: 100%; border-collapse: collapse;">';
+					html += '<thead><tr style="background-color: #f2f2f2; height: 22px;">';
+					html += '<th style="width: 30px;">STT</th><th style="width: 95px;">Thứ / Ngày</th><th style="width: 55px;">Lớp</th><th style="width: 80px;">Tiêu chí CĐ</th><th style="text-align: left; padding-left: 6px;">Mô tả cụ thể sự việc (minh chứng)</th><th style="width: 100px;">Người ghi nhận</th><th style="width: 125px;">Quản sinh xác nhận đã báo GVCN</th>';
+					html += '</tr></thead><tbody>';
+
+					var vList = isBlankWeekly ? [] : self.getWeeklyViolationsForPrint();
+					if (vList.length > 0) {
+						vList.forEach(function(v) {
+							html += '<tr style="height: 22px;">';
+							html += '<td>' + v.stt + '</td><td>' + v.thuNgay + '</td><td style="font-weight:bold;">' + v.lop + '</td><td style="color:#c62828; font-weight:bold;">' + v.tieuChiCD + '</td>';
+							html += '<td class="text-left" style="padding-left: 6px;">' + v.moTa + '</td><td>' + v.nguoiGhi + '</td><td>' + v.baoGVCN + '</td>';
+							html += '</tr>';
+						});
+					} else {
+						for (var bn = 1; bn <= 5; bn++) {
+							html += '<tr style="height: 26px;"><td>' + bn + '</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
+						}
+					}
+					html += '</tbody></table>';
+
+					// 2. Biểu hiện & 3. Quy trình
+					html += '<div style="margin-top: 6px; font-size: 7.5pt;">';
+					html += '<div style="font-weight: bold; font-size: 8.5pt; margin-bottom: 2px;">2. Biểu hiện cụ thể để xếp mức Đ/CĐ từng tiêu chí:</div>';
+					html += '<table style="font-size: 7pt; width: 100%; border-collapse: collapse;"><thead><tr style="background-color: #f2f2f2; height: 20px;">';
+					html += '<th style="width: 28%;">Tiêu chí</th><th style="width: 36%;">Ghi "Đ" (Đạt) khi</th><th style="width: 36%;">Ghi "CĐ" (Chưa đạt) khi</th>';
+					html += '</tr></thead><tbody>';
+					html += '<tr><td style="padding: 2px 4px; font-weight: bold;">TC1. Lớp thông thoáng, ngăn nắp; sàn, bảng sạch sẽ.</td><td style="padding: 2px 4px;">– Sàn sạch, không có rác; bảng đã lau.<br>– Bàn ghế, đồ dùng sắp xếp ngăn nắp.<br>– Lớp thông thoáng (cửa mở, đèn quạt phù hợp).</td><td style="padding: 2px 4px; color:#c62828;">– Còn rác trên sàn, hộc bàn; bảng chưa lau.<br>– Bàn ghế, đồ dùng lộn xộn.<br>– Lớp bí, thiếu thông thoáng.</td></tr>';
+					html += '<tr><td style="padding: 2px 4px; font-weight: bold;">TC2. Hoạt động 15 phút có nội dung cụ thể.</td><td style="padding: 2px 4px;">– Có nội dung cụ thể, rõ ràng.<br>– BCS điều hành đúng khung 5 phút nề nếp + 10 phút chủ đề, bắt đầu đúng 07:15.</td><td style="padding: 2px 4px; color:#c62828;">– Không có nội dung; học sinh ngồi tự do.<br>– Nội dung không rõ ràng hoặc không bắt đầu đúng giờ.</td></tr>';
+					html += '<tr><td style="padding: 2px 4px; font-weight: bold;">TC3. Tập thể lớp tham gia nghiêm túc, tích cực.</td><td style="padding: 2px 4px;">– Học sinh giữ trật tự, tập trung theo điều hành BCS.<br>– Tích cực hưởng ứng, tham gia hoạt động.</td><td style="padding: 2px 4px; color:#c62828;">– Nhiều học sinh làm việc riêng, ồn ào, tự do đi lại.<br>– Không hợp tác với BCS lớp.</td></tr>';
+					html += '</tbody></table>';
+
+					html += '<div style="font-weight: bold; font-size: 8.5pt; margin-top: 4px; margin-bottom: 2px;">3. Quy trình ghi phiếu:</div>';
+					html += '<div style="line-height: 1.3; color: #333;">';
+					html += '1. Chiều thứ Hai: Nhận lịch đăng kí; ghi tên lớp, gạch chéo (/) các ngày không đăng kí. &nbsp;|&nbsp; 2. 07:15 – 07:30 (thứ Ba – thứ Sáu): Đến lớp ghi Đ/CĐ từng tiêu chí rồi ghi KQ ngày (Đ/CCG/CĐ). Nếu GVCN có mặt: ghi "GV", không đánh giá.<br>';
+					html += '3. Khi có tiêu chí CĐ: Ghi mô tả cụ thể sự việc vào Bảng ghi nhận chi tiết (mục 1). &nbsp;|&nbsp; 4. Trước 09:30: Tổng hợp, thông báo KQ ngày; GVCN phản hồi trước 11:00. &nbsp;|&nbsp; 5. Thứ Sáu (trước 16:00): Tổng hợp tuần, xếp loại tuần (Đ/DT/CĐ), kí xác nhận và thông báo kết quả.';
+					html += '</div></div>';
+
+					html += '<div style="text-align: right; margin-top: 6px; font-style: italic; font-size: 9pt;">Trấn Biên, ngày ...... tháng 10 năm 2026</div>';
+					html += '</div>';
+
+					html += '<div class="sign-block" style="display: flex; justify-content: space-between; margin-top: 15px; text-align: center; font-size: 10pt; page-break-inside: avoid;">';
+					html += '<div style="width: 32%;"><strong>BÍ THƯ ĐOÀN – TPT ĐỘI</strong><br><i style="font-size: 8.5pt;">(Kí xác nhận)</i><div style="height: 45px;"></div><strong>Lưu Quý Đồng</strong></div>';
+					html += '<div style="width: 32%;"><strong>QUẢN SINH KHỐI</strong><br><i style="font-size: 8.5pt;">(Kí, ghi rõ họ tên)</i><div style="height: 45px;"></div></div>';
+					html += '<div style="width: 32%;"><strong>NGƯỜI GIÁM SÁT</strong><br><i style="font-size: 8.5pt;">(Sao đỏ / ĐV xung kích)</i><div style="height: 45px;"></div></div>';
+					html += '</div>';
+				}
 			}
 
 			html += '</body></html>';
@@ -6587,9 +8392,9 @@
 	user-select: none;
 }
 .badge-tuquan {
-	background-color: #eef2ff;
-	color: #4338ca;
-	border: 1px solid #e0e7ff;
+	background-color: #ecfdf5 !important;
+	color: #065f46 !important;
+	border: 1px solid #bbf7d0 !important;
 }
 .badge-gvcn {
 	background-color: #f8fafc;
@@ -6645,9 +8450,13 @@
 	box-shadow: 0 1px 3px rgba(22, 163, 74, 0.4);
 }
 .score-btn-item.score-active-d {
-	background-color: #2563eb !important;
+	background-color: #16a34a !important;
 	color: #ffffff !important;
-	box-shadow: 0 1px 3px rgba(37, 99, 235, 0.4);
+	box-shadow: 0 1px 3px rgba(22, 163, 74, 0.4);
+}
+.score-btn-item.score-btn-d:hover:not(:disabled):not(.score-active-d) {
+	background-color: #dcfce7 !important;
+	color: #15803d !important;
 }
 .score-btn-item.score-active-cd {
 	background-color: #dc2626 !important;
@@ -6662,6 +8471,162 @@
 .score-disabled .score-btn-item {
 	cursor: default;
 	pointer-events: none;
+}
+
+/* Mobile Segmented Score Control - Nút bấm dạng Segmented Control bo tròn, cân xứng, chống méo */
+.mobile-score-group {
+	display: inline-flex;
+	align-items: center;
+	background-color: #f1f5f9;
+	padding: 2.5px;
+	border-radius: 8px;
+	border: 1px solid #cbd5e1;
+	gap: 2px;
+	user-select: none;
+}
+.mobile-score-btn {
+	min-width: 40px;
+	height: 32px;
+	padding: 0 10px;
+	border-radius: 6px;
+	border: none;
+	outline: none;
+	background: transparent;
+	color: #64748b;
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	transition: all 0.15s ease;
+	box-sizing: border-box;
+}
+.mobile-score-btn:hover:not(:disabled):not(.active) {
+	background-color: #e2e8f0;
+	color: #1e293b;
+}
+.mobile-score-btn.mobile-score-btn-d.active {
+	background-color: #16a34a !important;
+	color: #ffffff !important;
+	box-shadow: 0 1px 3px rgba(22, 163, 74, 0.4);
+}
+.mobile-score-btn.mobile-score-btn-cd.active {
+	background-color: #dc2626 !important;
+	color: #ffffff !important;
+	box-shadow: 0 1px 3px rgba(220, 38, 38, 0.4);
+}
+.score-disabled .mobile-score-btn {
+	cursor: default;
+	pointer-events: none;
+}
+
+/* Clean LMS Styles */
+.compact-filter-select .v-field__input {
+	padding-top: 3px !important;
+	padding-bottom: 3px !important;
+	padding-inline-start: 4px !important;
+	padding-inline-end: 2px !important;
+	min-height: 32px !important;
+	height: 32px !important;
+	font-size: 11.5px !important;
+	white-space: nowrap !important;
+}
+.compact-filter-select .v-field {
+	border-radius: 8px !important;
+	background-color: #f8fafc !important;
+}
+.compact-filter-select .v-select__selection {
+	overflow: visible !important;
+	margin-inline-end: 0 !important;
+}
+.compact-filter-select .v-select__selection-text {
+	white-space: nowrap !important;
+	overflow: visible !important;
+	text-overflow: clip !important;
+	font-weight: 500 !important;
+}
+.week-selector-wrap {
+	min-width: 340px;
+	max-width: 420px;
+}
+@media (max-width: 600px) {
+	.week-selector-wrap {
+		min-width: 0 !important;
+		max-width: 100% !important;
+	}
+}
+.clean-days-toggle {
+	background-color: #f1f5f9 !important;
+	border: 1px solid #cbd5e1 !important;
+	border-radius: 10px !important;
+	padding: 4px !important;
+	gap: 4px !important;
+	height: auto !important;
+	min-height: 48px !important;
+	overflow: visible !important;
+}
+.clean-day-btn {
+	border-radius: 7px !important;
+	background: transparent !important;
+	color: #334155 !important;
+	transition: all 0.2s ease !important;
+	height: auto !important;
+	min-height: 42px !important;
+	padding: 2px 4px !important;
+}
+.clean-day-btn .v-btn__content {
+	height: 100% !important;
+	width: 100% !important;
+	padding: 0 !important;
+}
+.clean-day-btn:hover {
+	background-color: #ffffff !important;
+	color: #0f172a !important;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+.clean-days-toggle .v-btn--active {
+	background-color: #217D46 !important;
+	color: #ffffff !important;
+	box-shadow: 0 2px 6px rgba(33, 125, 70, 0.35) !important;
+}
+.clean-days-toggle .v-btn--active .font-weight-bold,
+.clean-days-toggle .v-btn--active .clean-day-date,
+.clean-days-toggle .v-btn--active .v-icon {
+	color: #ffffff !important;
+}
+.clean-day-date {
+	color: #64748b;
+	font-weight: 500;
+}
+.day-today-badge {
+	background: #dcfce7;
+	color: #166534;
+	font-weight: 700;
+	font-size: 10px;
+	padding: 1px 5px;
+	border-radius: 4px;
+	letter-spacing: 0.2px;
+	display: inline-block;
+}
+.day-today-badge-active {
+	background-color: #fef08a !important;
+	color: #854d0e !important;
+	font-weight: 800;
+	font-size: 10px;
+	padding: 1px 5px;
+	border-radius: 4px;
+	letter-spacing: 0.2px;
+	display: inline-block;
+}
+.status-dot-green {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background-color: #16a34a;
+	display: inline-block;
+	box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
 }
 
 /* Badge cột Xếp loại: Rõ ràng, tương phản cao, nền dịu không chói, không viền nặng nề */
@@ -6679,13 +8644,10 @@
 	user-select: none;
 	border: none;
 }
-.table-rank-badge.rank-tot {
-	background-color: #ecfdf5;
-	color: #065f46;
-}
+.table-rank-badge.rank-tot,
 .table-rank-badge.rank-dat {
-	background-color: #eff6ff;
-	color: #1e40af;
+	background-color: #ecfdf5 !important;
+	color: #065f46 !important;
 }
 .table-rank-badge.rank-chuadat {
 	background-color: #fef2f2;
@@ -6708,6 +8670,34 @@
 	color: #991b1b;
 }
 
+/* Ô SỌC CHÉO CHẾ TÀI TRÀN FULL TOÀN BỘ Ô KHI LỚP BỊ TẠM DỪNG TỰ QUẢN (CHUẨN IMAGE MẪU) */
+.cell-striped-blocked {
+	background: repeating-linear-gradient(
+		-45deg,
+		#f8fafc,
+		#f8fafc 6px,
+		#e2e8f0 6px,
+		#e2e8f0 12px
+	) !important;
+	border-left: 1px solid #e2e8f0 !important;
+	border-right: 1px solid #e2e8f0 !important;
+	padding: 0 !important;
+}
+.cell-striped-blocked-mobile {
+	width: 100%;
+	height: 22px;
+	border-radius: 4px;
+	background: repeating-linear-gradient(
+		-45deg,
+		#f8fafc,
+		#f8fafc 5px,
+		#e2e8f0 5px,
+		#e2e8f0 10px
+	) !important;
+	border: 1px solid #e2e8f0 !important;
+	display: block;
+}
+
 /* Tag tuần tiến độ & Tag khen thưởng: Thanh thoát, tương phản chuẩn, không viền lồng nhau */
 .badge-week-tag {
 	display: inline-flex;
@@ -6719,13 +8709,10 @@
 	white-space: nowrap;
 	border: none;
 }
-.badge-week-tag.tag-tot {
-	background-color: #ecfdf5;
-	color: #065f46;
-}
+.badge-week-tag.tag-tot,
 .badge-week-tag.tag-current {
-	background-color: #eff6ff;
-	color: #1e40af;
+	background-color: #ecfdf5 !important;
+	color: #065f46 !important;
 }
 .badge-week-tag.tag-future {
 	background-color: #f1f5f9;
@@ -6811,23 +8798,32 @@
 }
 
 /* LƯỚI THỜI KHÓA BIỂU ĐĂNG KÍ (TKB GRID) - MỀM MẠI, THANH THOÁT */
+.tkb-monday-cell {
+	background-color: #edf2f7 !important;
+	color: #334155 !important;
+	transition: all 0.2s ease;
+}
+.tkb-monday-note-cell {
+	background-color: #e2e8f0 !important;
+}
+.tkb-note-native-input.tkb-monday-input,
+.tkb-note-native-input.tkb-monday-input:disabled {
+	background-color: #edf2f7 !important;
+	border-color: #cbd5e1 !important;
+	color: #334155 !important;
+	font-weight: 500 !important;
+	opacity: 1 !important;
+}
+
 .tkb-stripe-disabled {
 	background-color: #f8fafc;
-	background-image: repeating-linear-gradient(
-		-45deg,
-		transparent,
-		transparent 8px,
-		rgba(100, 116, 139, 0.05) 8px,
-		rgba(100, 116, 139, 0.05) 16px
-	);
-	color: #64748b;
+	color: #94a3b8;
 	transition: all 0.2s ease;
 }
 
-/* Ô được đăng ký tự quản: Xanh lá cây tươi sáng, viền mảnh mềm */
+/* Ô được đăng ký tự quản: Xanh lá cây tươi sáng, thanh thoát */
 .tkb-cell-registered {
 	background-color: #f0fdf4 !important;
-	border-top: 2px solid #16a34a !important;
 	color: #15803d !important;
 	box-shadow: none !important;
 	transition: all 0.2s ease;

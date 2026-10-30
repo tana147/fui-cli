@@ -1,97 +1,127 @@
 <template>
 	<v-app>
-		<v-app-bar height="56" elevation="1">
-			<v-app-bar-title>
-				<div class="d-flex align-center ga-2">
-					<v-icon color="white" size="20">mdi-table-large</v-icon>
-					<span class="text-subtitle-1 font-weight-bold text-white">Lấy dữ liệu eTest</span>
+	<!-- Header dạng toolbar nằm trong luồng trang để luôn dành chỗ cho bảng bên dưới. -->
+	<v-toolbar color="primary" height="auto" elevation="1">
+		<div class="d-flex flex-column w-100">
+			<div class="d-flex flex-wrap align-center w-100 ga-3 px-2 py-1">
+				<div class="d-flex flex-wrap align-center flex-grow-1 ga-3">
+					<div class="d-flex align-center ga-2 flex-shrink-0">
+						<v-icon color="white" size="20">mdi-table-large</v-icon>
+						<span class="text-subtitle-1 font-weight-bold text-white">Lấy dữ liệu eTest</span>
+					</div>
+
+				<v-btn-toggle v-model="config.cap" mandatory density="compact" variant="outlined" class="bg-white flex-shrink-0"
+					@update:model-value="onConfigChange">
+					<v-btn value="cap2" size="small">Cấp 2</v-btn>
+					<v-btn value="cap3" size="small">Cấp 3</v-btn>
+				</v-btn-toggle>
+
+				<v-select v-model="config.semesterPeriod" :items="semesterPeriodOptions" item-title="label" item-value="key"
+					placeholder="Học kì / Kì thi" density="compact" variant="outlined" hide-details bg-color="white"
+					style="max-width:200px" @update:model-value="onConfigChange" />
+
+				<v-select v-model="config.scoreType" :items="scoreTypeOptions" item-title="label" item-value="key"
+					placeholder="Loại điểm" density="compact" variant="outlined" hide-details bg-color="white"
+					style="max-width:200px" @update:model-value="onConfigChange" />
 				</div>
-			</v-app-bar-title>
 
-			<v-btn-toggle v-model="config.cap" mandatory density="compact" variant="outlined" class="mx-2 bg-white"
-				@update:model-value="onConfigChange">
-				<v-btn value="cap2" size="small">Cấp 2</v-btn>
-				<v-btn value="cap3" size="small">Cấp 3</v-btn>
-			</v-btn-toggle>
+				<!-- Giữ nguyên chiều ngang hai nút; khi toolbar hẹp, cả nhóm tự xuống hàng thay vì làm chữ chồng lên nhau. -->
+				<div class="d-flex align-center ga-3 ml-auto flex-shrink-0">
+				<v-btn variant="outlined" :disabled="!canLoad || loading" :loading="loading" class="mr-0"
+					style="min-width: 156px"
+					@click="loadAllClasses">
+					<!-- Màu trắng giúp spinner tương phản rõ trên nền xanh của nút. -->
+					<template #loader>
+						<span class="d-inline-flex align-center ga-2">
+							<v-progress-circular indeterminate size="16" width="2" color="white" />
+							<span>Đang tải dữ liệu</span>
+						</span>
+					</template>
+					<v-icon start size="16">mdi-play-circle-outline</v-icon>
+					Tải dữ liệu
+				</v-btn>
 
-			<v-select v-model="config.semesterPeriod" :items="semesterPeriodOptions" item-title="label" item-value="key"
-				placeholder="Học kì / Kì thi" density="compact" variant="outlined" hide-details bg-color="white"
-				class="mx-2" style="max-width:200px" @update:model-value="onConfigChange" />
+				<v-menu offset-y>
+					<template #activator="{ props }">
+						<v-btn v-bind="props" variant="outlined" :disabled="!ready" class="mr-0">
+							<v-icon start size="16">mdi-dots-vertical</v-icon>
+							Hành động
+							<v-badge v-if="changedCount > 0" :content="changedCount" color="error" floating />
+						</v-btn>
+					</template>
 
-			<v-select v-model="config.scoreType" :items="scoreTypeOptions" item-title="label" item-value="key"
-				placeholder="Loại điểm" density="compact" variant="outlined" hide-details bg-color="white" class="mx-2"
-				style="max-width:200px" @update:model-value="onConfigChange" />
+					<v-list density="compact" min-width="220">
+						<uc-dialog-save :rows="saveRows" :loading="saving" @confirm="onConfirmSaveActual">
+							<template #default="{ activatorProps }">
+								<v-list-item v-bind="activatorProps" :disabled="changedCount === 0"
+									prepend-icon="mdi-content-save-outline">
+									<v-list-item-title>Lưu thay đổi</v-list-item-title>
+								</v-list-item>
+							</template>
+						</uc-dialog-save>
 
-			<v-btn variant="outlined" :disabled="!canLoad || loading" :loading="loading" class="mr-2"
-				@click="loadAllClasses">
-				<v-icon start size="16">mdi-play-circle-outline</v-icon>
-				Tải dữ liệu
-			</v-btn>
+						<v-divider class="my-1" />
 
-			<v-menu offset-y>
-				<template #activator="{ props }">
-					<v-btn v-bind="props" variant="outlined" :disabled="!ready" class="mr-2">
-						<v-icon start size="16">mdi-dots-vertical</v-icon>
-						Hành động
-						<v-badge v-if="changedCount > 0" :content="changedCount" color="error" floating />
-					</v-btn>
-				</template>
+						<!-- ✅ eTest chỉ hiện với cap3 TA2 mode -->
+						<uc-dialog-etest-exam v-if="isTA2Mode" :so-cau-dung-options="soCauDungOptions"
+							@apply="onEtestApply">
+							<template #default="{ activatorProps }">
+								<v-list-item v-bind="activatorProps" prepend-icon="mdi-file-import-outline">
+									<v-list-item-title>Import eTest</v-list-item-title>
+									<v-list-item-subtitle>Điền điểm từ file eTest</v-list-item-subtitle>
+								</v-list-item>
+							</template>
+						</uc-dialog-etest-exam>
 
-				<v-list density="compact" min-width="220">
-					<uc-dialog-save :rows="saveRows" :loading="saving" @confirm="onConfirmSaveActual">
-						<template #default="{ activatorProps }">
-							<v-list-item v-bind="activatorProps" :disabled="changedCount === 0"
-								prepend-icon="mdi-content-save-outline">
-								<v-list-item-title>Lưu thay đổi</v-list-item-title>
-							</v-list-item>
-						</template>
-					</uc-dialog-save>
+						<uc-dialog-quan-li-ki-thi-cap2 v-if="config.cap === 'cap2'" :nienKhoa="vueData.NienKhoa"
+							:hoc-ky="selectedSemesterHocKy" :wsMeta="wsMeta" :active-tab-meta="wsMeta[activeWsIdx]"
+							@apply="onQuanLiKiThiApply_cap2">
+							<template #default="{ activatorProps }">
+								<v-list-item v-bind="activatorProps" prepend-icon="mdi-clipboard-list-outline">
+									<v-list-item-title>Quản lí kì thi</v-list-item-title>
+									<v-list-item-subtitle>Đẩy điểm từ kì thi</v-list-item-subtitle>
+								</v-list-item>
+							</template>
+						</uc-dialog-quan-li-ki-thi-cap2>
 
-					<v-divider class="my-1" />
+						<uc-dialog-quan-li-ki-thi v-if="config.cap === 'cap3'" :classes="loadedClasses"
+							:nienKhoa="vueData.NienKhoa" :hoc-ky="selectedSemesterHocKy" :wsMeta="wsMeta"
+							:active-tab-meta="wsMeta[activeWsIdx]" @apply="onQuanLiKiThiApply">
+							<template #default="{ activatorProps }">
+								<v-list-item v-bind="activatorProps" prepend-icon="mdi-clipboard-list-outline">
+									<v-list-item-title>Quản lí kì thi</v-list-item-title>
+									<v-list-item-subtitle>Đẩy điểm từ kì thi</v-list-item-subtitle>
+								</v-list-item>
+							</template>
+						</uc-dialog-quan-li-ki-thi>
 
-					<!-- ✅ eTest chỉ hiện với cap3 TA2 mode -->
-					<uc-dialog-etest-exam v-if="isTA2Mode" :so-cau-dung-options="soCauDungOptions"
-						@apply="onEtestApply">
-						<template #default="{ activatorProps }">
-							<v-list-item v-bind="activatorProps" prepend-icon="mdi-file-import-outline">
-								<v-list-item-title>Import eTest</v-list-item-title>
-								<v-list-item-subtitle>Điền điểm từ file eTest</v-list-item-subtitle>
-							</v-list-item>
-						</template>
-					</uc-dialog-etest-exam>
+						<uc-dialog-thiet-lap-ki-nang :nienKhoa="vueData.NienKhoa" :classes="loadedClasses">
+							<template #default="{ activatorProps }">
+								<v-list-item v-bind="activatorProps" prepend-icon="mdi-cog-outline">
+									<v-list-item-title>Thiết lập kĩ năng</v-list-item-title>
+								</v-list-item>
+							</template>
+						</uc-dialog-thiet-lap-ki-nang>
+					</v-list>
+				</v-menu>
+				</div>
+			</div>
 
-					<uc-dialog-quan-li-ki-thi-cap2 v-if="config.cap === 'cap2'" :nienKhoa="vueData.NienKhoa"
-						:hoc-ky="selectedSemesterHocKy" :wsMeta="wsMeta" :active-tab-meta="wsMeta[activeWsIdx]"
-						@apply="onQuanLiKiThiApply_cap2">
-						<template #default="{ activatorProps }">
-							<v-list-item v-bind="activatorProps" prepend-icon="mdi-clipboard-list-outline">
-								<v-list-item-title>Quản lí kì thi</v-list-item-title>
-								<v-list-item-subtitle>Đẩy điểm từ kì thi</v-list-item-subtitle>
-							</v-list-item>
-						</template>
-					</uc-dialog-quan-li-ki-thi-cap2>
-
-					<uc-dialog-quan-li-ki-thi v-if="config.cap === 'cap3'" :classes="loadedClasses"
-						:nienKhoa="vueData.NienKhoa" :hoc-ky="selectedSemesterHocKy" :wsMeta="wsMeta"
-						:active-tab-meta="wsMeta[activeWsIdx]" @apply="onQuanLiKiThiApply">
-						<template #default="{ activatorProps }">
-							<v-list-item v-bind="activatorProps" prepend-icon="mdi-clipboard-list-outline">
-								<v-list-item-title>Quản lí kì thi</v-list-item-title>
-								<v-list-item-subtitle>Đẩy điểm từ kì thi</v-list-item-subtitle>
-							</v-list-item>
-						</template>
-					</uc-dialog-quan-li-ki-thi>
-
-					<uc-dialog-thiet-lap-ki-nang :nienKhoa="vueData.NienKhoa" :classes="loadedClasses">
-						<template #default="{ activatorProps }">
-							<v-list-item v-bind="activatorProps" prepend-icon="mdi-cog-outline">
-								<v-list-item-title>Thiết lập kĩ năng</v-list-item-title>
-							</v-list-item>
-						</template>
-					</uc-dialog-thiet-lap-ki-nang>
-				</v-list>
-			</v-menu>
-		</v-app-bar>
+			<!-- Cấp 2 chọn khối, cấp 3 chọn nhóm lớp; đặt cùng header để tab luôn hiện ngay trên bảng. -->
+			<div v-if="ready && wsMeta.length" class="d-flex align-center w-100 ga-2 px-2">
+				<span class="text-caption font-weight-medium text-white flex-shrink-0">
+					{{ config.cap === 'cap2' ? 'Khối:' : 'Nhóm lớp:' }}
+				</span>
+				<v-tabs v-model="activeWsIdx" color="white" density="compact" show-arrows class="flex-grow-1">
+					<!-- Nền trắng, chữ primary đậm phân biệt tab đang chọn khỏi các nhóm còn lại. -->
+					<v-tab v-for="(meta, idx) in wsMeta" :key="idx" :value="idx"
+						:class="idx === activeWsIdx ? 'bg-white text-primary font-weight-bold' : 'text-white'">
+						{{ meta.tabName ?? meta.cls?.name }}
+					</v-tab>
+				</v-tabs>
+			</div>
+		</div>
+	</v-toolbar>
 
 		<v-main>
 			<v-container v-if="!ready" class="fill-height d-flex align-center justify-center">
@@ -107,10 +137,6 @@
 			</v-container>
 
 			<div v-if="ready">
-				<v-tabs v-model="activeWsIdx" color="primary" density="compact">
-					<v-tab v-for="(meta, idx) in wsMeta" :key="idx" :value="idx">{{ meta.tabName ?? meta.cls?.name }}
-					</v-tab>
-				</v-tabs>
 				<v-divider />
 				<v-tabs-window v-model="activeWsIdx">
 					<v-tabs-window-item v-for="(meta, idx) in wsMeta" :key="idx" :value="idx">
@@ -217,12 +243,14 @@
 						}
 						// Sort khối theo khoiID tăng dần (K6→K9)
 						const sortedKhois = [...khoiMap.entries()].sort((a, b) => a[0] - b[0])
+						const allCap2Classes = sortedKhois.flatMap(([, khoiClasses]) => khoiClasses)
+						const allFetchResults = await this.fetchTemplateColsBatch(allCap2Classes)
+						const fetchResultsByClass = new Map(
+							allCap2Classes.map((cls, index) => [cls, allFetchResults[index]])
+						)
 
 						for (const [khoiID, khoiClasses] of sortedKhois) {
-							// Fetch data song song cho tất cả lớp trong khối
-							const fetchResults = await Promise.all(
-								khoiClasses.map(cls => this.fetchTemplateCols(cls.templateBangDiemID, cls))
-							)
+							const fetchResults = khoiClasses.map(cls => fetchResultsByClass.get(cls))
 							// Patch monHocLopID vào cls
 							fetchResults.forEach((res, i) => {
 								if (!khoiClasses[i].monHocLopID) khoiClasses[i].monHocLopID = res.monHocLopID
@@ -962,8 +990,32 @@
 			// ✅ Điền thẳng điểm từ API, không qua SoCauDung
 			// ════════════════════════════════════════════════
 
-			async onQuanLiKiThiApply_cap2({ studentScores }) {
-				const tabIdx = this.activeWsIdx
+			async onQuanLiKiThiApply_cap2({ studentScores, includeCambridge = false }) {
+				if (!studentScores?.size) return
+
+				// Cấp 2 chia worksheet theo khối; chọn tab có mã học sinh trùng dữ liệu kỳ thi thay vì mặc định tab đang mở.
+				const requestedStudentIDs = new Set([...studentScores.keys()].map(id => String(id)))
+				const tabCandidates = this.wsMeta.map((candidate, idx) => ({
+					idx,
+					matchCount: (candidate.students ?? []).reduce(
+						(count, student) => count + (requestedStudentIDs.has(String(student.id)) ? 1 : 0),
+						0
+					),
+				}))
+					.sort((a, b) => b.matchCount - a.matchCount ||
+						Number(b.idx === this.activeWsIdx) - Number(a.idx === this.activeWsIdx))
+				const targetTab = tabCandidates[0]
+				if (!targetTab || targetTab.matchCount === 0) {
+					alert('Không tìm thấy học sinh nào khớp trong các tab đã tải.')
+					return
+				}
+
+				const tabIdx = targetTab.idx
+				if (tabIdx !== this.activeWsIdx) {
+					this.activeWsIdx = tabIdx
+					await this.$nextTick()
+				}
+				if (!this.initializedTabs.has(tabIdx)) await new Promise(r => setTimeout(r, 300))
 				const meta = this.wsMeta[tabIdx]
 				const instance = this.instances[tabIdx]
 				if (!meta || !instance) return
@@ -1016,7 +1068,7 @@
 					}
 				}
 
-				// ── Pass 1: apply HK + CB scores thẳng ──
+				// ── Pass 1: apply HK scores và CB scores nếu checkbox đã bật ──
 				let matchCount = 0
 				for (const [hocSinhID, scoreObj] of studentScores) {
 					const rowIdx = rowMap.get(String(hocSinhID))
@@ -1034,44 +1086,47 @@
 					return
 				}
 
-				// ── Pass 2: CB_Point từ HK_Point (nếu chưa được map trực tiếp từ CB) ──
-				const cbPointDescs = scoreDescs.filter(d => d._isCambridgePoint && d._hkPointKey && d._diemMax)
-				for (const cbDesc of cbPointDescs) {
-					const hkDi = descMap.get(cbDesc._hkPointKey)
-					if (hkDi === undefined) continue
-					const hkCi = this.FREEZE_COLS + hkDi
-					const cbDi = descMap.get(cbDesc.key)
-					if (cbDi === undefined) continue
-					const cbCi = this.FREEZE_COLS + cbDi
+				// Chỉ quy đổi điểm HK sang cột Cambridge khi người dùng đã chủ động bật lấy Cambridge.
+				if (includeCambridge) {
+					// ── Pass 2: CB_Point từ HK_Point (nếu chưa được map trực tiếp từ CB) ──
+					const cbPointDescs = scoreDescs.filter(d => d._isCambridgePoint && d._hkPointKey && d._diemMax)
+					for (const cbDesc of cbPointDescs) {
+						const hkDi = descMap.get(cbDesc._hkPointKey)
+						if (hkDi === undefined) continue
+						const hkCi = this.FREEZE_COLS + hkDi
+						const cbDi = descMap.get(cbDesc.key)
+						if (cbDi === undefined) continue
+						const cbCi = this.FREEZE_COLS + cbDi
 
-					for (const rowIdxStr of Object.keys(allUpdates)) {
-						const rowIdx = Number(rowIdxStr)
-						if (allUpdates[rowIdx]?.[cbCi] !== undefined) continue
-						const hkVal = allUpdates[rowIdx]?.[hkCi] ?? ws.options?.data?.[rowIdx]?.[hkCi]
-						if (hkVal === null || hkVal === undefined || hkVal === '') continue
-						const cbVal = parseFloat((Number(hkVal) / cbDesc._diemMax * 100).toFixed(2))
-						applyAndRecord(rowIdx, cbDesc.key, cbVal)
+						for (const rowIdxStr of Object.keys(allUpdates)) {
+							const rowIdx = Number(rowIdxStr)
+							if (allUpdates[rowIdx]?.[cbCi] !== undefined) continue
+							const hkVal = allUpdates[rowIdx]?.[hkCi] ?? ws.options?.data?.[rowIdx]?.[hkCi]
+							if (hkVal === null || hkVal === undefined || hkVal === '') continue
+							const cbVal = parseFloat((Number(hkVal) / cbDesc._diemMax * 100).toFixed(2))
+							applyAndRecord(rowIdx, cbDesc.key, cbVal)
+						}
 					}
-				}
 
-				// ── Pass 3: CB_Conv ──
-				const cbConvDescs = scoreDescs.filter(d => d._isCambridgeConv && d._cbPointKey)
-				for (const cbConvDesc of cbConvDescs) {
-					const cbPtDi = descMap.get(cbConvDesc._cbPointKey)
-					if (cbPtDi === undefined) continue
-					const cbPtCi = this.FREEZE_COLS + cbPtDi
-					const cbConvDi = descMap.get(cbConvDesc.key)
-					if (cbConvDi === undefined) continue
-					const cbConvCi = this.FREEZE_COLS + cbConvDi
+					// ── Pass 3: CB_Conv ──
+					const cbConvDescs = scoreDescs.filter(d => d._isCambridgeConv && d._cbPointKey)
+					for (const cbConvDesc of cbConvDescs) {
+						const cbPtDi = descMap.get(cbConvDesc._cbPointKey)
+						if (cbPtDi === undefined) continue
+						const cbPtCi = this.FREEZE_COLS + cbPtDi
+						const cbConvDi = descMap.get(cbConvDesc.key)
+						if (cbConvDi === undefined) continue
+						const cbConvCi = this.FREEZE_COLS + cbConvDi
 
-					for (const rowIdxStr of Object.keys(allUpdates)) {
-						const rowIdx = Number(rowIdxStr)
-						if (allUpdates[rowIdx]?.[cbConvCi] !== undefined) continue
-						const cbPtVal = allUpdates[rowIdx]?.[cbPtCi] ?? ws.options?.data?.[rowIdx]?.[cbPtCi]
-						if (cbPtVal === null || cbPtVal === undefined || cbPtVal === '') continue
-						const cls = rowClassMap?.get(rowIdx) ?? meta.cls
-						const convVal = calcCambridgeConv(Number(cbPtVal), cls?.khoiID) ?? ''
-						if (convVal !== '') applyAndRecord(rowIdx, cbConvDesc.key, convVal)
+						for (const rowIdxStr of Object.keys(allUpdates)) {
+							const rowIdx = Number(rowIdxStr)
+							if (allUpdates[rowIdx]?.[cbConvCi] !== undefined) continue
+							const cbPtVal = allUpdates[rowIdx]?.[cbPtCi] ?? ws.options?.data?.[rowIdx]?.[cbPtCi]
+							if (cbPtVal === null || cbPtVal === undefined || cbPtVal === '') continue
+							const cls = rowClassMap?.get(rowIdx) ?? meta.cls
+							const convVal = calcCambridgeConv(Number(cbPtVal), cls?.khoiID) ?? ''
+							if (convVal !== '') applyAndRecord(rowIdx, cbConvDesc.key, convVal)
+						}
 					}
 				}
 
@@ -1097,31 +1152,34 @@
 					}
 				}
 
-				// ── Pass 5: CB_Avg_Point + CB_Avg_Conv ──
-				const cbAvgDesc = scoreDescs.find(d => d._isAvgPoint && d.key?.includes('_CB_'))
-				if (cbAvgDesc) {
-					const cbSkillDescs = scoreDescs.filter(d => d._isCambridgePoint)
-					const cbAvgDi = descMap.get(cbAvgDesc.key)
-					if (cbAvgDi !== undefined) {
-						for (const rowIdxStr of Object.keys(allUpdates)) {
-							const rowIdx = Number(rowIdxStr)
-							const vals = cbSkillDescs.map(d => {
-								const di = descMap.get(d.key)
-								if (di === undefined) return null
-								const ci = this.FREEZE_COLS + di
-								const v = allUpdates[rowIdx]?.[ci] ?? ws.options?.data?.[rowIdx]?.[ci]
-								return (v !== null && v !== undefined && v !== '') ? Number(v) : null
-							}).filter(v => v !== null && !isNaN(v))
-							if (!vals.length) continue
-							const cbAvg = parseFloat((vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2))
-							applyAndRecord(rowIdx, cbAvgDesc.key, cbAvg)
+				// Không tự tạo điểm hoặc xếp loại tổng Cambridge nếu người dùng không bật lấy Cambridge.
+				if (includeCambridge) {
+					// ── Pass 5: CB_Avg_Point + CB_Avg_Conv ──
+					const cbAvgDesc = scoreDescs.find(d => d._isAvgPoint && d.key?.includes('_CB_'))
+					if (cbAvgDesc) {
+						const cbSkillDescs = scoreDescs.filter(d => d._isCambridgePoint)
+						const cbAvgDi = descMap.get(cbAvgDesc.key)
+						if (cbAvgDi !== undefined) {
+							for (const rowIdxStr of Object.keys(allUpdates)) {
+								const rowIdx = Number(rowIdxStr)
+								const vals = cbSkillDescs.map(d => {
+									const di = descMap.get(d.key)
+									if (di === undefined) return null
+									const ci = this.FREEZE_COLS + di
+									const v = allUpdates[rowIdx]?.[ci] ?? ws.options?.data?.[rowIdx]?.[ci]
+									return (v !== null && v !== undefined && v !== '') ? Number(v) : null
+								}).filter(v => v !== null && !isNaN(v))
+								if (!vals.length) continue
+								const cbAvg = parseFloat((vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2))
+								applyAndRecord(rowIdx, cbAvgDesc.key, cbAvg)
 
-							const cbAvgConvKey = cbAvgDesc.key.replace('_Avg_Point', '_Avg_Conv')
-							const cbAvgConvDesc = scoreDescs.find(d => d.key === cbAvgConvKey)
-							if (cbAvgConvDesc) {
-								const cls = rowClassMap?.get(rowIdx) ?? meta.cls
-								const convVal = calcCambridgeConv(cbAvg, cls?.khoiID) ?? ''
-								if (convVal !== '') applyAndRecord(rowIdx, cbAvgConvDesc.key, convVal)
+								const cbAvgConvKey = cbAvgDesc.key.replace('_Avg_Point', '_Avg_Conv')
+								const cbAvgConvDesc = scoreDescs.find(d => d.key === cbAvgConvKey)
+								if (cbAvgConvDesc) {
+									const cls = rowClassMap?.get(rowIdx) ?? meta.cls
+									const convVal = calcCambridgeConv(cbAvg, cls?.khoiID) ?? ''
+									if (convVal !== '') applyAndRecord(rowIdx, cbAvgConvDesc.key, convVal)
+								}
 							}
 						}
 					}
@@ -1508,6 +1566,8 @@
 						const items = rows.map(row => ({
 							KQHTID: row._internal.kqhtID ?? 0,
 							KhoaCotDiemID: null,
+							// eTest xử lý phúc khảo: cho phép ghi đè điểm đã khóa nhưng giữ nguyên trạng thái khóa.
+							AllowLockedScoreOverwrite: 1,
 							HocSinhID: row._internal.hocSinhID,
 							CotDiemID: row._internal.cotDiemID,
 							KetQuaDanhGia_VI: row.newValue,
@@ -1620,6 +1680,22 @@
 				if (this._ieltsThietLapCache) return this._ieltsThietLapCache
 				const data = await fetchIeltsConfig(vueData.NienKhoa)
 				this._ieltsThietLapCache = data; return data
+			},
+
+			// Cap2 spans several grade tabs; bound concurrent class requests to reduce serial wait without flooding the API.
+			async fetchTemplateColsBatch(classes, maxConcurrent = 4) {
+				const results = new Array(classes.length)
+				let nextIndex = 0
+				const workerCount = Math.min(maxConcurrent, classes.length)
+				const workers = Array.from({ length: workerCount }, async () => {
+					while (nextIndex < classes.length) {
+						const index = nextIndex++
+						const cls = classes[index]
+						results[index] = await this.fetchTemplateCols(cls.templateBangDiemID, cls)
+					}
+				})
+				await Promise.all(workers)
+				return results
 			},
 
 			async fetchThietLapKiNang() {

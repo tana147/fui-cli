@@ -501,7 +501,8 @@
 					let manualScore = 0
 					const answerData = answers[question.id]?.answerData
 					//Nếu học sinh k trả lời bài thì return => ko cần tính cộng điểm
-					if (!answerData) continue
+					// Đáp án false vẫn là một câu trả lời hợp lệ của dạng đúng/sai.
+					if (answerData == null) continue
 
 					if (question.type === "QUIZ_SINGLE_CHOICE") {
 						if (question.config.correctAnswer == answerData) {
@@ -516,7 +517,8 @@
 						arr1.forEach(opt => { if (answerData.includes(opt)) correctIndex++ })
 						if (mode === 'partial') {
 							const partialMap = { 1: 0.1, 2: 0.25, 3: 0.5, 4: 1.0 }
-							manualScore = partialMap[correctIndex] ?? 0
+							// Bảng partial là tỷ lệ trên điểm tối đa của câu.
+							manualScore = (partialMap[correctIndex] ?? 0) * Number(question.points || 0)
 						} else {
 							manualScore = arr1.length ? Math.round((correctIndex / arr1.length) * question.points * 100) / 100 : 0
 						}
@@ -529,16 +531,19 @@
 						}
 					}
 					else if (question.type === "QUIZ_MULTIPLE_TRUE_FALSE") {
-						let flag = false
-						for (var option of question.config.options) {
-							if (option.correctAnswer === answerData[option.id]) {
-
-							}
+						// Chấm từng ý theo cùng quy tắc với luồng học sinh tự nộp bài;
+						// cờ flag cũ không được gán nên mọi câu dạng này từng nhận 0 điểm.
+						const options = question.config.options || []
+						const correctCount = options.filter(option => option.correctAnswer === answerData[option.id]).length
+						if (question.config.scoringMode === 'partial') {
+							const partialMap = { 1: 0.1, 2: 0.25, 3: 0.5, 4: 1.0 }
+							manualScore = (partialMap[correctCount] ?? 0) * Number(question.points || 0)
+						} else {
+							manualScore = options.length
+								? Math.round((correctCount / options.length) * Number(question.points || 0) * 100) / 100
+								: 0
 						}
-						if (flag) {
-							Score += question.points
-							manualScore = question.points
-						}
+						Score += manualScore
 					}
 					else if (question.type === "QUIZ_MATCHING") {
 						let numberOfCorrect = 0
@@ -552,7 +557,7 @@
 							}
 						})
 						const pts = Number(question?.points ?? 0)
-						manualScore = (numberOfCorrect / correctPairs.length) * pts
+						manualScore = correctPairs.length ? (numberOfCorrect / correctPairs.length) * pts : 0
 						Score += manualScore
 					}
 					else if (question.type === "QUIZ_FILL_IN_BLANK") {
@@ -560,11 +565,13 @@
 						const blanks = parts.filter(p => p.type === 'blank')
 						if (blanks.length === 0) {
 							manualScore = question.points
+							Score += manualScore
 						} else {
 							let correctsAnswer = 0
 							blanks.forEach(x => {
-								const answerToLowerCase = answerData[x.id].toLowerCase().trim() ?? ''
-								if (x.acceptedAnswers.map(item => item.toLowerCase().trim()).includes(answerToLowerCase)) {
+								// Ô chưa điền được tính sai, không làm dừng chấm cả bài.
+								const answerToLowerCase = String(answerData?.[x.id] ?? '').toLowerCase().trim()
+								if ((x.acceptedAnswers || []).map(item => String(item).toLowerCase().trim()).includes(answerToLowerCase)) {
 									correctsAnswer += 1
 								}
 							})

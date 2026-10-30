@@ -5,6 +5,13 @@
                 <v-card-title class="d-flex align-center">
                     {{ TitlePage }} • {{ TitleCap }}
                     <v-spacer />
+                    <!-- Chỉ hiện ở cấp 1; người dùng chọn học kỳ trước khi khóa tất cả lớp/môn trong kỳ đó. -->
+                    <v-btn v-if="Number(CapID) === 1" class="mr-2" color="warning" variant="outlined"
+                        prepend-icon="mdi-lock" :loading="bulkLockLoading"
+                        :disabled="bulkLockLoading || !vueData.NienKhoa"
+                        @click="onLockWholeLevel">
+                        {{ bulkLockLoading ? bulkLockPhase : 'Khóa cấp 1 theo kì' }}
+                    </v-btn>
                     <v-btn variant="outlined" color="primary" prepend-icon="mdi-reload" @click="onRefresh">
                         Làm mới
                     </v-btn>
@@ -144,6 +151,43 @@
             <v-textarea v-model="dialogMoKhoaSelected.LyDo" label="Lý do mở khóa" rows="3" auto-grow
                 placeholder="Nhập lý do mở khóa các cột điểm đã chọn..." />
         </uc-dialog>
+        <!-- Mỗi lần chỉ khóa một trong bốn kỳ đánh giá, trên toàn bộ lớp/môn cấp 1. -->
+        <v-dialog v-model="bulkLockPeriodDialog" max-width="460">
+            <v-card>
+                <v-card-title class="text-subtitle-1 font-weight-bold">Khóa cột điểm cấp 1 theo từng kỳ</v-card-title>
+                <v-card-text>
+                    <div class="text-body-2 mb-3">Chọn một kỳ cần khóa trong niên khóa {{ vueData.NienKhoa }}.</div>
+                    <v-radio-group v-model="bulkLockSelectedPeriod" hide-details>
+                        <v-radio v-for="item in bulkLockPeriodOptions" :key="item.value"
+                            :label="item.title" :value="item.value" />
+                    </v-radio-group>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn variant="text" @click="bulkLockPeriodDialog = false">Đóng</v-btn>
+                    <v-btn color="primary" :disabled="!bulkLockSelectedPeriod" @click="onConfirmBulkLockPeriod">
+                        Tiếp tục
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <!-- Giữ tiến trình trên màn hình sau khi xác nhận để người dùng theo dõi từng giai đoạn xử lý. -->
+        <v-dialog v-model="bulkLockProgressVisible" max-width="440" persistent>
+            <v-card class="pa-5">
+                <div class="d-flex align-center">
+                    <v-progress-circular indeterminate color="primary" size="28" width="3" class="mr-3" />
+                    <div class="text-subtitle-1 font-weight-bold">Đang khóa cột điểm cấp 1</div>
+                </div>
+                <div class="text-body-2 mt-4">{{ bulkLockPhase }}</div>
+                <v-progress-linear :model-value="bulkLockProgressPercent" color="primary" rounded height="8"
+                    class="mt-2" />
+                <div class="d-flex justify-space-between text-caption text-medium-emphasis mt-2">
+                    <span>{{ bulkLockProgressDetail }}</span>
+                    <span>{{ bulkLockProgressPercent }}%</span>
+                </div>
+            </v-card>
+        </v-dialog>
     </Global>
 </template>
 
@@ -162,6 +206,19 @@
             searchDebounceTimer: null,
             selectedSubjectNodeId: null,
             loadingTable: false,
+            bulkLockLoading: false,
+            bulkLockPhase: '',
+            bulkLockPeriodDialog: false,
+            bulkLockSelectedPeriod: null,
+            bulkLockPeriodOptions: [
+                { title: 'GKHK1 · GK_HK1', value: 'GKHK1' },
+                { title: 'CKHK1 · CK_HK1', value: 'CKHK1' },
+                { title: 'GKHK2 · GK_HK2', value: 'GKHK2' },
+                { title: 'CKHK2 · CK_HK2', value: 'CKHK2' },
+            ],
+            bulkLockProgressVisible: false,
+            bulkLockProgressPercent: 0,
+            bulkLockProgressDetail: '',
             treeSubjectMap: {},
             DSLop: [],
             LopItem: null,
@@ -309,9 +366,37 @@
             const monHocLopIDNum = Number(monHocLopID || 0)
             return `${monHocLopIDNum}__${this.normalizeMaCotDiem(maCotDiem || '')}`
         },
+        // TAPI có thể trả bit dạng số hoặc chuỗi; xử lý "0" rõ ràng để không coi nó là true.
+        isLockedFlag(value) {
+            if (typeof value === 'string') {
+                return !['', '0', 'false', 'no', 'n', 'null', 'undefined'].includes(value.trim().toLowerCase())
+            }
+            return !!value
+        },
+        isEnabledScoreColumn(column) {
+            if (!column || column.Enable === undefined || column.Enable === null || column.Enable === '') return true
+            return !['0', 'false', 'no', 'n', 'disabled'].includes(String(column.Enable).trim().toLowerCase())
+        },
+        // Một số API trả danh sách phẳng, một số trả nhiều result set; gom các dòng object để dùng chung an toàn.
+        getBulkRows(response) {
+            const payload = response?.data ?? response ?? []
+            const rows = []
+            const visit = value => {
+                if (Array.isArray(value)) {
+                    value.forEach(visit)
+                } else if (value && typeof value === 'object') {
+                    rows.push(value)
+                }
+            }
+            visit(payload)
+            return rows
+        },
         pickKhoaInfo(current, next) {
             if (!current) return next
-            if (Number(next.KhoaCotDiemID || 0) > Number(current.KhoaCotDiemID || 0)) {
+            const nextID = Number(next.KhoaCotDiemID || 0)
+            const currentID = Number(current.KhoaCotDiemID || 0)
+            // Dùng bản ghi mới nhất; nếu cùng ID thì giữ trạng thái đã khóa để tránh bỏ sót giữa các nhóm.
+            if (nextID > currentID || (nextID === currentID && next.TinhTrang && !current.TinhTrang)) {
                 return next
             }
             return current
@@ -527,7 +612,7 @@
                 const khoaMap = dsKhoaCotDiem.reduce((acc, item) => {
                     const key = this.getKhoaKey(item.MonHocLopID, item.MaCotDiem)
                     const nextInfo = {
-                        TinhTrang: !!item.TinhTrang,
+                        TinhTrang: this.isLockedFlag(item.TinhTrang),
                         KhoaCotDiemID: Number(item.KhoaCotDiemID || 0),
                     }
                     acc[key] = this.pickKhoaInfo(acc[key], nextInfo)
@@ -557,7 +642,7 @@
                         : Number(rowMonHocLopID || inferredMonHocLopID || this.MonHocItem.MonHocLopID || 0)
                     const maCotDiemSave = this.normalizeMaCotDiem(maCotDiemDisplay)
                     const khoaInfo = khoaMap[this.getKhoaKey(monHocLopID, maCotDiemDisplay)] || {}
-                    const isLocked = !!khoaInfo.TinhTrang
+                    const isLocked = this.isLockedFlag(khoaInfo.TinhTrang)
                     return {
                         RowKey: `${monHocLopID}_${maCotDiemDisplay}_${index}`,
                         STT: index + 1,
@@ -589,6 +674,360 @@
             const isDimmed = !!row.IsLocked !== this.selectedStatusFilter
             return isDimmed ? { class: 'row-dimmed' } : {}
         },
+        // Mỗi mã nhóm tương ứng một kỳ đánh giá; chỉ tải học kỳ chứa kỳ được chọn.
+        getBulkLockPeriodConfig(value) {
+            const groupCode = String(value || '')
+            const periodByGroupCode = {
+                GKHK1: { Value: 1, Code: 'HK1', ColumnSuffix: 'GK_HK1' },
+                CKHK1: { Value: 1, Code: 'HK1', ColumnSuffix: 'CK_HK1' },
+                GKHK2: { Value: 2, Code: 'HK2', ColumnSuffix: 'GK_HK2' },
+                CKHK2: { Value: 2, Code: 'HK2', ColumnSuffix: 'CK_HK2' },
+            }
+            const period = periodByGroupCode[groupCode]
+            return period ? { ...period, GroupCode: groupCode } : null
+        },
+        // Nhóm cấu hình và mã cột là hai mã riêng; kỳ được chọn khớp theo suffix của MaCotDiem.
+        isBulkLockColumnForPeriod(maCotDiem, period) {
+            const code = String(maCotDiem || '').trim().toUpperCase()
+            const suffix = String(period?.ColumnSuffix || '').trim().toUpperCase()
+            return !!suffix && code.endsWith(suffix)
+        },
+        setBulkLockProgress(phase, completed, total) {
+            const safeTotal = Math.max(0, Number(total || 0))
+            const safeCompleted = Math.min(safeTotal, Math.max(0, Number(completed || 0)))
+            this.bulkLockPhase = phase
+            this.bulkLockProgressPercent = safeTotal ? Math.round((safeCompleted / safeTotal) * 100) : 0
+            this.bulkLockProgressDetail = safeTotal ? `${safeCompleted}/${safeTotal} yêu cầu` : 'Đang chuẩn bị'
+        },
+        async fetchBulkRequests(requests, phase) {
+            const results = []
+            const batchSize = 20
+            let completed = 0
+            this.setBulkLockProgress(phase, 0, requests.length)
+            for (let start = 0; start < requests.length; start += batchSize) {
+                const batch = requests.slice(start, start + batchSize)
+                const batchResults = await Promise.allSettled(batch.map(async request => {
+                    try {
+                        return await fetchPromise(request.url, request.params, { cache: false })
+                    } finally {
+                        completed++
+                        this.setBulkLockProgress(phase, completed, requests.length)
+                    }
+                }))
+                const failed = batchResults.find(result => result.status === 'rejected')
+                if (failed) throw failed.reason
+                results.push(...batchResults.map(result => result.value))
+            }
+            return results
+        },
+        // Cây bên trái chỉ tải học kỳ đang mở; thao tác toàn cấp tự tải đủ lớp/môn cho kỳ người dùng chọn.
+        async collectCap1LockTargets(groupCode) {
+            const period = this.getBulkLockPeriodConfig(groupCode)
+            if (!period) throw new Error('Vui lòng chọn kỳ đánh giá')
+            const subjectEntries = []
+            const seenSubjects = new Set()
+            const templateIDs = new Map()
+            let skippedSubjects = 0
+
+            this.setBulkLockProgress(`Đang tải khối ${period.Code}`, 0, 1)
+            const resKhoi = await fetchPromise('lms/KhoiHocByCapHoc_Get', {
+                CapID: 1,
+                HocKi: period.Value,
+                NienKhoa: vueData.NienKhoa,
+            })
+            this.setBulkLockProgress(`Đang tải khối ${period.Code}`, 1, 1)
+            const dsKhoi = this.getBulkRows(resKhoi)
+            const classResponses = await this.fetchBulkRequests(dsKhoi.map(khoi => ({
+                url: 'lms/Lop_Get_ByKhoiID',
+                params: { NienKhoa: vueData.NienKhoa, HocKi: period.Value, KhoiID: khoi.KhoiID },
+            })), `Đang tải lớp ${period.Code}`)
+            const classEntries = []
+            dsKhoi.forEach((khoi, index) => {
+                this.getBulkRows(classResponses[index]).forEach(lop => {
+                    classEntries.push({
+                        Lop: {
+                            ...lop,
+                            TenLopDisplay: `${lop.TenLop} (${khoi.TenKhoiHoc})`,
+                            TenKhoiHoc: khoi.TenKhoiHoc,
+                            KhoiID: khoi.KhoiID,
+                        },
+                    })
+                })
+            })
+
+            const subjectResponses = await this.fetchBulkRequests(classEntries.map(({ Lop }) => ({
+                url: 'lms/MonHoc_Get_ByLopID_BoMon',
+                params: { LopID: Lop.LopID, NienKhoa: vueData.NienKhoa, HocKi: period.Value },
+            })), `Đang tải môn ${period.Code}`)
+            classEntries.forEach(({ Lop }, index) => {
+                this.getBulkRows(subjectResponses[index]).forEach(mon => {
+                    const MonHoc = {
+                        ...mon,
+                        TenMonHoc: mon.TenMonHoc_HienThi || mon.TenMonHoc || '',
+                    }
+                    const templateID = MonHoc.TemplateBangDiemID
+                    if (!Lop.LopID) return
+                    if (!MonHoc.MonHocLopID || templateID === undefined || templateID === null || templateID === '') {
+                        skippedSubjects++
+                        return
+                    }
+
+                    const subjectKey = `${Lop.LopID}__${MonHoc.MonHocLopID}`
+                    if (seenSubjects.has(subjectKey)) return
+                    seenSubjects.add(subjectKey)
+                    subjectEntries.push({ Lop, MonHoc })
+                    templateIDs.set(String(templateID), templateID)
+                })
+            })
+
+            const templates = Array.from(templateIDs.values())
+            const groupResponses = await this.fetchBulkRequests(templates.map(TemplateBangDiemID => ({
+                url: 'lms/NhomCauTrucDiem_Get_ByTemplateBangDiemID',
+                params: { TemplateBangDiemID },
+            })), 'Đang tải nhóm cột')
+            const groupsByTemplate = new Map()
+            templates.forEach((TemplateBangDiemID, index) => {
+                groupsByTemplate.set(String(TemplateBangDiemID), this.getBulkRows(groupResponses[index])
+                    .filter(group => group.Semester === period.Code))
+            })
+
+            const templateGroups = new Map()
+            subjectEntries.forEach(({ MonHoc }) => {
+                const templateKey = String(MonHoc.TemplateBangDiemID)
+                ;(groupsByTemplate.get(templateKey) || []).forEach(group => {
+                    const groupKey = `${templateKey}__${group.MaNhomCotDiem}`
+                    if (!templateGroups.has(groupKey)) {
+                        templateGroups.set(groupKey, { TemplateBangDiemID: MonHoc.TemplateBangDiemID, group })
+                    }
+                })
+            })
+
+            const templateGroupEntries = Array.from(templateGroups.entries())
+            const columnResponses = await this.fetchBulkRequests(templateGroupEntries.map(([, entry]) => ({
+                url: 'lms/CotDiem_Get_ByTemplateBangDiemID_MaNhom',
+                params: {
+                    TemplateBangDiemID: entry.TemplateBangDiemID,
+                    MaNhomCotDiem: entry.group.MaNhomCotDiem,
+                },
+            })), 'Đang tải danh sách cột')
+            const columnsByGroup = new Map()
+            templateGroupEntries.forEach(([groupKey], index) => {
+                columnsByGroup.set(groupKey, this.getBulkRows(columnResponses[index])
+                    .filter(column => this.isEnabledScoreColumn(column) && this.isBulkLockColumnForPeriod(column.MaCotDiem, period)))
+            })
+
+            const contexts = []
+            subjectEntries.forEach(({ Lop, MonHoc }) => {
+                const templateKey = String(MonHoc.TemplateBangDiemID)
+                ;(groupsByTemplate.get(templateKey) || []).forEach(group => {
+                    const groupKey = `${templateKey}__${group.MaNhomCotDiem}`
+                    const columns = columnsByGroup.get(groupKey) || []
+                    if (columns.length) contexts.push({ Lop, MonHoc, group, columns })
+                })
+            })
+
+            const candidateKeys = new Set()
+            contexts.forEach(({ Lop, MonHoc, columns }) => columns.forEach(column => {
+                const maCotDiem = this.normalizeMaCotDiem(String(column.MaCotDiem || ''))
+                if (Lop.LopID && MonHoc.MonHocLopID && maCotDiem) {
+                    candidateKeys.add(`${Lop.LopID}__${this.getKhoaKey(MonHoc.MonHocLopID, maCotDiem)}`)
+                }
+            }))
+            return {
+                contexts,
+                candidateCount: candidateKeys.size,
+                classCount: new Set(subjectEntries.map(entry => String(entry.Lop.LopID))).size,
+                subjectCount: new Set(subjectEntries.map(entry => `${entry.Lop.LopID}__${entry.MonHoc.MonHocLopID}`)).size,
+                skippedSubjects,
+                period,
+            }
+        },
+        // Chỉ tra trạng thái sau khi người dùng xác nhận; KhoaCotDiem_Get có thể ghi bản ghi phụ trợ.
+        async resolveCap1LockTargets(contexts) {
+            const statusRequests = contexts.map(({ Lop, MonHoc, group }) => ({
+                url: 'lms/KhoaCotDiem_Get',
+                params: {
+                    LopID: Lop.LopID,
+                    MonHocLopID: MonHoc.MonHocLopID,
+                    MaNhomCotDiem: group.MaNhomCotDiem,
+                    NienKhoa: vueData.NienKhoa,
+                    Semester: group.Semester,
+                },
+            }))
+            const groupCode = contexts[0]?.group?.MaNhomCotDiem || ''
+            const statusResponses = await this.fetchBulkRequests(statusRequests, `Đang kiểm tra ${groupCode}`)
+            const targetMap = new Map()
+
+            contexts.forEach((context, index) => {
+                const khoaMap = {}
+                const monHocLopByDisplayMap = {}
+                this.getBulkRows(statusResponses[index]).forEach(item => {
+                    const maCotDiemDisplay = String(item.MaCotDiem || '')
+                    if (!maCotDiemDisplay) return
+                    const khoaCotDiemID = Number(item.KhoaCotDiemID || 0)
+                    const nextInfo = {
+                        TinhTrang: this.isLockedFlag(item.TinhTrang),
+                        KhoaCotDiemID: khoaCotDiemID,
+                    }
+                    const key = this.getKhoaKey(item.MonHocLopID, maCotDiemDisplay)
+                    khoaMap[key] = this.pickKhoaInfo(khoaMap[key], nextInfo)
+
+                    const current = monHocLopByDisplayMap[maCotDiemDisplay]
+                    const next = {
+                        MonHocLopID: Number(item.MonHocLopID || 0),
+                        KhoaCotDiemID: khoaCotDiemID,
+                    }
+                    if (!current || next.KhoaCotDiemID >= current.KhoaCotDiemID) {
+                        monHocLopByDisplayMap[maCotDiemDisplay] = next
+                    }
+                })
+
+                context.columns.forEach(column => {
+                    const maCotDiemDisplay = String(column.MaCotDiem || '')
+                    const inferredMonHocLopID = monHocLopByDisplayMap[maCotDiemDisplay]?.MonHocLopID || 0
+                    const rowMonHocLopID = Number(context.MonHoc.MonHocLopID || 0)
+                    const monHocLopID = this.hasNumericPrefix(maCotDiemDisplay)
+                        ? Number(inferredMonHocLopID || rowMonHocLopID)
+                        : Number(rowMonHocLopID || inferredMonHocLopID)
+                    const maCotDiem = this.normalizeMaCotDiem(maCotDiemDisplay)
+                    if (!context.Lop.LopID || !monHocLopID || !maCotDiem) return
+
+                    const status = khoaMap[this.getKhoaKey(monHocLopID, maCotDiemDisplay)] || {}
+                    const targetKey = `${context.Lop.LopID}__${this.getKhoaKey(monHocLopID, maCotDiem)}`
+                    const target = targetMap.get(targetKey) || {
+                        LopID: context.Lop.LopID,
+                        MonHocLopID: monHocLopID,
+                        MaCotDiem: maCotDiem,
+                        KhoaCotDiemID: 0,
+                        IsLocked: false,
+                    }
+                    const statusID = Number(status.KhoaCotDiemID || 0)
+                    if (statusID > target.KhoaCotDiemID) target.KhoaCotDiemID = statusID
+                    target.IsLocked = target.IsLocked || this.isLockedFlag(status.TinhTrang)
+                    targetMap.set(targetKey, target)
+                })
+            })
+
+            return Array.from(targetMap.values())
+        },
+        onLockWholeLevel() {
+            if (Number(this.CapID) !== 1 || this.bulkLockLoading) return
+            if (!vueData.NienKhoa) {
+                this.snackbarRef.value.showSnackbar({ message: 'Vui lòng chọn niên khóa trước khi khóa toàn cấp 1', color: 'warning' })
+                return
+            }
+
+            this.bulkLockSelectedPeriod = null
+            this.bulkLockPeriodDialog = true
+        },
+        async onConfirmBulkLockPeriod() {
+            if (Number(this.CapID) !== 1 || this.bulkLockLoading) return
+            const period = this.getBulkLockPeriodConfig(this.bulkLockSelectedPeriod)
+            if (!period) {
+                this.snackbarRef.value.showSnackbar({ message: 'Vui lòng chọn kỳ đánh giá cần khóa', color: 'warning' })
+                return
+            }
+
+            this.bulkLockPeriodDialog = false
+            this.bulkLockLoading = true
+            this.bulkLockPhase = 'Chờ xác nhận'
+            this.bulkLockProgressPercent = 0
+            this.bulkLockProgressDetail = ''
+            const groupCode = period.GroupCode
+            try {
+                await this.$nextTick()
+                const ok = await this._confirm()?.show({
+                    title: `Khóa cấp 1 · ${groupCode} · ${period.ColumnSuffix}`,
+                    message: `Áp dụng cho tất cả lớp và môn trong niên khóa ${vueData.NienKhoa}, kỳ ${period.Code}, mã cột có suffix ${period.ColumnSuffix} (${groupCode}). Sẽ giữ nguyên cột đã khóa và khóa các cột còn mở.`,
+                    type: 'confirm',
+                })
+                if (!ok) return
+
+                this.bulkLockProgressVisible = true
+                this.setBulkLockProgress(`Đang chuẩn bị khóa ${period.ColumnSuffix}`, 0, 1)
+                const summary = await this.collectCap1LockTargets(groupCode)
+                if (!summary.candidateCount) {
+                    this.snackbarRef.value.showSnackbar({ message: `Không tìm thấy cột điểm có suffix ${period.ColumnSuffix} trong ${period.Code}`, color: 'warning' })
+                    return
+                }
+
+                const targets = await this.resolveCap1LockTargets(summary.contexts)
+                const toLock = targets.filter(target => !target.IsLocked)
+                if (!targets.length) {
+                    this.snackbarRef.value.showSnackbar({ message: `Không đọc được trạng thái cột điểm của ${groupCode}`, color: 'warning' })
+                    return
+                }
+                if (!toLock.length) {
+                    this.snackbarRef.value.showSnackbar({ message: `Toàn bộ ${targets.length} cột điểm thuộc ${groupCode} đã được khóa`, color: 'info' })
+                    return
+                }
+
+                // Giữ nguyên bản ghi khóa đã có để bảo toàn lịch sử; chỉ tạo mới cho cột chưa có bản ghi.
+                const writeRequests = toLock.map(target => target.KhoaCotDiemID
+                    ? {
+                        url: 'lms/KhoaCotDiem_TinhTrang_Upd_ByKhoaCotDiem',
+                        params: { KhoaCotDiemID: target.KhoaCotDiemID, TinhTrang: 1, LyDo: '' },
+                    }
+                    : {
+                        url: 'lms/KhoaCotDiem_Ins_And_Upd',
+                        params: {
+                            LopID: target.LopID,
+                            MonHocLopID: target.MonHocLopID,
+                            MaCotDiem: target.MaCotDiem,
+                            IsKhoaCotDiem: true,
+                        },
+                    })
+
+                let successCount = 0
+                let failedCount = 0
+                let completedCount = 0
+                const batchSize = 20
+                this.setBulkLockProgress(`Đang khóa ${period.ColumnSuffix}`, 0, writeRequests.length)
+                for (let start = 0; start < writeRequests.length; start += batchSize) {
+                    const batch = writeRequests.slice(start, start + batchSize)
+                    await Promise.all(batch.map(async request => {
+                        try {
+                            await fetchPromise(request.url, request.params, { cache: false })
+                            successCount++
+                        } catch (error) {
+                            failedCount++
+                        } finally {
+                            completedCount++
+                            this.setBulkLockProgress(`Đang khóa ${period.ColumnSuffix}`, completedCount, writeRequests.length)
+                            this.bulkLockProgressDetail = `${completedCount}/${writeRequests.length} · thành công ${successCount} · lỗi ${failedCount}`
+                        }
+                    }))
+                }
+
+                if (failedCount) {
+                    this.snackbarRef.value.showSnackbar({
+                        message: `Đã khóa ${successCount}/${writeRequests.length} cột thuộc ${groupCode} (${period.ColumnSuffix}); ${failedCount} cột lỗi, vui lòng làm mới và thử lại.`,
+                        color: 'warning',
+                    })
+                } else {
+                    this.snackbarRef.value.showSnackbar({
+                        message: `Đã khóa ${successCount} cột điểm cấp 1 thuộc ${groupCode} (${period.ColumnSuffix})`,
+                        color: 'success',
+                    })
+                }
+
+                if (this.LopItem && this.MonHocItem && this.MaNhomCotDiemItem) {
+                    this.setBulkLockProgress('Đang làm mới danh sách đang xem', 0, 1)
+                    await this.getDS()
+                    this.setBulkLockProgress('Đang làm mới danh sách đang xem', 1, 1)
+                }
+            } catch (error) {
+                this.snackbarRef.value.showSnackbar({
+                    message: `Không thể khóa cột điểm cấp 1 thuộc ${groupCode}${error?.message ? ': ' + error.message : ''}`,
+                    color: 'error',
+                })
+            } finally {
+                this.bulkLockLoading = false
+                this.bulkLockProgressVisible = false
+                this.bulkLockPhase = ''
+            }
+        },
+        
         async lockItem(item) {
             if (item.KhoaCotDiemID) {
                 await fetchPromise('lms/KhoaCotDiem_TinhTrang_Upd_ByKhoaCotDiem', {

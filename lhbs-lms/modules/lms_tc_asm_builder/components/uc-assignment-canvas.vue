@@ -337,7 +337,7 @@
 		canImportFromHocLieu: { type: Boolean, default: false },
 		assignment: { type: Object, default: () => ({}) }
 	},
-		emits: ['update:groups', 'update:selectedItem', 'open-group-import', 'remove-group', 'remove-question'],
+	emits: ['update:groups', 'update:selectedItem', 'open-group-import'],
 	data() {
 		return {
 			draggedQuestion: null, // { groupIndex, qIndex, question }
@@ -1152,11 +1152,9 @@
 			const group = this.groups[groupIndex];
 			if (!group) return;
 			if ((group.questions || []).length === 0) {
-				// Cả phần rỗng vẫn có thể đang giữ video/file ở cấp phần.
-				this.$emit('remove-group', {
-					groupIndex,
-					group: JSON.parse(JSON.stringify(group)),
-				});
+				const newGroups = this.groups.filter((_, index) => index !== groupIndex);
+				this.$emit('update:groups', newGroups);
+				this.$emit('update:selectedItem', null);
 				return;
 			}
 			if (this.confirmRef?.value?.show) {
@@ -1169,23 +1167,15 @@
 				const ok = window.confirm(this.IsEngLish ? `Are you sure you want to delete "${group.title || 'this section'}"?` : `Bạn có chắc muốn xóa toàn bộ "${group.title || 'Phần này'}" không?`);
 				if (!ok) return;
 			}
-			// Parent chịu trách nhiệm dọn media vật lý trước khi bỏ phần khỏi JSON.
-			// Nếu phần/câu được import từ Content Hub, parent chỉ gỡ liên kết nguồn.
-			this.$emit('remove-group', {
-				groupIndex,
-				group: JSON.parse(JSON.stringify(group)),
-			});
+			const newGroups = this.groups.filter((_, index) => index !== groupIndex);
+			this.$emit('update:groups', newGroups);
+			this.$emit('update:selectedItem', null);
 		},
 		removeQuestion(groupIndex, qIndex) {
-			const question = this.groups?.[groupIndex]?.questions?.[qIndex];
-			if (!question) return;
-			// Không xóa trực tiếp tại canvas: parent cần phân biệt file upload của bài
-			// với media chỉ được tham chiếu từ Content Hub trước khi cập nhật groups.
-			this.$emit('remove-question', {
-				groupIndex,
-				qIndex,
-				question: JSON.parse(JSON.stringify(question)),
-			});
+			const newGroups = JSON.parse(JSON.stringify(this.groups));
+			newGroups[groupIndex].questions.splice(qIndex, 1);
+			this.$emit('update:groups', newGroups);
+			this.$emit('update:selectedItem', null);
 		},
 		renderPointInGroup(group) {
 			return this.formatNumber(this.getEffectiveGroupScore(group), 2)

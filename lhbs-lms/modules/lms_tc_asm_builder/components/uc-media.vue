@@ -208,12 +208,6 @@
     methods: {
         getUploadManager() { return window.UploadManager },
         sourceKey(source) { return String(source?.externalId || source?.id || source?.source || '') },
-        isProtectedImportedSource(source) {
-            const sourceTypes = [source?.sourceTracking?.sourceType, source?.sourceType, source?.origin, this.item?.sourceTracking?.sourceType]
-            // Content Hub/Học liệu số là kho dùng chung; thao tác xóa tại bài tập
-            // chỉ tháo liên kết, không được xóa file gốc ở kho hoặc bên thứ ba.
-            return sourceTypes.some(type => ['CONTENT_HUB', 'HOC_LIEU_SO'].includes(String(type || '').trim().toUpperCase()))
-        },
         // Video/audio là ô media đơn; upload lại phải dọn liên kết, node tài nguyên và file vật lý cũ
         // thành công trước khi bắt đầu upload bản mới. File/ảnh vẫn là danh sách nên được phép append.
         async clearExistingSingleMediaBeforeUpload(typeMedia) {
@@ -598,13 +592,6 @@
         async removeSource(source, removeLocal) {
             try {
                 this.setLoading(true, 'Đang xóa media...')
-                // Media import từ Content Hub không thuộc quyền sở hữu của bài tập.
-                // Gỡ liên kết local là đủ và tránh xóa nhầm tài sản dùng chung.
-                if (this.isProtectedImportedSource(source)) {
-                    removeLocal()
-                    this.emitUpdate()
-                    return true
-                }
                 const manager = this.getUploadManager()
                 // Xóa node tài nguyên trước để không còn node trỏ tới file đã bị xóa.
                 if (source?.resourceNodeId) {
@@ -623,13 +610,18 @@
                     const token = await fetchPromise('lms/FP_Youtube_Token_Get', {}, { forceRefresh: true, cache: false })
                     await this.deleteExternalWithManager(manager, 'deleteFromGoogleDrive', externalId, token?.access_token)
                 }
-                // File upload được lưu ở LMS FileData dù đã có resourceNodeId;
-                // xóa node chỉ gỡ liên kết tài nguyên, không tự đảm bảo xóa file vật lý.
-                const dbFileId = source?.dbFileId || (source?.mediaSource === 'db' ? source.id : '')
-                if (dbFileId) await manager.deleteLmsFileData(dbFileId)
-                if (source?.resourceFileId && source.resourceFileId !== dbFileId) {
-                    // Tương thích dữ liệu cũ từng lưu bản sao bằng API LMS File.
-                    await manager.deleteLmsFile(source.resourceFileId)
+                if (!source?.resourceNodeId) {
+                    // Khi không có node tài nguyên cũ, dọn trực tiếp LMS FileData sau khi đã xóa Drive.
+                    if (source?.id && source.mediaSource === 'db') {
+                        await manager.deleteLmsFileData(source.id)
+                    }
+                    if (source?.dbFileId && source.dbFileId !== source.id) {
+                        await manager.deleteLmsFileData(source.dbFileId)
+                    }
+                    if (source?.resourceFileId) {
+                        // Tương thích dữ liệu cũ từng lưu bản sao vào FileData.
+                        await manager.deleteLmsFile(source.resourceFileId)
+                    }
                 }
                 removeLocal()
                 this.emitUpdate()

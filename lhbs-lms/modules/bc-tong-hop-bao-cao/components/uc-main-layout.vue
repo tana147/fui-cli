@@ -73,6 +73,12 @@
 						value: "BaoCao_ChiTietID",
 						align: "center",
 					},
+					// Hiển thị niên khóa vì các dòng lịch sử và dòng của năm mới cùng nằm trong danh sách.
+					{
+						title: "Niên khóa",
+						value: "NienKhoa",
+						align: "center",
+					},
 					// {
 					// 	title: "Tên báo cáo",
 					// 	value: "TenBaoCao_ChiTiet"

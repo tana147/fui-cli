@@ -88,6 +88,75 @@
 			</div>
 		</div>
 
+		<!-- Bộ chọn và mô tả phạm vi là một nhóm; nút xuất đứng riêng để tránh khoảng trống lớn giữa các tác vụ trên màn rộng. -->
+		<v-row dense align="center" class="mb-2">
+			<v-col cols="12" md="9">
+				<div class="d-flex align-center flex-wrap ga-3">
+					<v-btn-toggle v-model="reportPeriodMode" mandatory color="primary" density="compact" variant="outlined">
+						<v-btn value="range">Toàn khoảng ngày</v-btn>
+						<v-btn value="weekly">Theo tháng / tuần</v-btn>
+					</v-btn-toggle>
+					<div class="text-caption text-medium-emphasis">
+						<div class="text-body-2 font-weight-bold">Bộ lọc thời gian báo cáo</div>
+						<div v-if="weeklyReportLoading">Đang tổng hợp các tuần...</div>
+						<div v-else-if="weeklyReportError" class="text-error">Không tải được dữ liệu tuần</div>
+						<div v-else-if="reportPeriodMode === 'weekly' && activeWeeklyWeek">
+							{{ activeWeeklyWeek.title }} · {{ activeWeeklyWeek.rows.length }} lượt lớp–môn–giáo viên chưa giao
+						</div>
+						<div v-else-if="reportPeriodMode === 'weekly'">
+							{{ dashboardDateRange.label }} · Không có lượt lớp–môn–giáo viên chưa giao
+						</div>
+						<div v-else>
+							Toàn khoảng ngày · {{ dashboardDateRange.label }} · {{ weeklyMissingAssignments.length }} lượt lớp–môn–giáo viên chưa giao
+						</div>
+					</div>
+				</div>
+			</v-col>
+			<v-col cols="12" md="3" class="d-flex justify-end">
+				<v-btn color="success" variant="tonal" prepend-icon="mdi-microsoft-excel"
+					:loading="weeklyReportLoading" :disabled="!CapID || !NgayBatDau || !NgayKetThuc"
+					@click="exportWeeklyMissingHomework">
+					{{ weeklyReportError ? 'Tải lại' : 'Xuất Excel' }}
+				</v-btn>
+			</v-col>
+		</v-row>
+		<template v-if="reportPeriodMode === 'weekly'">
+			<v-tabs v-if="weeklyMissingGroups.length" v-model="weeklySelectedMonth" color="primary"
+				density="compact" show-arrows center-active align-tabs="start">
+				<v-tab v-for="month in weeklyMissingGroups" :key="month.key" :value="month.key"
+					:class="weeklySelectedMonth === month.key ? 'bg-green-lighten-5' : ''">
+					{{ month.title }}
+					<v-chip size="x-small" color="warning" variant="tonal" label class="ml-2">{{ month.count }}</v-chip>
+				</v-tab>
+			</v-tabs>
+			<v-divider v-if="activeWeeklyMonth" />
+			<v-tabs v-if="activeWeeklyMonth" v-model="weeklySelectedWeek" color="primary"
+				density="compact" show-arrows center-active align-tabs="start">
+				<v-tab v-for="week in activeWeeklyMonth.weeks" :key="week.key" :value="week.key"
+					:class="weeklySelectedWeek === week.key ? 'bg-green-lighten-5' : ''">
+					<div class="d-flex flex-column align-start text-left">
+						<span>{{ week.tabTitle }}</span>
+						<span v-if="week.dateRangeLabel" class="text-caption text-medium-emphasis">{{ week.dateRangeLabel }}</span>
+					</div>
+					<v-chip size="x-small" variant="tonal" label class="ml-2">{{ week.rows.length }}</v-chip>
+				</v-tab>
+			</v-tabs>
+			<div v-if="!weeklyReportLoading && !weeklyReportError && !weeklyMissingGroups.length"
+				class="text-caption text-medium-emphasis mb-2">
+				Không có lượt chưa giao để tạo tab tháng/tuần; báo cáo đang hiển thị toàn khoảng ngày đã chọn.
+			</div>
+		</template>
+		<!-- Bộ đếm tab tuần lấy từ danh sách chưa giao; bảng và biểu đồ dùng API tổng hợp riêng theo ngày đã chọn. -->
+		<v-alert v-if="reportPeriodMode === 'weekly' && activeWeeklyWeek && !loading && summaryError"
+			 type="error" variant="tonal" density="compact" class="mb-3">
+			Không tải được dữ liệu tổng hợp {{ tabChiTiet === 0 ? 'bài học' : 'bài tập' }} cho {{ dashboardDateRange.label }}.
+		</v-alert>
+		<v-alert v-else-if="reportPeriodMode === 'weekly' && activeWeeklyWeek && !loading && !summaryError && subjectKpiValue === 0"
+			 type="info" variant="tonal" density="compact" class="mb-3">
+			Bộ đếm tuần là {{ activeWeeklyWeek.rows.length }} lượt lớp–môn–giáo viên chưa giao bài tập. Báo cáo
+			{{ tabChiTiet === 0 ? 'bài học' : 'bài tập' }} chưa có dữ liệu trong khoảng {{ dashboardDateRange.label }}.
+		</v-alert>
+
 		<v-tabs-window v-model="tabChiTiet">
 
 			<!-- ===== TAB BÀI HỌC ===== -->
@@ -129,12 +198,7 @@
 								</template>
 
 								<template #item.TenMonHoc_HienThi="{ item }">
-									<div class="d-flex align-center ga-2 py-1">
-										<v-avatar size="30" :color="getSubjectColor(item.MonHocID)" rounded="md">
-											<v-icon size="16" color="white">mdi-book-open-variant</v-icon>
-										</v-avatar>
-										<span class="text-body-2 font-weight-medium">{{ item.TenMonHoc_HienThi }}</span>
-									</div>
+									{{ item.TenMonHoc_HienThi }}
 								</template>
 
 								<template #item.TotalLessons="{ item }">
@@ -236,7 +300,6 @@
 			<!-- ===== TAB BÀI TẬP ===== -->
 			<v-tabs-window-item :value="1">
 				<v-row dense>
-
 					<!-- Chart bài tập -->
 					<v-col cols="12" md="6">
 						<v-card rounded="lg" elevation="0" border height="100%">
@@ -284,12 +347,7 @@
 								</template>
 
 								<template #item.TenMonHoc_HienThi="{ item }">
-									<div class="d-flex align-center ga-2 py-1">
-										<v-avatar size="30" :color="getSubjectColor(item.MonHocID)" rounded="md">
-											<v-icon size="16" color="white">mdi-clipboard-text-outline</v-icon>
-										</v-avatar>
-										<span class="text-body-2 font-weight-medium">{{ item.TenMonHoc_HienThi }}</span>
-									</div>
+									{{ item.TenMonHoc_HienThi }}
 								</template>
 
 								<template #item.TotalAssignments="{ item }">
@@ -448,8 +506,7 @@
 
 <script>
 	export default {
-		name: 'UcLms',
-	props: {
+		props: {
 		CapID: { default: null },
 		NienKhoa: { default: null },
 		NgayBatDau: { default: null },
@@ -458,6 +515,7 @@
 	data() {
 		return {
 			loading: false,
+			summaryError: false,
 			tabChiTiet: 0,
 			SUBJECT_COLORS: [
 				'primary', 'teal', 'deep-purple', 'indigo', 'cyan',
@@ -466,6 +524,15 @@
 			dataTong: [],
 			dataBaiHoc: [],
 			dataBaiTap: [],
+			weeklyMissingAssignments: [],
+			weeklyReportLoading: false,
+			weeklyReportError: false,
+			weeklyReportRequestId: 0,
+			summaryRequestId: 0,
+			loadedSummaryQueryKey: '',
+			reportPeriodMode: 'range',
+			weeklySelectedMonth: '',
+			weeklySelectedWeek: '',
 			headersBaiHoc: [
 				{ title: 'STT', key: 'stt', sortable: false, width: '60px' },
 				{ title: 'Môn học', key: 'TenMonHoc_HienThi', sortable: true },
@@ -495,6 +562,116 @@
 		},
 		 subjectKpiValue() {
 			return this.tabChiTiet === 0 ? this.dataBaiHoc.length : this.dataBaiTap.length
+		},
+		activeWeeklyMonth() {
+			return this.weeklyMissingGroups.find(month => month.key === this.weeklySelectedMonth)
+				|| this.weeklyMissingGroups[0]
+				|| null
+		},
+		activeWeeklyWeek() {
+			const month = this.activeWeeklyMonth
+			if (!month) return null
+			return month.weeks.find(week => week.key === this.weeklySelectedWeek) || month.weeks[0] || null
+		},
+		// Chọn tuần thì giới hạn cả biểu đồ và bảng hiện tại vào đúng ngày của tuần đó.
+		dashboardDateRange() {
+			const globalFrom = this.NgayBatDau ? String(this.NgayBatDau).slice(0, 10) : ''
+			const globalTo = this.NgayKetThuc ? String(this.NgayKetThuc).slice(0, 10) : ''
+			const week = this.reportPeriodMode === 'weekly' ? this.activeWeeklyWeek : null
+			if (!week || !week.from || !week.to) {
+				return {
+					from: globalFrom,
+					to: globalTo,
+					isWeekly: false,
+					label: globalFrom && globalTo
+						? this.formatReportDate(globalFrom) + ' - ' + this.formatReportDate(globalTo)
+						: '',
+				}
+			}
+
+			// Tuần nằm sát biên khoảng lọc chỉ lấy phần giao nhau, tránh báo cáo ăn ra ngoài date range.
+			const from = globalFrom && globalFrom > week.from ? globalFrom : week.from
+			const to = globalTo && globalTo < week.to ? globalTo : week.to
+			return {
+				from,
+				to,
+				isWeekly: true,
+				label: this.formatReportDate(from) + ' - ' + this.formatReportDate(to),
+			}
+		},
+		// Dùng giá trị nguyên thủy để đổi tab trong cùng một tuần không gọi lại báo cáo dư thừa.
+		dashboardDateRangeKey() {
+			const range = this.dashboardDateRange
+			return range.from + '|' + range.to
+		},
+		// Theo dõi cấp/năm học/khoảng ngày đã gửi để biết có cần nạp bù sau khi danh sách tuần hoàn tất.
+		summaryQueryKey() {
+			return [this.CapID ?? '', this.NienKhoa ?? '', this.dashboardDateRangeKey].join('|')
+		},
+		// Nhóm kết quả thiếu theo lịch tháng/tuần do LMS trả về để dùng làm bộ lọc cho báo cáo hiện tại.
+		weeklyMissingGroups() {
+			const months = new Map()
+			const dateKey = value => {
+				if (!value) return ''
+				if (value instanceof Date) {
+					return [value.getFullYear(), String(value.getMonth() + 1).padStart(2, '0'), String(value.getDate()).padStart(2, '0')].join('-')
+				}
+				return String(value).slice(0, 10)
+			}
+			this.weeklyMissingAssignments.forEach(row => {
+				const year = Number(row.Nam) || 0
+				const monthNumber = Number(row.ThangHoc) || 0
+				const monthKey = year + '-' + String(monthNumber).padStart(2, '0')
+				let month = months.get(monthKey)
+				if (!month) {
+					month = { key: monthKey, sortKey: year * 100 + monthNumber, title: 'Tháng ' + monthNumber + '/' + year, count: 0, weeks: new Map() }
+					months.set(monthKey, month)
+				}
+
+				const weekKey = String(row.TuanHocID ?? (monthKey + '-' + row.Tuan))
+				let week = month.weeks.get(weekKey)
+				if (!week) {
+					week = {
+						key: weekKey,
+						sortKey: Number(row.Tuan) || 0,
+						tabTitle: 'Tuần ' + this.cleanSheetValue(row.Tuan),
+						from: '',
+						to: '',
+						rows: [],
+					}
+					month.weeks.set(weekKey, week)
+				}
+				// Các dòng cùng tuần có thể khác phạm vi ngày; gộp min/max để tab và báo cáo dùng trọn khoảng tuần.
+				const rowFrom = dateKey(row.NgayBatDau)
+				const rowTo = dateKey(row.NgayKetThuc)
+				if (rowFrom && (!week.from || rowFrom < week.from)) week.from = rowFrom
+				if (rowTo && (!week.to || rowTo > week.to)) week.to = rowTo
+				month.count += 1
+				week.rows.push(row)
+			})
+
+			return Array.from(months.values())
+				.sort((a, b) => a.sortKey - b.sortKey)
+				.map(month => ({
+					...month,
+					weeks: Array.from(month.weeks.values())
+						.sort((a, b) => a.sortKey - b.sortKey)
+						.map(week => {
+							const dateRangeLabel = week.from && week.to
+								? this.formatReportDate(week.from) + ' – ' + this.formatReportDate(week.to)
+								: ''
+							return {
+								...week,
+								dateRangeLabel,
+								title: week.tabTitle + (dateRangeLabel ? ' · ' + dateRangeLabel : ''),
+								rows: week.rows.sort((a, b) =>
+									this.cleanSheetValue(a.TenLop).localeCompare(this.cleanSheetValue(b.TenLop), 'vi')
+									|| this.cleanSheetValue(a.TenMonHoc_HienThi).localeCompare(this.cleanSheetValue(b.TenMonHoc_HienThi), 'vi')
+									|| this.cleanSheetValue(a.TenGiaoVien).localeCompare(this.cleanSheetValue(b.TenGiaoVien), 'vi')
+								),
+							}
+						}),
+				}))
 		},
 		// Ba KPI này dùng cùng một quy tắc với bảng chi tiết: tổng = đã giao + chưa giao.
 		// Khi chuyển tab, nhãn và số liệu đổi theo loại nội dung đang được xem.
@@ -667,6 +844,32 @@
 		},
 	},
 	watch: {
+		weeklyMissingGroups(groups) {
+			const month = groups.find(item => item.key === this.weeklySelectedMonth) || groups[0]
+			this.weeklySelectedMonth = month?.key ?? ''
+			const week = month?.weeks.find(item => item.key === this.weeklySelectedWeek) || month?.weeks[0]
+			this.weeklySelectedWeek = week?.key ?? ''
+		},
+		weeklySelectedMonth(monthKey) {
+			const month = this.weeklyMissingGroups.find(item => item.key === monthKey)
+			if (!month) {
+				this.weeklySelectedWeek = ''
+				return
+			}
+			if (!month.weeks.some(item => item.key === this.weeklySelectedWeek)) {
+				this.weeklySelectedWeek = month.weeks[0]?.key ?? ''
+			}
+		},
+		dashboardDateRangeKey() {
+			if (this.CapID && !this.weeklyReportLoading) this.loadSummaryData()
+		},
+		// Nếu tuần được xác định sau khi tải danh sách thiếu, nạp lại báo cáo theo khoảng tuần vừa chọn.
+		weeklyReportLoading(isLoading, wasLoading) {
+			if (!isLoading && wasLoading && this.CapID && this.reportPeriodMode === 'weekly'
+				&& this.loadedSummaryQueryKey !== this.summaryQueryKey) {
+				this.loadSummaryData()
+			}
+		},
 		CapID() { this.loadData() },
 		NienKhoa() { this.loadData() },
 		NgayBatDau() { this.loadData() },
@@ -676,28 +879,176 @@
 		if (this.CapID) this.loadData()
 	},
 	methods: {
-		async loadData() {
-			if (!this.CapID) return
+		// Chuẩn hóa ô Excel để API trả null/object không biến thành chữ [object Object].
+		cleanSheetValue(value) {
+			if (value === null || value === undefined) return ''
+			if (value instanceof Date) return this.formatReportDate(value)
+			if (typeof value === 'object') {
+				try { return JSON.stringify(value) } catch (e) { return '' }
+			}
+			return String(value).trim()
+		},
+		formatReportDate(value) {
+			if (!value) return ''
+			const dateText = value instanceof Date
+				? [value.getFullYear(), String(value.getMonth() + 1).padStart(2, '0'), String(value.getDate()).padStart(2, '0')].join('-')
+				: String(value).slice(0, 10)
+			const parts = dateText.split('-')
+			return parts.length === 3 ? parts[2] + '/' + parts[1] + '/' + parts[0] : dateText
+		},
+		loadWeeklyMissingHomework() {
+			const requestId = ++this.weeklyReportRequestId
+			if (!this.CapID || !this.NgayBatDau || !this.NgayKetThuc) {
+				this.weeklyMissingAssignments = []
+				this.weeklyReportLoading = false
+				this.weeklyReportError = false
+				return Promise.resolve([])
+			}
+			const self = this
+			this.weeklyReportLoading = true
+			this.weeklyReportError = false
+			this.weeklyMissingAssignments = []
+			return fetchPromise(
+					'lms/BaoCaoLMS_ChuaGiaoBaiTap_ByKhoangNgay',
+					{
+						CapID: this.CapID,
+						NienKhoa: this.NienKhoa ?? null,
+						NgayBatDau: this.NgayBatDau,
+						NgayKetThuc: this.NgayKetThuc,
+					},
+					{ forceRefresh: true }
+				).then(function(result) {
+					if (requestId !== self.weeklyReportRequestId) return
+					// tAPI một resultset có thể trả mảng dòng trực tiếp; API nhiều resultset trả mảng lồng.
+					const rows = Array.isArray(result)
+						? (Array.isArray(result[0]) ? result[0] : result)
+						: (result?.data ?? result?.items ?? [])
+					self.weeklyMissingAssignments = Array.isArray(rows) ? rows : []
+				}).catch(function(e) {
+					if (requestId === self.weeklyReportRequestId) {
+						console.error(e)
+						self.weeklyMissingAssignments = []
+						self.weeklyReportError = true
+					}
+				}).then(function() {
+					if (requestId === self.weeklyReportRequestId) self.weeklyReportLoading = false
+				})
+		},
+		exportWeeklyMissingHomework() {
+			if (this.weeklyReportLoading) return
+			if (this.weeklyReportError) {
+				this.loadWeeklyMissingHomework()
+				return
+			}
+
+			// Sắp theo lịch tuần chuẩn của LMS: tháng/năm học trước, rồi đến tuần và lớp.
+			const sourceRows = this.reportPeriodMode === 'weekly' && this.activeWeeklyWeek
+				? this.activeWeeklyWeek.rows
+				: this.weeklyMissingAssignments
+			const rows = sourceRows.slice().sort((a, b) => {
+				const monthA = Number(a.Nam) * 100 + Number(a.ThangHoc)
+				const monthB = Number(b.Nam) * 100 + Number(b.ThangHoc)
+				return monthA - monthB
+					|| Number(a.Tuan) - Number(b.Tuan)
+					|| this.cleanSheetValue(a.TenLop).localeCompare(this.cleanSheetValue(b.TenLop), 'vi')
+					|| this.cleanSheetValue(a.TenMonHoc_HienThi).localeCompare(this.cleanSheetValue(b.TenMonHoc_HienThi), 'vi')
+					|| this.cleanSheetValue(a.TenGiaoVien).localeCompare(this.cleanSheetValue(b.TenGiaoVien), 'vi')
+			})
+			const capLabel = this.CapID === 1 ? 'Cấp 1' : this.CapID === 2 ? 'Cấp 2' : this.CapID === 3 ? 'Cấp 3' : ''
+			const range = this.dashboardDateRange
+			const rangeLabel = range.label || (this.formatReportDate(this.NgayBatDau) + ' - ' + this.formatReportDate(this.NgayKetThuc))
+			const sheetRows = [
+				['BÁO CÁO LỚP/GIÁO VIÊN CHƯA GIAO BÀI TẬP THEO TUẦN' + (range.isWeekly && this.activeWeeklyWeek ? ' · ' + this.activeWeeklyWeek.title : '')],
+				['Cấp học:', capLabel, 'Năm học:', this.cleanSheetValue(this.NienKhoa)],
+				['Khoảng ngày:', rangeLabel],
+				[],
+				['Tháng', 'Tuần', 'Thời gian tuần', 'Lớp', 'Môn học', 'Giáo viên'],
+			]
+			if (rows.length) {
+				// Tạo dòng tiêu đề tháng rồi lồng từng tuần và các lớp bên dưới để range dài dễ rà soát.
+				let currentMonth = ''
+				let currentWeek = ''
+				rows.forEach(row => {
+					const monthKey = String(row.Nam) + '-' + String(row.ThangHoc)
+					const weekKey = String(row.TuanHocID)
+					if (monthKey !== currentMonth) {
+						sheetRows.push(['Tháng ' + this.cleanSheetValue(row.ThangHoc) + '/' + this.cleanSheetValue(row.Nam), '', '', '', '', ''])
+						currentMonth = monthKey
+						currentWeek = ''
+					}
+					if (weekKey !== currentWeek) {
+						sheetRows.push([
+							'',
+							'Tuần ' + this.cleanSheetValue(row.Tuan),
+							this.formatReportDate(row.NgayBatDau) + ' - ' + this.formatReportDate(row.NgayKetThuc),
+							'', '', '',
+						])
+						currentWeek = weekKey
+					}
+					sheetRows.push([
+						'', '', '',
+						this.cleanSheetValue(row.TenLop),
+						this.cleanSheetValue(row.TenMonHoc_HienThi),
+						this.cleanSheetValue(row.TenGiaoVien),
+					])
+				})
+			} else {
+				sheetRows.push(['', '', '', 'Không có lớp/giáo viên thiếu bài tập trong khoảng ngày này.', '', ''])
+			}
+
+			const workbook = XLSX.utils.book_new()
+			const worksheet = XLSX.utils.aoa_to_sheet(sheetRows)
+			worksheet['!cols'] = [18, 14, 25, 18, 30, 30].map(wch => ({ wch }))
+			XLSX.utils.book_append_sheet(workbook, worksheet, 'Chua giao theo tuan')
+			const startFile = String(range.from || this.NgayBatDau).slice(0, 10).replace(/-/g, '')
+			const endFile = String(range.to || this.NgayKetThuc).slice(0, 10).replace(/-/g, '')
+			XLSX.writeFile(workbook, 'BaoCao_ChuaGiaoBaiTap_Cap' + this.CapID + '_' + startFile + '_' + endFile + '.xlsx')
+		},
+		loadData() {
+			this.weeklySelectedMonth = ''
+			this.weeklySelectedWeek = ''
+			this.loadWeeklyMissingHomework()
+			this.loadSummaryData()
+		},
+		loadSummaryData() {
+			const requestId = ++this.summaryRequestId
+			const self = this
+			const range = this.dashboardDateRange
+			if (!this.CapID) {
+				this.dataTong = this.dataBaiHoc = this.dataBaiTap = []
+				this.loading = false
+				this.summaryError = false
+				this.loadedSummaryQueryKey = ''
+				return Promise.resolve([])
+			}
 			this.loading = true
-			try {
-				const result = await fetchPromise(
+			this.summaryError = false
+			this.loadedSummaryQueryKey = this.summaryQueryKey
+			return fetchPromise(
 					'lms/BaoCao_2_ThongKe_BaiTap_BaiHoc_LMS_ByCapID',
 					{
 						CapID: this.CapID,
 						NienKhoa: this.NienKhoa ?? null,
-						NgayBatDau: this.NgayBatDau ?? null,
-						NgayKetThuc: this.NgayKetThuc ?? null,
+						NgayBatDau: range.from || null,
+						NgayKetThuc: range.to || null,
+					},
+					{ forceRefresh: true }
+				).then(function(result) {
+					if (requestId !== self.summaryRequestId) return
+					const resultSets = Array.isArray(result) ? result : (result?.data ?? [])
+					self.dataTong = Array.isArray(resultSets[0]) ? resultSets[0] : []
+					self.dataBaiHoc = Array.isArray(resultSets[1]) ? resultSets[1] : []
+					self.dataBaiTap = Array.isArray(resultSets[2]) ? resultSets[2] : []
+					self.summaryError = false
+				}).catch(function(e) {
+					if (requestId === self.summaryRequestId) {
+						console.error(e)
+						self.dataTong = self.dataBaiHoc = self.dataBaiTap = []
+						self.summaryError = true
 					}
-				)
-				this.dataTong = result[0] ?? []
-				this.dataBaiHoc = result[1] ?? []
-				this.dataBaiTap = result[2] ?? []
-			} catch (e) {
-				console.error(e)
-				this.dataTong = this.dataBaiHoc = this.dataBaiTap = []
-			} finally {
-				this.loading = false
-			}
+				}).then(function() {
+					if (requestId === self.summaryRequestId) self.loading = false
+				})
 		},
 		getSubjectColor(MonHocID) {
 			return this.SUBJECT_COLORS[MonHocID % this.SUBJECT_COLORS.length]

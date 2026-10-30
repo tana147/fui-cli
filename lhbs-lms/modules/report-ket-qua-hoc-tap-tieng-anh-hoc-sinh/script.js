@@ -128,13 +128,45 @@ function buildActivityItem(item, capID) {
     if (objIcon) data.icon = objIcon.icon
     return data
 }
+// Chỉ hiện khối Cambridge cấp 2 khi API đã trả về điểm ở cột CB hoặc điểm Cambridge tổng.
+// Không dựa vào hậu tố TA2 vì mã này thuộc luồng cấp 3.
+function hasScoreValue(value) {
+    if (value === null || value === undefined) return false
+    const normalized = String(value).trim()
+    return normalized !== '' && normalized !== '-'
+}
+function collectScoreRows(source, rows = []) {
+    if (Array.isArray(source)) {
+        source.forEach(item => collectScoreRows(item, rows))
+    } else if (source && typeof source === 'object') {
+        rows.push(source)
+        Object.values(source).forEach(value => {
+            if (Array.isArray(value) || (value && typeof value === 'object')) collectScoreRows(value, rows)
+        })
+    }
+    return rows
+}
+function updateShowCambridgeScoreCap2() {
+    const isCap2 = Number(vueData.HocSinhDetail?.CapID) === 2
+    const rows = collectScoreRows(vueData.DSCotDiem)
+    const hasCBCotDiem = rows.some(row => {
+        const columnInfo = [row.MaCotDiem, row.TenCotDiem_VI, row.TenCotDiem_EN, row.TenNhomCotDiem_VI, row.TenNhomCotDiem_EN]
+            .filter(value => value !== null && value !== undefined)
+            .join(' ')
+        const isCambridgeColumn = /(^|[_\s-])CB($|[_\s-])/i.test(columnInfo) || /cambridge|cambrige/i.test(columnInfo)
+        return isCambridgeColumn && (hasScoreValue(row.KetQuaDanhGia_VI) || hasScoreValue(row.KetQuaDanhGia_EN))
+    })
+    const hasCambridgeOverall = hasScoreValue(vueData.DataNhomLop?.[0]?.Diem_Cambridge)
+    vueData.ShowCambridgeScoreCap2 = isCap2 && (hasCBCotDiem || hasCambridgeOverall)
+}
 // ─── Init ────────────────────────────────────────────────────────────────────
 function init() {
     vueData.handleData = handleData
 }
 // ─── Main data handlers ───────────────────────────────────────────────────────
 function handleData() {
-    const [cotDiem, themes] = vueData.DSCotDiem
+    updateShowCambridgeScoreCap2()
+    const [cotDiem, themes] = vueData.DSCotDiem ?? []
     if (!cotDiem?.length) { console.warn('CotDiem rỗng'); return }
     if (!themes?.length) { console.warn('Theme rỗng'); return }
     const capID = vueData.HocSinhDetail.CapID
@@ -161,9 +193,20 @@ function handleData() {
     vueData.activities = themeItems.map(item => buildActivityItem(item, capID))
     // Build theme number list
     const uniqueThemes = [...new Set(themes.map(x => x.MaNhomCotDiem))]
+    // Đổi nhãn hiển thị theo mẫu bảng điểm Ngoại ngữ cấp 2, nhưng giữ mã nhóm để ghép điểm theo Theme không đổi.
+    const displayTitleByTheme = capID === 2 ? {
+        Theme_1: 'Starter Unit',
+        Theme_2: 'Unit 1',
+        Theme_3: 'Unit 2',
+        Theme_4: 'Unit 3',
+        Theme_5: 'Unit 4',
+        Theme_6: 'Unit 5',
+        Theme_7: 'Unit 6',
+        Theme_8: 'Unit 7',
+    } : {}
     vueData.DSThemeNumber = uniqueThemes.map(i => {
         const [p0, p1] = i.split('_')
-        return { title: `${p0} ${p1}`, value: i }
+        return { title: displayTitleByTheme[i] ?? `${p0} ${p1}`, value: i }
     })
     // Color legend for activities
     vueData.defColorActivities = capID === 2 ? [
@@ -178,6 +221,7 @@ function handleData() {
     ]
 }
 function handleDataNhomLop() {
+    updateShowCambridgeScoreCap2()
     if (!vueData.DataNhomLop[0]?.HocSinhID) return
     const loai = vueData.DataNhomLop[0].LoaiHocSinh
     const row = vueData.DataNhomLop[0]

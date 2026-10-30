@@ -465,7 +465,7 @@
 		<template #actions>
 				<v-spacer></v-spacer>
 				<v-btn color="grey-darken-1" variant="text" @click="closeDialog">Hủy</v-btn>
-				<v-btn color="primary" variant="flat" class="font-weight-bold px-6" @click="save">
+				<v-btn color="primary" variant="flat" class="font-weight-bold px-6" :loading="saving" :disabled="saving" @click="save">
 					{{ isCreatingNew && questionList.length > 1 ? `Lưu cả ${questionList.length} câu (1 lần)` : 'Lưu' }}
 				</v-btn>
 		</template>
@@ -509,6 +509,7 @@
 		inject: ['snackbarRef', 'iframeRef', 'confirmRef'],
 		props: {
 			isOpen: Boolean,
+			saving: Boolean,
 			item: Object,
 			resourceContext: {
 				type: Object,
@@ -752,23 +753,17 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 			},
 			htmlContent: {
 				get() {
-					console.log('gethtmlContent', this.editableItem.DataJson)
-					// KHI HIỂN THỊ: Lấy giá trị từ object và trả về chuỗi
-					if (this.editableItem && this.editableItem.DataJson) {
-						// Nếu là object, lấy thuộc tính htmlContent, nếu không thì lấy chính nó
-						return this.editableItem.DataJson.htmlContent || '';
-					}
-					return '';
+					const data = this.editableItem?.DataJson;
+					// Node cũ có thể lưu HTML thô; ô nhập luôn cần chuỗi, không hiển thị [object Object].
+					return this.cleanSheetValue(data && typeof data === 'object' ? data.htmlContent : data);
 				},
 				set(newValue) {
-					console.log('set htmlContent', newValue)
-					// KHI NHẬP LIỆU: Cập nhật lại object DataJson
+					// Giữ mã HTML nguyên dạng chuỗi bên trong DataJson để JSON.stringify xử lý dấu nháy khi lưu.
 					if (this.editableItem) {
-						// Luôn đảm bảo DataJson là một object
 						if (typeof this.editableItem.DataJson !== 'object' || this.editableItem.DataJson === null) {
 							this.editableItem.DataJson = {};
 						}
-						this.editableItem.DataJson.htmlContent = newValue;
+						this.editableItem.DataJson.htmlContent = this.cleanSheetValue(newValue);
 						this.editableItem.DataJson.isType = this.activeTab;
 					}
 				}
@@ -934,6 +929,23 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 			this.ensureYoutubeApiLoaded();
 		},
 		methods: {
+			// Cùng một UUID được truyền qua các bước tạo node và gắn file của một thao tác tải lên.
+			createAuditContext(operationName) {
+				const bytes = window.crypto?.getRandomValues
+					? window.crypto.getRandomValues(new Uint8Array(16))
+					: Uint8Array.from({ length: 16 }, () => Math.floor(Math.random() * 256));
+				bytes[6] = (bytes[6] & 0x0f) | 0x40;
+				bytes[8] = (bytes[8] & 0x3f) | 0x80;
+				const hex = Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('');
+				const OperationID = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+				return { OperationID, OperationName: operationName, SourceModule: 'soan-hoc-lieu-v2' };
+			},
+			cleanSheetValue(value) {
+				if (value == null) return '';
+				if (typeof value === 'string') return value;
+				if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+				return '';
+			},
 			getDraftKey(item) {
 				if (item && item.NoiDungID != null) return 'id:' + item.NoiDungID;
 				if (!item) return 'new:none';
@@ -1780,14 +1792,22 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 				const payload = { ...(item || {}) };
 				const fallback = fallbackItem || {};
 
+				payload.NoiDungID = payload.NoiDungID ?? fallback.NoiDungID ?? 0;
 				payload.HocLieuID = payload.HocLieuID ?? fallback.HocLieuID ?? this.item?.HocLieuID;
 				payload.ParentID = payload.ParentID ?? fallback.ParentID ?? 0;
-				payload.LoaiNoiDung = payload.LoaiNoiDung ?? fallback.LoaiNoiDung;
+				payload.LoaiNoiDung = payload.LoaiNoiDung ?? fallback.LoaiNoiDung ?? '';
 				payload.TenNoiDung = payload.TenNoiDung ?? fallback.TenNoiDung ?? '';
+				payload.DataJson = payload.DataJson ?? fallback.DataJson ?? '{}';
 				payload.ThuTu = Number.isFinite(Number(payload.ThuTu))
 					? Number(payload.ThuTu)
 					: (Number.isFinite(Number(fallback.ThuTu)) ? Number(fallback.ThuTu) : 0);
 
+				return payload;
+			},
+			// Chuẩn hóa DataJson thành chuỗi JSON ở ranh giới gọi SP; form vẫn giữ object để chỉnh sửa.
+			buildAuditedSavePayload(item, fallbackItem = this.editableItem) {
+				const payload = this.buildSavePayload(item, fallbackItem);
+				if (typeof payload.DataJson !== 'string') payload.DataJson = JSON.stringify(payload.DataJson ?? {});
 				return payload;
 			},
 			ensureDataJsonObject(item) {
@@ -1819,9 +1839,10 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 				if (/docx?|msword|wordprocessingml/.test(value)) return 'DOCX';
 				return '';
 			},
-			async ensureDraftNode(file) {
+			async ensureDraftNode(file, auditContext = null) {
 				const targetItem = this.editableItem;
 				if (targetItem.NoiDungID) return true;
+				const operation = auditContext || this.createAuditContext('Tạo mục nội dung cho tệp');
 
 				const draftItem = this.buildSavePayload({
 					HocLieuID: targetItem.HocLieuID,
@@ -1831,7 +1852,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 					ThuTu: targetItem.ThuTu,
 					DataJson: JSON.stringify({}),
 				}, targetItem);
-				const result = await fetchPromise('lms/FP_NoiDung_Save', draftItem, { cache: false });
+				const result = await fetchPromise('lms/FP_NoiDung_Save_Audited', { ...this.buildAuditedSavePayload(draftItem, targetItem), ...operation }, { cache: false });
 				const saved = Array.isArray(result) ? result[0] : result;
 				if (!saved?.NoiDungID) {
 					this.notify('Không thể tạo mục nháp để tải file.', 'error');
@@ -1861,7 +1882,8 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 					sourceNoiDungID: targetItem.NoiDungID,
 				};
 			},
-			async saveUploadedFileToNode(targetItem, metadata) {
+			async saveUploadedFileToNode(targetItem, metadata, auditContext = null) {
+				const operation = auditContext || this.createAuditContext('Cập nhật tệp trong nội dung');
 				const nodeDataList = await fetchPromise('lms/FP_NoiDung_GetDetail', {
 					NoiDungID: targetItem.NoiDungID,
 				});
@@ -1878,7 +1900,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 					mergedMetadata.archivePurpose = currentMetadata.archivePurpose;
 				}
 				nodeData.DataJson = JSON.stringify(mergedMetadata);
-				await fetchPromise('lms/FP_NoiDung_Save', this.buildSavePayload(nodeData, targetItem), { cache: false });
+				await fetchPromise('lms/FP_NoiDung_Save_Audited', { ...this.buildAuditedSavePayload(nodeData, targetItem), ...operation }, { cache: false });
 
 				// Upload thành công chưa đủ: phải đọc lại node để chắc chắn FILE_ID đã được ghi vào
 				// tblNoiDungHocLieu_FP. Nếu bước Save bị lỗi/ngắt, không báo thành công giả cho người dùng.
@@ -1895,7 +1917,8 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 				targetItem.DataJson = verifyMetadata;
 				return verifyMetadata;
 			},
-			async saveArchiveReferenceToNode(targetItem, archiveMetadata) {
+			async saveArchiveReferenceToNode(targetItem, archiveMetadata, auditContext = null) {
+				const operation = auditContext || this.createAuditContext('Lưu tham chiếu bản lưu học liệu');
 				const nodeDataList = await fetchPromise('lms/FP_NoiDung_GetDetail', {
 					NoiDungID: targetItem.NoiDungID,
 				});
@@ -1913,7 +1936,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 					resourceLibraryId: archiveMetadata.resourceLibraryId || currentMetadata.resourceLibraryId || null,
 				};
 				nodeData.DataJson = JSON.stringify(mergedMetadata);
-				await fetchPromise('lms/FP_NoiDung_Save', this.buildSavePayload(nodeData, targetItem), { cache: false });
+				await fetchPromise('lms/FP_NoiDung_Save_Audited', { ...this.buildAuditedSavePayload(nodeData, targetItem), ...operation }, { cache: false });
 				targetItem.DataJson = mergedMetadata;
 			},
 			async registerUploadedFileInResourceLibrary(targetItem, metadata) {
@@ -1932,7 +1955,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 				metadata.resourceLibraryId = registered?.HocLieuID || null;
 				return metadata;
 			},
-			archiveFileToLmsInBackground(file, targetItem, uploadToken) {
+			archiveFileToLmsInBackground(file, targetItem, uploadToken, auditContext) {
 				const uploadManager = this.getUploadManager();
 				if (!uploadManager) return;
 
@@ -1957,7 +1980,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 								await this.deleteDbUploadedFile({ fileId: archiveMetadata.fileId });
 								return;
 							}
-							await this.saveArchiveReferenceToNode(targetItem, archiveMetadata);
+							await this.saveArchiveReferenceToNode(targetItem, archiveMetadata, auditContext);
 							this.notify(`Đã lưu bản kiểm tra “${archiveMetadata.fileName}” vào kho LMS.`);
 						} catch (error) {
 							console.error('Background LMS archive failed:', error);
@@ -1976,9 +1999,9 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 					},
 				});
 			},
-			async savePublishedMetadata(targetItem, metadata) {
+			async savePublishedMetadata(targetItem, metadata, auditContext = null) {
 				targetItem.DataJson = metadata;
-				await this.saveUploadedFileToNode(targetItem, metadata);
+				await this.saveUploadedFileToNode(targetItem, metadata, auditContext);
 				this.$emit('refresh-tree');
 			},
 			async prepareCurrentResourceForReplacement() {
@@ -2021,6 +2044,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 			async uploadFileGGDrive(file) {
 				const selectedFile = Array.isArray(file) ? file[0] : file;
 				if (!selectedFile) return;
+				const auditContext = this.createAuditContext(`Tải tệp lên Google Drive: ${String(selectedFile.name || '').slice(0, 80)}`);
 				const uploadManager = this.getUploadManager();
 				if (!uploadManager) return;
 				const targetItem = this.editableItem;
@@ -2034,7 +2058,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 				if (isWordDocument) {
 					// DOC/DOCX phải lưu trực tiếp vào tblFileData như PDF để viewer dùng FileID LMS;
 					// không đưa Word qua Google Drive vì Drive ID không phải FileID của viewer nội bộ.
-					this.ensureDraftNode(selectedFile).then(ok => {
+					this.ensureDraftNode(selectedFile, auditContext).then(ok => {
 						if (!ok) return;
 						this.notify('Đang lưu ' + selectedFile.name + ' vào kho file LMS...', 'info');
 						uploadManager.uploadLmsFile(selectedFile, {
@@ -2049,7 +2073,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 										return;
 									}
 
-									await this.savePublishedMetadata(targetItem, metadata);
+									await this.savePublishedMetadata(targetItem, metadata, auditContext);
 									this.notify('Đã lưu “' + selectedFile.name + '” vào kho file LMS.');
 								} catch (error) {
 									this.notify(error.message || 'Không thể lưu file Word vào LMS.', 'error');
@@ -2078,8 +2102,8 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 					}
 				}
 
-				if (!await this.ensureDraftNode(selectedFile)) return;
-				this.archiveFileToLmsInBackground(selectedFile, targetItem, uploadToken);
+				if (!await this.ensureDraftNode(selectedFile, auditContext)) return;
+				this.archiveFileToLmsInBackground(selectedFile, targetItem, uploadToken, auditContext);
 				this.notify(`Đang phát hành ${selectedFile.name} lên Google Drive...`, 'info');
 				uploadManager.uploadLmsGoogleDrive(selectedFile, {
 					folderPath: `${targetItem.TenHocLieu || this.item?.TenHocLieu || 'HocLieu'}/${vueData.user.UserID}`,
@@ -2112,7 +2136,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 								await this.deleteGoogleDriveFile(metadata);
 								return;
 							}
-							await this.savePublishedMetadata(targetItem, metadata);
+							await this.savePublishedMetadata(targetItem, metadata, auditContext);
 							if (targetItem.LoaiNoiDung === 'AUDIO') this.tempAudioUrl = metadata.url;
 							if (targetItem.LoaiNoiDung === 'IMAGE') this.tempImageUrl = metadata.url;
 							this.notify(`Đã phát hành “${selectedFile.name}” lên Google Drive.`);
@@ -2130,6 +2154,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 			async uploadFileYoutube(file) {
 				const selectedFile = Array.isArray(file) ? file[0] : file;
 				if (!selectedFile) return;
+				const auditContext = this.createAuditContext(`Tải video lên YouTube: ${String(selectedFile.name || '').slice(0, 80)}`);
 				const uploadManager = this.getUploadManager();
 				if (!uploadManager) return;
 				const targetItem = this.editableItem;
@@ -2142,7 +2167,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 				this.localVideoBlobUrl = URL.createObjectURL(selectedFile);
 				this.tempVideoUrl = this.localVideoBlobUrl;
 
-				if (!await this.ensureDraftNode(selectedFile)) return;
+				if (!await this.ensureDraftNode(selectedFile, auditContext)) return;
 				this.notify(`Đang phát hành ${selectedFile.name} lên YouTube...`, 'info');
 
 				const taskId = await uploadManager.uploadLmsYoutube(selectedFile, {
@@ -2160,7 +2185,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 								url: videoResult.source,
 								interactions: this.videoInteractions || []
 							};
-							await this.savePublishedMetadata(targetItem, metadata);
+							await this.savePublishedMetadata(targetItem, metadata, auditContext);
 							// 2. Chuyển sang link YouTube chính thức
 							this.tempVideoUrl = videoResult.source;
 							this.notify(`Đã phát hành “${selectedFile.name}” lên YouTube.`);
@@ -2261,21 +2286,22 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 				}
 				
 				const targetItem = this.editableItem;
+				const auditContext = this.createAuditContext('Liên kết tài liệu bên ngoài');
 				if (!await this.prepareCurrentResourceForReplacement()) return;
 				if (!targetItem.NoiDungID) {
 					// Ensure draft node exists if it's a new node
-					if (!await this.ensureDraftNode({ name: metadata.title, size: 0, type: metadata.contentType })) return;
+					if (!await this.ensureDraftNode({ name: metadata.title, size: 0, type: metadata.contentType }, auditContext)) return;
 				}
 				
 				// Save metadata to database
-				await this.savePublishedMetadata(targetItem, metadata);
+				await this.savePublishedMetadata(targetItem, metadata, auditContext);
 				
 				// Register in resource library
 				try {
 					await this.registerUploadedFileInResourceLibrary(targetItem, metadata);
 					// Registration trả về ID node; lưu lại vào DataJson để lần upload tiếp theo
 					// có đủ thông tin dọn node archive cũ trước khi tạo bản mới.
-					await this.saveUploadedFileToNode(targetItem, metadata);
+					await this.saveUploadedFileToNode(targetItem, metadata, auditContext);
 				} catch (e) {
 					console.error("Resource library registration failed:", e);
 				}
@@ -2440,9 +2466,11 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 						}
 
 						const questionData = this.buildSavePayload(JSON.parse(JSON.stringify(question)));
-						if (questionData.DataJson) {
-							questionData.DataJson = JSON.stringify(questionData.DataJson);
+						if (!questionData.DataJson || typeof questionData.DataJson !== 'object') {
+							questionData.DataJson = {};
 						}
+						questionData.DataJson.isTeacherOnly = Boolean(question.isTeacherOnly ?? this.editableItem.isTeacherOnly);
+						questionData.DataJson = JSON.stringify(questionData.DataJson);
 						questionData.ParentID = question.ParentID ?? this.item?.ParentID ?? 0;
 						questionData.ThuTu = baseThuTu + i;
 						delete questionData.NoiDungID;
@@ -2450,8 +2478,7 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 					}
 
 					this.$emit('save', payloadList);
-					this.clearDraft();
-					this.closeDialog();
+					// Parent giữ dialog mở đến khi API xác nhận; nếu lỗi, nội dung soạn vẫn còn để thử lại.
 					return;
 				}
 
@@ -2504,18 +2531,14 @@ Mỗi câu phải có type, points, content; mỗi option phải có id và text
 				}
 				// "Đóng gói" lại DataJson thành chuỗi trước khi lưu
 				const dataToSave = this.buildSavePayload(JSON.parse(JSON.stringify(this.editableItem)));
-				if (dataToSave.DataJson) {
-					// Nếu là HTML, nhưng DataJson chỉ có mỗi htmlContent, thì chỉ lưu chuỗi đó thôi
-					if (this.isHtml && dataToSave.DataJson.htmlContent && Object.keys(dataToSave.DataJson).length === 1) {
-						dataToSave.DataJson = dataToSave.DataJson.htmlContent;
-					} else {
-						// Các trường hợp khác thì stringify cả object
-						dataToSave.DataJson = JSON.stringify(dataToSave.DataJson);
-					}
+				if (!dataToSave.DataJson || typeof dataToSave.DataJson !== 'object') {
+					dataToSave.DataJson = {};
 				}
+				// Đồng bộ cờ isTeacherOnly vào DataJson để database lưu được
+				dataToSave.DataJson.isTeacherOnly = Boolean(this.editableItem.isTeacherOnly);
+				dataToSave.DataJson = JSON.stringify(dataToSave.DataJson);
 				this.$emit('save', dataToSave);
-				this.clearDraft();
-				this.closeDialog();
+				// Parent đóng và xóa bản nháp sau khi nhận được NoiDungID từ API.
 			},
 
 			//API github

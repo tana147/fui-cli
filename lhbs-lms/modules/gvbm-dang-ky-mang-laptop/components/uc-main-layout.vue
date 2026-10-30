@@ -476,7 +476,12 @@
 		},
 		filteredStudents() {
 			const keyword = String(this.vueData.TimKiemHocSinh || '').trim().toLowerCase()
-			return (this.vueData.HocSinhThietBi || []).filter(x => !keyword || String(x.HoTen || '').toLowerCase().includes(keyword))
+			const filtered = (this.vueData.HocSinhThietBi || []).filter(x => !keyword || String(x.HoTen || '').toLowerCase().includes(keyword))
+			// Bảng desktop và danh sách mobile dùng chung computed này nên luôn giữ thứ tự tên, bất kể thứ tự API.
+			return filtered.slice().sort((a, b) => {
+				const byName = String(a.HoTen || '').localeCompare(String(b.HoTen || ''), 'vi', { sensitivity: 'base' })
+				return byName || String(a.HocSinhID || '').localeCompare(String(b.HocSinhID || ''), 'vi', { numeric: true })
+			})
 		},
 		filteredStudentDetailList() {
 			const keyword = String(this.studentDetailSearch || '').trim().toLowerCase()

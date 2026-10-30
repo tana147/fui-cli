@@ -35,9 +35,19 @@
 						</v-col>
 					</v-row>
 
-					<!-- ⚠️ Warning lớp khác tab active -->
+					<!-- Báo trước khi dữ liệu học sinh khớp với tab khối khác tab đang mở. -->
 					<v-alert v-if="activeTabWarning" type="warning" density="compact" variant="tonal"
 						class="mb-3 text-body-2" :text="activeTabWarning" />
+
+					<div v-if="selectedExam && selectedKhoiKeyID && !loadingPreview"
+						class="d-flex align-center ga-3 mb-3 flex-wrap">
+						<!-- Cho phép bật Cambridge cả khi dữ liệu HK của khối đang chọn rỗng. -->
+						<v-checkbox v-model="includeCambridge" label="Lấy thêm điểm Cambridge" color="teal"
+							density="compact" hide-details />
+						<span class="text-caption text-medium-emphasis">
+							Điểm học kì luôn được lấy; Cambridge chỉ thêm khi bật lựa chọn này.
+						</span>
+					</div>
 
 					<!-- Loading -->
 					<div v-if="loadingPreview" class="d-flex justify-center py-8">
@@ -56,63 +66,35 @@
 							<v-divider />
 							<v-card-text class="pa-3">
 
-								<!-- Mode toggle -->
-								<div class="d-flex align-center ga-3 mb-3 flex-wrap">
-									<v-btn-toggle v-model="fillMode" mandatory density="compact" variant="outlined"
-										color="primary">
-										<v-btn value="HK" size="small">
-											<v-icon start size="14">mdi-counter</v-icon>
-											Điểm HK
-										</v-btn>
-										<v-btn value="CB" size="small">
-											<v-icon start size="14">mdi-school-outline</v-icon>
-											Cambridge
-										</v-btn>
-										<v-btn value="BOTH" size="small">
-											<v-icon start size="14">mdi-layers-outline</v-icon>
-											Cả hai
-										</v-btn>
-									</v-btn-toggle>
-									<span class="text-caption text-medium-emphasis">
-										<template v-if="fillMode === 'HK'">Điền điểm kỹ năng thô (thang 10)</template>
-										<template v-else-if="fillMode === 'CB'">Điền tỉ lệ %, phân loại
-											Cambridge</template>
-										<template v-else>Điền cả điểm HK lẫn Cambridge một lần</template>
-									</span>
-								</div>
-
-								<div v-if="!hkColOptions.length && !cbColOptions.length"
+				<div v-if="!hkColOptions.length && !(includeCambridge && cbColOptions.length)"
 									class="text-body-2 text-medium-emphasis">
 									Không có cột điểm khả dụng — hãy tải dữ liệu và chọn đúng tab lớp trước.
 								</div>
 
 								<v-row v-else dense>
 									<!-- HK -->
-									<template v-if="fillMode !== 'CB'">
-										<v-col cols="12">
-											<div class="text-caption font-weight-bold text-primary text-uppercase mb-1">
-												Điểm HK (ThongKe_SelectBangDiemTheoMon)
-											</div>
-										</v-col>
-										<v-col v-for="skill in HK_SKILLS" :key="'hk_' + skill.apiField" cols="12"
-											sm="6">
-											<div class="d-flex align-center ga-2">
-												<v-chip size="small" color="primary" label class="flex-shrink-0"
-													style="min-width:110px;justify-content:center">
-													{{ skill.label }}
-												</v-chip>
-												<v-icon size="16" color="grey">mdi-arrow-right</v-icon>
-												<v-select v-model="hkMapping[skill.apiField]" :items="hkColOptions"
-													item-title="label" item-value="key" density="compact"
-													variant="outlined" hide-details clearable
-													placeholder="-- Không áp dụng --" style="flex:1" />
-											</div>
-										</v-col>
-									</template>
+									<v-col cols="12">
+										<div class="text-caption font-weight-bold text-primary text-uppercase mb-1">
+											Điểm HK (ThongKe_SelectBangDiemTheoMon)
+										</div>
+									</v-col>
+									<v-col v-for="skill in HK_SKILLS" :key="'hk_' + skill.apiField" cols="12" sm="6">
+										<div class="d-flex align-center ga-2">
+											<v-chip size="small" color="primary" label class="flex-shrink-0"
+												style="min-width:110px;justify-content:center">
+												{{ skill.label }}
+											</v-chip>
+											<v-icon size="16" color="grey">mdi-arrow-right</v-icon>
+											<v-select v-model="hkMapping[skill.apiField]" :items="hkColOptions"
+												item-title="label" item-value="key" density="compact"
+												variant="outlined" hide-details clearable
+												placeholder="-- Không áp dụng --" style="flex:1" />
+										</div>
+									</v-col>
 
 									<!-- CB -->
-									<template v-if="fillMode !== 'HK'">
-										<v-col cols="12" :class="fillMode === 'BOTH' ? 'mt-2' : ''">
+									<template v-if="includeCambridge">
+										<v-col cols="12" class="mt-2">
 											<div class="text-caption font-weight-bold text-teal text-uppercase mb-1">
 												Cambridge (ThongKe_AnhVan_SelectThongKeDiemAnhVan1_Cambridge)
 											</div>
@@ -212,8 +194,6 @@
 
 <script>
 	export default {
-		name: 'UcDialogQuanLiKiThiCap2',
-
 		props: {
 			classes: { type: Array, default: () => [] },
 			nienKhoa: { type: Number, default: null },
@@ -267,7 +247,7 @@
 				selectedLopFilter: null,
 				selectedStudentIDs: [],
 
-				fillMode: 'BOTH',
+				includeCambridge: false,
 
 				hkMapping: Object.fromEntries(HK_SKILLS.map(s => [s.apiField, null])),
 				cbMapping: Object.fromEntries(CB_SKILLS.map(s => [s.apiField, null])),
@@ -311,15 +291,28 @@
 			},
 
 			activeTabWarning() {
-				if (!this.activeTabMeta || !this.selectedLopFilter) return null
-				const activeName = this.activeTabMeta.cls?.name ?? ''
-				if (activeName === this.selectedLopFilter) return null
-				return `⚠️ Dữ liệu lấy từ "${this.selectedLopFilter}" nhưng sẽ apply vào tab đang active: "${activeName}". Chỉ HocSinhID khớp mới được điền.`
+				if (!this.activeTabMeta || !this.selectedStudentIDs.length) return null
+				// Tìm tab khối chứa học sinh đã chọn để người dùng biết trước nơi sẽ nhận điểm.
+				const selectedIDs = new Set(this.selectedStudentIDs.map(String))
+				const activeName = this.activeTabMeta.tabName ?? this.activeTabMeta.cls?.name ?? ''
+				const target = this.wsMeta
+					.map(meta => ({
+						meta,
+						matchCount: (meta.students ?? []).reduce(
+							(count, student) => count + (selectedIDs.has(String(student.id)) ? 1 : 0),
+							0
+						),
+					}))
+					.sort((a, b) => b.matchCount - a.matchCount ||
+						Number(b.meta.tabName === activeName) - Number(a.meta.tabName === activeName))[0]
+				const targetName = target?.meta?.tabName ?? target?.meta?.cls?.name ?? ''
+				if (!target || target.matchCount === 0 || !targetName || targetName === activeName) return null
+				return `Dữ liệu học sinh khớp với tab "${targetName}" (${target.matchCount} học sinh). Khi áp dụng, màn hình sẽ tự chuyển sang tab này.`
 			},
 
 			hasMappingSelected() {
-				if (this.fillMode !== 'CB' && this.HK_SKILLS.some(s => !!this.hkMapping[s.apiField])) return true
-				if (this.fillMode !== 'HK' && this.CB_SKILLS.some(s => !!this.cbMapping[s.apiField])) return true
+				if (this.HK_SKILLS.some(s => !!this.hkMapping[s.apiField])) return true
+				if (this.includeCambridge && this.CB_SKILLS.some(s => !!this.cbMapping[s.apiField])) return true
 				return false
 			},
 
@@ -330,13 +323,11 @@
 
 			mappingWarnings() {
 				const warns = []
-				if (this.fillMode !== 'CB') {
-					const unmapped = this.HK_SKILLS
-						.filter(s => s.apiField !== 'DiemTong' && !this.hkMapping[s.apiField])
-					if (unmapped.length)
-						warns.push(`HK chưa map: ${unmapped.map(s => s.label).join(', ')}`)
-				}
-				if (this.fillMode !== 'HK') {
+				const unmappedHK = this.HK_SKILLS
+					.filter(s => s.apiField !== 'DiemTong' && !this.hkMapping[s.apiField])
+				if (unmappedHK.length)
+					warns.push(`HK chưa map: ${unmappedHK.map(s => s.label).join(', ')}`)
+				if (this.includeCambridge) {
 					const unmapped = this.CB_SKILLS
 						.filter(s => s.isNumeric && !this.cbMapping[s.apiField])
 					if (unmapped.length)
@@ -351,10 +342,8 @@
 					{ title: 'Họ và tên',key: 'hoTen',     width: '180px' },
 					{ title: 'Lớp',      key: 'tenLop',    width: '80px' },
 				]
-				const hkCols = this.fillMode !== 'CB'
-					? this.HK_SKILLS.map(s => ({ title: s.label, key: s.apiField, align: 'center', width: '88px' }))
-					: []
-				const cbCols = this.fillMode !== 'HK'
+				const hkCols = this.HK_SKILLS.map(s => ({ title: s.label, key: s.apiField, align: 'center', width: '88px' }))
+				const cbCols = this.includeCambridge
 					? this.CB_SKILLS
 						.filter(s => ['NgheTL', 'DocTL', 'VietTL', 'NoiTL', 'PhanTramChung', 'DanhGiaChung'].includes(s.apiField))
 						.map(s => ({ title: s.label, key: s.apiField, align: 'center', width: '88px' }))
@@ -363,9 +352,12 @@
 			},
 
 			skillSummary() {
-				const keys = this.fillMode !== 'CB'
-					? this.HK_SKILLS.filter(s => ['Nghe', 'Doc', 'Viet', 'Noi'].includes(s.apiField))
-					: this.CB_SKILLS.filter(s => ['NgheTL', 'DocTL', 'VietTL', 'NoiTL'].includes(s.apiField))
+				const keys = [
+					...this.HK_SKILLS.filter(s => ['Nghe', 'Doc', 'Viet', 'Noi'].includes(s.apiField)),
+					...(this.includeCambridge
+						? this.CB_SKILLS.filter(s => ['NgheTL', 'DocTL', 'VietTL', 'NoiTL'].includes(s.apiField))
+						: []),
+				]
 				return keys.map(s => {
 					const vals = this.filteredRows
 						.map(r => r[s.apiField])
@@ -387,7 +379,11 @@
 				this.selectedStudentIDs = rows.map(r => String(r.hocSinhID))
 			},
 			scoreDescOptions() { this._autoMap() },
-			fillMode() { this._autoMap() },
+			includeCambridge(enabled) {
+				this._autoMap()
+				// Chỉ gọi API điểm Cambridge sau khi người dùng bật lựa chọn này.
+				if (this.selectedExam && this.selectedKhoiKeyID) this._loadPreview()
+			},
 		},
 
 		methods: {
@@ -402,7 +398,7 @@
 				this.rawHK = []; this.rawCB = []
 				this.previewRows = []
 				this.selectedStudentIDs = []
-				this.fillMode = 'BOTH'
+				this.includeCambridge = false
 				this.hkMapping = Object.fromEntries(this.HK_SKILLS.map(s => [s.apiField, null]))
 				this.cbMapping = Object.fromEntries(this.CB_SKILLS.map(s => [s.apiField, null]))
 			},
@@ -457,9 +453,11 @@
 							KyThiID: kyThiID, KhoiKeyID: this.selectedKhoiKeyID,
 							MonHocID: 3, XemChiTiet: false,
 						}),
-						fetchPromise('qlktt/ThongKe_AnhVan_SelectThongKeDiemAnhVan1_Cambridge', {
-							KyThiID: kyThiID, KhoiKeyID: this.selectedKhoiKeyID,
-						}),
+						this.includeCambridge
+							? fetchPromise('qlktt/ThongKe_AnhVan_SelectThongKeDiemAnhVan1_Cambridge', {
+								KyThiID: kyThiID, KhoiKeyID: this.selectedKhoiKeyID,
+							})
+							: Promise.resolve([]),
 					])
 					this.rawHK = hkData ?? []
 					this.rawCB = cbData ?? []
@@ -586,14 +584,12 @@
 				for (const row of this.previewRows) {
 						if (!selectedSet.has(String(row.hocSinhID))) continue
 
-						if (this.fillMode !== 'CB') {
-							for (const s of this.HK_SKILLS) {
-								const col = this.hkMapping[s.apiField]
-								if (col) addScore(row.hocSinhID, col, row[s.apiField])
-							}
+						for (const s of this.HK_SKILLS) {
+							const col = this.hkMapping[s.apiField]
+							if (col) addScore(row.hocSinhID, col, row[s.apiField])
 						}
 
-						if (this.fillMode !== 'HK') {
+						if (this.includeCambridge) {
 							for (const s of this.CB_SKILLS) {
 								const col = this.cbMapping[s.apiField]
 								if (!col) continue
@@ -608,7 +604,7 @@
 						exam: this.selectedExam,
 						khoiKeyID: this.selectedKhoiKeyID,
 						lopFilter: this.selectedLopFilter,
-						fillMode: this.fillMode,
+						includeCambridge: this.includeCambridge,
 						studentScores,
 						rawRows: this.filteredRows,
 					})

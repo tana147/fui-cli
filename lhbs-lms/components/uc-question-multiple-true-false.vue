@@ -119,7 +119,8 @@
 			this.question.config.options.forEach(opt => { if (this.answer?.[opt.id] === opt.correctAnswer) c++; });
 			if (mode === 'partial') {
 				const partialMap = { 1: 0.1, 2: 0.25, 3: 0.5, 4: 1.0 };
-				return partialMap[c] ?? 0;
+				// Partial map là tỷ lệ, nên nhân với điểm tối đa trước khi phát điểm chấm.
+				return (partialMap[c] ?? 0) * Number(this.question?.points ?? 0);
 			}
 			// equal: chia đều theo số options
 			const total = this.question.config.options.length;

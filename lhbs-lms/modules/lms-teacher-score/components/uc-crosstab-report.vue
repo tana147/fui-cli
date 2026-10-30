@@ -49,7 +49,7 @@
 							variant="outlined"
 						></v-select>
 						<v-btn color="primary" variant="outlined" prepend-icon="mdi-microsoft-excel"
-							@click="exportToExcel">
+							@click="openExportColumnsDialog">
 							{{ IsEnglish ? 'Export' : 'Xuất' }} Excel
 						</v-btn>
 					</div>
@@ -123,6 +123,31 @@
 				</v-table>
 			</v-card>
 		</div>
+
+		<!-- Keep question and identity fields independently selectable; all are checked for each new export. -->
+		<v-dialog v-model="exportColumnsDialog.show" max-width="600" scrollable>
+			<v-card>
+				<v-card-title class="d-flex align-center px-3 pt-2 pb-3 subtitle-1 font-weight-bold">
+					{{ IsEnglish ? 'Choose Excel columns' : 'Chọn cột xuất Excel' }}
+					<v-spacer />
+					<v-btn icon @click="exportColumnsDialog.show = false"><v-icon>mdi-close</v-icon></v-btn>
+				</v-card-title>
+				<v-card-text class="px-3 py-1">
+					<div class="text-body-2 text-medium-emphasis mb-2">
+						{{ IsEnglish ? 'All columns start selected. Uncheck columns you do not need.' : 'Mặc định đã chọn tất cả cột. Bỏ chọn những cột bạn không cần xuất.' }}
+					</div>
+					<v-checkbox v-for="column in exportColumnsDialog.columns" :key="column.value"
+						v-model="exportColumnsDialog.selectedColumns" :value="column.value" :label="column.label"
+						density="compact" hide-details />
+				</v-card-text>
+				<v-card-actions class="pa-3">
+					<v-spacer />
+					<v-btn text @click="exportColumnsDialog.show = false">{{ IsEnglish ? 'Cancel' : 'Hủy' }}</v-btn>
+					<v-btn color="primary" elevation="0" :disabled="!exportColumnsDialog.selectedColumns.length"
+						@click="confirmExportColumns">{{ IsEnglish ? 'Export Excel' : 'Xuất Excel' }}</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</v-container>
 </template>
 
@@ -141,7 +166,8 @@
 			columnStats: [],
 			className: '...',
 			assignmentTitle: '...',
-			csvContent: []
+			csvContent: [],
+			exportColumnsDialog: { show: false, columns: [], selectedColumns: [], pending: null }
 		};
 	},
 	computed: {
@@ -315,56 +341,78 @@
 				document.body.removeChild(link);
 			}
 		},
-		exportToExcel() {
+		openExportColumnsDialog() {
 			// Rebuild rows for each export so repeated clicks do not grow the in-memory worksheet.
-			this.csvContent = [];
-			const headers = [
-				'Mã HS','Số danh bộ', 'Họ và tên', 'Lần nộp',
-				...this.questionHeaders.map((h, i) => `Câu ${i + 1}`),
-				'Tổng điểm'
+			const columns = [
+				{ key: 'studentId', label: 'Mã HS' },
+				{ key: 'studentNumber', label: 'Số danh bộ' },
+				{ key: 'studentName', label: 'Họ và tên' },
+				{ key: 'attempt', label: 'Lần nộp' },
+				...this.questionHeaders.map((header, index) => ({ key: 'question_' + index, label: 'Câu ' + (index + 1), questionId: header.QuestionID_InJSON })),
+				{ key: 'totalScore', label: 'Tổng điểm' }
 			];
-			const footer = [
-				'', '', 'Tỉ lệ đúng (%)', '',
-				...this.questionHeaders.map((h, i) => (isNaN(this.getCorrectPercentage(h.QuestionID_InJSON)) ? '' :
-					this.getCorrectPercentage(h.QuestionID_InJSON) + '%')),
-				''
-			];
-			this.visibleStudentResults.forEach(student => {
-				const row = [
-					student.HocSinhID,
-					student.SoDanhBo ?? student.SoTT,
-					`${student.HoTen}`,
-					this.formatAttemptLabel(student),
-					...this.questionHeaders.map(h => {
-						const cellData = student[h.QuestionID_InJSON];
-						if (!cellData) return '-';
-						try {
-							const data = JSON.parse(cellData);
-							switch (data.status) {
-								case 'CORRECT': return this.IsEnglish ? 'Correct' : 'Đúng';
-								case 'INCORRECT': return this.IsEnglish ? 'Wrong' : 'Sai';
-								case 'GRADED': return data.score;
-								case 'PENDING': return this.IsEnglish ? 'Waiting grade' : 'Chờ chấm';
-								case 'NOT_ANSWERED': return this.IsEnglish ? 'Not complete' : 'Không làm';
-								default: return '-';
-							}
-						} catch (e) {
-							return '-';
+			const rows = this.visibleStudentResults.map(student => {
+				const row = {
+					studentId: student.HocSinhID,
+					studentNumber: student.SoDanhBo ?? student.SoTT,
+					studentName: String(student.HoTen ?? ''),
+					attempt: this.formatAttemptLabel(student),
+					totalScore: student.FinalScore
+				};
+				columns.filter(column => column.questionId !== undefined).forEach(column => {
+					const cellData = student[column.questionId];
+					if (!cellData) {
+						row[column.key] = '-';
+						return;
+					}
+					try {
+						const result = JSON.parse(cellData);
+						switch (result.status) {
+							case 'CORRECT': row[column.key] = this.IsEnglish ? 'Correct' : 'Đúng'; break;
+							case 'INCORRECT': row[column.key] = this.IsEnglish ? 'Wrong' : 'Sai'; break;
+							case 'GRADED': row[column.key] = result.score; break;
+							case 'PENDING': row[column.key] = this.IsEnglish ? 'Waiting grade' : 'Chờ chấm'; break;
+							case 'NOT_ANSWERED': row[column.key] = this.IsEnglish ? 'Not complete' : 'Không làm'; break;
+							default: row[column.key] = '-';
 						}
-					}),
-					student.FinalScore
-				];
-				this.csvContent.push(row)
+					} catch (e) {
+						row[column.key] = '-';
+					}
+				});
+				return row;
 			});
-			const worksheet = XLSX.utils.aoa_to_sheet(
-				[headers, ...this.csvContent, footer]
-			)
-
-			const workbook = XLSX.utils.book_new()
-			XLSX.utils.book_append_sheet(workbook, worksheet, 'BaoCao')
-
-			const fileName = `BaoCao_${this.className}_${this.assignmentTitle.replace(/ /g, '_')}.xlsx`
-			XLSX.writeFile(workbook, fileName)
+			const footer = { studentName: this.IsEnglish ? 'Accuracy Rate (%)' : 'Tỉ lệ đúng (%)' };
+			columns.filter(column => column.questionId !== undefined).forEach(column => {
+				const percentage = this.getCorrectPercentage(column.questionId);
+				footer[column.key] = isNaN(percentage) ? '' : percentage + '%';
+			});
+			this.exportColumnsDialog.columns = columns.map(column => ({ value: column.key, label: column.label }));
+			this.exportColumnsDialog.selectedColumns = columns.map(column => column.key);
+			this.exportColumnsDialog.pending = {
+				columns,
+				rows,
+				footer,
+				fileName: 'BaoCao_' + this.className + '_' + this.assignmentTitle.replace(/ /g, '_') + '.xlsx'
+			};
+			this.exportColumnsDialog.show = true;
+		},
+		confirmExportColumns() {
+			const pending = this.exportColumnsDialog.pending;
+			const selected = new Set(this.exportColumnsDialog.selectedColumns);
+			if (!pending || !selected.size) return;
+			const columns = pending.columns.filter(column => selected.has(column.key));
+			if (!columns.length) return;
+			const headers = columns.map(column => column.label);
+			const rows = pending.rows.map(row => columns.map(column => row[column.key] ?? ''));
+			const footer = columns.map(column => pending.footer[column.key] ?? '');
+			const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows, footer]);
+			const workbook = XLSX.utils.book_new();
+			XLSX.utils.book_append_sheet(workbook, worksheet, 'BaoCao');
+			XLSX.writeFile(workbook, pending.fileName);
+			this.exportColumnsDialog.show = false;
+		},
+		exportToExcel() {
+			this.openExportColumnsDialog();
 		}
 	},
 	mounted() {

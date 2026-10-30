@@ -36,7 +36,7 @@
 							<v-btn @click="getHocSinh()" variant="outlined" color="primary" :disabled="!LopItem">
 								<v-icon start="">mdi-reload</v-icon>{{ isEn ? 'Refresh' : 'Làm mới' }}
 							</v-btn>
-							<v-btn @click="insHocSinh()" color="teal" :disabled="DSHocSinhSelected.length === 0">
+							<v-btn @click="insHocSinh()" color="teal" :disabled="DSHocSinhSelected.length === 0 || isLoadingTransferReview" :loading="isLoadingTransferReview">
 								<v-icon start="">mdi-sync</v-icon>
 								{{ isEn ? 'Update student list' : 'Cập nhật DS học sinh' }}
 								<v-badge v-if="DSHocSinhSelected.length > 0" :content="DSHocSinhSelected.length"
@@ -134,6 +134,106 @@
 
 		<uc-modal-edit-profile-shared @refresh="getHocSinh(true)" />
 
+		<!-- Rà soát lớp và dữ liệu liên quan trước khi đồng bộ danh sách học sinh. -->
+		<v-dialog v-model="isOpenTransferReview" max-width="1000">
+			<v-card class="pa-0">
+				<v-toolbar dense flat>
+					<v-toolbar-title>{{ isEn ? 'Review class update' : 'Rà soát cập nhật lớp' }}</v-toolbar-title>
+					<v-spacer />
+					<v-btn icon="" @click="closeTransferReview"><v-icon>mdi-close</v-icon></v-btn>
+				</v-toolbar>
+				<v-card-text class="px-4 py-3">
+					<v-alert type="info" variant="tonal" density="compact" class="mb-3">
+						<strong>{{ isEn ? 'Destination class:' : 'Lớp nhận:' }}</strong>
+						{{ LopItem?.TenLop || LopItem?.LopID }}
+						<span class="mx-1">•</span>
+						{{ transferReviewItems.length }} {{ isEn ? 'selected students' : 'học sinh được chọn' }}.
+						{{ isEn ? 'This action syncs the student roster only. Grades, groups, and subsystem histories are not copied or reassigned automatically.' : 'Thao tác xác nhận chỉ đồng bộ danh sách lớp; điểm, nhóm học và hồ sơ các phân hệ không tự sao chép hoặc đổi sang lớp mới.' }}
+					</v-alert>
+
+					<v-alert v-if="hasClassTransfers" type="warning" variant="tonal" density="compact" class="mb-3">
+						{{ isEn ? 'The database has no dedicated class transfer history table. If an existing membership row is updated, its previous class may no longer be available in the roster table after this action.' : 'DB chưa có bảng lịch sử chuyển lớp riêng. Nếu bản ghi phân lớp hiện tại bị cập nhật, lớp cũ có thể không còn trong bảng danh sách lớp sau thao tác này.' }}
+					</v-alert>
+
+					<div class="overflow-y-auto" style="max-height: 52vh;">
+						<v-card v-for="student in transferReviewItems" :key="student.HocSinhID" variant="outlined" class="pa-3 mb-2">
+							<div class="d-flex align-center flex-wrap ga-2 mb-2">
+								<div class="font-weight-bold">{{ student.HoTen }}</div>
+								<v-chip size="small" variant="tonal" label="">{{ student.HocSinhID }}</v-chip>
+								<v-chip v-if="student.IsChuyenLop" size="small" color="warning" variant="tonal" label="">
+									{{ isEn ? 'Class transfer' : 'Có chuyển lớp' }}
+								</v-chip>
+								<v-chip v-else size="small" color="success" variant="tonal" label="">
+									{{ student.TenLopCu ? (isEn ? 'Same class' : 'Giữ nguyên lớp') : (isEn ? 'No current class' : 'Chưa có lớp hiện tại') }}
+								</v-chip>
+								<v-chip v-if="Number(student.SoLopDangHoc) > 1" size="small" color="warning" variant="tonal" label="">
+									{{ student.SoLopDangHoc }} {{ isEn ? 'active class records' : 'bản ghi lớp đang hiệu lực' }}
+								</v-chip>
+							</div>
+							<div class="text-body-2 mb-2">
+								<strong>{{ isEn ? 'Old class:' : 'Lớp cũ:' }}</strong> {{ student.TenLopCu || (isEn ? 'No active class record' : 'Chưa có bản ghi lớp đang học') }}
+								<v-icon size="small" class="mx-1">mdi-arrow-right</v-icon>
+								<strong>{{ isEn ? 'New class:' : 'Lớp mới:' }}</strong> {{ student.TenLopMoi || LopItem?.TenLop || LopItem?.LopID }}
+							</div>
+					<!-- Các số đếm chỉ rà nơi dữ liệu đang gắn; dialog không tự sửa hay sao chép hồ sơ sang lớp mới. -->
+							<v-row dense>
+								<v-col cols="12" sm="6" md="4">
+									<div class="text-body-2"><strong>{{ isEn ? 'Academic results' : 'Điểm KQHT' }}</strong></div>
+									<div class="text-caption">{{ isEn ? 'Old class' : 'Lớp cũ' }}: {{ student.SoDiemLopCu || 0 }} • {{ isEn ? 'new class' : 'lớp mới' }}: {{ student.SoDiemLopMoi || 0 }} • {{ isEn ? 'study groups' : 'nhóm học' }}: {{ student.SoDiemNhomDangHoc || 0 }} • {{ isEn ? 'English/other score rows' : 'điểm Tiếng Anh/bảng khác' }}: {{ (student.SoDiemTALopCu || 0) + (student.SoDiemBangKhacLopCu || 0) }}</div>
+								</v-col>
+								<v-col cols="12" sm="6" md="4">
+									<div class="text-body-2"><strong>{{ isEn ? 'Study groups' : 'Nhóm học' }}</strong></div>
+									<div class="text-caption">{{ student.SoNhomDangHoc || 0 }} {{ isEn ? 'active groups' : 'nhóm đang học' }} • {{ student.SoNhomLopCu || 0 }} {{ isEn ? 'with old class ID' : 'nhóm còn ghi mã lớp cũ' }}</div>
+								</v-col>
+								<v-col cols="12" sm="6" md="4">
+									<div class="text-body-2"><strong>{{ isEn ? 'LMS assignments' : 'Bài giao LMS' }}</strong></div>
+									<div class="text-caption">{{ student.SoBaiTapLopCu || 0 }} {{ isEn ? 'open on old class' : 'bài đang mở ở lớp cũ' }} • {{ student.SoBaiNopLopCu || 0 }} {{ isEn ? 'submissions' : 'bài nộp' }} • {{ student.SoBaiGiaoTrucTiep || 0 }} {{ isEn ? 'direct assignments' : 'bài giao riêng' }} • {{ student.SoKetQuaLMSLopCu || 0 }} {{ isEn ? 'question results' : 'kết quả câu hỏi' }}</div>
+								</v-col>
+								<v-col cols="12" sm="6" md="4">
+									<div class="text-body-2"><strong>{{ isEn ? 'Monthly comments' : 'Nhận xét tháng' }}</strong></div>
+									<div class="text-caption">{{ student.SoNhanXetThangLopCu || 0 }} {{ isEn ? 'records on old class' : 'bản ghi ở lớp cũ' }}</div>
+								</v-col>
+								<v-col cols="12" sm="6" md="4">
+									<div class="text-body-2"><strong>{{ isEn ? 'Homeroom book' : 'Sổ GVCN' }}</strong></div>
+									<div class="text-caption">{{ student.SoTheoDoiGVCNLopCu || 0 }} {{ isEn ? 'records across homeroom book sections' : 'dòng ở các mục Sổ GVCN' }}</div>
+								</v-col>
+								<v-col cols="12" sm="6" md="4">
+									<div class="text-body-2"><strong>{{ isEn ? 'Other records' : 'Hồ sơ khác' }}</strong></div>
+									<div class="text-caption">{{ isEn ? 'Absence' : 'Báo nghỉ' }}: {{ student.SoBaoNghi || 0 }} • {{ isEn ? 'awards/evaluations' : 'khen thưởng/đánh giá' }}: {{ student.SoDanhGiaKhenThuong || 0 }} • {{ isEn ? 'contests/certificates' : 'cuộc thi/chứng nhận' }}: {{ (student.SoCuocThiLopCu || 0) + (student.SoChungNhanLopCu || 0) }}</div>
+								</v-col>
+								<v-col cols="12" sm="6" md="4">
+									<div class="text-body-2"><strong>{{ isEn ? 'Parent feedback and score appeals' : 'Ý kiến phụ huynh / phúc khảo' }}</strong></div>
+									<div class="text-caption">{{ isEn ? 'Parent feedback' : 'Ý kiến phụ huynh' }}: {{ student.SoYkienPhuHuynhLopCu || 0 }} • {{ isEn ? 'appeals/rejections' : 'phúc khảo/từ chối điểm' }}: {{ (student.SoPhucKhaoLopCu || 0) + (student.SoTuChoiLopCu || 0) }}</div>
+								</v-col>
+								<v-col cols="12" sm="6" md="4">
+									<div class="text-body-2"><strong>{{ isEn ? 'English assessment records' : 'Hồ sơ đánh giá Tiếng Anh' }}</strong></div>
+									<div class="text-caption">IELTS: {{ student.SoIeltsLopCu || 0 }} • Cambridge: {{ student.SoBaoCaoCambridge || 0 }}</div>
+								</v-col>
+								<v-col cols="12" sm="6" md="4">
+									<div class="text-body-2"><strong>{{ isEn ? 'Device bookings' : 'Đăng ký thiết bị' }}</strong></div>
+									<div class="text-caption">{{ student.SoDangKyLaptopLopCu || 0 }} {{ isEn ? 'records linked to the old class' : 'bản ghi gắn với lớp cũ' }}</div>
+								</v-col>
+								<v-col cols="12" sm="6" md="4">
+									<div class="text-body-2"><strong>{{ isEn ? 'Student LMS history' : 'Lịch sử LMS của học sinh' }}</strong></div>
+									<div class="text-caption">{{ student.SoTienDoLMSCaNhan || 0 }} {{ isEn ? 'progress rows' : 'dòng tiến độ cá nhân' }} • {{ student.SoThanhTichLMSNamHoc || 0 }} {{ isEn ? 'achievements this year' : 'thành tích năm học' }}. {{ isEn ? 'These stay with the student account.' : 'Dữ liệu này gắn với hồ sơ học sinh.' }}</div>
+								</v-col>
+							</v-row>
+						</v-card>
+					</div>
+
+					<v-checkbox v-model="isTransferReviewAccepted" density="compact" hide-details class="mt-2"
+					:label="isEn ? 'I reviewed the old and new classes and understand subsystem data will not be copied automatically.' : 'Tôi đã rà lớp cũ, lớp mới và hiểu dữ liệu các phân hệ không tự chuyển theo.'" />
+				</v-card-text>
+				<v-card-actions class="mr-1 mb-1">
+					<v-spacer />
+					<v-btn variant="text" :disabled="isSavingStudentList" @click="closeTransferReview">{{ isEn ? 'Cancel' : 'Hủy' }}</v-btn>
+					<v-btn color="primary" variant="text" :loading="isSavingStudentList" :disabled="!isTransferReviewAccepted || isSavingStudentList" @click="confirmInsHocSinh">
+						<v-icon start="">mdi-sync</v-icon>{{ isEn ? 'Sync class list' : 'Đồng bộ danh sách lớp' }}
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+
 		<v-dialog v-model="isOpenAvatarDialog" max-width="900">
 			<div style="position: relative; display: block; line-height: 0; width: fit-content; margin: 0 auto;">
 				<img :src="AvatarImageUrl" :alt="isEn ? 'Student photo' : 'Ảnh học sinh'"
@@ -164,6 +264,11 @@
 				KhoiItem: null,
 				LopItem: null,
 				DSHocSinhSelected: [],
+				isOpenTransferReview: false,
+				isLoadingTransferReview: false,
+				isSavingStudentList: false,
+				isTransferReviewAccepted: false,
+				transferReviewItems: [],
 				// Giữ table ở trạng thái loading trong suốt thời gian tải dữ liệu theo lớp.
 				isLoadingHocSinh: false,
 				StudentProfile: null,
@@ -202,6 +307,9 @@
 			},
 			AvatarImageUrl() {
 				return this.AvatarStudent?.HocSinhID ? vueData.v_Set?.urlAvatarHocSinh + this.AvatarStudent.HocSinhID + '/' + Date.now() : ''
+			},
+			hasClassTransfers() {
+				return this.transferReviewItems.some(x => x.IsChuyenLop)
 			},
 		},
 	
@@ -305,22 +413,84 @@
 				}
 			},
 	
-			async insHocSinh() {
+			// Đọc trước tình trạng lớp và dữ liệu các phân hệ để người dùng thấy rõ điểm sẽ giữ ở lớp nào.
+			insHocSinh() {
 				const payload = this.DSHocSinhSelected.map(x => ({
 					...x,
 					TinhTrang: x.TinhTrangQLHS,
 					TenTinhTrang: x.TenTinhTrangQLHS,
 				}))
-	
-				// Gửi niên khóa đang chọn cùng LopID để ghi đúng bản ghi học sinh-lớp.
+				const HocSinhIDs = [...new Set(payload.map(x => Number(x.HocSinhID)).filter(x => Number.isFinite(x) && x > 0))]
+				if (!HocSinhIDs.length || !this.LopItem?.LopID) return
+				this.isLoadingTransferReview = true
+				this.isTransferReviewAccepted = false
+				fetchPromise('lms/HocSinhLop_ChuyenLop_Preview', {
+					Json_HocSinhID: JSON.stringify(HocSinhIDs),
+					LopMoiID: this.LopItem.LopID,
+					NienKhoa: vueData.NienKhoa,
+				}, { cache: false, suppressError: true }).then(rows => {
+					const previewRows = Array.isArray(rows) ? rows : []
+					const previewByID = new Map(previewRows.map(x => [Number(x.HocSinhID), x]))
+					const missingIDs = HocSinhIDs.filter(id => !previewByID.has(id))
+					if (missingIDs.length) throw new Error((this.isEn ? 'Could not check students: ' : 'Chưa rà được học sinh: ') + missingIDs.join(', '))
+					this.transferReviewItems = payload.map(student => {
+						const preview = previewByID.get(Number(student.HocSinhID))
+						return {
+							...preview,
+							HoTen: student.HoTen || preview.HoTen,
+							TenLopMoi: preview.TenLopMoi || this.LopItem.TenLop || String(this.LopItem.LopID),
+							IsChuyenLop: !!preview.LopCuID && String(preview.LopCuID) !== String(this.LopItem.LopID),
+						}
+					})
+					const hasExistingData = row => [
+						row.SoDiemLopCu, row.SoDiemLopMoi, row.SoDiemNhomDangHoc,
+						row.SoDiemTALopCu, row.SoDiemBangKhacLopCu,
+						row.SoNhomDangHoc, row.SoBaiTapLopCu, row.SoBaiNopLopCu,
+						row.SoBaiGiaoTrucTiep, row.SoKetQuaLMSLopCu,
+						row.SoNhanXetThangLopCu, row.SoTheoDoiGVCNLopCu,
+						row.SoBaoNghi, row.SoDanhGiaKhenThuong,
+						row.SoYkienPhuHuynhLopCu, row.SoIeltsLopCu, row.SoBaoCaoCambridge,
+						row.SoCuocThiLopCu, row.SoChungNhanLopCu, row.SoDangKyLaptopLopCu,
+						row.SoPhucKhaoLopCu, row.SoTuChoiLopCu, row.SoTienDoLMSCaNhan,
+						row.SoThanhTichLMSNamHoc,
+					].some(value => Number(value) > 0)
+					const needsReview = this.transferReviewItems.some(row =>
+						row.IsChuyenLop || (!row.LopCuID && hasExistingData(row))
+					)
+					if (needsReview) this.isOpenTransferReview = true
+					else this.saveHocSinhList(payload)
+				}).catch(err => {
+					showMessage({ title: this.isEn ? 'Unable to review class update' : 'Không rà soát được việc cập nhật lớp', message: err?.message || (this.isEn ? 'Please retry before syncing.' : 'Vui lòng thử lại trước khi đồng bộ.') })
+				}).then(() => {
+					this.isLoadingTransferReview = false
+				})
+			},
+
+			closeTransferReview() {
+				if (this.isSavingStudentList) return
+				this.isOpenTransferReview = false
+				this.isTransferReviewAccepted = false
+			},
+
+			confirmInsHocSinh() {
+				if (!this.isTransferReviewAccepted || this.isSavingStudentList) return
+				const payload = this.DSHocSinhSelected.map(x => ({
+					...x,
+					TinhTrang: x.TinhTrangQLHS,
+					TenTinhTrang: x.TenTinhTrangQLHS,
+				}))
+				this.saveHocSinhList(payload)
+			},
+
+			// Phân tách bước ghi để học sinh mới đi thẳng, còn chuyển lớp phải qua dialog rà soát trước.
+			saveHocSinhList(payload) {
+				if (this.isSavingStudentList) return
+				// API nhập lớp hiện ghi danh sách thành viên; các phân hệ lịch sử phải theo đúng phạm vi riêng của chúng.
 				const promise = Promise.all([
-					fetchPromise("lms/IO_IN_HocSinh_Ins", { HocSinhObjArr: payload }, { cache: false, suppressError: true }),
-					fetchPromise("lms/IO_IN_HocSinhLop_Ins", { HocSinhLopObjArr: payload, NienKhoa: vueData.NienKhoa }, { cache: false, suppressError: true }),
+					fetchPromise('lms/IO_IN_HocSinh_Ins', { HocSinhObjArr: payload }, { cache: false, suppressError: true }),
+					fetchPromise('lms/IO_IN_HocSinhLop_Ins', { HocSinhLopObjArr: payload, NienKhoa: vueData.NienKhoa }, { cache: false, suppressError: true }),
 				])
-	
-				// Tách getHocSinh ra — không để nó kéo dài promise
-				promise.then(() => this.getHocSinh(true))
-	
+				this.isSavingStudentList = true
 				this.snackbarRef.value.showPromise(promise, {
 					loadingText: this.isEn ? `Updating ${payload.length} students...` : `Đang cập nhật ${payload.length} học sinh...`,
 					onSuccess: () => ({
@@ -330,7 +500,7 @@
 						timeout: 3000,
 						timer: 'white',
 					}),
-					onError: (err) => ({
+					onError: err => ({
 						text: this.isEn ? `Update failed: ${err?.message ?? 'Unknown error'}` : `Cập nhật thất bại: ${err?.message ?? 'Lỗi không xác định'}`,
 						color: 'error',
 						prependIcon: 'mdi-alert-circle-outline',
@@ -338,6 +508,14 @@
 						timer: 'white',
 						reverseTimer: true,
 					}),
+				})
+				promise.then(() => {
+					this.isOpenTransferReview = false
+					this.getHocSinh(true)
+				}).then(() => {
+					this.isSavingStudentList = false
+				}, () => {
+					this.isSavingStudentList = false
 				})
 			},
 	

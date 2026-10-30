@@ -892,7 +892,7 @@
         case 'HTML':
         case 'READING': return 'mdi-file-document-outline';
         default:
-          if (type.startsWith('QUIZ')) return 'mdi-help-circle-outline';
+          if (type.startsWith('QUIZ') || ['ESSAY', 'SHORT_ANSWER'].includes(type)) return 'mdi-help-circle-outline';
           return 'mdi-file-outline';
       }
     },
@@ -1455,7 +1455,7 @@
 			</div>
 
 			<!-- Single Quiz Types -->
-			<div v-else-if="slideData.type.startsWith('QUIZ')" class="lh-quiz-single"
+			<div v-else-if="slideData.type.startsWith('QUIZ') || ['ESSAY', 'SHORT_ANSWER'].includes(slideData.type)" class="lh-quiz-single"
 				:class="'lh-quiz-' + slideData.type.toLowerCase().replace('quiz_', '')">
 
 				<!-- Quiz Header -->
@@ -1468,7 +1468,7 @@
 						</button>
 						<button class="lh-header-btn lh-btn-check" @click="checkAnswer" title="Kiểm tra">
 							<v-icon size="16" class="mr-1 text-white">mdi-check-circle-outline</v-icon>
-							<span>Nộp bài</span>
+							<span>Kiểm tra đáp án</span>
 						</button>
 					</div>
 				</div>
@@ -1707,6 +1707,28 @@
 							</label>
 						</div>
 					</div>
+
+					<!-- ESSAY / SHORT_ANSWER -->
+					<div v-else-if="slideData.type === 'ESSAY' || slideData.type === 'SHORT_ANSWER'" class="lh-essay-question pa-3">
+						<uc-latex-view class="lh-question-prompt mb-4" :content="slideData.content.prompt" ></uc-latex-view>
+						<v-textarea
+							v-model="userAnswers.essay"
+							:placeholder="slideData.type === 'SHORT_ANSWER' ? 'Nhập câu trả lời ngắn của bạn tại đây...' : 'Nhập câu trả lời tự luận của bạn tại đây...'"
+							:rows="slideData.type === 'SHORT_ANSWER' ? 2 : 5"
+							variant="outlined"
+							auto-grow
+							class="lh-essay-input mb-3"
+							hide-details="auto"
+						></v-textarea>
+						<!-- Đáp án tham khảo dành riêng cho Giáo viên -->
+						<div v-if="slideData.content.referenceAnswer && isUserTeacher()" class="lh-reference-answer-box mt-3 pa-3" style="background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #f59e0b; border-radius: 8px;">
+							<div class="font-weight-bold text-amber-darken-3 mb-1 d-flex align-center ga-1" style="font-size: 0.875rem;">
+								<v-icon size="small" color="amber-darken-3">mdi-lightbulb-on</v-icon>
+								<span>Đáp án tham khảo / Gợi ý chấm (Chỉ giáo viên thấy):</span>
+							</div>
+							<div class="lh-reference-content text-body-2 text-slate-800" v-html="slideData.content.referenceAnswer"></div>
+						</div>
+					</div>
 				</div>
 			</div>
 
@@ -1857,6 +1879,7 @@
 					ordering: [],
 					matching: [],
 					fillInTheBlank: {},
+					essay: '',
 					connection: {
 						activeGroup: null,
 						selections: []
@@ -1888,6 +1911,8 @@
 					'QUIZ_CONNECTION': '🔗 Nối đường thẳng',
 					'QUIZ_COMPOSITE': '📝 Nhiều câu hỏi',
 					'QUIZ_TRUE_FALSE': '🎯 Chọn đáp án đúng sai',
+					'ESSAY': '✍️ Câu hỏi tự luận',
+					'SHORT_ANSWER': '✏️ Trả lời ngắn',
 				},
 				zoomLevel: 1.0,
 				isFullscreen: false,
@@ -1995,7 +2020,7 @@
 			},
 	
 			isQuiz() {
-				return this.slideData && this.slideData.type.startsWith('QUIZ') && this.slideData.type !== 'QUIZ_COMPOSITE';
+				return this.slideData && (this.slideData.type.startsWith('QUIZ') || ['ESSAY', 'SHORT_ANSWER'].includes(this.slideData.type)) && this.slideData.type !== 'QUIZ_COMPOSITE';
 			},
 
 			audioSourceUrl() {
@@ -2536,6 +2561,20 @@
 				}
 			},
 	
+			syncCategoryDropzoneHints() {
+				this.$nextTick(() => {
+					const dropzones = document.querySelectorAll('.lh-category-dropzone');
+					dropzones.forEach(dz => {
+						const hasItem = Array.from(dz.children).some(c => c.classList && c.classList.contains('lh-draggable-item'));
+						dz.classList.toggle('has-item', hasItem);
+						const hint = dz.querySelector('.lh-dropzone-hint');
+						if (hint) {
+							hint.style.display = hasItem ? 'none' : '';
+						}
+					});
+				});
+			},
+
 			// ✅ FIXED: Sử dụng slideData.content thay vì this.currentQuestion
 			initCategorizeSortable(questionId) {
 				// Source container
@@ -2548,7 +2587,10 @@
 						ghostClass: 'lh-sortable-ghost',
 						chosenClass: 'lh-sortable-chosen',
 						dragClass: 'lh-sortable-drag',
-						onEnd: () => this.playSound('drop')
+						onEnd: () => {
+							this.playSound('drop');
+							this.syncCategoryDropzoneHints();
+						}
 					});
 					this.sortableInstances.push(sourceInstance);
 				}
@@ -2565,12 +2607,16 @@
 								ghostClass: 'lh-sortable-ghost',
 								chosenClass: 'lh-sortable-chosen',
 								dragClass: 'lh-sortable-drag',
-								onEnd: () => this.playSound('drop')
+								onEnd: () => {
+									this.playSound('drop');
+									this.syncCategoryDropzoneHints();
+								}
 							});
 							this.sortableInstances.push(categoryInstance);
 						}
 					});
 				}
+				this.syncCategoryDropzoneHints();
 			},
 	
 			destroySortableInstances() {
@@ -2615,7 +2661,10 @@
 						group: 'categorize-group',
 						animation: 200,
 						ghostClass: 'lh-sortable-ghost',
-						onEnd: () => this.playSound('drop')
+						onEnd: () => {
+							this.playSound('drop');
+							this.syncCategoryDropzoneHints();
+						}
 					});
 					this.sortableInstances.push(sourceInstance);
 				}
@@ -2625,17 +2674,22 @@
 							group: 'categorize-group',
 							animation: 200,
 							ghostClass: 'lh-sortable-ghost',
-							onEnd: () => this.playSound('drop')
+							onEnd: () => {
+								this.playSound('drop');
+								this.syncCategoryDropzoneHints();
+							}
 						});
 						this.sortableInstances.push(instance);
 					});
 				}
+				this.syncCategoryDropzoneHints();
 			},
 	
 			initSortableMatching() {
 				// Hủy toàn bộ SortableJS cho phần Ghép Nối
 				// Sử dụng 100% Native Pointer Engine (startMatchingPointerDrag) để kéo thả mượt mà không bị bóng mờ lề
 				this.destroySortableInstances();
+				this.updateBCount();
 			},
 
 			handleMatchingDragEnd(evt) {
@@ -2894,6 +2948,13 @@
 						}
 					}
 					isCorrect = flag;
+				} else if (this.slideData.type === 'ESSAY' || this.slideData.type === 'SHORT_ANSWER') {
+					const essayText = (userAnswers.essay || '').trim();
+					if (!essayText && !this.isUserTeacher()) {
+						this.showToast('⚠️ Em hãy nhập câu trả lời nhé!', 'warning');
+						return;
+					}
+					isCorrect = true;
 				}
 
 				if (this.slideData.content.explanation) {
@@ -3106,28 +3167,32 @@
 				this.activeDragEl = itemEl;
 
 				const rect = itemEl.getBoundingClientRect();
-				const targetDz = document.querySelector('.lh-matching-dropzone');
-				const dzWidth = targetDz ? targetDz.getBoundingClientRect().width : 0;
-				const avatarWidth = (dzWidth && dzWidth > 40) ? dzWidth : Math.min(rect.width, 180);
+				const avatarWidth = rect.width;
 				const avatarHeight = rect.height;
 				const avatar = itemEl.cloneNode(true);
 				avatar.id = 'matching-drag-avatar';
-				avatar.className = 'lh-drag-avatar-clone';
+				avatar.className = 'lh-matching-item-b lh-drag-avatar-clone';
 				avatar.style.position = 'fixed';
 				avatar.style.left = (pointer.clientX - avatarWidth / 2) + 'px';
 				avatar.style.top = (pointer.clientY - avatarHeight / 2) + 'px';
 				avatar.style.width = avatarWidth + 'px';
-				avatar.style.maxWidth = avatarWidth + 'px';
-				avatar.style.height = avatarHeight + 'px';
+				avatar.style.minHeight = avatarHeight + 'px';
+				avatar.style.height = 'auto';
 				avatar.style.zIndex = '999999';
 				avatar.style.pointerEvents = 'none';
-				avatar.style.boxShadow = '0 12px 28px rgba(0,0,0,0.3)';
-				avatar.style.transform = 'scale(1.05) rotate(2deg)';
-				avatar.style.opacity = '0.92';
+				avatar.style.boxShadow = '0 12px 28px rgba(0,0,0,0.22)';
+				avatar.style.transform = 'scale(1.02)';
+				avatar.style.opacity = '0.96';
 				avatar.style.transition = 'none';
-				avatar.style.border = '2px solid #10b981';
+				avatar.style.border = '2px solid #0284c7';
 				avatar.style.background = '#ffffff';
-				avatar.style.borderRadius = '10px';
+				avatar.style.borderRadius = '6px';
+				avatar.style.display = 'flex';
+				avatar.style.alignItems = 'center';
+				avatar.style.gap = '8px';
+				avatar.style.padding = '8px 12px';
+				avatar.style.margin = '0';
+				avatar.style.boxSizing = 'border-box';
 				avatar.style.touchAction = 'none';
 
 				document.body.appendChild(avatar);
@@ -3228,6 +3293,19 @@
 					if (this.$refs.matchingBContainer) {
 						const items = this.$refs.matchingBContainer.querySelectorAll('.lh-matching-item-b');
 						this.remainingBCount = items.length;
+					}
+					if (this.$refs.matchingDropzones) {
+						const dropzones = Array.isArray(this.$refs.matchingDropzones)
+							? this.$refs.matchingDropzones
+							: [this.$refs.matchingDropzones];
+						dropzones.forEach(dz => {
+							const hasItem = Array.from(dz.children).some(c => c.classList.contains('lh-matching-item-b'));
+							dz.classList.toggle('has-item', hasItem);
+							const placeholder = dz.querySelector('.lh-dropzone-placeholder');
+							if (placeholder) {
+								placeholder.style.display = hasItem ? 'none' : '';
+							}
+						});
 					}
 				});
 			},
@@ -3702,6 +3780,17 @@
 			},
 			onPrev() {
 				this.$emit('prev');
+			},
+			isUserTeacher() {
+				const user = (typeof vueData !== 'undefined' && vueData?.user) || window.user || {};
+				if (user.IsGiaoVien === true || user.isTeacher === true || user.IsTeacher === true || user.IsAdmin === true || user.isAdmin === true) return true;
+				if (user.Role === 'GiaoVien' || user.Role === 'Admin' || user.Role === 'GV' || !!user.NhanVienID || !!user.GiaoVienID || !!user.MaNhanVien) return true;
+				if (user.SystemRight !== undefined && user.SystemRight !== null && Number(user.SystemRight) > 0) return true;
+				if (user.UserID) {
+					const uId = String(user.UserID).toUpperCase();
+					if (!user.HocSinhID && !uId.startsWith('HS') && !uId.startsWith('PH')) return true;
+				}
+				return false;
 			}
 		},
 
@@ -3744,6 +3833,8 @@
 			document.body.style.overflow = '';
 		}
   };
+  // Giữ bản viewer đầy đủ cho quiz đơn trước khi service đăng ký viewer tài liệu cùng tên.
+  Vue.component("uc-standalone-quiz-viewer", compDef);
   Vue.component("uc-slide-viewer-v3", compDef);
 })();
 
@@ -3764,7 +3855,7 @@
 		<!-- Giao diện khi phát video (YouTube/HTML5 Video) -->
 		<v-row v-else-if="mediaType === 'youtube' || mediaType === 'video'" class="ma-0 w-100" :no-gutters="!hasQuestions">
 			<!-- Cột trái: Trình phát; video tương tác chiếm 9 cột để chừa sidebar các mốc câu hỏi. -->
-			<v-col cols="12" :md="hasQuestions ? 9 : 12" class="pa-0" :class="{ 'pr-md-3': hasQuestions }">
+			<v-col cols="12" :md="hasQuestions ? 9 : 12" class="pa-0 d-flex flex-column h-100" :class="{ 'pr-md-3': hasQuestions }">
 				<div class="video-preview-box position-relative w-100">
 					<div v-if="mediaType === 'youtube'" key="yt-preview-box" ref="ytWrapper" class="lh-youtube-wrapper w-100 h-100 position-absolute">
 						<div :id="playerId" class="w-100 h-100"></div>
@@ -3780,18 +3871,43 @@
 				</div>
 
 				<!-- Chỉ video tương tác dùng timeline riêng; video thường giữ nguyên controls/time mặc định của YouTube/HTML5. -->
-				<div v-if="hasQuestions" class="lh-video-timeline w-100 d-flex flex-column mt-3 mb-4">
-					<div ref="timelineTrack" class="position-relative w-100 px-1 mb-2 d-flex align-center" style="height: 20px;"
-						@mousedown="onTimelineTrackMouseDown"
-						@touchstart="onTimelineTrackMouseDown">
+				<div v-if="hasQuestions" class="lh-video-timeline w-100 d-flex flex-column mt-1 mb-0 pb-1">
+					<div ref="timelineTrack" class="position-relative w-100 px-1 mb-1 d-flex align-center" style="height: 20px;">
 						<v-slider v-model="videoCurrentTime" :max="videoDuration || 100" min="0" step="1"
 							:hide-details="true" density="compact" color="success" track-color="grey-lighten-2"
 							:track-size="4" :thumb-size="12"
-							@update:model-value="onVideoSliderEnd"
-							@change="onVideoSliderEnd"
+							@start="onSliderStart"
+							@update:model-value="onSliderInput"
+							@end="onVideoSliderEnd"
 							class="w-100">
 						</v-slider>
-						
+
+						<!-- Markers hiển thị các mốc câu hỏi tương tác trên thanh timeline -->
+						<div class="lh-timeline-markers-layer position-absolute" style="left: 6px; right: 6px; top: 0; bottom: 0; pointer-events: none;">
+							<div
+								v-for="item in normalizedInteractions"
+								:key="'marker_' + item.id"
+								class="lh-timeline-marker position-absolute"
+								:style="{
+									left: (videoDuration ? Math.min(100, Math.max(0, (item.time / videoDuration) * 100)) : 0) + '%',
+									top: '50%',
+									transform: 'translate(-50%, -50%)',
+									pointerEvents: 'auto',
+									cursor: 'pointer',
+									zIndex: 4
+								}"
+								:title="'Mốc ' + formatTime(item.time) + ' - ' + (completedInteractions.includes(item.id) ? 'Đã hoàn thành' : 'Câu hỏi tương tác (' + item.questions.length + ' câu)')"
+								@click.stop="seekVideo(item.time)"
+							>
+								<div
+									class="lh-marker-pin"
+									:class="{
+										'is-completed': completedInteractions.includes(item.id),
+										'is-active': activeInteraction && activeInteraction.id === item.id
+									}"
+								></div>
+							</div>
+						</div>
 					</div>
 					
 					<div class="d-flex align-center justify-space-between w-100 pt-1">
@@ -3878,7 +3994,7 @@
 
 		<!-- Overlay câu hỏi tương tác dành cho học sinh (Hỗ trợ đầy đủ cả 8 dạng câu hỏi) -->
 		<v-dialog v-model="showInteractionOverlay" persistent max-width="850">
-			<v-card v-if="activeInteraction" style="border-radius: 16px; overflow: hidden; box-shadow: 0 12px 36px rgba(0,0,0,0.25) !important;">
+			<v-card v-if="activeInteraction" class="lh-dialog-interaction" style="border-radius: 16px; overflow: hidden; box-shadow: 0 12px 36px rgba(0,0,0,0.25) !important;">
 				<v-card-title class="d-flex align-center pa-4 style-header" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important; color: #ffffff !important;">
 					<v-icon class="mr-2" style="color: #ffffff !important;">mdi-help-circle-outline</v-icon>
 					<span class="text-subtitle-1 font-weight-bold" style="color: #ffffff !important;">
@@ -4014,9 +4130,21 @@
 					document.head.appendChild(tag);
 				}
 			}
+
+			this._onWindowMouseUp = () => {
+				if (this.isDraggingSlider) {
+					this.onVideoSliderEnd(this.videoCurrentTime);
+				}
+			};
+			window.addEventListener('mouseup', this._onWindowMouseUp);
+			window.addEventListener('touchend', this._onWindowMouseUp);
 		},
 		beforeUnmount() {
 			this.stopTimeCheck();
+			if (this._onWindowMouseUp) {
+				window.removeEventListener('mouseup', this._onWindowMouseUp);
+				window.removeEventListener('touchend', this._onWindowMouseUp);
+			}
 			if (this.ytPlayer) {
 				try {
 					this.ytPlayer.destroy();
@@ -4220,11 +4348,13 @@
 									modestbranding: 1,
 									rel: 0,
 									cc_load_policy: 0,
-									iv_load_policy: 3
+									iv_load_policy: 3,
+									enablejsapi: 1,
+									origin: window.location.origin
 								},
 								events: {
-									'onReady': self.onPlayerReady,
-									'onStateChange': self.onPlayerStateChange
+									'onReady': (event) => self.onPlayerReady(event),
+									'onStateChange': (event) => self.onPlayerStateChange(event)
 								}
 							});
 						}
@@ -4254,22 +4384,27 @@
 			onPlayerReady(event) {
 				const player = event.target;
 				this.ytPlayer = player;
-				this.videoDuration = Math.floor(player.getDuration() || 0);
+				try {
+					const dur = Math.floor(player.getDuration?.() || 0);
+					if (dur > 0) this.videoDuration = dur;
+				} catch (e) {}
 				this.disableYtCC(player);
-				// Video thường cần polling để cập nhật timer tùy chỉnh; interaction cũng dùng polling để bắt mốc timeMarker.
 				this.startTimeCheck();
 			},
 
 			onPlayerStateChange(event) {
-				if (event.data === window.YT.PlayerState.PLAYING) {
+				this.ytPlayer = event.target;
+				try {
+					const dur = Math.floor(event.target.getDuration?.() || 0);
+					if (dur > 0) this.videoDuration = dur;
+				} catch (e) {}
+				const isPlay = event.data === 1 || (window.YT && window.YT.PlayerState && event.data === window.YT.PlayerState.PLAYING);
+				if (isPlay) {
 					this.videoPlaying = true;
 					this.startTimeCheck();
 					this.disableYtCC(event.target);
-				} else {
+				} else if (event.data === 2 || event.data === 0) {
 					this.videoPlaying = false;
-					// Giữ polling khi có interaction để không bỏ sót mốc; video thường có thể dừng polling khi pause.
-					if (this.hasQuestions && !this.timeCheckInterval) this.startTimeCheck();
-					if (!this.hasQuestions) this.stopTimeCheck();
 				}
 			},
 
@@ -4403,6 +4538,15 @@
 				window.addEventListener('touchmove', onMouseMove);
 				window.addEventListener('mouseup', onMouseUp);
 				window.addEventListener('touchend', onMouseUp);
+			},
+			onSliderStart() {
+				this.isDraggingSlider = true;
+				this.dragStartTime = this.videoCurrentTime;
+			},
+			onSliderInput(val) {
+				if (this.isDraggingSlider) {
+					this.videoCurrentTime = Math.max(0, Number(val) || 0);
+				}
 			},
 			onVideoSliderEnd(val) {
 				this.isDraggingSlider = false;
@@ -4594,6 +4738,8 @@
 				if (type === 'QUIZ_CONNECTION') return 'Nối cặp';
 				if (type === 'QUIZ_DRAG_DROP_CATEGORIZE') return 'Phân loại';
 				if (type === 'QUIZ_COMPOSITE') return 'Tổ hợp nhiều câu hỏi';
+				if (type === 'ESSAY') return 'Tự luận';
+				if (type === 'SHORT_ANSWER') return 'Trả lời ngắn';
 				return 'Câu hỏi';
 			},
 
@@ -4607,6 +4753,8 @@
 				if (type === 'QUIZ_CONNECTION') return '#0d9488';
 				if (type === 'QUIZ_DRAG_DROP_CATEGORIZE') return '#ea580c';
 				if (type === 'QUIZ_COMPOSITE') return '#f43f5e';
+				if (type === 'ESSAY') return '#2563eb';
+				if (type === 'SHORT_ANSWER') return '#0891b2';
 				return '#475569';
 			},
 
@@ -4624,30 +4772,39 @@
 
 			startTimeCheck() {
 				if (this.mediaType !== 'youtube') return;
-				if (this.timeCheckInterval) return;
+				this.stopTimeCheck();
 				this.timeCheckInterval = setInterval(() => {
+					if (this.isDraggingSlider) return;
 					const player = this.ytPlayer;
-					if (player && typeof player.getDuration === 'function') {
-						const dur = Math.floor(player.getDuration() || 0);
-						if (dur > 0 && this.videoDuration !== dur) {
-							this.videoDuration = dur;
+					if (!player) return;
+					try {
+						if (typeof player.getDuration === 'function') {
+							const dur = Math.floor(player.getDuration() || 0);
+							if (dur > 0 && this.videoDuration !== dur) {
+								this.videoDuration = dur;
+							}
 						}
-					}
-					if (!this.isDraggingSlider && this.mediaType === 'youtube' && player && typeof player.getCurrentTime === 'function') {
-						const currentTime = Math.floor(player.getCurrentTime());
-						this.videoCurrentTime = currentTime;
-						this.lastConfirmedTime = currentTime;
-						const interaction = this.hasQuestions
-							? this.normalizedInteractions.find(item => currentTime >= item.time && currentTime <= item.time + 1 && !this.completedInteractions.includes(item.id))
-							: null;
-						if (interaction && this.lastTriggeredInteractionId !== interaction.id) {
-							this.unlockInteraction(interaction);
-							this.lastTriggeredInteractionId = interaction.id;
-							this.videoCurrentTime = interaction.time;
-							this.triggerInteraction(interaction);
+						if (typeof player.getPlayerState === 'function') {
+							const state = player.getPlayerState();
+							if (state === 1) this.videoPlaying = true;
+							else if (state === 2 || state === 0) this.videoPlaying = false;
 						}
-					}
-				}, 300);
+						if (typeof player.getCurrentTime === 'function') {
+							const currentTime = Math.floor(player.getCurrentTime() || 0);
+							this.videoCurrentTime = currentTime;
+							this.lastConfirmedTime = currentTime;
+							const interaction = this.hasQuestions
+								? this.normalizedInteractions.find(item => currentTime >= item.time && currentTime <= item.time + 1 && !this.completedInteractions.includes(item.id))
+								: null;
+							if (interaction && this.lastTriggeredInteractionId !== interaction.id) {
+								this.unlockInteraction(interaction);
+								this.lastTriggeredInteractionId = interaction.id;
+								this.videoCurrentTime = interaction.time;
+								this.triggerInteraction(interaction);
+							}
+						}
+					} catch (e) {}
+				}, 250);
 			},
 
 			stopTimeCheck() {
@@ -4736,7 +4893,7 @@
 				}
 				
 				this.isAnswered = false;
-				this.isAnswerCorrect = false;
+				this.isAnswerCorrect = this.isUserTeacher ? this.isUserTeacher() : false;
 				this.showInteractionOverlay = true;
 			},
 
@@ -4879,6 +5036,17 @@
 				if (isCorrect) return 'success';
 				if (isChosen) return 'error';
 				return 'grey';
+			},
+			isUserTeacher() {
+				const user = (typeof vueData !== 'undefined' && vueData?.user) || window.user || {};
+				if (user.IsGiaoVien === true || user.isTeacher === true || user.IsTeacher === true || user.IsAdmin === true || user.isAdmin === true) return true;
+				if (user.Role === 'GiaoVien' || user.Role === 'Admin' || user.Role === 'GV' || !!user.NhanVienID || !!user.GiaoVienID || !!user.MaNhanVien) return true;
+				if (user.SystemRight !== undefined && user.SystemRight !== null && Number(user.SystemRight) > 0) return true;
+				if (user.UserID) {
+					const uId = String(user.UserID).toUpperCase();
+					if (!user.HocSinhID && !uId.startsWith('HS') && !uId.startsWith('PH')) return true;
+				}
+				return false;
 			}
 		}
   };
@@ -6826,28 +6994,32 @@
 				this.activeDragEl = itemEl;
 
 				const rect = itemEl.getBoundingClientRect();
-				const targetDz = document.querySelector('.lh-matching-dropzone');
-				const dzWidth = targetDz ? targetDz.getBoundingClientRect().width : 0;
-				const avatarWidth = (dzWidth && dzWidth > 40) ? dzWidth : Math.min(rect.width, 180);
+				const avatarWidth = rect.width;
 				const avatarHeight = rect.height;
 				const avatar = itemEl.cloneNode(true);
 				avatar.id = 'composite-matching-drag-avatar';
-				avatar.className = 'lh-drag-avatar-clone';
+				avatar.className = 'lh-matching-item-b lh-drag-avatar-clone';
 				avatar.style.position = 'fixed';
 				avatar.style.left = (pointer.clientX - avatarWidth / 2) + 'px';
 				avatar.style.top = (pointer.clientY - avatarHeight / 2) + 'px';
 				avatar.style.width = avatarWidth + 'px';
-				avatar.style.maxWidth = avatarWidth + 'px';
-				avatar.style.height = avatarHeight + 'px';
+				avatar.style.minHeight = avatarHeight + 'px';
+				avatar.style.height = 'auto';
 				avatar.style.zIndex = '9999999';
 				avatar.style.pointerEvents = 'none';
-				avatar.style.boxShadow = '0 12px 28px rgba(0,0,0,0.3)';
-				avatar.style.transform = 'scale(1.05) rotate(2deg)';
-				avatar.style.opacity = '0.92';
+				avatar.style.boxShadow = '0 12px 28px rgba(0,0,0,0.22)';
+				avatar.style.transform = 'scale(1.02)';
+				avatar.style.opacity = '0.96';
 				avatar.style.transition = 'none';
-				avatar.style.border = '2px solid #10b981';
+				avatar.style.border = '2px solid #0284c7';
 				avatar.style.background = '#ffffff';
-				avatar.style.borderRadius = '10px';
+				avatar.style.borderRadius = '6px';
+				avatar.style.display = 'flex';
+				avatar.style.alignItems = 'center';
+				avatar.style.gap = '8px';
+				avatar.style.padding = '8px 12px';
+				avatar.style.margin = '0';
+				avatar.style.boxSizing = 'border-box';
 				avatar.style.touchAction = 'none';
 
 				document.body.appendChild(avatar);
@@ -7415,6 +7587,20 @@
 			},
 	
 			initCategorizeSortable(questionId) {
+				const syncHints = () => {
+					this.$nextTick(() => {
+						const dropzones = document.querySelectorAll('.lh-category-dropzone');
+						dropzones.forEach(dz => {
+							const hasItem = Array.from(dz.children).some(c => c.classList && c.classList.contains('lh-draggable-item'));
+							dz.classList.toggle('has-item', hasItem);
+							const hint = dz.querySelector('.lh-dropzone-hint');
+							if (hint) {
+								hint.style.display = hasItem ? 'none' : '';
+							}
+						});
+					});
+				};
+
 				const updateUnclassified = (sourceContainer) => {
 					if (sourceContainer && this.userAnswers.composite[questionId]) {
 						const remainingCount = sourceContainer.querySelectorAll('.lh-draggable-item').length;
@@ -7422,6 +7608,7 @@
 						// Update counter flag without replacing array reference to prevent Vue template wipe
 						this.userAnswers.composite[questionId].remainingCount = remainingCount;
 					}
+					syncHints();
 				};
 
 				// Source container
@@ -7465,6 +7652,7 @@
 						}
 					});
 				}
+				syncHints();
 			},
 	
 			destroySortableInstances() {

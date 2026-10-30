@@ -84,13 +84,14 @@
 							<v-list density="compact" nav class="pa-0 profile-teacher-list">
 								<v-list-item v-for="teacher in filteredInitiativeTeachers" :key="teacher.UserID" rounded="lg" :active="selectedTeacherInitiative?.UserID === teacher.UserID" color="primary" class="mb-1 mx-2" @click="selectTeacherInitiative(teacher)">
 									<template #prepend>
-										<v-avatar size="28" color="primary" variant="tonal" class="text-caption font-weight-bold mr-2">
+									<v-avatar size="28" color="primary" variant="tonal" class="d-flex align-center justify-center text-caption font-weight-bold mr-2">
 											<!-- Avatar dùng GiaoVienID để ghép đúng endpoint ảnh; lỗi hoặc chưa có ảnh thì quay về chữ cái đầu. -->
 											<v-img v-if="teacherAvatarUrl(teacher)" :src="teacherAvatarUrl(teacher)" :alt="teacher.FullName || teacher.UserID" cover>
-												<template #placeholder><span>{{ teacherInitial(teacher) }}</span></template>
-												<template #error><span>{{ teacherInitial(teacher) }}</span></template>
+											<!-- Lấp đầy slot ảnh để chữ cái dự phòng luôn nằm chính giữa avatar. -->
+											<template #placeholder><span class="d-flex align-center justify-center w-100 h-100">{{ teacherInitial(teacher) }}</span></template>
+											<template #error><span class="d-flex align-center justify-center w-100 h-100">{{ teacherInitial(teacher) }}</span></template>
 											</v-img>
-											<span v-else>{{ teacherInitial(teacher) }}</span>
+										<span v-else class="d-flex align-center justify-center w-100 h-100">{{ teacherInitial(teacher) }}</span>
 										</v-avatar>
 									</template>
 									<v-list-item-title class="text-body-2 font-weight-medium">{{ teacher.FullName }}</v-list-item-title>
@@ -126,13 +127,14 @@
 							<v-list density="compact" nav class="pa-0 profile-teacher-list">
 								<v-list-item v-for="teacher in filteredProfileTeachers" :key="teacher.UserID" rounded="lg" :active="selectedTeacherProfile?.UserID === teacher.UserID" color="primary" class="mb-1 mx-2" @click="selectTeacherProfile(teacher)">
 									<template #prepend>
-										<v-avatar size="28" color="primary" variant="tonal" class="text-caption font-weight-bold mr-2">
+									<v-avatar size="28" color="primary" variant="tonal" class="d-flex align-center justify-center text-caption font-weight-bold mr-2">
 											<!-- Hồ sơ và Sáng kiến dùng chung quy tắc avatar để mã giáo viên luôn map về đúng ảnh. -->
 											<v-img v-if="teacherAvatarUrl(teacher)" :src="teacherAvatarUrl(teacher)" :alt="teacher.FullName || teacher.UserID" cover>
-												<template #placeholder><span>{{ teacherInitial(teacher) }}</span></template>
-												<template #error><span>{{ teacherInitial(teacher) }}</span></template>
+											<!-- Lấp đầy slot ảnh để chữ cái dự phòng luôn nằm chính giữa avatar. -->
+											<template #placeholder><span class="d-flex align-center justify-center w-100 h-100">{{ teacherInitial(teacher) }}</span></template>
+											<template #error><span class="d-flex align-center justify-center w-100 h-100">{{ teacherInitial(teacher) }}</span></template>
 											</v-img>
-											<span v-else>{{ teacherInitial(teacher) }}</span>
+										<span v-else class="d-flex align-center justify-center w-100 h-100">{{ teacherInitial(teacher) }}</span>
 										</v-avatar>
 									</template>
 									<v-list-item-title class="text-body-2 font-weight-medium">{{ teacher.FullName }}</v-list-item-title>
@@ -199,19 +201,27 @@
 					</div>
 					<div v-if="activeBranch === 'profile' && profileViewMode === 'cards' && profileFolderItems.length" class="profile-folder-grid px-3 pt-2">
 						<v-card v-for="folder in profileFolderItems" :key="folder.NoiDungID" variant="tonal" class="profile-folder-card" @click="enterProfileFolder(folder)">
-							<div class="d-flex align-center ga-2 pa-3">
-								<!-- Icon đổi giữa folder có file và folder rỗng để nhận biết nhanh mà không cần bấm vào. -->
-								<v-icon :color="getProfileFolderDirectFileCount(folder.NoiDungID) > 0 ? 'amber-darken-3' : 'amber-darken-1'">{{ getProfileFolderDirectFileCount(folder.NoiDungID) > 0 ? 'mdi-folder-text' : 'mdi-folder-outline' }}</v-icon>
-								<div class="text-body-2 font-weight-medium text-truncate flex-grow-1">{{ folder.TenNoiDung }}</div>
-								<!-- Badge số file trực tiếp trong thư mục -->
-								<v-chip size="x-small" variant="flat" :color="getProfileFolderDirectFileCount(folder.NoiDungID) > 0 ? 'primary' : 'default'" class="px-2 font-weight-medium" :title="getProfileFolderDirectFileCount(folder.NoiDungID) > 0 ? (getProfileFolderDirectFileCount(folder.NoiDungID) + ' tài liệu') : 'Thư mục rỗng'">
-									{{ getProfileFolderDirectFileCount(folder.NoiDungID) }} file
-								</v-chip>
-								<!-- Người giám sát chỉ đọc nên không được đổi tên hoặc xóa folder của giáo viên. -->
-								<template v-if="!isProfileInspectionMode">
-									<v-btn icon size="x-small" variant="text" color="primary" @click.stop="openEditProfileFolder(folder)"><v-icon size="small">mdi-pencil-outline</v-icon><v-tooltip activator="parent" location="top">Đổi tên thư mục</v-tooltip></v-btn>
-									<v-btn icon size="x-small" variant="text" color="error" :loading="deletingDocumentId === folder.NoiDungID" @click.stop="deleteProfileNode(folder)"><v-icon size="small">mdi-delete-outline</v-icon><v-tooltip activator="parent" location="top">Xóa thư mục</v-tooltip></v-btn>
-								</template>
+							<!-- Lưới tự chia cột; card lấp đầy cột, còn py-1 giữ chiều cao gọn. -->
+							<div class="d-flex align-center ga-2 px-2 py-1">
+								<!-- Thẻ phản ánh cả file trong thư mục con để không khiến folder cha có dữ liệu bị hiểu nhầm là trống. -->
+								<v-icon class="flex-shrink-0" :color="getProfileFolderCounts(folder.NoiDungID).totalFiles > 0 ? 'amber-darken-3' : 'amber-darken-1'">{{ getProfileFolderCardIcon(folder.NoiDungID) }}</v-icon>
+								<div class="profile-folder-info">
+									<!-- Khi có thư mục con, nhãn dùng cùng quy ước trực tiếp/tổng như Dạng cây. -->
+									<div class="text-body-2 font-weight-medium profile-folder-name" :title="folder.TenNoiDung">{{ folder.TenNoiDung }}</div>
+									<div class="text-caption text-medium-emphasis" :title="getProfileFolderCardCountTitle(folder.NoiDungID)">{{ getProfileFolderCardCountLabel(folder.NoiDungID) }}</div>
+								</div>
+								<!-- Gom Đổi tên/Xóa vào một icon menu ở mép phải; chế độ giám sát chỉ đọc không có menu này. -->
+								<div v-if="!isProfileInspectionMode" class="flex-shrink-0">
+									<v-menu location="bottom end">
+										<template #activator="{ props }">
+											<v-btn v-bind="props" icon size="small" variant="text" color="primary" :loading="deletingDocumentId === folder.NoiDungID" aria-label="Thao tác thư mục" @click.stop><v-icon>mdi-dots-vertical</v-icon><v-tooltip activator="parent" location="top">Thao tác thư mục</v-tooltip></v-btn>
+										</template>
+										<v-list density="compact" min-width="180">
+											<v-list-item prepend-icon="mdi-pencil-outline" title="Đổi tên thư mục" :disabled="deletingDocumentId === folder.NoiDungID" @click.stop="openEditProfileFolder(folder)" />
+											<v-list-item prepend-icon="mdi-delete-outline" title="Xóa thư mục" base-color="error" :disabled="deletingDocumentId === folder.NoiDungID" @click.stop="deleteProfileNode(folder)" />
+										</v-list>
+									</v-menu>
+								</div>
 							</div>
 						</v-card>
 					</div>
@@ -251,7 +261,13 @@
 						<v-progress-circular indeterminate color="primary" size="32" class="mb-3" />
 						<div class="text-body-2 text-medium-emphasis">{{ activeBranch === 'profile' ? 'Đang tải Hồ sơ...' : 'Đang tải tài liệu Sáng kiến...' }}</div>
 					</div>
-					<div v-else-if="!documentItems.length && !(activeBranch === 'profile' && profileFolderItems.length)" class="content-hub-empty-state">
+					<!-- Bảng chỉ liệt kê file trực tiếp; khi còn folder con thì hướng dẫn mở folder thay vì báo kho trống. -->
+					<div v-else-if="!documentItems.length && activeBranch === 'profile' && profileFolderItems.length" class="content-hub-empty-state">
+						<v-icon size="52" class="mb-3 text-medium-emphasis">mdi-folder-open-outline</v-icon>
+						<div class="text-body-1 font-weight-medium">Thư mục này chưa có file trực tiếp</div>
+						<div class="text-body-2 text-medium-emphasis mt-1">Chọn một thư mục phía trên để xem các file bên trong.</div>
+					</div>
+					<div v-else-if="!documentItems.length" class="content-hub-empty-state">
 						<v-icon size="52" class="mb-3 text-medium-emphasis">mdi-file-document-off-outline</v-icon>
 						<div class="text-body-1 font-weight-medium">Chưa có tài liệu</div>
 						<div class="text-body-2 text-medium-emphasis mt-1">{{ emptyDocumentMessage }}</div>
@@ -876,7 +892,11 @@
 
 				<!-- ==================== CÁC LOẠI CÂU HỎI TỰ LUẬN / CHẤM TAY ==================== -->
 				<template v-else-if="['SHORT_ANSWER', 'ESSAY', 'FILE_UPLOAD', 'AUDIO_RESPONSE'].includes(questionForm.Type)">
-					<!-- referenceAnswer chỉ dành cho hai dạng giáo viên chấm tay; không dùng làm đáp án tự động. -->
+					<!-- referenceAnswer chỉ dành cho câu chấm tay; đặt tiêu đề ngoài editor vì label của f-editor không nổi bật trong dialog. -->
+					<div v-if="['SHORT_ANSWER', 'ESSAY'].includes(questionForm.Type)" class="mb-2">
+						<div class="text-subtitle-2 font-weight-medium">Đáp án tham khảo <span class="text-caption text-medium-emphasis">(chỉ giáo viên xem)</span></div>
+						<div class="text-caption text-medium-emphasis">Ghi đáp án mẫu hoặc ý chính để giáo viên đối chiếu khi chấm; học sinh không nhìn thấy nội dung này.</div>
+					</div>
 					<uc-rich-text-editor v-if="['SHORT_ANSWER', 'ESSAY'].includes(questionForm.Type)"
 						:key="'reference-answer-' + (questionForm.Id || 'new')"
 						v-model="questionForm._referenceAnswer"
@@ -1519,6 +1539,8 @@
 			profileLoading: false,
 			// BGH/Admin dùng được cả chế độ giám sát Sáng kiến và Hồ sơ; Tổ trưởng chỉ được giám sát Hồ sơ.
 			profileMode: 'personal',
+			// Mỗi lần đổi chủ sở hữu/chế độ tăng số phiên để request cũ không ghi đè cây folder mới.
+			profileContextRequestId: 0,
 			teacherSearchQuery: '',
 			selectedTeacherProfile: null,
 			assignedTeachers: [],
@@ -1600,6 +1622,7 @@
 			importDefaultSkillIds: [],
 			libraries: [],
 			nodes: [],
+			treeLoadRequestId: 0,
 			innovationNodes: [],
 			innovationLoading: false,
 			sourceFiles: [],
@@ -2006,6 +2029,21 @@
 				children: rootChildren
 			}]
 		},
+		// Dùng cùng phép đếm đệ quy của Dạng cây để thẻ có thể hiện số file trong toàn bộ nhánh folder.
+		profileFolderCountMap() {
+			const map = new Map()
+			const visit = items => items.forEach(item => {
+				if (item.NoiDungID !== 'profile-root') {
+					map.set(String(item.NoiDungID), {
+						directFiles: item.directFiles || 0,
+						totalFiles: item.totalFiles || 0,
+					})
+				}
+				visit(item.children || [])
+			})
+			visit(this.profileFolderTree)
+			return map
+		},
 		profileCurrentFolder() {
 			return this.nodes.find(item => String(item.NoiDungID) === String(this.profileCurrentFolderId)) || null
 		},
@@ -2228,11 +2266,21 @@
 			const candidates = this.libraries.filter(item => item.TaiNguyenLoaiCode === 'TAI_LIEU_THAM_KHAO'
 				&& Number(item.KhoiID) === Number(mon.KhoiID)
 				&& Number(item.MonHocID) === Number(mon.MonHocID))
-			// Tài liệu Khối/Môn là một kho dùng chung cho mọi giáo viên được phân công
-			// cùng context; không ưu tiên kho theo người tạo vì điều đó biến tài liệu
-			// chia sẻ thành kho riêng và có thể làm Node_Save từ giáo viên khác bị từ chối.
+			// GetTree gộp các kho TAI_LIEU_THAM_KHAO cùng Khối/Môn, nên kho của bất kỳ giáo viên nào
+			// cũng có thể làm điểm neo để đọc cây tài liệu dùng chung.
 			const sharedLibraryName = 'Tài liệu chia sẻ/tham khảo'
 			return candidates.find(item => String(item.TenHocLieu || '').trim() === sharedLibraryName) || candidates[0] || null
+		},
+		findOwnedSubjectResourceLibrary(mon = this.selectedMon) {
+			if (!mon) return null
+			const ownerUserId = String(this.getCurrentUserId() || '').trim().toUpperCase()
+			if (!ownerUserId) return null
+			// Node_Save giữ quyền ghi theo chủ bộ tài nguyên; upload phải dùng kho riêng của giáo viên,
+			// dù cây hiển thị vẫn gộp nội dung của cả Khối/Môn.
+			return this.libraries.find(item => item.TaiNguyenLoaiCode === 'TAI_LIEU_THAM_KHAO'
+				&& Number(item.KhoiID) === Number(mon.KhoiID)
+				&& Number(item.MonHocID) === Number(mon.MonHocID)
+				&& String(item.CreateUser || item.NguoiUploadID || '').trim().toUpperCase() === ownerUserId) || null
 		},
 		async loadSourceFiles(mon = this.selectedMon) {
 			if (!mon) {
@@ -2279,15 +2327,20 @@
 		async selectProfileMode(mode) {
 			// Tổ trưởng được xem Hồ sơ giáo viên; các role khác không được tự chuyển sang chế độ giám sát này.
 			if (mode === 'teachers' && !this.isProfileSupervisor) mode = 'personal'
+			const contextRequestId = ++this.profileContextRequestId
+			this.treeLoadRequestId += 1
 			this.profileMode = mode
 			this.profileCurrentFolderId = null
 			this.profileActivatedTreeNodeIds = ['profile-root']
+			// Xóa cây và library ID trước khi nạp để folder của chủ sở hữu trước không lóe lên ở chế độ mới.
+			this.nodes = []
+			this.selectedLibraryId = null
 			if (mode === 'personal') {
 				this.selectedTeacherProfile = null
 				this.profileLoading = true
 				try {
-					await this.ensureProfileLibrary()
-					if (this.activeBranch === 'profile') await this.loadTree()
+					await this.ensureProfileLibrary(contextRequestId)
+					if (contextRequestId === this.profileContextRequestId && this.activeBranch === 'profile' && this.profileMode === 'personal') await this.loadTree()
 				} catch (error) {
 					this.notify(error?.message || 'Không thể mở Hồ sơ cá nhân.', 'error')
 				} finally {
@@ -2301,8 +2354,12 @@
 		},
 		async selectTeacherProfile(teacher) {
 			if (!teacher) return
+			this.profileContextRequestId += 1
+			this.treeLoadRequestId += 1
+			// Bỏ cây đang xem ngay khi đổi giáo viên, không giữ folder của người trước trong lúc chờ API.
+			this.nodes = []
 			this.selectedTeacherProfile = teacher
-			this.selectedLibraryId = teacher.HocLieuID
+			this.selectedLibraryId = teacher.HocLieuID || null
 			this.profileCurrentFolderId = null
 			this.profileActivatedTreeNodeIds = ['profile-root']
 			if (!teacher.HocLieuID) {
@@ -2342,6 +2399,8 @@
 		},
 		async selectBranch(branch) {
 			// Đổi nhánh phải reset source/group selection để không dùng nhầm context khác nghiệp vụ.
+			const contextRequestId = ++this.profileContextRequestId
+			this.treeLoadRequestId += 1
 			this.activeBranch = branch
 			this.activeSection = 'documents'
 			this.selectedMon = null
@@ -2368,8 +2427,8 @@
 						else this.nodes = []
 					} else {
 						// Kho Hồ sơ được tạo một lần theo user; sau đó chỉ đọc cây node của chính kho này.
-						await this.ensureProfileLibrary()
-						if (this.activeBranch === 'profile') await this.loadTree()
+						await this.ensureProfileLibrary(contextRequestId)
+						if (contextRequestId === this.profileContextRequestId && this.activeBranch === 'profile' && this.profileMode === 'personal') await this.loadTree()
 					}
 				} catch (error) {
 					this.notify(error?.message || 'Không thể mở Hồ sơ cá nhân.', 'error')
@@ -2425,21 +2484,35 @@
 			this.loadTree()
 		},
 		async loadTree() {
-			if (!this.selectedLibraryId) return
-			const result = await fetchPromise('lms/FP_TaiNguyen_GetTree', { HocLieuID: this.selectedLibraryId }, { forceRefresh: true })
+			const requestId = ++this.treeLoadRequestId
+			const libraryId = this.selectedLibraryId
+			if (!libraryId) {
+				this.nodes = []
+				return
+			}
+			const result = await fetchPromise('lms/FP_TaiNguyen_GetTree', { HocLieuID: libraryId }, { forceRefresh: true })
+			// Chỉ áp dụng kết quả nếu vẫn là request mới nhất cho đúng library đang được chọn.
+			if (requestId !== this.treeLoadRequestId || String(this.selectedLibraryId || '') !== String(libraryId)) return
 			this.nodes = result ?? []
 		},
-		async ensureProfileLibrary() {
-			if (this.selectedLibraryId && this.activeBranch === 'profile') return this.selectedLibraryId
+		async ensureProfileLibrary(contextRequestId) {
 			const ownerUserId = this.getCurrentUserId()
 			if (!ownerUserId) throw new Error('Không xác định được tài khoản để mở Hồ sơ cá nhân.')
 			const profileName = 'Hồ sơ của tôi'
-			const existing = this.libraries.find(item => Number(item.KhoiID || 0) === 0
+			const isCurrentUsersProfileLibrary = item => Boolean(item
+				&& Number(item.KhoiID || 0) === 0
 				&& Number(item.MonHocID || 0) === 0
 				&& String(item.TenHocLieu || '').trim() === profileName
 				&& String(item.CreateUser || item.NguoiUploadID || '').trim().toUpperCase() === ownerUserId.toUpperCase())
+			const canSelectPersonalLibrary = () => this.activeBranch === 'profile'
+				&& this.profileMode === 'personal'
+				&& (contextRequestId === undefined || contextRequestId === this.profileContextRequestId)
+			const selectedLibrary = this.libraries.find(item => String(item.HocLieuID) === String(this.selectedLibraryId || ''))
+			// Không tái sử dụng selectedLibraryId nếu nó đang trỏ tới Hồ sơ của giáo viên đang được giám sát.
+			if (canSelectPersonalLibrary() && isCurrentUsersProfileLibrary(selectedLibrary)) return selectedLibrary.HocLieuID
+			const existing = this.libraries.find(isCurrentUsersProfileLibrary)
 			if (existing?.HocLieuID) {
-				this.selectedLibraryId = existing.HocLieuID
+				if (canSelectPersonalLibrary()) this.selectedLibraryId = existing.HocLieuID
 				return existing.HocLieuID
 			}
 			const typeInfo = this.resourceTypes.find(item => (item.TaiNguyenLoaiCode || item.Code) === 'TAI_LIEU_THAM_KHAO')
@@ -2460,9 +2533,9 @@
 			await this.loadLibraries()
 			const library = created?.HocLieuID
 				? created
-				: this.libraries.find(item => Number(item.KhoiID || 0) === 0 && Number(item.MonHocID || 0) === 0 && String(item.TenHocLieu || '').trim() === profileName && String(item.CreateUser || item.NguoiUploadID || '').trim().toUpperCase() === ownerUserId.toUpperCase())
+				: this.libraries.find(isCurrentUsersProfileLibrary)
 			if (!library?.HocLieuID) throw new Error('Không tạo được kho Hồ sơ cá nhân.')
-			this.selectedLibraryId = library.HocLieuID
+			if (canSelectPersonalLibrary()) this.selectedLibraryId = library.HocLieuID
 			return library.HocLieuID
 		},
 		sameProfileParent(parentId, folderId) {
@@ -2471,6 +2544,29 @@
 		getProfileFolderDirectFileCount(folderId) {
 			const key = folderId === 'profile-root' || folderId === null || folderId === undefined || folderId === '' ? null : String(folderId)
 			return this.profileDirectFileCountMap.get(key) || 0
+		},
+		getProfileFolderCounts(folderId) {
+			return this.profileFolderCountMap.get(String(folderId)) || {
+				directFiles: this.getProfileFolderDirectFileCount(folderId),
+				totalFiles: this.getProfileFolderDirectFileCount(folderId),
+			}
+		},
+		getProfileFolderCardIcon(folderId) {
+			const counts = this.getProfileFolderCounts(folderId)
+			if (counts.directFiles > 0) return 'mdi-folder-text'
+			return counts.totalFiles > 0 ? 'mdi-folder' : 'mdi-folder-outline'
+		},
+		getProfileFolderCardCountLabel(folderId) {
+			const counts = this.getProfileFolderCounts(folderId)
+			return counts.totalFiles > counts.directFiles
+				? counts.directFiles + '/' + counts.totalFiles + ' file'
+				: counts.totalFiles + ' file'
+		},
+		getProfileFolderCardCountTitle(folderId) {
+			const counts = this.getProfileFolderCounts(folderId)
+			return counts.totalFiles > counts.directFiles
+				? counts.directFiles + ' file trực tiếp · ' + counts.totalFiles + ' file trong toàn nhánh'
+				: counts.totalFiles + ' file'
 		},
 		enterProfileFolder(folder) {
 			if (!folder?.NoiDungID) return
@@ -3414,15 +3510,13 @@
 				return null
 			}
 			if (!this.selectedMon) return null
-			// Không kiểm tra CreateUser/NguoiUploadID ở đây: mọi giáo viên cùng Khối/Môn
-			// đều được phép thêm tài liệu vào kho context chung.
-			let library = this.findSubjectResourceLibrary(this.selectedMon)
+			// Cây tài liệu được chia sẻ theo Khối/Môn, còn Node_Save chỉ nhận ghi vào kho do người dùng tạo.
+			let library = this.findOwnedSubjectResourceLibrary(this.selectedMon)
 			if (!library) {
 				const typeInfo = this.resourceTypes.find(item => (item.TaiNguyenLoaiCode || item.Code) === 'TAI_LIEU_THAM_KHAO')
-				const result = await fetchPromise('lms/FP_TaiNguyen_Save', { HocLieuID: 0, TenHocLieu: `Tài liệu ${this.selectedMon.TenMonHoc_HienThi || this.selectedMon.MonHocName || ''}`.trim(), TaiNguyenLoaiID: typeInfo?.TaiNguyenLoaiID, KhoiID: this.selectedMon.KhoiID, MonHocID: this.selectedMon.MonHocID, TinhTrang: 'Private' }, { cache: false })
-				library = Array.isArray(result) ? result[0] : result
+				await fetchPromise('lms/FP_TaiNguyen_Save', { HocLieuID: 0, TenHocLieu: `Tài liệu ${this.selectedMon.TenMonHoc_HienThi || this.selectedMon.MonHocName || ''}`.trim(), TaiNguyenLoaiID: typeInfo?.TaiNguyenLoaiID, KhoiID: this.selectedMon.KhoiID, MonHocID: this.selectedMon.MonHocID, TinhTrang: 'Private' }, { cache: false })
 				await this.loadLibraries()
-				library = library?.HocLieuID ? library : this.findSubjectResourceLibrary(this.selectedMon)
+				library = this.findOwnedSubjectResourceLibrary(this.selectedMon)
 			}
 			if (library?.HocLieuID) { this.selectedLibraryId = library.HocLieuID; return library.HocLieuID }
 			return null
@@ -5338,15 +5432,18 @@
 .content-hub-documents { height: calc(100% - 105px); overflow: hidden; }
 .content-hub-documents .profile-drive-toolbar { min-height: 42px; }
 .content-hub-documents .profile-drive-toolbar .v-breadcrumbs-item:not(.v-breadcrumbs-item--disabled) { cursor: pointer; }
-.content-hub-documents .profile-folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.content-hub-documents .profile-folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 8px; }
 .content-hub-documents .profile-folder-tree { max-height: 260px; overflow-y: auto; }
 .content-hub-documents .profile-tree-title { cursor: pointer; border-radius: 4px; padding: 2px 6px; transition: background-color .15s ease, color .15s ease; }
 /* Màu active tự quản lý vì slot title chặn click của v-treeview khi mở folder. */
 .content-hub-documents .profile-tree-title--active { background: rgba(var(--v-theme-primary), .14); color: rgb(var(--v-theme-primary)); font-weight: 700; }
 .content-hub-documents .profile-tree-count-badge { font-size: 11px; font-weight: 600; line-height: 1; padding: 2px 5px; border-radius: 10px; background: rgba(var(--v-theme-primary), .12); color: rgb(var(--v-theme-primary)); margin-left: 4px; }
 .content-hub-documents .profile-tree-empty-badge { font-size: 11px; font-weight: 500; line-height: 1; padding: 2px 5px; border-radius: 10px; background: rgba(0, 0, 0, .06); color: rgba(0, 0, 0, .45); margin-left: 4px; }
-.content-hub-documents .profile-folder-card { cursor: pointer; transition: background-color .15s ease, box-shadow .15s ease; }
+/* Card chiếm trọn track auto-fill để không sinh khoảng trắng thừa bên trong mỗi cột. */
+.content-hub-documents .profile-folder-card { width: 100%; cursor: pointer; transition: background-color .15s ease, box-shadow .15s ease; }
 .content-hub-documents .profile-folder-card:hover { background: rgba(var(--v-theme-primary), .10); box-shadow: 0 2px 8px rgba(0, 0, 0, .08); }
+.content-hub-documents .profile-folder-info { flex: 1 1 auto; min-width: 0; }
+.content-hub-documents .profile-folder-name { min-width: 0; overflow-wrap: anywhere; white-space: normal; line-height: 1.35; }
 .content-hub-questions { height: calc(100% - 105px); min-height: 0; overflow: hidden; padding: 12px; box-sizing: border-box; }
 .content-hub-question-row { height: 100%; min-height: 0; align-items: stretch; }
 .content-hub-group-panel { min-height: 320px; padding: 0; border-right: 1px solid rgba(0, 0, 0, .12); }

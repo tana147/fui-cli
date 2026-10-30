@@ -124,6 +124,8 @@
 						:content="suggestLockColumns.length" color="warning" inline class="ml-1" />
 				</v-btn>
 
+				<!-- Nút Công bố điểm được ẩn theo yêu cầu; thao tác khóa cột vẫn tự đồng bộ điểm. -->
+
 				<v-btn v-if="canManageUnlockColumns && hasStudents && lockedColumns.length > 0"
 					@click="onOpenUnlockDialog" color="warning" variant="outlined" size="small">
 					<v-icon start>mdi-lock-open-variant</v-icon>
@@ -283,7 +285,14 @@
 
 				<v-card-text class="pt-3 px-4 pb-2">
 					<div class="text-body-2 text-medium-emphasis mb-3">
-						{{ isEn ? 'Select grade columns to lock. Teachers will not be able to edit after locking.' : 'Chọn các cột điểm muốn khóa. Giáo viên sẽ không thể chỉnh sửa sau khi khóa.' }}
+						<!-- Nêu rõ việc gửi công bố chỉ khi các cột đã chọn thuộc luồng API tự công bố sau khi khóa. -->
+						{{ lockWillPublishGrades
+							? (isEn
+								? 'Select grade columns to lock. Entered scores will be sent for publication after locking; teachers will no longer be able to edit these columns.'
+								: 'Chọn các cột điểm muốn khóa. Điểm đã nhập sẽ được gửi công bố sau khi khóa; giáo viên sẽ không thể chỉnh sửa các cột này.')
+							: (isEn
+								? 'Select grade columns to lock. Teachers will not be able to edit after locking.'
+								: 'Chọn các cột điểm muốn khóa. Giáo viên sẽ không thể chỉnh sửa sau khi khóa.') }}
 					</div>
 
 					<!-- Check all — chỉ tính cột nhập tay chưa khóa -->
@@ -330,7 +339,115 @@
 					<v-btn color="teal" variant="flat" :disabled="action.lockDialog.selectedColumns.length === 0"
 						@click="onConfirmLockColumns">
 						<v-icon start size="18">mdi-lock-check</v-icon>
-						{{ isEn ? ('Lock ' + action.lockDialog.selectedColumns.length + ' columns') : ('Khóa ' + action.lockDialog.selectedColumns.length + ' cột') }}
+						{{ lockWillPublishGrades
+							? (isEn ? 'Lock ' : 'Khóa ') + action.lockDialog.selectedColumns.length + (isEn ? ' columns & publish grades' : ' cột & công bố điểm')
+							: (isEn ? 'Lock ' : 'Khóa ') + action.lockDialog.selectedColumns.length + (isEn ? ' columns' : ' cột') }}
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+
+				<!-- Dialog chỉ nêu thao tác và kết quả giáo viên cần biết; điểm trống được bỏ qua. -->
+		<v-dialog v-model="action.publishGradeDialog.show" max-width="900" scrollable persistent>
+			<v-card rounded="lg">
+				<v-card-title class="d-flex align-center ga-2 pt-4 pb-2 px-4">
+					<v-icon color="primary" size="22">mdi-bullhorn-outline</v-icon>
+					<span class="text-body-1 font-weight-bold">{{ isEn ? 'Choose scores to publish' : 'Chọn điểm công bố cho phụ huynh' }}</span>
+				</v-card-title>
+				<v-divider />
+
+				<v-card-text class="pa-4">
+					<div class="text-body-2 text-medium-emphasis mb-3">
+						{{ isEn ? `Choose students and ${publishGradeTypeLabel} columns to publish. Blank scores will be skipped.` : `Chọn học sinh và cột điểm ${publishGradeTypeLabel} cần công bố. Ô chưa nhập sẽ được bỏ qua.` }}
+					</div>
+					<v-row>
+						<v-col cols="12" md="4">
+							<v-checkbox
+								:model-value="allPublishGradeColumnsSelected"
+								:indeterminate="selectedPublishGradeColumns.length > 0 && !allPublishGradeColumnsSelected"
+								:disabled="selectablePublishGradeColumns.length === 0"
+								@update:model-value="onToggleSelectAllPublishGradeColumns" density="compact" hide-details color="primary">
+								<template v-slot:label>
+									<span class="text-body-2 font-weight-medium">{{ isEn ? 'Grade columns' : `Cột điểm ${publishGradeTypeLabel}` }}</span>
+									<span class="text-caption text-medium-emphasis ml-2">({{ selectedPublishGradeColumns.length }}/{{ selectablePublishGradeColumns.length }})</span>
+								</template>
+							</v-checkbox>
+							<v-list density="compact" class="rounded border pa-0 fpScrollbar" style="max-height: 280px;">
+								<!-- Cột đã khóa vẫn hiển thị để tra cứu nhưng không được gửi công bố lại. -->
+								<v-list-item v-for="(col, index) in publishGradeColumns" :key="col.value" min-height="40"
+								:class="index < publishGradeColumns.length - 1 ? 'border-b' : ''"
+									:disabled="col.isLocked" @click="!col.isLocked && onTogglePublishGradeColumn(col.value)">
+									<template v-slot:prepend>
+										<v-checkbox-btn :model-value="!col.isLocked && action.publishGradeDialog.selectedColumns.includes(col.value)"
+											:disabled="col.isLocked" @click.stop
+											@update:model-value="!col.isLocked && onTogglePublishGradeColumn(col.value)" color="primary" density="compact" />
+									</template>
+									<v-list-item-title class="text-body-2">{{ col.title }}</v-list-item-title>
+									<template v-slot:append>
+										<v-chip v-if="col.isLocked" color="primary" size="x-small">{{ isEn ? 'Locked' : 'Đã khóa' }}</v-chip>
+									</template>
+								</v-list-item>
+							</v-list>
+						</v-col>
+
+						<v-col cols="12" md="8">
+							<v-checkbox
+								:model-value="allPublishGradeStudentsSelected"
+								:indeterminate="action.publishGradeDialog.selectedStudentIds.length > 0 && !allPublishGradeStudentsSelected"
+								@update:model-value="onToggleSelectAllPublishGradeStudents" density="compact" hide-details color="primary">
+								<template v-slot:label>
+									<span class="text-body-2 font-weight-medium">{{ isEn ? 'Students' : 'Học sinh' }}</span>
+									<span class="text-caption text-medium-emphasis ml-2">({{ action.publishGradeDialog.selectedStudentIds.length }}/{{ DSHocSinh.length }})</span>
+								</template>
+							</v-checkbox>
+							<v-list density="compact" class="rounded border pa-0 fpScrollbar" style="max-height: 280px;">
+								<v-list-item v-for="(student, index) in DSHocSinh" :key="String(student.HocSinhID)" min-height="44"
+									:class="index < DSHocSinh.length - 1 ? 'border-b' : ''"
+								@click="onTogglePublishGradeStudent(student.HocSinhID)">
+									<template v-slot:prepend>
+										<v-checkbox-btn :model-value="action.publishGradeDialog.selectedStudentIds.includes(String(student.HocSinhID))"
+											@click.stop @update:model-value="onTogglePublishGradeStudent(student.HocSinhID)" color="primary" density="compact" />
+									</template>
+									<v-list-item-title class="text-body-2">{{ getPublishGradeStudentName(student) }}</v-list-item-title>
+									<v-list-item-subtitle>{{ isEn ? 'ID: ' : 'Mã học sinh: ' }}{{ student.HocSinhID }} · {{ isEn ? 'Roll: ' : 'Số danh bộ: ' }}{{ student.SoDanhBo || '-' }}</v-list-item-subtitle>
+									<!-- Hiển thị đúng các ô sắp gửi, đọc cả giá trị mới nhập chưa lưu; ô rỗng ghi rõ sẽ bỏ qua. -->
+									<div v-if="selectedPublishGradeColumns.length" class="d-flex flex-column ga-1 mt-1">
+										<div v-for="col in selectedPublishGradeColumns" :key="col.value">
+											<v-chip size="x-small" density="compact" variant="tonal"
+												:color="getPublishGradeDisplayValue(student, col) ? 'success' : 'grey'">
+												{{ col.title }}: {{ getPublishGradeDisplayValue(student, col) || (isEn ? 'Not entered · skipped' : 'Chưa nhập · bỏ qua') }}
+											</v-chip>
+											<div v-if="getPublishGradeHistoryText(student, col)" class="text-caption text-medium-emphasis ml-1">
+												{{ getPublishGradeHistoryText(student, col) }}
+											</div>
+										</div>
+									</div>
+								</v-list-item>
+							</v-list>
+						</v-col>
+					</v-row>
+					<v-alert v-if="action.publishGradeDialog.historyLoading" type="info" variant="tonal" density="compact" class="mt-3">
+						{{ isEn ? 'Loading…' : 'Đang tải…' }}
+					</v-alert>
+					<v-alert v-else-if="action.publishGradeDialog.historyError" type="warning" variant="tonal" density="compact" class="mt-3">
+						<div class="d-flex align-center justify-space-between ga-2 flex-wrap">
+							<span>{{ isEn ? 'Could not load the information.' : 'Chưa tải được thông tin.' }}</span>
+							<v-btn size="small" variant="text" :disabled="action.publishGradeDialog.historyLoading" @click="loadPublishGradeHistory">
+								{{ isEn ? 'Try again' : 'Thử lại' }}
+							</v-btn>
+						</div>
+					</v-alert>
+					<v-alert v-if="action.publishGradeDialog.selectedColumns.length && action.publishGradeDialog.selectedStudentIds.length && !hasSelectedPublishableGrades" type="warning" variant="tonal" density="compact" class="mt-2">
+						{{ isEn ? 'There are no entered scores in the selected scope, so nothing can be published.' : 'Phạm vi đang chọn chưa có điểm đã nhập nên không thể công bố.' }}
+					</v-alert>
+				</v-card-text>
+
+				<v-divider />
+				<v-card-actions class="justify-end ga-2 pa-3">
+					<v-btn variant="text" :disabled="isPublishingGrades" @click="action.publishGradeDialog.show = false">{{ isEn ? 'Cancel' : 'Hủy' }}</v-btn>
+					<v-btn color="primary" variant="flat" :disabled="!canConfirmPublishGrades" :loading="isPublishingGrades" @click="onConfirmPublishGrades">
+						<v-icon start>mdi-bullhorn-outline</v-icon>
+						{{ isEn ? 'Publish selected scores' : 'Công bố điểm đã chọn' }}
 					</v-btn>
 				</v-card-actions>
 			</v-card>
@@ -619,6 +736,35 @@
 			</v-card>
 		</v-dialog>
 
+		<!-- Luôn mở bộ chọn cột trước khi ghi workbook để người dùng bỏ các trường không cần. -->
+		<v-dialog v-model="action.exportColumnsDialog.show" max-width="600" scrollable>
+			<v-card rounded="lg">
+				<v-card-title class="d-flex align-center pt-4 pb-2 px-4">
+					<v-icon color="primary" size="22">mdi-microsoft-excel</v-icon>
+					<span class="ml-2 text-body-1 font-weight-bold">{{ isEn ? 'Choose Excel columns' : 'Chọn cột xuất Excel' }}</span>
+				</v-card-title>
+				<v-divider />
+				<v-card-text class="pt-2 px-4">
+					<div class="text-body-2 text-medium-emphasis mb-2">
+						{{ isEn ? 'All columns are selected. Uncheck the columns you do not need.' : 'Mặc định đã chọn tất cả cột. Bỏ chọn những cột bạn không cần xuất.' }}
+					</div>
+					<v-checkbox v-for="column in action.exportColumnsDialog.columns" :key="column.value"
+						v-model="action.exportColumnsDialog.selectedColumns" :value="column.value" :label="column.label"
+						density="compact" hide-details />
+				</v-card-text>
+				<v-divider />
+				<v-card-actions class="justify-end pa-3 ga-2">
+					<v-btn variant="text" size="small" @click="action.exportColumnsDialog.show = false">
+						{{ isEn ? 'Cancel' : 'Hủy' }}
+					</v-btn>
+					<v-btn color="primary" variant="flat" size="small"
+						:disabled="!action.exportColumnsDialog.selectedColumns.length" @click="confirmExportColumns">
+						<v-icon start>mdi-microsoft-excel</v-icon>{{ isEn ? 'Export Excel' : 'Xuất Excel' }}
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+
 			<!-- Dialog lịch sử điểm của đúng học sinh và cột điểm vừa chọn bằng chuột phải -->
 			<v-dialog v-model="action.gradeHistoryDialog.show" max-width="860" scrollable>
 				<v-card rounded="lg">
@@ -658,7 +804,7 @@
 						</thead>
 						<tbody>
 											<tr v-for="(log, index) in action.gradeHistoryDialog.rows" :key="(log.KQHTID || 'log') + '_' + (log.NhapDiemTime || index) + '_' + index">
-												<td>{{ log.NhapDiemTime || log.UpdateTime || log.CreateTime || '-' }}</td>
+												<td>{{ formatGradeHistoryTime(log) }}</td>
 												<td>{{ log.KetQuaDanhGia_VI ?? '-' }}</td>
 												<td>{{ getHistoryUserLabel(log) }}</td>
 											</tr>
@@ -695,6 +841,7 @@
 			vueData,
 			isCheckingAI: false,
 			isCheckingLength: false,
+			isPublishingGrades: false,
 			showOnlyLimitExceeded: false,
 
 			action: {
@@ -712,6 +859,16 @@
 					show: false,
 					selectedColumns: []
 				},
+				publishGradeDialog: {
+					show: false,
+					selectedColumns: [],
+					selectedStudentIds: [],
+					historyByCell: {},
+					historyLoading: false,
+					historyLoaded: false,
+					historyError: '',
+					historyRequestId: 0
+				},
 				unlockDialog: {
 					show: false,
 					selectedColumns: [],
@@ -721,6 +878,15 @@
 					show: false,
 					selectedLopIDs: [],
 					loading: false
+				},
+				exportColumnsDialog: {
+					show: false,
+					kind: '',
+					title: '',
+					columns: [],
+					selectedColumns: [],
+					sheets: [],
+					fileName: ''
 				},
 					gradeHistoryDialog: {
 						show: false,
@@ -850,6 +1016,89 @@
 			return this.displayColumns.filter(col => col.isLocked);
 		},
 
+		/** Xác định loại điểm từ nhóm template đang chọn; GK/CK chỉ hợp lệ khi IsThiTapTrung xác nhận thi tại lớp. */
+		publishGradeType() {
+			const groupItem = this.filter.MaNhomCotDiemItem || {};
+			const type = BangDiemService.lock.getSyncLoaiDiemForTemplateGroup(
+				groupItem.MaNhomCotDiem,
+				groupItem.TenNhomCotDiem_VI || groupItem.TenNhomCotDiem_EN || groupItem.TenNhomCotDiem
+			);
+			if (['DiemGK', 'DiemCK'].includes(type) &&
+				!BangDiemService.lock.isInClassExamSubject(this.filter, this.DSHocSinh_API)) return null;
+			return type;
+		},
+		publishGradeTypeLabel() {
+			const labels = {
+				TX: this.isEn ? 'TX' : 'TX',
+				DiemGK: this.isEn ? 'midterm' : 'giữa kỳ',
+				DiemCK: this.isEn ? 'final' : 'cuối kỳ'
+			};
+			return labels[this.publishGradeType] || '';
+		},
+		/** Dùng chung dialog công bố, chỉ lấy cột cùng loại với nhóm template hiện hành. */
+		publishGradeColumns() {
+			if (!this.publishGradeType) return [];
+			return this.displayColumns.filter(col =>
+				BangDiemService.lock.getSyncLoaiDiemForColumn(col, this.filter, this.DSHocSinh_API) === this.publishGradeType
+			);
+		},
+
+		/** Ẩn nút khi toàn bộ cột của nhóm hiện tại đã khóa vì thao tác khóa đã tự công bố điểm. */
+		showPublishGradeButton() {
+			return !this.isAllColumnsLocked && [2, 3].includes(Number(this.vueData.CapID)) && this.hasStudents &&
+				['TX', 'DiemGK', 'DiemCK'].includes(this.publishGradeType) &&
+				this.publishGradeColumns.length > 0;
+		},
+
+		/** Có điểm đã lưu hoặc đang nhập thì mới cho mở luồng công bố. */
+		hasPublishableGrades() {
+			return this.publishGradeColumns.some(col =>
+				this.DSHocSinh.some(student => this.getPublishGradeDisplayValue(student, col) !== '')
+			);
+		},
+		allPublishGradeColumnsSelected() {
+			return this.selectablePublishGradeColumns.length > 0 &&
+				this.selectedPublishGradeColumns.length === this.selectablePublishGradeColumns.length;
+		},
+		allPublishGradeStudentsSelected() {
+			return this.DSHocSinh.length > 0 &&
+				this.action.publishGradeDialog.selectedStudentIds.length === this.DSHocSinh.length;
+		},
+		selectedPublishGradeColumns() {
+			const selected = new Set(this.action.publishGradeDialog.selectedColumns);
+			return this.publishGradeColumns.filter(col => !col.isLocked && selected.has(col.value));
+		},
+		/** Chỉ cột chưa khóa mới được đưa vào phạm vi công bố. */
+		selectablePublishGradeColumns() {
+			return this.publishGradeColumns.filter(col => !col.isLocked);
+		},
+		selectedPublishGradeStudents() {
+			const selected = new Set(this.action.publishGradeDialog.selectedStudentIds.map(id => String(id)));
+			return this.DSHocSinh.filter(student => selected.has(String(student.HocSinhID)));
+		},
+		/** Đếm chính xác ô có điểm trong phạm vi đã chọn, gồm cả giá trị đang sửa nhưng chưa lưu. */
+		selectedPublishGradeScoreCount() {
+			let count = 0;
+			this.selectedPublishGradeStudents.forEach(student => {
+				this.selectedPublishGradeColumns.forEach(col => {
+					if (this.getPublishGradeDisplayValue(student, col) !== '') count += 1;
+				});
+			});
+			return count;
+		},
+		/** Chặn phạm vi không có điểm; các ô trống trong một phạm vi rộng sẽ bị bỏ khỏi payload. */
+		hasSelectedPublishableGrades() {
+			return this.selectedPublishGradeScoreCount > 0;
+		},
+		canConfirmPublishGrades() {
+			return this.showPublishGradeButton &&
+				this.selectedPublishGradeColumns.length > 0 &&
+				this.action.publishGradeDialog.selectedStudentIds.length > 0 &&
+				this.hasSelectedPublishableGrades && this.action.publishGradeDialog.historyLoaded &&
+				!this.action.publishGradeDialog.historyLoading && !this.action.publishGradeDialog.historyError &&
+				!this.isPublishingGrades;
+		},
+
 		// Danh sách tài khoản được nghiệp vụ ủy quyền mở khóa cột điểm; điều kiện dữ liệu của nút vẫn được kiểm tra ở template.
 		canManageUnlockColumns() {
 			const unlockUserIds = ['NA0000022', 'NV0000134', 'NV0000009', 'NV0000018'];
@@ -859,6 +1108,26 @@
 		/** Tất cả cột trong dialog khóa */
 		lockableColumns() {
 			return this.displayColumns;
+		},
+		/** Hiện trạng thái tự công bố khi trong các cột sắp khóa có ít nhất một cột được hỗ trợ gửi sang QLDiem. */
+		lockWillPublishGrades() {
+			if (![2, 3].includes(Number(this.vueData.CapID)) || !this.action.lockDialog.selectedColumns.length) {
+				return false;
+			}
+			const selectedCols = this.lockableColumns.filter(col =>
+				this.action.lockDialog.selectedColumns.includes(col.value)
+			);
+			if (!selectedCols.length || selectedCols.length !== this.action.lockDialog.selectedColumns.length) {
+				return false;
+			}
+			const isCentralExam = BangDiemService.lock.isCentralExamSubject(this.filter, this.DSHocSinh_API);
+			return selectedCols.some(col => {
+				const loaiDiem = BangDiemService.lock.getSyncLoaiDiemForColumn(
+					col, this.filter, this.DSHocSinh_API
+				);
+				return ['TX', 'DiemGK', 'DiemCK'].includes(loaiDiem) &&
+					!(isCentralExam && ['DiemGK', 'DiemCK'].includes(loaiDiem));
+			});
 		},
 
 		/** Cột có thể tick checkbox (chưa khóa) */
@@ -955,7 +1224,7 @@
 		hasBlockingDialog() {
 			const action = this.action;
 			return Boolean(action.isShowDialogMauNhanXet || action.aiResultDialog.show ||
-				action.aiColumnDialog.show || action.lockDialog.show || action.unlockDialog.show ||
+				action.aiColumnDialog.show || action.lockDialog.show || action.publishGradeDialog.show || action.unlockDialog.show ||
 				action.exportDialog.show || action.gradeHistoryDialog.show);
 		},
 		filteredAiWarnings() {
@@ -976,8 +1245,15 @@
 			if (isOpen) this.closeFormulaTooltip();
 		},
 		keyComp() {
-			// JExcel dựng lại header khi key đổi; chèn icon sau khi DOM của bảng mới sẵn sàng.
+			// JExcel dựng lại header khi key đổi; gắn lại icon công thức và trạng thái công bố sau khi DOM sẵn sàng.
 			this.$nextTick(() => this.refreshFormulaHeaderIcons());
+		},
+		editedCells: {
+			deep: true,
+			handler() {
+				// Điểm đang sửa có thể làm một cột vừa công bố chuyển sang trạng thái chưa đồng bộ.
+				this.$nextTick(() => this.refreshFormulaHeaderIcons());
+			}
 		},
 		filter: {
 			handler(newFilter) {
@@ -1034,7 +1310,7 @@
 	},
 
 	methods: {
-		// JExcel render title thành text; chèn icon sau khi bảng dựng xong và chỉ trên header có metadata của cột công thức.
+		// JExcel render title thành text; gắn icon công thức và trạng thái công bố trực tiếp vào header sau khi bảng dựng xong.
 		refreshFormulaHeaderIcons() {
 			const tableWrapper = this.$refs.tableWrapper?.$el || this.$refs.tableWrapper;
 			if (!tableWrapper || !this.headers?.length) return;
@@ -1061,6 +1337,74 @@
 				}
 				icon.setAttribute('aria-label', column.formulaTooltipText);
 				icon.setAttribute('data-formula-tooltip', column.formulaTooltipText);
+			});
+
+			// Gom trạng thái khóa và công bố cạnh tiêu đề thành một cụm icon để không kéo dài tên cột bằng nhãn (KHÓA).
+			const lockedColumnCodes = new Set(this.lockedColumns.map(column => String(column.value)));
+			const publishColumnsByCode = new Map(this.publishGradeColumns.map(column => [String(column.value), column]));
+			this.headers.forEach((column, columnIndex) => {
+				const headerCells = Array.from(tableWrapper.querySelectorAll(
+					`thead td[data-x="${columnIndex}"]`
+				)).filter(cell => !cell.classList.contains('jss_column_filter'));
+				const headerCell = headerCells[headerCells.length - 1];
+				if (!headerCell) return;
+
+				const isLocked = lockedColumnCodes.has(String(column.name));
+				const publishColumn = publishColumnsByCode.get(String(column.name));
+				// Cấp 1 không công bố điểm; chỉ cấp 2/3 mới có trạng thái công bố và icon loa trên header.
+				const canShowPublishStatus = [2, 3].includes(Number(this.vueData.CapID));
+				const status = canShowPublishStatus && publishColumn
+					? this.getPublishGradeColumnPublicationStatus(publishColumn)
+					: null;
+				const dialog = this.action.publishGradeDialog;
+				// Chỉ hiện trạng thái công bố cho cột được gửi lên LMS; cột thành phần trong nhóm Theme không gửi riêng.
+				const showUnconfirmedPublish = canShowPublishStatus && Boolean(publishColumn) && isLocked && Boolean(this.publishGradeType) &&
+					dialog.historyLoaded && !dialog.historyLoading && !dialog.historyError && !status;
+				const shouldShowStatus = isLocked || status || showUnconfirmedPublish;
+				let group = headerCell.querySelector('[data-grade-header-status]');
+				const legacyIcon = headerCell.querySelector('[data-publish-grade-status]');
+				if (legacyIcon) legacyIcon.remove();
+				if (!shouldShowStatus) {
+					if (group) group.remove();
+					return;
+				}
+				if (!group) {
+					group = document.createElement('span');
+					group.className = 'd-inline-flex align-center ml-1';
+					group.style.gap = '3px';
+					group.style.verticalAlign = 'middle';
+					group.setAttribute('data-grade-header-status', '');
+					group.setAttribute('role', 'group');
+					headerCell.appendChild(group);
+				}
+				group.replaceChildren();
+				if (isLocked) {
+					const lockIcon = document.createElement('span');
+					lockIcon.className = 'mdi mdi-lock-outline';
+					lockIcon.style.fontSize = '14px';
+					lockIcon.style.color = '#607d8b';
+					lockIcon.setAttribute('role', 'img');
+					lockIcon.setAttribute('aria-label', this.isEn ? 'Locked' : 'Đã khóa');
+					group.appendChild(lockIcon);
+				}
+				if (status || showUnconfirmedPublish) {
+					const publishIcon = document.createElement('span');
+					publishIcon.className = 'mdi mdi-bullhorn-outline';
+					publishIcon.style.fontSize = '14px';
+					publishIcon.style.color = status?.kind === 'current' ? '#4caf50' :
+						(status?.kind === 'partial' ? '#fb8c00' : '#9e9e9e');
+					const publishLabel = status?.kind === 'current'
+						? (this.isEn ? 'Published' : 'Đã công bố')
+						: (status?.kind === 'partial'
+							? (this.isEn ? 'Some scores are unpublished' : 'Có điểm chưa công bố')
+							: (this.isEn ? 'Not published' : 'Chưa công bố'));
+					publishIcon.setAttribute('role', 'img');
+					publishIcon.setAttribute('aria-label', publishLabel);
+					publishIcon.setAttribute('title', publishLabel);
+					group.appendChild(publishIcon);
+				}
+				group.setAttribute('aria-label', this.isEn ? 'Score column status' : 'Trạng thái cột điểm');
+				group.removeAttribute('title');
 			});
 		},
 
@@ -1238,6 +1582,385 @@
 			}
 		},
 
+		/** Mở dialog dùng chung cho TX/GK/CK hợp lệ; phạm vi ban đầu để trống để giáo viên tự chọn. */
+		onOpenPublishGradeDialog() {
+			if (!this.showPublishGradeButton || !this.hasPublishableGrades) {
+				this.showSnackbar(this.isEn ? 'There are no entered scores to publish.' : 'Nhóm hiện tại chưa có điểm để công bố.', 'warning');
+				return;
+			}
+			const dialog = this.action.publishGradeDialog;
+			dialog.selectedColumns = [];
+			dialog.selectedStudentIds = [];
+			dialog.show = true;
+			// Khi bảng TX đã tải log nền thì dùng luôn kết quả đó cho dialog và icon header; chỉ tải lại nếu chưa có dữ liệu.
+			if (!dialog.historyLoaded && !dialog.historyLoading) this.loadPublishGradeHistory();
+		},
+
+		/** Ưu tiên giá trị đang sửa trên sheet để nút và phạm vi công bố nhận ngay điểm chưa lưu. */
+		getCurrentPublishGradeCellValue(student, column) {
+			const studentIndex = this.DSHocSinh.findIndex(item =>
+				String(item?.HocSinhID) === String(student?.HocSinhID)
+			);
+			const columnIndex = BangDiemService.lock.getSyncCellIndex(this.headers, column?.value);
+			if (studentIndex >= 0 && columnIndex >= 0) {
+				const pendingCell = this.pendingSaveCells.find(cell =>
+					Number(cell.y) === studentIndex && Number(cell.x) === columnIndex
+				);
+				if (pendingCell) return pendingCell.value;
+			}
+			return student?.[column?.value];
+		},
+		/** Chuẩn hóa giống payload sync và giữ nguyên điểm 0 khi xem trước. */
+		getPublishGradeDisplayValue(student, column) {
+			let value = this.getCurrentPublishGradeCellValue(student, column);
+			if (value && typeof value === 'object') {
+				value = value.value ?? value.text ?? value.name ?? JSON.stringify(value);
+			}
+			return value === null || value === undefined ? '' : String(value).trim();
+		},
+		/** Key gồm học sinh, mã cột và học kỳ để không gộp nhầm cùng mã điểm giữa hai kỳ. */
+		getPublishGradeHistoryKey(studentId, maCotDiem, hocKy) {
+			const semester = BangDiemService.lock.normalizeSyncHocKy(hocKy) || '';
+			return [String(studentId ?? ''), String(maCotDiem ?? '').trim().toUpperCase(), semester].join('|');
+		},
+		getPublishGradeColumnSemester(column) {
+			const columnCode = String(column?.value ?? '');
+			const metadata = this.DSHocSinh_API.find(row => String(row?.MaCotDiem ?? '') === columnCode);
+			return BangDiemService.lock.getSyncHocKyFromColumn(columnCode) ??
+				metadata?.HocKy ?? metadata?.Semester ??
+				this.filter.MaNhomCotDiemItem?.Semester ?? this.vueData.NienKhoaItem?.HocKi;
+		},
+		getPublishGradeHistorySemester() {
+			const semesters = [...new Set(this.publishGradeColumns
+				.map(column => BangDiemService.lock.normalizeSyncHocKy(this.getPublishGradeColumnSemester(column)))
+				.filter(value => /^HK[12]$/.test(String(value ?? ''))))];
+			return semesters.length === 1 ? Number(semesters[0].slice(-1)) : null;
+		},
+		getPublishGradeHistory(student, column) {
+			const columnSemester = BangDiemService.lock.normalizeSyncHocKy(this.getPublishGradeColumnSemester(column));
+			const requestSemester = BangDiemService.lock.normalizeSyncHocKy(this.getPublishGradeHistorySemester());
+			const expectedSemester = columnSemester || requestSemester;
+			// Không xác định được học kỳ thì không mượn log khác kỳ để kết luận đã công bố.
+			if (!expectedSemester) return null;
+			const key = this.getPublishGradeHistoryKey(student?.HocSinhID, column?.value, expectedSemester);
+			const exact = this.action.publishGradeDialog.historyByCell[key];
+			if (exact) return exact;
+			// Chỉ nhận log không có học kỳ khi request đã được giới hạn vào đúng một học kỳ.
+			const base = this.getPublishGradeHistoryKey(student?.HocSinhID, column?.value, null);
+			if (requestSemester === expectedSemester && this.action.publishGradeDialog.historyByCell[base]) {
+				return this.action.publishGradeDialog.historyByCell[base];
+			}
+			return null;
+		},
+		getPublishGradeHistorySuccessCount(history) {
+			return Math.max(0, Number(history?.SuccessfulSendCount) || 0);
+		},
+		arePublishGradeScoresEqual(left, right) {
+			if (left === null || left === undefined || right === null || right === undefined) return false;
+			const leftText = String(left).trim();
+			const rightText = String(right).trim();
+			if (leftText === rightText) return true;
+			if (!leftText || !rightText) return false;
+			const leftNumber = Number(leftText.replace(',', '.'));
+			const rightNumber = Number(rightText.replace(',', '.'));
+			return Number.isFinite(leftNumber) && Number.isFinite(rightNumber) && leftNumber === rightNumber;
+		},
+		formatPublishGradeHistoryTime(value) {
+			if (!value) return this.isEn ? 'unknown time' : 'không rõ thời gian';
+			const date = new Date(value);
+			return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString(this.isEn ? 'en-US' : 'vi-VN', {
+				day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit'
+			});
+		},
+		getPublishGradeAttemptStatusLabel(status) {
+			const labels = {
+				Started: this.isEn ? 'Processing' : 'Đang xử lý',
+				Failed: this.isEn ? 'Not published' : 'Chưa công bố được',
+				InvalidResponse: this.isEn ? 'Not published' : 'Chưa công bố được'
+			};
+			return labels[status] || (this.isEn ? 'Not published yet' : 'Chưa công bố');
+		},
+		/** Tóm tắt số lần công bố, thời điểm gần nhất và điểm cũ khi điểm hiện tại đã đổi hoặc bị xóa. */
+		getPublishGradeHistoryText(student, column) {
+			const dialog = this.action.publishGradeDialog;
+			if (dialog.historyLoading || dialog.historyError) return '';
+			if (!dialog.historyLoaded) return '';
+			const history = this.getPublishGradeHistory(student, column);
+			if (!history) return '';
+
+			const count = this.getPublishGradeHistorySuccessCount(history);
+			const current = this.getPublishGradeDisplayValue(student, column);
+			const lastAttemptStatus = String(history.LastAttemptStatus || '');
+			const lastAttemptTime = this.formatPublishGradeHistoryTime(history.LastAttemptAt);
+			if (count === 0) {
+				if (!lastAttemptStatus) return '';
+				return this.getPublishGradeAttemptStatusLabel(lastAttemptStatus) +
+					(lastAttemptTime ? ' · ' + lastAttemptTime : '');
+			}
+
+			const lastScore = history.LastSuccessfulScore === null || history.LastSuccessfulScore === undefined
+				? (this.isEn ? 'unknown' : 'không rõ')
+				: String(history.LastSuccessfulScore);
+			const lastSuccessTime = this.formatPublishGradeHistoryTime(history.LastSuccessfulAt);
+			let message = this.isEn
+				? 'Published ' + count + ' time(s) · latest ' + lastSuccessTime
+				: 'Đã công bố ' + count + ' lần · gần nhất ' + lastSuccessTime;
+			if (current === '') {
+				message += this.isEn ? ' · previous score ' + lastScore + ' kept' : ' · điểm cũ ' + lastScore + ' vẫn giữ';
+			} else if (!this.arePublishGradeScoresEqual(current, history.LastSuccessfulScore)) {
+				message += this.isEn ? ' · previous score ' + lastScore : ' · điểm trước ' + lastScore;
+			}
+			if (lastAttemptStatus && lastAttemptStatus !== 'Succeeded') {
+				message += (this.isEn ? ' · latest attempt: ' : ' · lần mới: ') +
+					this.getPublishGradeAttemptStatusLabel(lastAttemptStatus) +
+					(lastAttemptTime ? ' · ' + lastAttemptTime : '');
+			}
+			return message;
+		},
+		/** Với cột đã khóa, so điểm API đã lưu với log công bố; giá trị trên sheet có thể là chuỗi công thức hoặc điểm đang sửa. */
+		getPublishGradeStatusValue(student, column) {
+			if (!column?.isLocked) return this.getPublishGradeDisplayValue(student, column);
+			const studentId = String(student?.HocSinhID ?? '');
+			const columnCode = String(column?.value ?? '').trim().toUpperCase();
+			const apiCell = this.DSHocSinh_API.find(row =>
+				String(row?.HocSinhID ?? '') === studentId &&
+				String(row?.MaCotDiem ?? '').trim().toUpperCase() === columnCode
+			);
+			let value = apiCell?.KetQuaDanhGia_VI;
+			if (value && typeof value === 'object') {
+				value = value.value ?? value.text ?? value.name ?? JSON.stringify(value);
+			}
+			return value === null || value === undefined ? '' : String(value).trim();
+		},
+		/** Xác định loa xanh (đã công bố đủ điểm đã lưu) hay cam (còn điểm chưa công bố) cho TX/GK/CK. */
+		getPublishGradeColumnPublicationStatus(column) {
+			const dialog = this.action.publishGradeDialog;
+			if (!this.publishGradeType || !dialog.historyLoaded || dialog.historyLoading || dialog.historyError) return null;
+
+			let hasSuccessfulSend = false;
+			let currentScoreCount = 0;
+			let needsPublishCount = 0;
+			let previouslyPublishedButNowBlankCount = 0;
+			this.DSHocSinh.forEach(student => {
+				const currentScore = this.getPublishGradeStatusValue(student, column);
+				const history = this.getPublishGradeHistory(student, column);
+				const successful = this.getPublishGradeHistorySuccessCount(history) > 0;
+				if (successful) hasSuccessfulSend = true;
+
+				if (currentScore !== '') {
+					currentScoreCount += 1;
+					if (!successful || !this.arePublishGradeScoresEqual(currentScore, history.LastSuccessfulScore)) {
+						needsPublishCount += 1;
+					}
+				} else if (successful) {
+					// Điểm đã lưu bị xóa vẫn có thể còn giá trị cũ ở LMS vì API công bố bỏ qua ô trống.
+					previouslyPublishedButNowBlankCount += 1;
+				}
+			});
+
+			if (!hasSuccessfulSend) return null;
+			const fullyCurrent = currentScoreCount > 0 && needsPublishCount === 0 && previouslyPublishedButNowBlankCount === 0;
+			return { kind: fullyCurrent ? 'current' : 'partial' };
+		},
+		/** Tải log theo cả niên khóa + lớp được chọn + môn học phần + template để tránh gộp nhầm LopID trùng. */
+		async loadPublishGradeHistory() {
+			const dialog = this.action.publishGradeDialog;
+			const requestId = Number(dialog.historyRequestId || 0) + 1;
+			dialog.historyRequestId = requestId;
+			dialog.historyLoading = true;
+			dialog.historyLoaded = false;
+			dialog.historyError = '';
+			dialog.historyByCell = {};
+			try {
+				const filter = this.filter || {};
+				const params = {
+					CapID: Number(this.vueData.CapID),
+					KhoiID: Number(filter.KhoiItem?.KhoiID),
+					NienKhoa: Number(this.vueData.NienKhoa),
+					LopChonID: filter.LopItem?.LopID == null ? null : String(filter.LopItem.LopID),
+					MonHocLopID: Number(filter.MonHocItem?.MonHocLopID),
+					MonHocID: Number(filter.MonHocItem?.MonHocID),
+					TemplateBangDiemID: Number(filter.MonHocItem?.TemplateBangDiemID),
+					HocKy: this.getPublishGradeHistorySemester()
+				};
+				if (!params.LopChonID || !Number.isFinite(params.CapID) || !Number.isFinite(params.KhoiID) ||
+					!Number.isFinite(params.NienKhoa) ||
+					!Number.isFinite(params.MonHocLopID) || !Number.isFinite(params.MonHocID) ||
+					!Number.isFinite(params.TemplateBangDiemID)) {
+					throw new Error('Thiếu niên khóa, lớp chọn, môn học phần hoặc template để tải lịch sử công bố.');
+				}
+				const response = await BangDiemService.api.getLmsSyncDiemPublishHistory(params);
+				if (requestId !== dialog.historyRequestId) return;
+				let body = response;
+				if (typeof body === 'string') {
+					try { body = JSON.parse(body); } catch (_) { body = null; }
+				}
+				let rows = Array.isArray(body) ? body : null;
+				for (const key of ['Result', 'Data', 'data', 'result']) {
+					if (!rows && Array.isArray(body?.[key])) rows = body[key];
+				}
+				if (!rows) throw new Error('API lịch sử công bố không trả về danh sách hợp lệ.');
+				const historyByCell = {};
+				rows.forEach(row => {
+					if (row?.HocSinhID == null || !row?.MaCotDiem) return;
+					const key = this.getPublishGradeHistoryKey(row.HocSinhID, row.MaCotDiem, row.HocKy);
+					historyByCell[key] = row;
+				});
+				dialog.historyByCell = historyByCell;
+				dialog.historyLoaded = true;
+			} catch (error) {
+				if (requestId !== dialog.historyRequestId) return;
+				console.error('[diemc3/LMS_SyncDiem] Không tải được lịch sử công bố:', error);
+				dialog.historyError = this.isEn
+					? 'Could not load the information. Try again.'
+					: 'Chưa tải được thông tin. Vui lòng thử lại.';
+			} finally {
+				if (requestId === dialog.historyRequestId) {
+					dialog.historyLoading = false;
+					this.$nextTick(() => this.refreshFormulaHeaderIcons());
+				}
+			}
+		},
+
+		getPublishGradeStudentName(student) {
+			const studentId = student?.HocSinhID;
+			const apiStudent = (this.DSHocSinh_API || []).find(row =>
+				studentId != null && String(row?.HocSinhID) === String(studentId)
+			) || {};
+			const asText = value => (typeof value === 'string' || typeof value === 'number') ? String(value).trim() : '';
+			const fullName = item => [item?.Ho, item?.Ten].map(asText).filter(Boolean).join(' ');
+			// Row hiển thị có thể bị dựng lại chỉ còn các cột điểm; tra API gốc theo HocSinhID để tên trong dialog luôn khớp học sinh của bảng hiện tại.
+			return [
+				student?.HoVaTenHocSinh, student?.HoTenHocSinh, student?.HoTen, fullName(student),
+				apiStudent?.HoVaTenHocSinh, apiStudent?.HoTenHocSinh, apiStudent?.HoTen, fullName(apiStudent),
+				student?.EnglishName, apiStudent?.EnglishName
+			].map(asText).find(Boolean) || (this.isEn ? 'Unnamed student' : 'Chưa có tên học sinh');
+		},
+
+		onToggleSelectAllPublishGradeColumns(value) {
+			this.action.publishGradeDialog.selectedColumns = value
+				? this.selectablePublishGradeColumns.map(col => col.value)
+				: [];
+		},
+
+		onTogglePublishGradeColumn(value) {
+			const column = this.publishGradeColumns.find(col => col.value === value);
+			if (!column || column.isLocked) return;
+			const selected = this.action.publishGradeDialog.selectedColumns;
+			this.action.publishGradeDialog.selectedColumns = selected.includes(value)
+				? selected.filter(item => item !== value)
+				: [...selected, value];
+		},
+
+		onToggleSelectAllPublishGradeStudents(value) {
+			this.action.publishGradeDialog.selectedStudentIds = value
+				? this.DSHocSinh.map(student => String(student.HocSinhID)).filter(Boolean)
+				: [];
+		},
+
+		onTogglePublishGradeStudent(studentId) {
+			const value = String(studentId);
+			const selected = this.action.publishGradeDialog.selectedStudentIds;
+			this.action.publishGradeDialog.selectedStudentIds = selected.includes(value)
+				? selected.filter(item => item !== value)
+				: [...selected, value];
+		},
+
+		/** Response DTB rỗng là hợp lệ; chỉ cảnh báo khi ghi lỗi hoặc có dòng trả về bị bỏ qua. */
+		hasAverageSaveIssue(result) {
+			return Array.isArray(result?.averageResults) && result.averageResults.some(item =>
+				item?.error || item?.skipped || Number(item?.skippedCount || 0) > 0
+			);
+		},
+
+		/** Lưu điểm đang sửa rồi chỉ công bố học sinh/cột thuộc loại đang chọn; cột khóa bị loại khỏi payload. */
+		async onConfirmPublishGrades() {
+			if (this.isPublishingGrades) return;
+			const publishType = this.publishGradeType;
+			const publishTypeLabel = this.publishGradeTypeLabel;
+			const selectedStudentIds = [...new Set(this.action.publishGradeDialog.selectedStudentIds.map(id => String(id)))];
+			const selectedColumnValues = [...new Set(this.action.publishGradeDialog.selectedColumns)];
+			const validStudentIds = new Set(this.DSHocSinh.map(student => String(student.HocSinhID)));
+			const filteredStudentIds = selectedStudentIds.filter(id => validStudentIds.has(id));
+			// Kiểm tra lại trạng thái khóa ngay trước khi tạo payload để cột vừa bị khóa không thể được gửi đi.
+			const selectedColumns = this.publishGradeColumns.filter(col =>
+				!col.isLocked && selectedColumnValues.includes(col.value)
+			);
+			if (!this.showPublishGradeButton || !selectedColumns.length || !filteredStudentIds.length) {
+				this.showSnackbar(this.isEn ? 'Choose at least one student and one grade column.' : 'Hãy chọn ít nhất một học sinh và một cột điểm để công bố.', 'warning');
+				return;
+			}
+			if (!this.hasSelectedPublishableGrades) {
+				this.showSnackbar('Trong phạm vi đã chọn chưa có điểm để công bố.', 'warning');
+				return;
+			}
+
+			this.isPublishingGrades = true;
+			try {
+				const cellsToSave = this.pendingSaveCells;
+				if (cellsToSave.length) {
+					const success = await BangDiemService.saveData(
+						cellsToSave, this.DSHocSinh, this.DSHocSinh_API,
+						this.freezeColumns, { ...this.filter, NienKhoa: this.vueData.NienKhoa },
+						this.instance, this.vueData
+					);
+					if (!success) {
+						this.showSnackbar('Không lưu được điểm nên chưa công bố cho phụ huynh.', 'error');
+						return;
+					}
+					await BangDiemService.saveDraft(this.filter, this.vueData);
+					await this.onRefresh();
+				}
+
+				const currentColumns = this.publishGradeColumns.filter(col =>
+					!col.isLocked && selectedColumnValues.includes(col.value)
+				);
+				const currentStudentIds = filteredStudentIds.filter(id =>
+					this.DSHocSinh.some(student => String(student.HocSinhID) === id)
+				);
+				if (!currentColumns.length || !currentStudentIds.length) {
+					this.showSnackbar('Phạm vi học sinh/cột điểm đã chọn không còn trong bảng điểm hiện tại.', 'warning');
+					return;
+				}
+				const result = await BangDiemService.lock.syncLmsDiem(
+					currentColumns, this.filter, this.vueData, this.instance, this.headers,
+					this.DSHocSinh_API, { studentIds: currentStudentIds, skipEmptyScores: true }
+				);
+				// Giữ dialog mở để giáo viên thấy trạng thái lần công bố vừa thực hiện.
+				if (result.failedSemesters?.length) {
+					this.showSnackbar(this.isEn ? 'Could not publish the scores. Please try again.' : 'Chưa công bố được điểm. Vui lòng thử lại.', 'error');
+					return;
+				}
+				if (!result.syncedTypes?.includes(publishType)) {
+					this.showSnackbar(this.isEn ? 'No scores were sent.' : 'Không có dữ liệu điểm được gửi đi.', 'warning');
+					return;
+				}
+
+				this.action.publishGradeDialog.show = false;
+				const averageSaveFailed = this.hasAverageSaveIssue(result);
+				this.showSnackbar(
+					averageSaveFailed
+						? (this.isEn
+							? 'Scores were published, but the term average was not fully updated.'
+							: `Đã công bố điểm ${publishTypeLabel}, nhưng điểm trung bình học kỳ chưa được cập nhật đầy đủ.`)
+						: (this.isEn
+							? `${publishTypeLabel} scores were published to parents.`
+							: `Đã công bố điểm ${publishTypeLabel} cho phụ huynh!`),
+					averageSaveFailed ? 'warning' : 'success'
+				);
+				try {
+					await this.onRefresh();
+				} catch (refreshError) {
+					console.warn('[diemc3/LMS_SyncDiem] Công bố xong nhưng không tải lại được bảng điểm:', refreshError);
+				}
+			} catch (error) {
+				console.error('[diemc3/LMS_SyncDiem] Lỗi công bố điểm:', error);
+				this.showSnackbar(this.isEn ? 'Could not publish the scores. Please try again.' : 'Chưa công bố được điểm. Vui lòng thử lại.', 'error');
+			} finally {
+				this.isPublishingGrades = false;
+			}
+		},
+
 		async onConfirmLockColumns() {
 			const selectedCols = this.lockableColumns.filter(col =>
 				this.action.lockDialog.selectedColumns.includes(col.value)
@@ -1258,21 +1981,55 @@
 				if (nlpcIDList.length > 0) {
 					await BangDiemService.lock.lockNLPCColumns(this.filter, this.vueData, this.DSHocSinh_API);
 				}
-				// Dựng payload đồng bộ từ bảng sau khi khóa để log kiểm tra; request mark/lms_syncdiem vẫn được giữ comment.
-				try {
-					await BangDiemService.lock.logLmsSyncDiemParamsAfterLock(
-						selectedCols, this.filter, this.vueData, this.instance, this.headers, this.DSHocSinh_API
-					);
-				} catch (payloadError) {
-					// Payload preview không được làm hỏng thao tác khóa đã lưu thành công.
-					console.warn('[mark/lms_syncdiem] Không thể dựng payload xem trước:', payloadError);
+				// Khóa điểm là bước chốt: công bố luôn các cột TX/GK/CK vừa khóa, chỉ gửi ô đã có điểm.
+				// Nút Công bố điểm trên thanh công cụ đã ẩn; thao tác khóa cột vẫn tiếp tục đồng bộ điểm.
+				const canPublishGradeTypes = [2, 3].includes(Number(this.vueData.CapID));
+				const syncOnLockColumns = canPublishGradeTypes
+					? selectedCols.filter(col => Boolean(BangDiemService.lock.getSyncLoaiDiemForColumn(
+						col, this.filter, this.DSHocSinh_API
+					)))
+					: [];
+				const lockPublishStudentIds = (Array.isArray(this.DSHocSinh) ? this.DSHocSinh : [])
+					.map(student => student?.HocSinhID)
+					.filter(studentId => studentId !== null && studentId !== undefined && String(studentId).trim() !== '')
+					.map(studentId => String(studentId));
+				let publishResult = null;
+				let publishError = null;
+				if (syncOnLockColumns.length) {
+					try {
+						publishResult = await BangDiemService.lock.syncLmsDiem(
+							syncOnLockColumns, this.filter, this.vueData, this.instance, this.headers,
+							this.DSHocSinh_API, {
+								skipEmptyScores: true,
+								// LMS_SyncDiem trả DTB toàn khối; chỉ lưu response của học sinh thuộc lớp/nhóm đang khóa.
+								studentIds: lockPublishStudentIds,
+								// Cột ĐTB được chốt cùng thao tác khóa, nhưng chỉ sau khi lưu response thành công.
+								lockAverageColumn: true
+							}
+						);
+					} catch (error) {
+						publishError = error;
+						console.warn('[diemc3/LMS_SyncDiem] Đã khóa cột nhưng công bố điểm phát sinh lỗi:', error);
+					}
 				}
-				this.showSnackbar(
-					nlpcIDList.length > 0
-						? 'Đã khóa cột điểm và các môn Năng lực – Phẩm chất đi kèm!'
-						: `Đã khóa ${selectedCols.length} cột điểm!`,
-					'success'
-				);
+				const lockMessage = nlpcIDList.length > 0
+					? 'Đã khóa cột điểm và các môn Năng lực – Phẩm chất đi kèm!'
+					: `Đã khóa ${selectedCols.length} cột điểm!`;
+				const publishFailed = Boolean(publishError || publishResult?.failedSemesters?.length);
+				const averageSaveFailed = this.hasAverageSaveIssue(publishResult);
+				let lockResultMessage = lockMessage;
+				if (syncOnLockColumns.length) {
+					if (publishFailed) {
+						lockResultMessage += ' Đã khóa nhưng chưa công bố hết điểm; cần mở khóa cột trước khi gửi lại bằng nút Công bố điểm.';
+					} else if (averageSaveFailed) {
+						lockResultMessage += ' Đã công bố điểm nhưng điểm trung bình học kỳ chưa được cập nhật đầy đủ.';
+					} else if (publishResult?.syncedTypes?.length) {
+						lockResultMessage += ' Đã công bố điểm cho phụ huynh.';
+					} else {
+						lockResultMessage += ' Không có điểm đủ điều kiện để công bố.';
+					}
+				}
+				this.showSnackbar(lockResultMessage, publishFailed || averageSaveFailed ? 'warning' : 'success');
 				await this.onRefresh();
 			} catch (error) {
 				console.error('onConfirmLockColumns error:', error);
@@ -1350,6 +2107,9 @@
 
 		async onRefresh() {
 			try {
+				// Xóa màu cảnh báo trên sheet cũ trước khi tải nhóm mới; nếu để tới lần đánh dấu kế tiếp,
+				// màu gốc đã lưu theo địa chỉ ô của nhóm trước có thể đè lên màu cột của nhóm mới.
+				this.clearFormulaMismatchMarkers();
 				const result = await BangDiemService.initialize(this.filter, this.vueData);
 
 				this.DSHocSinh = result.students;
@@ -1385,13 +2145,24 @@
 				this.tinhTrangStatus = result.tinhTrangStatus;
 				this.editedCells = defaultCells;
 				this.checkSuggestLock();
+				// Log công bố thuộc đúng bộ lọc hiện tại; hủy request cũ để không gắn trạng thái của lớp/môn trước lên header mới.
+				const publishHistory = this.action.publishGradeDialog;
+				publishHistory.historyRequestId += 1;
+				publishHistory.historyByCell = {};
+				publishHistory.historyLoading = false;
+				publishHistory.historyLoaded = false;
+				publishHistory.historyError = '';
 				this.keyComp++;
+				// Tải lịch sử cho mọi nhóm có thể công bố để header hiển thị icon đúng cả với điểm giữa kỳ/cuối kỳ.
+				if (this.publishGradeType) this.loadPublishGradeHistory();
 
 				// Nạp log một lần cho cả lớp để đánh dấu các ô có lịch sử trước khi giáo viên mở chi tiết.
 				this.$nextTick(() => {
 					// Chụp một lần đối chiếu API với kết quả công thức ban đầu sau khi bảng JSpreadsheet tính xong.
 					setTimeout(() => {
-						if (historyLoadId === this.gradeHistoryLoadId) this.refreshFormulaMismatchMarkers();
+						if (historyLoadId === this.gradeHistoryLoadId) {
+							this.refreshFormulaMismatchMarkers();
+						}
 					}, 0);
 					this.loadGradeHistoryMarkers(result.students, result.apiData, historyLoadId);
 				});
@@ -1583,6 +2354,13 @@
 			}
 		},
 
+			formatGradeHistoryTime(log) {
+				const raw = String(log?.NhapDiemTime || log?.UpdateTime || log?.CreateTime || '').trim();
+				if (!raw) return '-';
+				// API trả mili-giây để sắp xếp chính xác; chỉ ẩn phần này ở giao diện lịch sử.
+				return raw.replace(/(\d{2}:\d{2}:\d{2})\.\d+/, '$1');
+			},
+
 			getHistoryTimeValue(log) {
 				const raw = String(log?.NhapDiemTime || log?.UpdateTime || log?.CreateTime || '');
 				// API trả thêm mili-giây để các lần cập nhật sát nhau vẫn được sắp xếp đúng thứ tự.
@@ -1631,7 +2409,9 @@
 			},
 
 			onChangeSheet(options) {
-			setTimeout(() => { this.processChange(options); }, 0);
+			setTimeout(() => {
+				this.processChange(options);
+			}, 0);
 		},
 
 		processChange({ instance, cell, x, y, value }) {
@@ -1767,17 +2547,75 @@
 		// SAVE / SEND
 		// ============================================================
 
+		/**
+		 * Lưu tạm chỉ đồng bộ điểm TX sang QLDiem; GK/CK chỉ đồng bộ trong luồng khóa cột.
+		 * Môn Tiếng Anh phải khóa cột trước khi công bố nên không đi qua nhánh Lưu tạm này.
+		 * Các môn còn lại chỉ đồng bộ cấp 2/3, cột TX chưa khóa trong nhóm đang chọn; service
+		 * bỏ ô trống và ghi audit trước/sau từng request để có thể tra soát hoặc thử lại.
+		 */
+		async syncDraftGradesToQLDiem() {
+			if (![2, 3].includes(Number(this.vueData.CapID)) || this.isEnglishSubject) return null;
+
+			const columns = this.displayColumns.filter(col =>
+				!col.isLocked && BangDiemService.lock.getSyncLoaiDiemForColumn(
+					col, this.filter, this.DSHocSinh_API
+				) === 'TX'
+			);
+			const studentIds = (Array.isArray(this.DSHocSinh) ? this.DSHocSinh : [])
+				.map(student => student?.HocSinhID)
+				.filter(studentId => studentId !== null && studentId !== undefined && String(studentId).trim() !== '')
+				.map(studentId => String(studentId));
+			if (!columns.length || !studentIds.length) return null;
+
+			try {
+				return await BangDiemService.lock.syncLmsDiem(
+					columns, this.filter, this.vueData, this.instance, this.headers,
+					this.DSHocSinh_API, { skipEmptyScores: true, studentIds }
+				);
+			} catch (error) {
+				console.error('[diemc3/LMS_SyncDiem] Lưu tạm xong nhưng sync phát sinh lỗi:', error);
+				return { failedSemesters: [], syncError: error };
+			}
+		},
+
+		/** Tách trạng thái lưu LMS và đồng bộ QLDiem để lỗi sync không bị báo nhầm là mất điểm vừa lưu. */
+		showDraftSaveResult(syncResult, fallbackMessage) {
+			const failedSemesters = Array.isArray(syncResult?.failedSemesters) ? syncResult.failedSemesters : [];
+			if (failedSemesters.length || syncResult?.syncError || this.hasAverageSaveIssue(syncResult)) {
+				const semesterText = failedSemesters.length ? ` (${failedSemesters.join(', ')})` : '';
+				this.showSnackbar(
+					this.isEn
+						? `Draft saved in LMS, but the score sync to QLDiem${semesterText} did not finish. Save again to retry.`
+						: `Đã lưu tạm trên LMS nhưng đồng bộ điểm sang QLDiem${semesterText} chưa hoàn tất. Bấm Lưu tạm lại để thử đồng bộ.`,
+					'warning'
+				);
+				return;
+			}
+			if (syncResult?.syncedTypes?.length) {
+				this.showSnackbar(
+					this.isEn ? 'Draft saved and scores synced to QLDiem.' : 'Đã lưu tạm và đồng bộ điểm sang QLDiem.',
+					'success'
+				);
+				return;
+			}
+			this.showSnackbar(fallbackMessage, 'success');
+		},
+
 		async onLuuTam() {
 			try {
 				const cellsToSave = this.pendingSaveCells;
-				const success = await BangDiemService.saveData(
-					cellsToSave, this.DSHocSinh, this.DSHocSinh_API,
-					this.freezeColumns, { ...this.filter, NienKhoa: this.vueData.NienKhoa },
-					this.instance, this.vueData
-				);
-				if (!success) return;
+				// Không có ô mới vẫn cho phép lưu trạng thái và đồng bộ lại sau lần API trước lỗi.
+				if (cellsToSave.length) {
+					const success = await BangDiemService.saveData(
+						cellsToSave, this.DSHocSinh, this.DSHocSinh_API,
+						this.freezeColumns, { ...this.filter, NienKhoa: this.vueData.NienKhoa },
+						this.instance, this.vueData
+					);
+					if (!success) return;
+				}
 				await BangDiemService.saveDraft(this.filter, this.vueData);
-				this.showSnackbar('Lưu dữ liệu thành công!', 'success');
+				const syncResult = await this.syncDraftGradesToQLDiem();
+				this.showDraftSaveResult(syncResult, 'Lưu dữ liệu thành công!');
 				await this.onRefresh();
 			} catch (error) {
 				console.error('onLuuTam error:', error);
@@ -1795,14 +2633,17 @@
 						}
 					});
 				});
-				const success = await BangDiemService.saveData(
-					allCells, this.DSHocSinh, this.DSHocSinh_API,
-					this.freezeColumns, { ...this.filter, NienKhoa: this.vueData.NienKhoa },
-					this.instance, this.vueData
-				);
-				if (!success) return;
+				if (allCells.length) {
+					const success = await BangDiemService.saveData(
+						allCells, this.DSHocSinh, this.DSHocSinh_API,
+						this.freezeColumns, { ...this.filter, NienKhoa: this.vueData.NienKhoa },
+						this.instance, this.vueData
+					);
+					if (!success) return;
+				}
 				await BangDiemService.saveDraft(this.filter, this.vueData);
-				this.showSnackbar('Lưu tất cả thành công!', 'success');
+				const syncResult = await this.syncDraftGradesToQLDiem();
+				this.showDraftSaveResult(syncResult, 'Lưu tất cả thành công!');
 				await this.onRefresh();
 			} catch (error) {
 				console.error('onLuuTamTatCa error:', error);
@@ -1870,11 +2711,60 @@
 				const exportData = BangDiemService.export.prepareExportData(
 					this.DSHocSinh, this.DSCotDiem_ByMaNhomCotDiem, this.instance, this.freezeColumns, this.filter, this.DSHocSinh_API
 				);
-				const fileName = `Bang_Diem_Lop_${this.filter.LopItem.TenLop}_${this.filter.MonHocItem.MonHocName}.xlsx`;
-				BangDiemService.export.exportExcel(this.headers, exportData, fileName);
-				this.showSnackbar('Xuất Excel thành công!', 'success');
+				const fileName = 'Bang_Diem_Lop_' + this.filter.LopItem.TenLop + '_' + this.filter.MonHocItem.MonHocName + '.xlsx';
+				this.openExportColumnsDialog('single', [{ name: 'Sheet1', headers: this.headers, data: exportData }], fileName);
 			} catch (error) {
 				console.error('onExportExcel error:', error);
+				this.showSnackbar('Có lỗi xảy ra khi xuất Excel!', 'error');
+			}
+		},
+
+		// Tạo danh sách theo từng sheet để cột trùng tên vẫn có lựa chọn riêng và mặc định chọn toàn bộ.
+		openExportColumnsDialog(kind, sheets, fileName) {
+			const columns = [];
+			(sheets || []).forEach((sheet, sheetIndex) => {
+				(sheet.headers || []).forEach((header, columnIndex) => {
+					const prefix = kind === 'workbook' ? (sheet.name || ('Sheet ' + (sheetIndex + 1))) + ' — ' : '';
+					columns.push({
+						value: 'sheet_' + sheetIndex + '_column_' + columnIndex,
+						label: prefix + (header.title || header.name || '')
+					});
+				});
+			});
+			if (!columns.length) {
+				this.showSnackbar('Không có cột dữ liệu để xuất!', 'warning');
+				return;
+			}
+			this.action.exportColumnsDialog.kind = kind;
+			this.action.exportColumnsDialog.sheets = sheets;
+			this.action.exportColumnsDialog.fileName = fileName;
+			this.action.exportColumnsDialog.columns = columns;
+			this.action.exportColumnsDialog.selectedColumns = columns.map(column => column.value);
+			this.action.exportColumnsDialog.show = true;
+		},
+
+		// Áp dụng đúng các cột đã chọn cho từng sheet trước khi gọi bộ xuất Excel hiện có.
+		confirmExportColumns() {
+			const dialog = this.action.exportColumnsDialog;
+			const selected = new Set(dialog.selectedColumns || []);
+			if (!selected.size) return;
+			const sheets = (dialog.sheets || []).map((sheet, sheetIndex) => {
+				const headers = (sheet.headers || []).filter((header, columnIndex) =>
+					selected.has('sheet_' + sheetIndex + '_column_' + columnIndex)
+				);
+				return { ...sheet, headers };
+			}).filter(sheet => sheet.headers.length);
+			if (!sheets.length) return;
+			try {
+				if (dialog.kind === 'single') {
+					BangDiemService.export.exportExcel(sheets[0].headers, sheets[0].data, dialog.fileName);
+				} else {
+					BangDiemService.export.exportWorkbook(sheets, dialog.fileName);
+				}
+				dialog.show = false;
+				this.showSnackbar('Xuất Excel thành công!', 'success');
+			} catch (error) {
+				console.error('confirmExportColumns error:', error);
 				this.showSnackbar('Có lỗi xảy ra khi xuất Excel!', 'error');
 			}
 		},
@@ -1943,10 +2833,9 @@
 
 				const monName = this.filter.MonHocItem?.TenMonHoc_HienThi || this.filter.MonHocItem?.MonHocName || 'MonHoc';
 				const maNhom = this.filter.MaNhomCotDiemItem?.MaNhomCotDiem || 'Nhom';
-				const fileName = `Bang_Diem_${monName}_${maNhom}_${sheets.length}_Lop.xlsx`;
-				BangDiemService.export.exportWorkbook(sheets, fileName);
+				const fileName = 'Bang_Diem_' + monName + '_' + maNhom + '_' + sheets.length + '_Lop.xlsx';
 				this.action.exportDialog.show = false;
-				this.showSnackbar(`Xuất Excel ${sheets.length} lớp thành công!`, 'success');
+				this.openExportColumnsDialog('workbook', sheets, fileName);
 			} catch (error) {
 				console.error('onExportManyClasses error:', error);
 				this.showSnackbar('Có lỗi xảy ra khi xuất Excel nhiều lớp!', 'error');
@@ -1959,7 +2848,7 @@
 			try {
 				if (!this.aiWarnings?.length) return;
 				
-				const headers = [
+				const headerLabels = [
 					'Dòng',
 					'Mã học sinh',
 					'Học sinh',
@@ -1976,41 +2865,35 @@
 						? w.message 
 						: (w.suggestions || []).join('; ');
 					
-					return [
-						w.rowNum,
-						w.studentId || '',
-						w.studentName,
-						w.subjectName,
-						errorType,
-						w.currentText,
-						details,
-						w.correctedText || ''
-					];
+					return {
+						rowNum: w.rowNum,
+						studentId: w.studentId || '',
+						studentName: w.studentName,
+						subjectName: w.subjectName,
+						errorType: errorType,
+						currentText: w.currentText,
+						details: details,
+						correctedText: w.correctedText || ''
+					};
 				});
-				
-				const worksheet = XLSX.utils.aoa_to_sheet([headers, ...dataRows]);
-				
-				worksheet['!cols'] = [
-					{ wch: 8 },   // Dòng
-					{ wch: 15 },  // Mã học sinh
-					{ wch: 25 },  // Học sinh
-					{ wch: 20 },  // Môn
-					{ wch: 15 },  // Loại lỗi
-					{ wch: 45 },  // Nhận xét hiện tại
-					{ wch: 50 },  // Chi tiết lỗi
-					{ wch: 45 }   // Nhận xét đề xuất
-				];
-				
-				const workbook = XLSX.utils.book_new();
-				XLSX.utils.book_append_sheet(workbook, worksheet, 'Báo cáo lỗi nhận xét');
-				
 				const lopName = this.filter.LopItem?.TenLop || 'Lop';
 				const monName = this.filter.MonHocItem?.MonHocName || 'MonHoc';
 				const checkType = this.action.aiResultDialog.title?.includes('AI') ? 'AI' : 'DoDai';
-				const fileName = `Bao_Cao_Loi_Nhan_Xet_${checkType}_${lopName}_${monName}.xlsx`;
-				
-				XLSX.writeFile(workbook, fileName);
-				this.showSnackbar('Xuất file Excel báo cáo lỗi thành công!', 'success');
+				const fileName = 'Bao_Cao_Loi_Nhan_Xet_' + checkType + '_' + lopName + '_' + monName + '.xlsx';
+				const headerNames = headerLabels;
+				const headers = headerNames.map(name => ({ name, title: name }));
+				// Tên cột là khóa dữ liệu vì bộ xuất Excel hiện có dùng header.name làm cả tiêu đề lẫn khóa dòng.
+				const exportRows = dataRows.map(row => ({
+					[headerLabels[0]]: row.rowNum,
+					[headerLabels[1]]: row.studentId,
+					[headerLabels[2]]: row.studentName,
+					[headerLabels[3]]: row.subjectName,
+					[headerLabels[4]]: row.errorType,
+					[headerLabels[5]]: row.currentText,
+					[headerLabels[6]]: row.details,
+					[headerLabels[7]]: row.correctedText
+				}));
+				this.openExportColumnsDialog('single', [{ name: 'Báo cáo lỗi nhận xét', headers, data: exportRows }], fileName);
 			} catch (error) {
 				console.error('onExportAiWarnings error:', error);
 				this.showSnackbar('Có lỗi xảy ra khi xuất file Excel!', 'error');

@@ -10,10 +10,12 @@ const CONSTANTS = {
         ENGLISH_46: 46,
         ENGLISH_76: 76,
         STEM_36: 36,
-        GROUP_101: 101
+        GROUP_101: 101,
+        TIN_102: 102
     },
     ENGLISH_SUBJECTS: [5, 46, 76],
-    GROUP_SUBJECTS: [101, 76],
+    // Tin C3 (ID 102) dùng nhóm môn N26…TH và cần hiển thị lớp chủ nhiệm theo từng học sinh.
+    GROUP_SUBJECTS: [101, 76, 102],
     CONVERT_STAR_SUBJECTS: [36, 37, 38, 40, 41, 42, 43, 106],
     COLUMN_TYPES: {
         NUMBER: 'number',
@@ -124,11 +126,26 @@ const ApiService = {
     async toggleKhoaCotDiem(params) {
         return await ajaxCALLPromise("lms/KhoaCotDiem_Ins_And_Upd", params);
     },
-    // Giữ helper gọi mark/lms_syncdiem ở comment trong lúc kiểm tra payload.
-//     /** Đẩy dữ liệu điểm LMS sang QLDiem sau khi khóa cột điểm. */
-//     async syncDiemToQLDiem(params) {
-//         return await ajaxCALLPromise("mark/lms_syncdiem", params);
-//     },
+    /** Gửi dữ liệu điểm LMS sang QLDiem sau khi khóa cột điểm. */
+    async syncDiemToQLDiem(params) {
+        return await ajaxCALLPromise("diemc3/LMS_SyncDiem", params);
+    },
+    /** Ghi nhận payload và người gửi ở LMS trước khi gọi QLDiem. */
+    async startLmsSyncDiemLog(params) {
+        return await ajaxCALLPromise("lms/LMS_SyncDiemLog_Start", params);
+    },
+    /** Chốt trạng thái cùng phản hồi QLDiem vào log LMS sau mỗi lần gọi. */
+    async completeLmsSyncDiemLog(params) {
+        return await ajaxCALLPromise("lms/LMS_SyncDiemLog_Complete", params);
+    },
+    /** Đọc lịch sử công bố TX/GK/CK theo đúng lớp chọn, môn học, template và niên khóa hiện tại. */
+    async getLmsSyncDiemPublishHistory(params) {
+        return await ajaxCALLPromise("lms/LMS_SyncDiemLog_History_Select", params);
+    },
+    /** Lấy cấu trúc cột điểm đúng theo template của lớp học phần đang chọn. */
+    async getTemplateGradeColumns(params) {
+        return await ajaxCALLPromise("lms/NhomCauTrucDiem_Get_All_ByTemplateBangDiemID", params);
+    },
     /** Cập nhật tình trạng khóa cột điểm theo KhoaCotDiemID */
     async updateKhoaCotDiemTinhTrang(params) {
         return await ajaxCALLPromise("lms/KhoaCotDiem_TinhTrang_Upd_ByKhoaCotDiem", params);
@@ -229,7 +246,7 @@ const DataProcessor = {
         if (monHocID === CONSTANTS.SUBJECT_IDS.ENGLISH_76) {
             return isEnglish ? 5 : 3;
         }
-        if (monHocID === CONSTANTS.SUBJECT_IDS.GROUP_101) {
+        if (isGroup || monHocID === CONSTANTS.SUBJECT_IDS.GROUP_101) {
             return 4;
         }
         return 3;
@@ -458,7 +475,7 @@ const HeaderBuilder = {
         let backGroundColor = column.HexBackground;
         let width = parseInt(column?.WidthCSS ?? 80);
         if (isLocked) {
-            title += isLanguage ? ' (LOCKED)' : ' (KHÓA)';
+            // Giữ tên cột thuần; component gắn icon khóa cạnh trạng thái công bố sau khi JSpreadsheet dựng header.
             backGroundColor = '#c1c1c157';
             width += 25;
         } else if (isNoPermission) {
@@ -531,7 +548,8 @@ const HeaderBuilder = {
         const groupNames = [...new Set(apiData.map(x => x.MaNhomCotDiem))];
         const nestedHeader = [{
             title: isLanguage ? 'Student Information' : 'Thông tin học sinh',
-            colspan: freezeColumns + (isGroup ? 1 : 0)
+            // freezeColumns đã tính đủ các cột thông tin, gồm cả Lớp chủ nhiệm và English Name.
+            colspan: freezeColumns
         }];
         groupNames.forEach(groupName => {
             const matchingColumn = gradeColumns.find(col => col.MaNhomCotDiem === groupName);
@@ -941,28 +959,101 @@ const LockService = {
             });
         }
     },
-    // Dựng payload thật từ JSpreadsheet và chỉ ghi log để kiểm tra; chưa gọi mark/lms_syncdiem.
-    /** Ánh xạ mã cột LMS sang LoaiDiem mà mark/lms_syncdiem nhận. */
-    getSyncLoaiDiemForColumn(column, filter, apiData = []) {
-        const isEnglishSubject = CONSTANTS.ENGLISH_SUBJECTS.includes(Number(filter.MonHocItem?.MonHocID));
+    // Dựng payload từ JSpreadsheet và gửi sang QLDiem sau khi khóa cột thành công.
+    /** Chỉ cho công bố GK/CK khi cờ IsThiTapTrung xác nhận đây là môn thi tại lớp. */
+    isInClassExamSubject(filter, apiData = []) {
+        const subject = filter.MonHocItem || {};
+        const monHocID = Number(subject.MonHocID);
+        const flagValue = subject.IsThiTapTrung ??
+            apiData.find(row => Number(row?.MonHocID) === monHocID)?.IsThiTapTrung;
+        const normalized = String(flagValue ?? '').trim().toLowerCase();
+        return flagValue === false || flagValue === 0 ||
+            ['false', '0', 'n', 'no'].includes(normalized);
+    },
+    /** Dùng duy nhất cờ IsThiTapTrung từ MonHoc_Get_ByLopID để phân loại cách thi của môn. */
+    isCentralExamSubject(filter, apiData = []) {
+        const subject = filter.MonHocItem || {};
+        const monHocID = Number(subject.MonHocID);
+        const flagValue = subject.IsThiTapTrung ??
+            apiData.find(row => Number(row?.MonHocID) === monHocID)?.IsThiTapTrung;
+        return flagValue === true || flagValue === 1 ||
+            String(flagValue ?? '').trim().toLowerCase() === 'true' ||
+            String(flagValue ?? '').trim() === '1';
+    },
+    /**
+     * Quy đổi mã nhóm lấy từ TemplateBangDiem sang enum của diemc3/LMS_SyncDiem.
+     * TemplateBangDiemChiTiet không có cột LoaiDiem riêng; MaNhomCotDiem là metadata
+     * cho biết nhóm đang khóa thuộc TX, giữa kỳ hay cuối kỳ. Nhóm tổng kết không gửi.
+     */
+    getSyncLoaiDiemForTemplateGroup(groupCode, groupName) {
+        // Một số template đặt mã nhóm theo tên nghiệp vụ (ví dụ DiemThuongXuyen_HK1),
+        // còn template khác dùng TX/KTTX/Theme. Chuẩn hóa cả mã và tên hiển thị từ template.
+        const normalize = value => String(value ?? '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toUpperCase()
+            .replace(/Đ/g, 'D')
+            .replace(/[^A-Z0-9]/g, '');
+        const candidates = [groupCode, groupName].map(normalize).filter(Boolean);
+        if (candidates.some(value =>
+            /^(?:DIEM)?(?:TX|KTTX|THUONGXUYEN|KIEMTRATHUONGXUYEN)/.test(value) ||
+            /^THEME[1-8](?:TOTAL)?$/.test(value)
+        )) return 'TX';
+        // JA/AI templates dùng DiemCD1 cho giữa kỳ và DiemCD2 cho cuối kỳ.
+        if (candidates.some(value =>
+            /^(?:DIEMGK|DIEMCD1|S[12]MID)/.test(value) ||
+            /^(?:DIEM)?GIUAKY/.test(value) || /^MIDTERM/.test(value)
+        )) return 'DiemGK';
+        if (candidates.some(value =>
+            /^(?:DIEMCK|DIEMCD2|S[12]FINAL)/.test(value) ||
+            /^(?:DIEM)?CUOIKY/.test(value) || /^FINAL/.test(value)
+        )) return 'DiemCK';
+        return null;
+    },
+    /** Lấy mã nhóm đúng theo chi tiết template gắn với cột đang hiển thị. */
+    getSyncTemplateGroupCodeForColumn(column, filter, apiData = []) {
         const columnMeta = apiData.find(row =>
             ColumnCodeService.isSameMaCotDiem(row?.MaCotDiem, column?.value)
         );
-        // LoaiDiem trong SELECT KQHT được suy ra từ MaCotDiem; không lấy theo nhóm đang lọc
-        // để tránh cột như DiemTB bị gán nhầm thành GK/CK.
-        const sources = [columnMeta?.MaCotDiem, column?.value, column?.MaCotDiemSave];
-        for (const source of sources) {
-            const normalized = String(source ?? '')
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-                .toUpperCase();
-            // Theme_total của môn Anh C2/C3 là TX; LMS cũng xếp các mã kết thúc bằng Total vào TX.
-            if (isEnglishSubject && /THEME[_\s-]*TOTAL/.test(normalized)) return 'TX';
-            if (/DIEMCD1|DIEMGK|GIA\s*KY|MID[_\s-]*TOTAL[_\s-]*POINT/.test(normalized)) return 'DiemGK';
-            if (/DIEMCD2|DIEMCK|CUOI\s*KY|FINAL[_\s-]*TOTAL[_\s-]*POINT/.test(normalized)) return 'DiemCK';
-            if (/KTTX|DIEMTX|THUONG\s*XUYEN|(?:^|[_\s-])TX(?:\d|[_\s-]|$)|TOTAL$/.test(normalized)) return 'TX';
+        return columnMeta?.MaNhomCotDiem ?? column?.MaNhomCotDiem ??
+            filter.MaNhomCotDiemItem?.MaNhomCotDiem ?? null;
+    },
+    /** Tên nhóm cũng là metadata của TemplateBangDiem; dùng khi mã nhóm không biểu đạt loại điểm. */
+    getSyncTemplateGroupNameForColumn(column, filter, apiData = []) {
+        const columnMeta = apiData.find(row =>
+            ColumnCodeService.isSameMaCotDiem(row?.MaCotDiem, column?.value)
+        );
+        return columnMeta?.TenNhomCotDiem_VI ?? columnMeta?.TenNhomCotDiem_EN ??
+            columnMeta?.TenNhomCotDiem ?? column?.TenNhomCotDiem_VI ??
+            filter.MaNhomCotDiemItem?.TenNhomCotDiem_VI ??
+            filter.MaNhomCotDiemItem?.TenNhomCotDiem_EN ??
+            filter.MaNhomCotDiemItem?.TenNhomCotDiem ?? null;
+    },
+    /**
+     * Lấy LoaiDiem theo metadata nhóm, đồng thời chỉ cho cột tổng ThemeN_Total đi ra QLDiem.
+     * Các cột thành phần trong ThemeN vẫn thuộc nhóm TX để nhập/tính tổng nội bộ, không phải TX độc lập.
+     */
+    getSyncLoaiDiemForColumn(column, filter, apiData = []) {
+        const groupCode = this.getSyncTemplateGroupCodeForColumn(column, filter, apiData);
+        const groupName = this.getSyncTemplateGroupNameForColumn(column, filter, apiData);
+        const normalizeThemeCode = value => String(value ?? '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toUpperCase()
+            .replace(/Đ/g, 'D')
+            .replace(/[^A-Z0-9]/g, '');
+        const themeGroupMatch = [groupCode, groupName]
+            .map(value => /^THEME([1-8])(?:TOTAL)?$/.exec(normalizeThemeCode(value)))
+            .find(Boolean);
+        if (themeGroupMatch) {
+            const columnCode = ColumnCodeService.normalizeMaCotDiem(
+                String(column?.value ?? column?.MaCotDiemSave ?? column?.MaCotDiem ?? '')
+            );
+            const themeTotalMatch = /^THEME([1-8])TOTAL$/.exec(normalizeThemeCode(columnCode));
+            // Chỉ gửi điểm tổng của đúng Theme đang chọn; EC/Journal/Test/Bonus... là điểm thành phần.
+            if (!themeTotalMatch || themeTotalMatch[1] !== themeGroupMatch[1]) return null;
         }
-        return null;
+        return this.getSyncLoaiDiemForTemplateGroup(groupCode, groupName);
     },
     /** Loại điểm khác nhau cần đẩy, không gửi lặp khi khóa nhiều cột cùng nhóm. */
     getSyncLoaiDiem(columns, filter, apiData = []) {
@@ -987,11 +1078,267 @@ const LockService = {
         const semester = String(value ?? '').trim();
         return /^[12]$/.test(semester) ? `HK${semester}` : (semester || null);
     },
+    /** Chuẩn hóa response LMS_SyncDiem; DTB chỉ có nghĩa trong HocKy của request tương ứng. */
+    normalizeSyncDtbRows(response) {
+        let body = response;
+        if (typeof body === 'string') {
+            try {
+                body = JSON.parse(body);
+            } catch (_) {
+                return null;
+            }
+        }
+        if (Array.isArray(body)) return body;
+        for (const key of ['Result', 'Data', 'data', 'result']) {
+            if (Array.isArray(body?.[key])) return body[key];
+        }
+        return null;
+    },
+    /** Tạo GUID riêng cho một thao tác khóa và từng request QLDiem trong thao tác đó. */
+    createSyncLogGuid() {
+        if (typeof window !== 'undefined' && window.crypto?.randomUUID) {
+            return window.crypto.randomUUID();
+        }
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, char => {
+            const random = Math.random() * 16 | 0;
+            return (char === 'x' ? random : (random & 0x3 | 0x8)).toString(16);
+        });
+    },
+    /** Giữ được cả response JSON lẫn lỗi dạng chuỗi trong cột audit NVARCHAR(MAX). */
+    serializeSyncLogValue(value) {
+        if (value === null || value === undefined) return null;
+        if (typeof value === 'string') return value;
+        try {
+            return JSON.stringify(value);
+        } catch (_) {
+            return String(value);
+        }
+    },
+    /** Tạo log chi tiết cho một batch theo đúng tham số gửi QLDiem và ngữ cảnh LMS đang chọn. */
+    buildSyncDiemLogStartParams(requestID, operationID, params, loaiDiem, hocKy, filter, vueData) {
+        const subject = filter.MonHocItem || {};
+        const selectedClass = filter.LopItem || {};
+        return {
+            RequestID: requestID,
+            // Giữ tên cột audit hiện hữu; với nút công bố TX, đây là ID tương quan của thao tác công bố.
+            LockActionID: operationID,
+            CapID: this.toSyncNumber(vueData.CapID),
+            KhoiID: params.KhoiID,
+            NienKhoa: this.toSyncNumber(vueData.NienKhoa),
+            LopChonID: selectedClass.LopID == null ? null : String(selectedClass.LopID),
+            LopChonTen: selectedClass.TenLop == null ? null : String(selectedClass.TenLop),
+            MonHocLopID: this.toSyncNumber(subject.MonHocLopID),
+            MonHocID: this.toSyncNumber(subject.MonHocID),
+            MonHocCode: subject.MonHocCode == null ? null : String(subject.MonHocCode),
+            TemplateBangDiemID: this.toSyncNumber(subject.TemplateBangDiemID),
+            LoaiDiem: loaiDiem,
+            HocKy: hocKy,
+            DataPayload: params.Data
+        };
+    },
+    /** Retry thao tác chốt log một lần; nếu LMS vẫn không ghi được, batch giữ trạng thái Started để tra soát. */
+    async completeSyncDiemLogWithRetry(requestID, syncStatus, response, responseRows, error) {
+        const completionParams = {
+            RequestID: requestID,
+            SyncStatus: syncStatus,
+            ResponsePayload: this.serializeSyncLogValue(response),
+            ResponseRowsJson: Array.isArray(responseRows) ? JSON.stringify(responseRows) : null,
+            ErrorMessage: error ? String(error?.message || error).slice(0, 4000) : null
+        };
+        let lastError = null;
+        for (let attempt = 1; attempt <= 2; attempt += 1) {
+            try {
+                await ApiService.completeLmsSyncDiemLog(completionParams);
+                return true;
+            } catch (logError) {
+                lastError = logError;
+                console.warn(`[diemc3/LMS_SyncDiem] Lần ${attempt}/2 chốt log LMS thất bại cho request ${requestID}:`, logError);
+            }
+        }
+        console.error(`[diemc3/LMS_SyncDiem] Không chốt được trạng thái log LMS cho request ${requestID}; log còn Started.`, lastError);
+        return false;
+    },
+    /** Sau luồng khóa cột và công bố thành công, khóa thêm cột ĐTB của đúng học kỳ; không tạo lại khóa nếu đã khóa. */
+    async lockSyncAverageColumnIfNeeded(averageColumn, hocKy, filter, vueData) {
+        const semester = `HK${Number(hocKy)}`;
+        const averageCode = `DiemTB_${semester}`;
+        const lopID = filter.LopItem?.LopID;
+        const monHocLopID = Number(filter.MonHocItem?.MonHocLopID);
+        const lockedRowsRaw = await ApiService.getKhoaCotDiem({
+            LopID: lopID,
+            MonHocLopID: monHocLopID,
+            MaNhomCotDiem: averageColumn.MaNhomCotDiem,
+            Semester: averageColumn.Semester ?? semester,
+            NienKhoa: Number(vueData.NienKhoa)
+        });
+        const lockedRows = this.normalizeSyncDtbRows(lockedRowsRaw);
+        if (!Array.isArray(lockedRows)) {
+            throw new Error(`Không đọc được trạng thái khóa của cột ${averageCode}.`);
+        }
+        const isLocked = lockedRows.some(row => {
+            const status = String(row?.TinhTrang ?? '').trim().toLowerCase();
+            return ColumnCodeService.isSameMaCotDiem(row?.MaCotDiem, averageCode) &&
+                (row?.TinhTrang === true || row?.TinhTrang === 1 || status === 'true' || status === '1');
+        });
+        if (isLocked) return false;
+        await ApiService.toggleKhoaCotDiem({
+            LopID: lopID,
+            MonHocLopID: monHocLopID,
+            MaCotDiem: ColumnCodeService.normalizeMaCotDiem(averageCode),
+            IsKhoaCotDiem: true
+        });
+        return true;
+    },
+    /** Lưu DTB vào đúng cột trung bình của cùng học kỳ trong template đang áp dụng. */
+    async saveSyncDtbToSemesterColumn(hocKy, responseRows, filter, vueData, options = {}) {
+        const semester = `HK${Number(hocKy)}`;
+        const averageCode = `DiemTB_${semester}`;
+        const templateBangDiemID = Number(filter.MonHocItem?.TemplateBangDiemID);
+        const monHocLopID = Number(filter.MonHocItem?.MonHocLopID);
+        const monHocID = Number(filter.MonHocItem?.MonHocID);
+        const lopID = filter.LopItem?.LopID;
+        const nienKhoa = Number(vueData.NienKhoa);
+        if (![1, 2].includes(Number(hocKy)) || !Number.isInteger(templateBangDiemID) || templateBangDiemID <= 0 ||
+            !Number.isInteger(monHocLopID) || monHocLopID <= 0 ||
+            !Number.isInteger(monHocID) || monHocID <= 0 ||
+            lopID === null || lopID === undefined || String(lopID).trim() === '' ||
+            !Number.isInteger(nienKhoa) || nienKhoa <= 0) {
+            throw new Error(`Thiếu thông tin lớp/môn/template/niên khóa để lưu DTB ${semester}.`);
+        }
+        const templateColumns = await ApiService.getTemplateGradeColumns({ TemplateBangDiemID: templateBangDiemID });
+        const templateRows = this.normalizeSyncDtbRows(templateColumns) || [];
+        // So mã sau khi bỏ prefix CotDiemID nếu API trả dạng "123_DiemTB_HK1".
+        // Tên nhóm có thể khác mã cột ở template Anh văn, nên lấy cột TB theo mã + học kỳ và chỉ dùng nhóm để ưu tiên khi trùng.
+        const matchesAverageCode = value => String(ColumnCodeService.normalizeMaCotDiem(String(value ?? '')) ?? '')
+            .trim().toLowerCase() === averageCode.toLowerCase();
+        // DTB trả về từ LMS_SyncDiem là trung bình cả học kỳ, không phụ thuộc nhóm Theme đang được khóa.
+        // Lấy mọi kiểu của cột TB để quyết định cách lưu dựa trên GiaTriCotDiem của template.
+        const averageCodeColumns = templateRows.filter(column =>
+            matchesAverageCode(column?.MaCotDiem) &&
+            this.normalizeSyncHocKy(column?.Semester) === semester
+        );
+        const averageGroupColumns = averageCodeColumns.filter(column => matchesAverageCode(column?.MaNhomCotDiem));
+        const averageColumns = averageGroupColumns.length ? averageGroupColumns : averageCodeColumns;
+        if (averageColumns.length !== 1 || !Number.isInteger(Number(averageColumns[0]?.CotDiemID))) {
+            console.warn(`[diemc3/LMS_SyncDiem] Không tìm được duy nhất cột ${averageCode} trong template ${templateBangDiemID}.`, averageColumns);
+            return { HocKy: semester, savedCount: 0, skipped: 'template-column-not-unique' };
+        }
+        const averageColumn = averageColumns[0];
+        const averageColumnType = String(averageColumn.GiaTriCotDiem ?? '').trim().toLowerCase();
+        const isNumericAverage = averageColumnType === CONSTANTS.COLUMN_TYPES.NUMBER;
+        const isPassFailAverage = averageColumnType === CONSTANTS.COLUMN_TYPES.DROPDOWN_CD_D.toLowerCase();
+        if (!isNumericAverage && !isPassFailAverage) {
+            console.warn(`[diemc3/LMS_SyncDiem] Không hỗ trợ kiểu ${averageColumn.GiaTriCotDiem} của cột ${averageCode} trong template ${templateBangDiemID}.`);
+            return { HocKy: semester, savedCount: 0, skipped: 'unsupported-average-type' };
+        }
+        // DTB do QLDiem trả về là kết quả hệ thống, vẫn phải cập nhật khi cột TB đang khóa.
+        // Payload dùng marker riêng để SP chỉ cho phép ghi cột DiemTB_HK1/HK2 và giữ nguyên trạng thái khóa.
+        const gradeRowsRaw = await ApiService.fetchBangDiem('lms/HocSinhBangDiem_Get_ByMonHocID_MaNhom', {
+            LopID: lopID,
+            MonHocID: monHocID,
+            TemplateBangDiemID: templateBangDiemID,
+            MaNhomCotDiem: averageColumn.MaNhomCotDiem,
+            NienKhoa: nienKhoa
+        });
+        const gradeRows = this.normalizeSyncDtbRows(gradeRowsRaw) || [];
+        const targetRowsByStudent = new Map();
+        gradeRows.filter(row => matchesAverageCode(row?.MaCotDiem)).forEach(row => {
+            if (row?.HocSinhID === null || row?.HocSinhID === undefined) return;
+            const studentID = String(row.HocSinhID);
+            if (!targetRowsByStudent.has(studentID)) targetRowsByStudent.set(studentID, []);
+            targetRowsByStudent.get(studentID).push(row);
+        });
+        const responseRowsByStudent = new Map();
+        responseRows.forEach(row => {
+            if (row?.HocSinhID === null || row?.HocSinhID === undefined || !Object.prototype.hasOwnProperty.call(row, 'DTB')) return;
+            const studentID = String(row.HocSinhID);
+            if (!responseRowsByStudent.has(studentID)) responseRowsByStudent.set(studentID, []);
+            responseRowsByStudent.get(studentID).push(row);
+        });
+        const ketQuaObjArr = [];
+        let skippedCount = 0;
+        responseRowsByStudent.forEach((studentResults, studentID) => {
+            const matchingGradeRows = targetRowsByStudent.get(studentID) || [];
+            // Bỏ qua học sinh trùng/không thuộc lớp học phần đang chọn để tránh ghi nhầm KQHT.
+            if (studentResults.length !== 1 || matchingGradeRows.length !== 1) {
+                skippedCount += studentResults.length;
+                return;
+            }
+            const dtb = studentResults[0].DTB;
+            const rawScore = dtb === null || dtb === undefined || String(dtb).trim() === ''
+                ? null
+                : String(dtb).trim();
+            let score = null;
+            if (rawScore !== null && isNumericAverage) {
+                score = Number(rawScore);
+                if (!Number.isFinite(score)) {
+                    skippedCount += 1;
+                    console.warn(`[diemc3/LMS_SyncDiem] Bỏ qua DTB không phải số của học sinh ${studentID}:`, dtb);
+                    return;
+                }
+            } else if (rawScore !== null && isPassFailAverage) {
+                // QLDiem quy ước cột Đ/CĐ: DTB 9 (hoặc Đ sẵn) là Đ; các giá trị khác là CĐ.
+                const numericScore = Number(rawScore);
+                score = rawScore.toUpperCase() === 'Đ' || (Number.isFinite(numericScore) && numericScore === 9)
+                    ? 'Đ'
+                    : 'CĐ';
+            }
+            const gradeRow = matchingGradeRows[0];
+            if (Number(gradeRow.CotDiemID) !== Number(averageColumn.CotDiemID)) {
+                skippedCount += 1;
+                return;
+            }
+            ketQuaObjArr.push({
+                HocSinhID: Number(gradeRow.HocSinhID),
+                LopID: lopID,
+                NienKhoa: nienKhoa,
+                CotDiemID: Number(averageColumn.CotDiemID),
+                KetQuaDanhGia_VI: score,
+                KetQuaDanhGia_EN: score,
+                KQHTID: Number(gradeRow.KQHTID) || 0,
+                KhoaCotDiemID: Number(gradeRow.KhoaCotDiemID) || 0,
+                AllowLockedAverageOverwrite: 1
+            });
+        });
+        if (!ketQuaObjArr.length) {
+            console.info(`[diemc3/LMS_SyncDiem] Không có DTB hợp lệ để lưu vào ${averageCode}.`, {
+                responseCount: responseRows.length, skippedCount
+            });
+            return { HocKy: semester, savedCount: 0, skippedCount };
+        }
+        const saveParams = {
+            NienKhoa: nienKhoa,
+            MonHocLopID: monHocLopID,
+            LopID: lopID,
+            MonHocID: monHocID,
+            TemplateBangDiemID: templateBangDiemID,
+            MaNhomCotDiem: averageColumn.MaNhomCotDiem,
+            KetQuaObjArr: ketQuaObjArr
+        };
+        console.log(`[diemc3/LMS_SyncDiem] Lưu DTB ${semester} vào ${averageCode}:`, saveParams);
+        await ApiService.saveGradeData(saveParams);
+        // Chỉ khóa cột trung bình trong luồng khóa điểm; nút công bố riêng có thể còn dùng để tính lại sau khi mở khóa.
+        let averageColumnLocked = false;
+        if (options.lockAverageColumn === true) {
+            await this.lockSyncAverageColumnIfNeeded(averageColumn, hocKy, filter, vueData);
+            averageColumnLocked = true;
+        }
+        return { HocKy: semester, savedCount: ketQuaObjArr.length, skippedCount, averageColumnLocked };
+    },
+    /** Mã cột AI như DiemCD2_HK2 mang kỳ riêng; ưu tiên hậu tố để payload không lệch HK. */
+    getSyncHocKyFromColumn(columnCode) {
+        const normalized = String(ColumnCodeService.normalizeMaCotDiem(columnCode) ?? '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toUpperCase();
+        const semesterMatch = /(?:^|_)HK([12])$/.exec(normalized);
+        return semesterMatch ? `HK${semesterMatch[1]}` : null;
+    },
     /**
      * Tạo record theo đúng 12 key của SELECT LMS_KetQuaHocTap.
-     * KetQua lấy từ JSpreadsheet; DSHocSinh_API chỉ cung cấp metadata cho các cột.
+     * KetQua lấy từ JSpreadsheet; DSHocSinh_API cung cấp metadata và thứ tự cột từ API đang hiển thị.
      */
-    buildSyncDataFromSheet(columns, loaiDiem, filter, vueData, sheetInstance, headers, apiData = []) {
+    buildSyncDataFromSheet(columns, loaiDiem, filter, vueData, sheetInstance, headers, apiData = [], selectedStudentIds = null, options = {}) {
         const sheet = Array.isArray(sheetInstance) ? sheetInstance[0] : sheetInstance;
         if (!sheet || typeof sheet.getData !== 'function') {
             throw new Error('Bảng JSpreadsheet chưa sẵn sàng để lấy dữ liệu đồng bộ.');
@@ -1001,24 +1348,26 @@ const LockService = {
         const studentIdIndex = this.getSyncCellIndex(headers, 'HocSinhID');
         const soDanhBoIndex = this.getSyncCellIndex(headers, 'SoDanhBo');
         if (studentIdIndex < 0) throw new Error('Không tìm thấy cột HocSinhID trên JSpreadsheet.');
+        const selectedStudentIdSet = Array.isArray(selectedStudentIds)
+            ? new Set(selectedStudentIds.map(id => String(id)))
+            : null;
         const targetColumns = columns.map(column => {
             const columnMeta = apiData.find(row =>
                 ColumnCodeService.isSameMaCotDiem(row?.MaCotDiem, column?.value)
             );
             if (this.getSyncLoaiDiemForColumn(column, filter, apiData) !== loaiDiem) return null;
+            // Dùng nguyên mã ThemeN_Total của dòng metadata đã khớp với cột được khóa.
             const maCotDiem = String(columnMeta?.MaCotDiem || column.MaCotDiemSave ||
                 ColumnCodeService.normalizeMaCotDiem(column.value));
             const sheetColumnIndex = this.getSyncCellIndex(headers, maCotDiem);
             if (sheetColumnIndex < 0) throw new Error(`Không tìm thấy cột ${maCotDiem} trên JSpreadsheet.`);
             return { columnMeta, maCotDiem, sheetColumnIndex };
         }).filter(Boolean);
-        const sortedCodes = [...targetColumns]
-            .sort((left, right) => left.maCotDiem.localeCompare(right.maCotDiem))
-            .map(item => item.maCotDiem);
         const result = [];
         sheetRows.forEach((sheetRow, rowIndex) => {
             const hocSinhID = this.getSyncCellValue(sheetRow, studentIdIndex, 'HocSinhID');
             if (hocSinhID === null || hocSinhID === undefined || hocSinhID === '') return;
+            if (selectedStudentIdSet && !selectedStudentIdSet.has(String(hocSinhID))) return;
             const studentMeta = apiData.find(row => String(row?.HocSinhID) === String(hocSinhID));
             targetColumns.forEach(target => {
                 const cellMeta = apiData.find(row =>
@@ -1035,68 +1384,219 @@ const LockService = {
                 if (ketQua && typeof ketQua === 'object') {
                     ketQua = ketQua.value ?? ketQua.text ?? ketQua.name ?? JSON.stringify(ketQua);
                 }
+                const hasGradeValue = ketQua !== null && ketQua !== undefined && String(ketQua).trim() !== '';
+                // Khi công bố cho phụ huynh, chỉ gửi điểm đã nhập; các ô trống trong phạm vi chọn được bỏ qua.
+                // Các luồng sync khóa GK/CK vẫn giữ record null để bảo toàn vị trí cột điểm còn thiếu.
+                if (options.skipEmptyScores && !hasGradeValue) return;
                 const monHocCode = cellMeta?.MonHocCode ?? target.columnMeta?.MonHocCode ??
                     filter.MonHocItem?.MonHocCode;
                 if (monHocCode == null || String(monHocCode).trim() === '') {
                     throw new Error('Không tìm thấy MonHocCode để tạo dữ liệu đồng bộ điểm.');
                 }
-                const semester = cellMeta?.HocKy ?? cellMeta?.Semester ??
+                // CD1 được LMS xếp vào GK, CD2 vào CK; hậu tố HK1/HK2 trên mã cột là nguồn kỳ chính xác nhất.
+                const semester = this.getSyncHocKyFromColumn(target.maCotDiem) ??
+                    cellMeta?.HocKy ?? cellMeta?.Semester ??
                     target.columnMeta?.HocKy ?? target.columnMeta?.Semester ??
                     filter.MaNhomCotDiemItem?.Semester ?? vueData.NienKhoaItem?.HocKi;
-                const fallbackThuTuCotDiem = sortedCodes.indexOf(target.maCotDiem) + 1;
-                result.push({
+                const syncRow = {
                     LopID: String(cellMeta?.LopID ?? filter.LopItem?.LopID ?? ''),
                     TenLop: cellMeta?.TenLop ?? filter.LopItem?.TenLop ?? '',
                     SoDanhBo: this.getSyncCellValue(sheetRow, soDanhBoIndex, 'SoDanhBo') ?? studentMeta?.SoDanhBo ?? null,
                     HocSinhID: this.toSyncNumber(hocSinhID),
                     MonHocCode: monHocCode == null ? null : String(monHocCode),
                     LoaiDiem: loaiDiem,
-                    ThuTuNhom: this.toSyncNumber(cellMeta?.ThuTuNhom ?? target.columnMeta?.ThuTuNhom ??
-                        filter.MaNhomCotDiemItem?.ThuTuNhom),
-                    ThuTuCotDiem: this.toSyncNumber(cellMeta?.ThuTuCotDiem ?? target.columnMeta?.ThuTuCotDiem ??
-                        fallbackThuTuCotDiem),
+                    ThuTuNhom: null,
+                    ThuTuCotDiem: null,
                     MaCotDiem: target.maCotDiem,
-                    KetQua: ketQua === null || ketQua === undefined || String(ketQua).trim() === ''
-                        ? null
-                        : String(ketQua).trim(),
+                    KetQua: hasGradeValue ? String(ketQua).trim() : null,
                     HocKy: this.normalizeSyncHocKy(semester),
-                    Sort: this.toSyncNumber(cellMeta?.Sort ?? target.columnMeta?.Sort ?? filter.MonHocItem?.Sort)
-                });
+                    Sort: null
+                };
+                syncRow.ThuTuNhom = this.toSyncNumber(cellMeta?.ThuTuNhom ?? target.columnMeta?.ThuTuNhom);
+                // fn_GetKetQuaHocTapTheoLop_C2 đánh số lại bằng ROW_NUMBER theo LoaiDiem/MaCotDiem;
+                // vị trí template API có thể khác (Theme2_Total đang trả 8 thay vì thứ tự đồng bộ là 2).
+                const normalizedMaCotDiem = String(ColumnCodeService.normalizeMaCotDiem(target.maCotDiem) ?? '')
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .toUpperCase();
+                const themeTotalMatch = /^THEME([1-8])_TOTAL$/.exec(normalizedMaCotDiem);
+                const themeGroupLoaiDiem = this.getSyncLoaiDiemForTemplateGroup(
+                    target.columnMeta?.MaNhomCotDiem ?? filter.MaNhomCotDiemItem?.MaNhomCotDiem,
+                    target.columnMeta?.TenNhomCotDiem_VI ?? target.columnMeta?.TenNhomCotDiem_EN ??
+                        filter.MaNhomCotDiemItem?.TenNhomCotDiem_VI ?? filter.MaNhomCotDiemItem?.TenNhomCotDiem_EN
+                );
+                // Cấp 3 Anh văn có nhiều MonHocID giữa lớp thường/lớp nhóm; nhận biết ThemeN_Total theo template
+                // để luôn gửi Theme1_Total là TX1 (Theme2_Total là TX2...) dù MonHocID không nằm trong danh sách cũ.
+                if (themeTotalMatch && themeGroupLoaiDiem === 'TX') {
+                    const themeNumber = Number(themeTotalMatch[1]);
+                    // Theme1–4 là TX1–4/HK1; Theme5–8 quay lại TX1–4/HK2.
+                    syncRow.ThuTuCotDiem = ((themeNumber - 1) % 4) + 1;
+                    syncRow.HocKy = themeNumber <= 4 ? 'HK1' : 'HK2';
+                } else {
+                    syncRow.ThuTuCotDiem = this.toSyncNumber(cellMeta?.ThuTuCotDiem ?? target.columnMeta?.ThuTuCotDiem);
+                }
+                syncRow.Sort = this.toSyncNumber(cellMeta?.Sort ?? target.columnMeta?.Sort);
+                if (syncRow.ThuTuNhom === null || syncRow.ThuTuCotDiem === null || syncRow.Sort === null) {
+                    throw new Error(`Thiếu ThuTuNhom, ThuTuCotDiem hoặc Sort trong dữ liệu bảng điểm của học sinh ${syncRow.HocSinhID}, mã cột ${syncRow.MaCotDiem}.`);
+                }
+                result.push(syncRow);
             });
         });
         return result;
     },
-    /**
-     * Dựng và log payload theo schema LMS_KetQuaHocTap để kiểm tra trước; chưa gửi request sang QLDiem.
-     * Chỉ cấp 2/3 có payload; API thật vẫn được giữ comment.
-     */
-    async logLmsSyncDiemParamsAfterLock(columns, filter, vueData, sheetInstance, headers, apiData = []) {
+    /** Dựng, log và đồng bộ điểm từ thao tác khóa GK/CK hoặc công bố TX; GK/CK thi tập trung lấy từ hệ thống thi. */
+    async syncLmsDiem(columns, filter, vueData, sheetInstance, headers, apiData = [], options = {}) {
         const capHoc = Number(vueData.CapID);
-        if (![2, 3].includes(capHoc)) return { loggedTypes: [] };
-        const khoiID = Number(filter.KhoiItem?.KhoiID);
-        const rawHocKy = vueData.NienKhoaItem?.HocKi ?? filter.MaNhomCotDiemItem?.Semester;
-        const hocKyMatch = String(rawHocKy ?? '').match(/([12])\s*$/);
-        const hocKy = hocKyMatch ? Number(hocKyMatch[1]) : Number(rawHocKy);
-        if (!Number.isInteger(khoiID) || ![1, 2].includes(hocKy)) {
-            throw new Error('Thiếu Khối hoặc Học kỳ hợp lệ để đồng bộ điểm sang QLDiem.');
+        if (![2, 3].includes(capHoc)) return { syncedTypes: [], failedSemesters: [] };
+        const detectedTypes = this.getSyncLoaiDiem(columns, filter, apiData);
+        const templateGroups = [];
+        columns.forEach(column => {
+            const groupCode = this.getSyncTemplateGroupCodeForColumn(column, filter, apiData);
+            if (!groupCode || templateGroups.some(group => group.code === groupCode)) return;
+            templateGroups.push({
+                code: groupCode,
+                name: this.getSyncTemplateGroupNameForColumn(column, filter, apiData)
+            });
+        });
+        const skippedTemplateGroups = templateGroups
+            .filter(group => !this.getSyncLoaiDiemForTemplateGroup(group.code, group.name))
+            .map(group => group.code);
+        if (skippedTemplateGroups.length) {
+            // Các nhóm tổng kết/đánh giá khác không thuộc contract TX/GK/CK của QLDiem.
+            console.info('[diemc3/LMS_SyncDiem] Bỏ qua nhóm template không thuộc TX/GK/CK:', skippedTemplateGroups);
         }
-        const loaiDiemList = this.getSyncLoaiDiem(columns, filter, apiData);
+        const isCentralExam = this.isCentralExamSubject(filter, apiData);
+        // Cờ IsThiTapTrung=true nghĩa là GK/CK nhập ở hệ thống thi tập trung, không đồng bộ từ LMS.
+        const skippedTypes = isCentralExam
+            ? detectedTypes.filter(type => ['DiemGK', 'DiemCK'].includes(type))
+            : [];
+        const loaiDiemList = detectedTypes.filter(type => !skippedTypes.includes(type));
+        if (skippedTypes.length) {
+            console.info('[diemc3/LMS_SyncDiem] Bỏ qua môn thi tập trung:', {
+                CapID: capHoc,
+                MonHocID: filter.MonHocItem?.MonHocID ?? null,
+                MonHocCode: filter.MonHocItem?.MonHocCode ?? null,
+                LoaiDiem: skippedTypes
+            });
+        }
+        if (!loaiDiemList.length) {
+            return { syncedTypes: [], failedSemesters: [], skippedTypes, skippedTemplateGroups };
+        }
+        const khoiID = Number(filter.KhoiItem?.KhoiID);
+        if (!Number.isInteger(khoiID)) {
+            throw new Error('Thiếu Khối hợp lệ để dựng params sync điểm.');
+        }
+        // Một thao tác đồng bộ có thể tạo nhiều request theo loại điểm/học kỳ; LockActionID lưu ID tương quan của thao tác.
+        const operationID = this.createSyncLogGuid();
+        const syncedTypes = new Set();
+        const failedSemesters = new Set();
+        const syncDtbRowsBySemester = new Map();
         for (const loaiDiem of loaiDiemList) {
             const rows = this.buildSyncDataFromSheet(
-                columns, loaiDiem, filter, vueData, sheetInstance, headers, apiData
+                columns, loaiDiem, filter, vueData, sheetInstance, headers, apiData,
+                options.studentIds ?? null, options
             );
             if (!rows.length) continue;
-            const params = {
-                KhoiID: khoiID,
-                LoaiDiem: loaiDiem,
-                HocKy: hocKy,
-                Data: JSON.stringify(rows)
-            };
-            console.log('[mark/lms_syncdiem] params:', params);
-            // Giữ request tắt để bạn kiểm tra payload trên console trước.
-            // await ApiService.syncDiemToQLDiem(params);
+            const rowsByHocKy = new Map();
+            rows.forEach(row => {
+                const hocKyMatch = String(row.HocKy ?? '').match(/([12])\s*$/);
+                const hocKy = hocKyMatch ? Number(hocKyMatch[1]) : Number(row.HocKy);
+                if (![1, 2].includes(hocKy)) {
+                    throw new Error(`Thiếu Học kỳ hợp lệ cho mã cột ${row.MaCotDiem}.`);
+                }
+                const key = `HK${hocKy}`;
+                if (!rowsByHocKy.has(key)) rowsByHocKy.set(key, []);
+                rowsByHocKy.get(key).push(row);
+            });
+            for (const [hocKyLabel, semesterRows] of rowsByHocKy) {
+                const params = {
+                    KhoiID: khoiID,
+                    LoaiDiem: loaiDiem,
+                    HocKy: Number(hocKyLabel.slice(2)),
+                    Data: JSON.stringify(semesterRows)
+                };
+                console.log('[diemc3/LMS_SyncDiem] params:', params);
+                const requestID = this.createSyncLogGuid();
+                const logStartParams = this.buildSyncDiemLogStartParams(
+                    requestID, operationID, params, loaiDiem, Number(hocKyLabel.slice(2)), filter, vueData
+                );
+                let startLogResponse;
+                try {
+                    // Ghi payload và giáo viên xuống LMS trước; dùng response để kiểm tra API log đã nhận.
+                    startLogResponse = await ApiService.startLmsSyncDiemLog(logStartParams);
+                    console.info('[diemc3/LMS_SyncDiem] LMS_SyncDiemLog_Start response:', {
+                        RequestID: requestID,
+                        response: startLogResponse
+                    });
+                } catch (logError) {
+                    failedSemesters.add(hocKyLabel);
+                    console.error(`[diemc3/LMS_SyncDiem] Không tạo được log LMS cho ${loaiDiem} ${hocKyLabel}; bỏ qua lần gửi để không đẩy điểm thiếu audit.`, logError);
+                    continue;
+                }
+                let response;
+                try {
+                    // Giữ lời gọi này hoạt động: comment nó sẽ chỉ tạo log Started mà không công bố điểm sang QLDiem.
+                    // Log audit đã được tạo trước ở trên, nên response thật của API sẽ được ghi lại bên dưới.
+                    response = await ApiService.syncDiemToQLDiem(params);
+                } catch (error) {
+                    failedSemesters.add(hocKyLabel);
+                    await this.completeSyncDiemLogWithRetry(
+                        requestID, 'Failed', error?.response?.data ?? null, null, error
+                    );
+                    console.error(`[diemc3/LMS_SyncDiem] Lỗi đồng bộ ${loaiDiem} ${hocKyLabel}; sẽ không ghi DTB chưa đầy đủ.`, error);
+                    continue;
+                }
+                console.info('[diemc3/LMS_SyncDiem] response:', response);
+                const responseRows = this.normalizeSyncDtbRows(response);
+                const syncStatus = Array.isArray(responseRows) ? 'Succeeded' : 'InvalidResponse';
+                const logCompleted = await this.completeSyncDiemLogWithRetry(
+                    requestID, syncStatus, response, responseRows, null
+                );
+                if (!logCompleted) {
+                    failedSemesters.add(hocKyLabel);
+                    // QLDiem đã trả lời nhưng LMS chưa xác nhận ghi xong audit, vì vậy không lưu DTB chưa được đối chiếu.
+                    continue;
+                }
+                if (!Array.isArray(responseRows)) {
+                    failedSemesters.add(hocKyLabel);
+                    console.warn(`[diemc3/LMS_SyncDiem] Response ${hocKyLabel} không có danh sách DTB hợp lệ; không ghi cột trung bình kỳ này.`, response);
+                    continue;
+                }
+                // Ghi DTB đúng tập học sinh được chọn công bố; audit vẫn giữ nguyên toàn bộ response của QLDiem.
+                const selectedStudentIdSet = Array.isArray(options.studentIds)
+                    ? new Set(options.studentIds.map(id => String(id)))
+                    : null;
+                const averageRows = selectedStudentIdSet
+                    ? responseRows.filter(row => selectedStudentIdSet.has(String(row?.HocSinhID)))
+                    : responseRows;
+                // Nếu nhiều loại điểm cùng học kỳ được khóa, dùng response cuối cùng sau khi tất cả loại đã đồng bộ.
+                syncDtbRowsBySemester.set(hocKyLabel, averageRows);
+                syncedTypes.add(loaiDiem);
+            }
         }
-        return { loggedTypes: loaiDiemList };
+        const averageResults = [];
+        for (const [hocKyLabel, responseRows] of syncDtbRowsBySemester) {
+            if (failedSemesters.has(hocKyLabel)) {
+                console.warn(`[diemc3/LMS_SyncDiem] Bỏ qua ghi DTB ${hocKyLabel} vì có ít nhất một lần gọi loại điểm trong kỳ bị lỗi.`);
+                continue;
+            }
+            try {
+                averageResults.push(await this.saveSyncDtbToSemesterColumn(
+                    Number(hocKyLabel.slice(2)), responseRows, filter, vueData,
+                    { lockAverageColumn: options.lockAverageColumn === true }
+                ));
+            } catch (error) {
+                console.error(`[diemc3/LMS_SyncDiem] Lỗi lưu DTB ${hocKyLabel} vào cột trung bình học kỳ.`, error);
+                averageResults.push({ HocKy: hocKyLabel, savedCount: 0, error: error?.message || String(error) });
+            }
+        }
+        return {
+            syncedTypes: [...syncedTypes],
+            failedSemesters: [...failedSemesters],
+            skippedTypes,
+            skippedTemplateGroups,
+            averageResults
+        };
     },
     /**
      * Mở khóa một danh sách cột điểm của môn chính

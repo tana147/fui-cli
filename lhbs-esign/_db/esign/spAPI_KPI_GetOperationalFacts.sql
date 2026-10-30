@@ -5,7 +5,7 @@
 -- Database: eSignature
 -- ===================================================================================
 
-CREATE OR ALTER PROCEDURE spAPI_KPI_GetOperationalFacts
+CREATE   PROCEDURE spAPI_KPI_GetOperationalFacts
     @DomainCode VARCHAR(50),
     @PeriodKey VARCHAR(20),
     @ScopeID VARCHAR(50),

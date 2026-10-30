@@ -99,6 +99,9 @@
     "MonHocItem": {
       "CALL": [
         {
+          "EXE": "setDefaultNhomModeForMonHoc()"
+        },
+        {
           "IF": "vueData.MonHocItem?.MonHocID >= 0",
           "THEN": {
             "CALL": "getMonHocLop"

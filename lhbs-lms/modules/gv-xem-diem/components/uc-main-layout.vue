@@ -18,8 +18,9 @@
 					</v-btn-toggle>
 				</v-card-title>
 				<v-card-text>
+					<!-- Keep scope filters compact on desktop; less-used actions stay together in one menu. -->
 					<v-row align="center">
-						<v-col cols="12" sm="3">
+						<v-col cols="12" sm="6" md="2">
 							<v-select :key="'sem_' + isEn" v-model="Semester" :label="isEn ? 'Select semester' : 'Chọn học kì'" :items="DSSemester"
 								:item-title="formatSemesterTitle" item-value="value" return-object
 								:no-data-text="isEn ? 'No data available' : 'Chưa có dữ liệu'">
@@ -31,7 +32,7 @@
 								</template>
 							</v-select>
 						</v-col>
-						<v-col cols="12" sm="3">
+						<v-col cols="12" sm="6" md="2">
 							<v-select :key="'khoi_' + isEn" v-model="KhoiItem" :label="isEn ? 'Select grade' : 'Chọn khối'" :items="DSKhoi"
 								:item-title="formatKhoiTitle" item-value="KhoiID" return-object
 								:no-data-text="isEn ? 'No data available' : 'Chưa có dữ liệu'">
@@ -43,29 +44,143 @@
 								</template>
 							</v-select>
 						</v-col>
-						<v-col cols="12" sm="3">
+						<v-col cols="12" sm="6" md="2">
 							<v-select :key="'lop_' + isEn" v-model="LopItem" :label="isEn ? 'Select class' : 'Chọn lớp'" :items="DSLop"
 								item-title="TenLop" item-value="LopID" :disabled="!KhoiItem" return-object
 								:no-data-text="isEn ? 'No data available' : 'Chưa có dữ liệu'" />
 						</v-col>
-						<v-col class="d-flex align-center ga-2 flex-wrap">
+						<v-col cols="12" md="6" class="d-flex align-center justify-end ga-3 flex-wrap">
 							<v-btn variant="outlined" color="primary" :disabled="!LopItem || isLoading" :loading="isLoading"
 								@click="getDiemTheoLopMonQLD">
 								<v-icon start>mdi-refresh</v-icon>{{ isEn ? 'Refresh' : 'Làm mới' }}
 							</v-btn>
-							<v-btn v-if="isAdminCompare" variant="outlined" color="cyan-darken-2"
-								:disabled="DSHocSinhQLD.length === 0" @click="onLoadBangDiemLMS">
-								<v-icon start>mdi-compare</v-icon>{{ isEn ? 'Compare LMS grades' : 'So sánh điểm LMS' }}
-							</v-btn>
-							<v-btn v-if="isAdminCompare" variant="outlined" color="amber-darken-2"
-								:disabled="DSHocSinhQLD.length === 0" @click="openKeoDiemDialog">
-								<v-icon start>mdi-database-import</v-icon>{{ isEn ? 'Pull grades' : 'Kéo điểm' }}
-							</v-btn>
+							<!-- Trên màn hình rộng hiện thao tác riêng; vẫn giữ nguyên quyền, trạng thái chờ và điều kiện khả dụng. -->
+							<div class="d-none d-lg-flex align-center ga-2 flex-wrap">
+								<v-btn v-if="[2, 3].includes(Number(vueData.CapID))" variant="outlined" color="primary"
+									:disabled="!LopItem || isLoading || IsLoadingPublicationStatus" :loading="IsLoadingPublicationStatus"
+									@click="loadClassPublicationStatus">
+									<v-icon start>mdi-bullhorn-outline</v-icon>{{ isEn ? 'Check publication' : 'Kiểm tra công bố' }}
+								</v-btn>
+								<v-btn v-if="isAdminCompare" variant="outlined" color="primary"
+									:disabled="IsLoadingCompareLMS || DSHocSinhQLD.length === 0" :loading="IsLoadingCompareLMS"
+									@click="onLoadBangDiemLMS">
+									<v-icon start>mdi-compare</v-icon>{{ isEn ? 'Compare LMS grades' : 'So sánh điểm LMS' }}
+								</v-btn>
+								<v-btn v-if="isAdminCompare" variant="outlined" color="primary"
+									:disabled="DSHocSinhQLD.length === 0" @click="openKeoDiemDialog">
+									<v-icon start>mdi-database-import</v-icon>{{ isEn ? 'Pull grades' : 'Kéo điểm' }}
+								</v-btn>
+							</div>
+							<!-- Trên màn hình hẹp, gom các thao tác phụ vào menu để hàng bộ lọc luôn gọn. -->
+							<div class="d-flex d-lg-none">
+								<v-menu location="bottom end">
+									<template #activator="{ props }">
+										<v-btn v-bind="props" variant="outlined" color="primary">
+											<v-icon start>mdi-dots-horizontal</v-icon>{{ isEn ? 'Actions' : 'Thao tác' }}
+										</v-btn>
+									</template>
+									<v-list density="compact">
+										<v-list-item v-if="[2, 3].includes(Number(vueData.CapID))"
+											:disabled="!LopItem || isLoading || IsLoadingPublicationStatus"
+											:title="isEn ? 'Check publication' : 'Kiểm tra công bố'"
+											prepend-icon="mdi-bullhorn-outline" @click="loadClassPublicationStatus">
+											<template #append>
+												<v-progress-circular v-if="IsLoadingPublicationStatus" indeterminate size="16" width="2" />
+											</template>
+										</v-list-item>
+										<v-list-item v-if="isAdminCompare"
+											:disabled="IsLoadingCompareLMS || DSHocSinhQLD.length === 0"
+											:title="isEn ? 'Compare LMS grades' : 'So sánh điểm LMS'"
+											prepend-icon="mdi-compare" @click="onLoadBangDiemLMS">
+											<template #append>
+												<v-progress-circular v-if="IsLoadingCompareLMS" indeterminate size="16" width="2" />
+											</template>
+										</v-list-item>
+										<v-list-item v-if="isAdminCompare" :disabled="DSHocSinhQLD.length === 0"
+											:title="isEn ? 'Pull grades' : 'Kéo điểm'" prepend-icon="mdi-database-import"
+											@click="openKeoDiemDialog" />
+									</v-list>
+								</v-menu>
+							</div>
 						</v-col>
 					</v-row>
 				</v-card-text>
 			</v-card> 
 		</template>
+
+		<!-- Show publication results on demand, grouped by subject and by score column. -->
+		<v-dialog v-model="IsShowPublicationStatusDialog" max-width="800" scrollable>
+			<v-card class="pa-0">
+				<v-toolbar density="compact" flat>
+					<v-toolbar-title>
+						{{ isEn ? 'Publication status:' : 'Tình trạng công bố:' }} {{ LopItem?.TenLop }} · {{ formatSemesterTitle(Semester) }}
+					</v-toolbar-title>
+					<v-spacer />
+					<v-btn icon variant="text" @click="IsShowPublicationStatusDialog = false">
+						<v-icon>mdi-close</v-icon>
+					</v-btn>
+				</v-toolbar>
+				<v-card-text class="d-flex flex-column ga-3">
+					<div class="text-caption text-medium-emphasis">
+						{{ isEn
+								? 'Subjects with no TX/GK/CK scores are hidden. Empty cells are shown as not entered; 0 is a valid score. Pulled centralized-exam midterm/final scores count as published. GPA is not a publication column.'
+								: 'Môn chưa có điểm TX/GK/CK được ẩn. Ô trống hiển thị là chưa nhập; điểm 0 vẫn hợp lệ. GK/CK thi tập trung đã kéo được tính là đã công bố. ĐTB không phải cột công bố.' }}
+					</div>
+					<v-progress-linear v-if="IsLoadingPublicationStatus" indeterminate color="primary" />
+					<v-alert v-if="PublicationStatusError" type="warning" variant="tonal" density="compact">
+						{{ PublicationStatusError }}
+					</v-alert>
+					<div v-else-if="IsPublicationStatusLoaded && DSPublicationStatus.length" class="d-flex flex-column ga-3">
+						<v-card v-for="item in DSPublicationStatus" :key="item.key" variant="outlined" class="pa-3">
+							<div class="d-flex align-center flex-wrap ga-2">
+								<span class="font-weight-medium">{{ item.subjectName }}</span>
+								<v-chip size="small" :color="getPublicationStatusColor(item.status)" variant="tonal" :title="item.details">
+									<v-icon start>{{ getPublicationStatusIcon(item.status) }}</v-icon>
+									{{ getPublicationStatusLabel(item.status) }}
+								</v-chip>
+							</div>
+							<div class="d-flex flex-column ga-2 mt-2">
+								<div v-for="column in item.columns" :key="column.key" class="d-flex align-center flex-wrap ga-2">
+									<span class="font-weight-medium">{{ column.title }}</span>
+									<!-- Chỉ GK/CK thi tập trung có trạng thái công bố từ luồng kéo; ĐTB bị loại khỏi popup này. -->
+									<template v-if="item.historyAvailable || column.countedViaSourcePull">
+										<v-chip v-if="column.countedViaSourcePull && column.scoreCount" size="small" variant="tonal" color="success"
+											:title="isEn ? 'Centralized-exam scores count as published after they are pulled.' : 'Điểm GK/CK thi tập trung được tính là đã công bố sau khi kéo về.'">
+											{{ column.publishedCount }}/{{ column.scoreCount }} {{ isEn ? 'pulled · published' : 'đã kéo · tính là đã công bố' }}
+										</v-chip>
+										<v-chip v-else-if="column.scoreCount" size="small" variant="tonal" :color="column.publishedCount ? 'success' : 'grey'">
+											{{ column.publishedCount }}/{{ column.scoreCount }} {{ isEn ? 'scores published' : 'ô đã công bố' }}
+										</v-chip>
+										<!-- Màu cam làm nổi số ô còn lệch; xanh dành cho ô đã khớp, đỏ dành cho lần gửi lỗi. -->
+										<v-chip v-if="column.unpublishedCount" size="small" color="warning" variant="tonal" class="font-weight-medium">
+											{{ column.unpublishedCount }} {{ isEn ? 'not published' : 'chưa công bố' }}
+										</v-chip>
+										<v-chip v-if="column.failedCount" size="small" color="error" variant="tonal">
+											{{ column.failedCount }} {{ isEn ? 'failed' : 'lỗi gửi' }}
+										</v-chip>
+										<v-chip v-if="column.processingCount" size="small" color="info" variant="tonal">
+											{{ column.processingCount }} {{ isEn ? 'processing' : 'đang xử lý' }}
+										</v-chip>
+									</template>
+									<v-chip v-else-if="column.scoreCount" size="small" color="grey" variant="tonal">
+										{{ column.scoreCount }} {{ isEn ? 'scores entered' : 'ô đã nhập' }}
+									</v-chip>
+									<v-chip v-if="column.unenteredCount" size="small" color="grey" variant="outlined">
+										{{ column.unenteredCount }} {{ isEn ? 'not entered' : 'chưa nhập' }}
+									</v-chip>
+								</div>
+							</div>
+							<div v-if="item.historyRequired && !item.historyAvailable" class="text-caption text-medium-emphasis mt-2">
+								{{ isEn ? 'Publication history could not be confirmed for this subject.' : 'Chưa xác minh được lịch sử công bố của môn này.' }}
+							</div>
+						</v-card>
+					</div>
+					<div v-else-if="IsPublicationStatusLoaded" class="text-body-2 text-medium-emphasis">
+						{{ isEn ? 'No subjects have entered scores in this class.' : 'Không có môn nào đã nhập điểm trong lớp này.' }}
+					</div>
+				</v-card-text>
+			</v-card>
+		</v-dialog>
 
 		<v-divider />
 
@@ -89,6 +204,9 @@
 							</v-card-title>
 							<v-data-table :headers="getHeaders()" :items="getItems(hocSinh)" item-value="MonHocID"
 								items-per-page="-1" hide-default-footer density="compact">
+								<template #item.MonHocID="{ value }">
+									{{ getDisplaySubjectName(value) }}
+								</template>
 								<template #item.TX1="{ item, value }">
 									<div class="d-flex ga-2 align-center justify-center">
 										<span>{{ value }}</span>
@@ -243,6 +361,16 @@
 		inject: ['snackbarRef', 'iframeRef', 'confirmRef'],
 	
 	    data() {
+	        const DSSemester = [
+	            { title: 'Học kì 1', value: 'HK1', HocKi: 1 },
+	            { title: 'Học kì 2', value: 'HK2', HocKi: 2 },
+	            { title: 'Cả năm', value: 'CaNam', HocKi: 0 },
+	        ]
+	        // Lấy học kì từ năm học đang chọn; dùng học kì 2 làm mặc định khi dữ liệu cha chưa có giá trị khớp.
+	        const currentHocKi = String(vueData?.NienKhoaItem?.HocKi ?? '').trim().toLowerCase()
+	        const initialSemester = DSSemester.find(item =>
+	            [item.HocKi, item.value, item.title].some(value => String(value).trim().toLowerCase() === currentHocKi)
+	        ) || DSSemester[1]
 	        return {
 	            isEn: JSON.parse(localStorage.getItem('IsLanguage')) ?? false,
 	            vueData,
@@ -256,18 +384,21 @@
 	            DSHocSinhTinhTrang: [],
 	            DSHocSinh_LMS: [],
 	            IsCompareLMS: false,
+	            IsLoadingCompareLMS: false,
+	            DSPublicationStatus: [],
+	            IsShowPublicationStatusDialog: false,
+	            IsLoadingPublicationStatus: false,
+	            IsPublicationStatusLoaded: false,
+	            PublicationStatusError: '',
+	            PublicationStatusRequestId: 0,
 	            IsShowDialogKeoDiem: false,
 	            SelectedKeoDiemColumns: [],
 	            IsPullingDiem: false,
 	            PullProgressText: '',
 	            PullProgressCurrent: 0,
 	            PullProgressTotal: 0,
-	            DSSemester: [
-	                { title: 'Học kì 1', value: 'HK1', HocKi: 1 },
-	                { title: 'Học kì 2', value: 'HK2', HocKi: 2 },
-	                { title: 'Cả năm', value: 'CaNam', HocKi: 0 },
-	            ],
-	            Semester: { title: 'Học kì 2', value: 'HK2', HocKi: 2 },
+	            DSSemester,
+	            Semester: initialSemester,
 	        }
 	    },
 	
@@ -291,7 +422,8 @@
 	        isAdminCompare() { return vueData?.user?.UserID === 'NA0000022' },
 	        pullColumnOptions() {
 	            return this.getHeaders()
-	                .filter(x => x.value !== 'MonHocID')
+	                // Tên môn và STT chỉ để hiển thị, không phải cột điểm có thể kéo.
+	                .filter(x => !['MonHocID', 'STT'].includes(x.value))
 	                .map(x => ({ title: x.title, value: x.value }))
 	        },
 	        PullProgressPercent() {
@@ -301,6 +433,10 @@
 	    },
 	
 	    watch: {
+	        // Đồng bộ bộ lọc nếu trang cha đổi học kì của năm học hiện tại.
+	        'vueData.NienKhoaItem.HocKi'(hocKi) {
+	            this.syncSemesterWithNienKhoa(hocKi)
+	        },
 	        'vueData.NienKhoa'() {
 	            this.resetAllFilters()
 	            this.getKhoi()
@@ -331,6 +467,18 @@
 	    },
 	
 	    methods: {
+	        findSemesterByHocKi(hocKi) {
+	            const target = String(hocKi ?? '').trim().toLowerCase()
+	            return this.DSSemester.find(item =>
+	                [item.HocKi, item.value, item.title].some(value => String(value).trim().toLowerCase() === target)
+	            ) || null
+	        },
+
+	        syncSemesterWithNienKhoa(hocKi) {
+	            const semester = this.findSemesterByHocKi(hocKi)
+	            if (semester && semester.value !== this.Semester?.value) this.Semester = semester
+	        },
+
 	        setLanguage(val) {
 	            this.isEn = val
 	            if (this.$i18n) this.$i18n.locale = val ? 'en' : 'vi'
@@ -415,6 +563,17 @@
 	            this.DSHocSinhTinhTrang = []
 	            this.DSHocSinh_LMS = []
 	            this.IsCompareLMS = false
+	            this.resetPublicationStatus()
+	        },
+
+	        resetPublicationStatus() {
+	            // Bỏ trạng thái môn của bộ lọc cũ và khiến response đang chờ không ghi đè lớp/học kì mới.
+	            this.PublicationStatusRequestId += 1
+	            this.DSPublicationStatus = []
+	            this.IsShowPublicationStatusDialog = false
+	            this.IsLoadingPublicationStatus = false
+	            this.IsPublicationStatusLoaded = false
+	            this.PublicationStatusError = ''
 	        },
 	
 	        resetAllFilters() {
@@ -515,6 +674,7 @@
 	
 	        async getDiemTheoLopMonQLD() {
 	            if (!this.LopItem?.LopID) return
+	            this.resetPublicationStatus()
 	            this.IsCompareLMS = false
 	            this.isLoading = true
 	            try {
@@ -586,6 +746,362 @@
 	            return this.DSHocSinhTinhTrang
 	        },
 
+	        extractPublicationHistoryRows(response) {
+	            let body = response
+	            if (typeof body === 'string') {
+	                try { body = JSON.parse(body) } catch (_) { body = null }
+	            }
+	            if (Array.isArray(body)) return body
+	            for (const key of ['Result', 'Data', 'data', 'result']) {
+	                if (Array.isArray(body?.[key])) return body[key]
+	            }
+	            throw new Error('API lịch sử công bố không trả về danh sách hợp lệ.')
+	        },
+
+	        getPublicationScoreColumns() {
+	            // ĐTB là số liệu nguồn từ QLDiem, không có log công bố theo từng ô nên không được tính là đã công bố tại đây.
+	            return this.getHeaders()
+	                .filter(column => !['STT', 'MonHocID', 'DTB', 'DiemTB_CaNam'].includes(column.value))
+	                .map(column => ({ key: column.value, title: column.title }))
+	        },
+
+	        // MonHoc_Get_ByLopID trả cả mã môn và ID số; các dòng điểm dùng mã môn trong MonHocID.
+	        getPublicationScoreRows(subject) {
+	            const subjectCodes = new Set([subject?.MonHocCode, subject?.MonHocID]
+	                .filter(value => value !== null && value !== undefined)
+	                .map(value => String(value).trim().toLowerCase())
+	                .filter(Boolean))
+	            return this.DSHocSinhQLD.flatMap(student => Array.isArray(student?.DSCotDiem) ? student.DSCotDiem : [])
+	                .filter(row => [row?.MonHocID, row?.MonHocCode]
+	                    .filter(value => value !== null && value !== undefined)
+	                    .some(value => subjectCodes.has(String(value).trim().toLowerCase())))
+	        },
+
+	        // Chỉ cờ IsThiTapTrung=true xác nhận GK/CK thuộc luồng thi tập trung; thiếu cờ thì vẫn cần lịch sử công bố thông thường.
+	        isCentralExamSubject(subject) {
+	            const value = subject?.IsThiTapTrung
+	            return value === true || value === 1 ||
+	                ['true', '1'].includes(String(value ?? '').trim().toLowerCase())
+	        },
+
+	        hasEnteredScore(value) {
+	            if (value === null || value === undefined || typeof value === 'boolean') return false
+	            if (typeof value === 'number') return Number.isFinite(value)
+	            if (typeof value !== 'string') return false
+	            const normalized = value.trim().toLowerCase()
+	            return normalized !== '' && !['-', '—', '–', '--', 'null', 'undefined', 'nan'].includes(normalized)
+	        },
+
+	        normalizePublicationScoreValue(value) {
+	            if (!this.hasEnteredScore(value)) return null
+	            const normalized = String(value).trim().replace(',', '.')
+	            const numericValue = Number(normalized)
+	            return Number.isFinite(numericValue)
+	                ? 'number:' + numericValue
+	                : 'text:' + normalized.toLowerCase()
+	        },
+
+	        // Chuẩn hóa mã cột trong log sang key đang dùng trên bảng điểm (ví dụ TX_L1_HK1 → TX1).
+	        normalizePublicationColumnCode(value) {
+	            const code = String(value ?? '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '')
+	            const txMatch = code.match(/^(?:TXL?|THEME)(\d+)/)
+	            if (txMatch) return 'TX' + txMatch[1]
+	            if (/^(GK|DIEMGK|DIEMCD1|S[12]MID|MID)/.test(code)) return 'GK'
+	            if (/^(CK|DIEMCK|DIEMCD2|S[12]FINAL|FINAL)/.test(code)) return 'CK'
+	            if (/^(DTB|DIEMTB|AVERAGE)/.test(code)) return 'DTB'
+	            return code
+	        },
+
+	        normalizePublicationSemester(value) {
+	            const normalized = String(value ?? '').trim().toUpperCase().replace(/\s/g, '')
+	            const match = normalized.match(/^(?:HK)?([12])$/)
+	            return match ? Number(match[1]) : null
+	        },
+
+	        isAutoPublishedSourceColumn(column, isCentralExam) {
+	            const columnCode = this.normalizePublicationColumnCode(column?.key)
+	            return isCentralExam && ['GK', 'CK'].includes(columnCode)
+	        },
+
+	        // Đối chiếu log đúng học kỳ; chỉ GK/CK thi tập trung được tính công bố theo trạng thái kéo.
+	        buildPublicationColumnStatuses(scoreRows, scoreColumns, historyRows, isCentralExam = false, expectedSemester = null) {
+	            const historyByCell = new Map()
+	            for (const history of historyRows) {
+	                const studentID = String(history?.HocSinhID ?? '').trim()
+	                const columnCode = this.normalizePublicationColumnCode(history?.MaCotDiem)
+	                if (!studentID || !columnCode) continue
+	                // API được gọi với một học kỳ cụ thể; bỏ log khác kỳ và ưu tiên log có kỳ rõ ràng hơn log không ghi kỳ.
+	                const historySemester = this.normalizePublicationSemester(history?.HocKy ?? history?.Semester)
+	                if (expectedSemester !== null && historySemester !== null && historySemester !== Number(expectedSemester)) continue
+	                const key = studentID + '|' + columnCode
+	                const existing = historyByCell.get(key)
+	                const existingSemester = this.normalizePublicationSemester(existing?.HocKy ?? existing?.Semester)
+	                if (existing && existingSemester === Number(expectedSemester) && historySemester !== Number(expectedSemester)) continue
+	                historyByCell.set(key, history)
+	            }
+	            const totalStudents = this.DSHocSinhQLD.length
+
+	            return scoreColumns.map(column => {
+	                const rowsByStudent = new Map()
+	                scoreRows.forEach((row, index) => {
+	                    if (!this.hasEnteredScore(row?.[column.key])) return
+	                    const studentID = String(row?.HocSinhID ?? '').trim()
+	                    rowsByStudent.set(studentID || `row:${index}`, row)
+	                })
+	                const scoredRows = [...rowsByStudent.values()]
+	                const columnCode = this.normalizePublicationColumnCode(column.key)
+	                const countedViaCentralExamPull = isCentralExam && ['GK', 'CK'].includes(columnCode)
+	                const countedViaSourcePull = countedViaCentralExamPull
+	                let publishedCount = 0
+	                let failedCount = 0
+	                let processingCount = 0
+	                let unpublishedCount = 0
+
+	                for (const row of scoredRows) {
+	                    if (countedViaSourcePull) {
+	                        publishedCount += 1
+	                        continue
+	                    }
+	                    const studentID = String(row?.HocSinhID ?? '').trim()
+	                    const currentScore = this.normalizePublicationScoreValue(row?.[column.key])
+	                    const history = historyByCell.get(studentID + '|' + this.normalizePublicationColumnCode(column.key))
+	                    if (!history) {
+	                        unpublishedCount += 1
+	                        continue
+	                    }
+
+	                    const successfulScore = this.normalizePublicationScoreValue(history.LastSuccessfulScore)
+	                    if (Number(history.SuccessfulSendCount) > 0 && successfulScore === currentScore) {
+	                        publishedCount += 1
+	                        continue
+	                    }
+
+	                    const latestAttemptScore = this.normalizePublicationScoreValue(history.LastAttemptScore)
+	                    const latestAttemptMatches = latestAttemptScore !== null && latestAttemptScore === currentScore
+	                    const latestAttemptStatus = String(history.LastAttemptStatus || '')
+	                    if (latestAttemptMatches && ['Failed', 'InvalidResponse'].includes(latestAttemptStatus)) {
+	                        failedCount += 1
+	                    } else if (latestAttemptMatches && latestAttemptStatus === 'Started') {
+	                        processingCount += 1
+	                    } else {
+	                        unpublishedCount += 1
+	                    }
+	                }
+
+	                return {
+	                    key: column.key,
+	                    title: column.title,
+	                    scoreCount: scoredRows.length,
+	                    publishedCount,
+	                    unenteredCount: Math.max(0, totalStudents - scoredRows.length),
+	                    unpublishedCount,
+	                    failedCount,
+	                    processingCount,
+	                    countedViaCentralExamPull,
+	                    countedViaSourcePull,
+	                }
+	            })
+	        },
+
+	        async loadClassPublicationStatus() {
+	            if (!this.LopItem?.LopID || !this.KhoiItem?.KhoiID) return
+	            const capID = Number(vueData.CapID)
+	            if (![2, 3].includes(capID)) return
+
+	            this.IsShowPublicationStatusDialog = true
+	            const requestId = ++this.PublicationStatusRequestId
+	            this.IsLoadingPublicationStatus = false
+	            this.IsPublicationStatusLoaded = false
+	            this.PublicationStatusError = ''
+	            this.DSPublicationStatus = []
+
+	            const hocKy = Number(this.Semester?.HocKi)
+	            if (![1, 2].includes(hocKy)) {
+	                this.PublicationStatusError = this.isEn
+	                    ? 'Select Semester 1 or 2 to check publication history.'
+	                    : 'Chọn học kì 1 hoặc 2 để kiểm tra lịch sử công bố.'
+	                return
+	            }
+
+	            this.IsLoadingPublicationStatus = true
+	            try {
+	                const subjectResponse = await fetchPromise('lms/MonHoc_Get_ByLopID', {
+	                    NienKhoa: vueData.NienKhoa,
+	                    HocKi: hocKy,
+	                    LopID: this.LopItem.LopID,
+	                })
+	                if (requestId !== this.PublicationStatusRequestId) return
+
+	                const seenSubjects = new Set()
+	                const subjects = this.extractList(subjectResponse).filter(subject => {
+	                    const key = String(subject?.MonHocLopID ?? subject?.MonHocID ?? '')
+	                    if (!key || seenSubjects.has(key)) return false
+	                    seenSubjects.add(key)
+	                    return true
+	                })
+	                const scoreColumns = this.getPublicationScoreColumns()
+	                // Chỉ hiện môn có TX/GK/CK; ĐTB không đại diện cho việc giáo viên đã công bố điểm.
+	                const subjectsWithScores = subjects.map(subject => {
+	                    const scoreRows = this.getPublicationScoreRows(subject)
+	                    const hasAnyEnteredScore = scoreColumns.some(column => scoreRows.some(row => this.hasEnteredScore(row?.[column.key])))
+	                    const columns = scoreColumns.filter(column => {
+	                        const hasEnteredScore = scoreRows.some(row => this.hasEnteredScore(row?.[column.key]))
+	                        const code = this.normalizePublicationColumnCode(column.key)
+	                        return hasEnteredScore || ['GK', 'CK'].includes(code)
+	                    })
+	                    return { subject, scoreRows, columns, hasAnyEnteredScore }
+	                }).filter(entry => entry.hasAnyEnteredScore)
+
+	                const statuses = await Promise.all(subjectsWithScores.map(async entry => {
+	                    const { subject, scoreRows, columns } = entry
+	                    const isCentralExam = this.isCentralExamSubject(subject)
+	                    const historyColumns = columns.filter(column =>
+	                        scoreRows.some(row => this.hasEnteredScore(row?.[column.key])) &&
+	                        !this.isAutoPublishedSourceColumn(column, isCentralExam)
+	                    )
+	                    const subjectName = this.isEn
+	                        ? (subject.TenMonHoc_EN || subject.TenMonHoc_HienThi || subject.TenMonHoc || subject.MonHocName)
+	                        : (subject.TenMonHoc_HienThi || subject.TenMonHoc || subject.MonHocName)
+	                    const statusItem = {
+	                        key: String(subject.MonHocLopID ?? subject.MonHocID),
+	                        subjectName: subjectName || (this.isEn ? 'Unnamed subject' : 'Chưa có tên môn'),
+	                        status: 'unavailable',
+	                        historyAvailable: false,
+	                        historyRequired: historyColumns.length > 0,
+	                        columns: this.buildPublicationColumnStatuses(scoreRows, columns, [], isCentralExam, hocKy),
+	                        details: this.isEn
+	                            ? 'Course metadata required to check publication is missing.'
+	                            : 'Thiếu thông tin môn học để kiểm tra lịch sử công bố.',
+	                    }
+	                    const params = {
+	                        CapID: capID,
+	                        KhoiID: Number(this.KhoiItem.KhoiID),
+	                        NienKhoa: Number(vueData.NienKhoa),
+	                        LopChonID: String(this.LopItem.LopID),
+	                        MonHocLopID: Number(subject.MonHocLopID),
+	                        MonHocID: Number(subject.MonHocID),
+	                        TemplateBangDiemID: Number(subject.TemplateBangDiemID),
+	                        HocKy: hocKy,
+	                    }
+	                    // Bỏ qua truy vấn log khi các điểm đã nhập đều đến từ luồng thi tập trung.
+	                    if (!statusItem.historyRequired) {
+	                        const totals = statusItem.columns.reduce((result, column) => ({
+	                            scoreCount: result.scoreCount + column.scoreCount,
+	                            publishedCount: result.publishedCount + column.publishedCount,
+	                        }), { scoreCount: 0, publishedCount: 0 })
+	                        statusItem.status = totals.scoreCount > 0 && totals.publishedCount === totals.scoreCount
+	                            ? 'published'
+	                            : 'unavailable'
+	                        statusItem.details = this.isEn
+	                            ? `${totals.publishedCount}/${totals.scoreCount} entered score cells from centralized exams count as published.`
+	                            : `${totals.publishedCount}/${totals.scoreCount} ô điểm đã nhập từ thi tập trung được tính là đã công bố.`
+	                        return statusItem
+	                    }
+	                    const requiredIds = [params.CapID, params.KhoiID, params.NienKhoa, params.MonHocLopID,
+	                        params.MonHocID, params.TemplateBangDiemID]
+	                    if (!params.LopChonID || requiredIds.some(value => !Number.isFinite(value) || value <= 0)) {
+	                        return statusItem
+	                    }
+
+	                    try {
+	                        // Điểm có thể vừa được công bố từ màn nhập; không dùng lại cache lịch sử cũ khi mở dialog lần nữa.
+	                        const historyResponse = await fetchPromise('lms/LMS_SyncDiemLog_History_Select', params, { cache: false })
+	                        const historyRows = this.extractPublicationHistoryRows(historyResponse)
+	                        statusItem.historyAvailable = true
+	                        statusItem.columns = this.buildPublicationColumnStatuses(scoreRows, columns, historyRows, isCentralExam, hocKy)
+
+	                        const columnTotals = statusItem.columns.reduce((total, column) => ({
+	                            scoreCount: total.scoreCount + column.scoreCount,
+	                            publishedCount: total.publishedCount + column.publishedCount,
+	                            failedCount: total.failedCount + column.failedCount,
+	                            processingCount: total.processingCount + column.processingCount,
+	                        }), { scoreCount: 0, publishedCount: 0, failedCount: 0, processingCount: 0 })
+	                        const latestSuccess = historyRows
+	                            .filter(row => Number(row?.SuccessfulSendCount) > 0)
+	                            .map(row => row.LastSuccessfulAt)
+	                            .filter(Boolean)
+	                            .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0]
+
+	                        if (columnTotals.publishedCount === columnTotals.scoreCount && !columnTotals.failedCount && !columnTotals.processingCount) {
+	                            statusItem.status = 'published'
+	                        } else if (columnTotals.publishedCount > 0) {
+	                            statusItem.status = 'partial'
+	                        } else if (columnTotals.failedCount > 0) {
+	                            statusItem.status = 'failed'
+	                        } else if (columnTotals.processingCount > 0) {
+	                            statusItem.status = 'processing'
+	                        } else {
+	                            statusItem.status = 'unpublished'
+	                        }
+
+	                        statusItem.details = this.isEn
+	                            ? `${columnTotals.publishedCount}/${columnTotals.scoreCount} current score cells match a successful publication.`
+	                            : `${columnTotals.publishedCount}/${columnTotals.scoreCount} ô điểm hiện tại khớp với lần công bố thành công.`
+	                        if (latestSuccess) statusItem.details += (this.isEn ? ' Latest success: ' : ' Gần nhất: ') + this.formatPublicationStatusTime(latestSuccess)
+	                    } catch (error) {
+	                        console.error('loadClassPublicationStatus subject error:', error)
+	                        statusItem.status = 'error'
+	                        statusItem.details = this.isEn
+	                            ? 'Could not load this subject publication history.'
+	                            : 'Chưa tải được lịch sử công bố của môn này.'
+	                    }
+	                    return statusItem
+	                }))
+
+	                if (requestId !== this.PublicationStatusRequestId) return
+	                const statusPriority = { unpublished: 0, failed: 1, error: 2, unavailable: 3, partial: 4, processing: 5, published: 6 }
+	                statuses.sort((a, b) => statusPriority[a.status] - statusPriority[b.status])
+	                this.DSPublicationStatus = statuses
+	                this.IsPublicationStatusLoaded = true
+	            } catch (error) {
+	                if (requestId !== this.PublicationStatusRequestId) return
+	                console.error('loadClassPublicationStatus error:', error)
+	                this.PublicationStatusError = this.isEn
+	                    ? 'Could not load publication status. Please try again.'
+	                    : 'Chưa tải được tình trạng công bố. Vui lòng thử lại.'
+	            } finally {
+	                if (requestId === this.PublicationStatusRequestId) this.IsLoadingPublicationStatus = false
+	            }
+	        },
+
+	        formatPublicationStatusTime(value) {
+	            const date = new Date(value)
+	            return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString(this.isEn ? 'en-US' : 'vi-VN', {
+	                day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit',
+	            })
+	        },
+
+	        getPublicationStatusLabel(status) {
+	            const labels = {
+	                published: this.isEn ? 'Published' : 'Đã có công bố',
+	                partial: this.isEn ? 'Partially published' : 'Công bố một phần',
+	                failed: this.isEn ? 'Failed, not published' : 'Gửi lỗi, chưa công bố',
+	                processing: this.isEn ? 'Processing' : 'Đang xử lý',
+	                unpublished: this.isEn ? 'Not published' : 'Chưa công bố',
+	                unavailable: this.isEn ? 'Missing course details' : 'Thiếu thông tin môn',
+	                error: this.isEn ? 'Status unavailable' : 'Chưa tải được trạng thái',
+	            }
+	            return labels[status] || (this.isEn ? 'Unknown' : 'Không rõ')
+	        },
+
+	        getPublicationStatusColor(status) {
+	            const colors = { published: 'success', partial: 'warning', failed: 'error', processing: 'info', unpublished: 'grey', unavailable: 'grey', error: 'error' }
+	            return colors[status] || 'grey'
+	        },
+
+	        getPublicationStatusIcon(status) {
+	            const icons = {
+	                published: 'mdi-bullhorn-outline',
+	                partial: 'mdi-bullhorn-outline',
+	                failed: 'mdi-alert-circle-outline',
+	                processing: 'mdi-progress-clock',
+	                unpublished: 'mdi-bullhorn-outline',
+	                unavailable: 'mdi-help-circle-outline',
+	                error: 'mdi-alert-outline',
+	            }
+	            return icons[status] || 'mdi-help-circle-outline'
+	        },
+
 	        applyHocSinhTinhTrang(data, hocSinhTinhTrang) {
 	            if (!Array.isArray(hocSinhTinhTrang)) return data
 	            const mapTinhTrang = new Map(hocSinhTinhTrang.map(x => [x.HocSinhID, x]))
@@ -613,7 +1129,13 @@
 	        },
 	
 	        getHeaders() {
-	            const headers = []
+	            // STT là cột trình bày riêng trong từng bảng học sinh, không thuộc dữ liệu điểm.
+	            const headers = [{
+	                title: this.isEn ? 'No.' : 'STT',
+	                value: 'STT',
+	                minWidth: 50,
+	                align: 'center',
+	            }]
 	            let listMaCotDiem = [
 	                { title: this.isEn ? 'Subject' : 'Tên môn học', value: 'MonHocID', minWidth: 100, align: 'left' },
 	            ]
@@ -655,9 +1177,20 @@
 	            }
 	            return headers
 	        },
+
+	        // Chuẩn hóa mã môn chỉ ở lớp hiển thị; giữ nguyên MonHocID gốc cho truy vấn và đối chiếu điểm.
+	        getDisplaySubjectName(monHocID) {
+	            const code = String(monHocID ?? '').trim().toUpperCase()
+	            if (code === 'TD') return 'GDTC'
+	            if (Number(vueData.CapID) === 2 && code === 'HKTN') return 'KHTN'
+	            return monHocID
+	        },
 	
 	        getItems(hocSinh) {
-	            return [...hocSinh.DSCotDiem].sort((a, b) => String(a.MonHocID).localeCompare(String(b.MonHocID)))
+	            // Đánh số sau khi sắp xếp để STT khớp thứ tự môn đang thấy và bắt đầu lại ở từng học sinh.
+	            return [...hocSinh.DSCotDiem]
+	                .sort((a, b) => String(a.MonHocID).localeCompare(String(b.MonHocID)))
+	                .map((item, index) => ({ ...item, STT: index + 1 }))
 	        },
 	
 	        renderItemLMS(itemTable, key) {
@@ -784,45 +1317,59 @@
 	            return itemHocSinhMon[lockKey]
 	        },
 	
+	        // Giữ nút ở trạng thái chờ trong suốt lần lấy dữ liệu và luôn khôi phục sau khi API hoàn tất hoặc lỗi.
 	        async onLoadBangDiemLMS() {
-	            if (!this.LopItem?.LopID) return
-	            const res = await fetchPromise('lms/HocSinhBangDiem_Get_ByLopID_Semester', {
-	                Semester: this.Semester.value,
-	                NienKhoa: vueData.NienKhoa,
-	                LopID: this.LopItem.LopID,
-	            }, { cache: false })
+	            if (!this.LopItem?.LopID || this.IsLoadingCompareLMS) return
+	            this.IsLoadingCompareLMS = true
+	            this.IsCompareLMS = false
+	            this.DSHocSinh_LMS = []
+	            try {
+	                const res = await fetchPromise('lms/HocSinhBangDiem_Get_ByLopID_Semester', {
+	                    Semester: this.Semester.value,
+	                    NienKhoa: vueData.NienKhoa,
+	                    LopID: this.LopItem.LopID,
+	                }, { cache: false })
 	
-	            const hocSinhBangDiem = this.extractList(res)
-	            const newData = []
-	            const hocSinhIDs = [...new Set(hocSinhBangDiem.map(x => x.HocSinhID))]
-	            for (const hocSinhID of hocSinhIDs) {
-	                const obj = {
-	                    HocSinhID: hocSinhID,
-	                    DSCotDiem: [],
-	                }
-	                const cotDiemByHocSinh = hocSinhBangDiem.filter(x => x.HocSinhID === hocSinhID)
-	                const monHocCodes = [...new Set(cotDiemByHocSinh.map(x => x.MonHocCode))]
-	                for (const monHocCode of monHocCodes) {
-	                    const arrMonHoc = cotDiemByHocSinh.filter(x => x.MonHocCode.toLowerCase() === monHocCode.toLowerCase())
-	                    const newObj = {
+	                const hocSinhBangDiem = this.extractList(res)
+	                const newData = []
+	                const hocSinhIDs = [...new Set(hocSinhBangDiem.map(x => x.HocSinhID))]
+	                for (const hocSinhID of hocSinhIDs) {
+	                    const obj = {
 	                        HocSinhID: hocSinhID,
-	                        MonHocCode: monHocCode,
+	                        DSCotDiem: [],
 	                    }
-	                    for (const cd of arrMonHoc) {
-	                        newObj[cd.MaCotDiem] = cd.KetQuaDanhGia_VI
-	                        newObj[`${cd.MaCotDiem}_IsLock`] = cd.IsLock
+	                    const cotDiemByHocSinh = hocSinhBangDiem.filter(x => x.HocSinhID === hocSinhID)
+	                    const monHocCodes = [...new Set(cotDiemByHocSinh.map(x => x.MonHocCode))]
+	                    for (const monHocCode of monHocCodes) {
+	                        const arrMonHoc = cotDiemByHocSinh.filter(x => x.MonHocCode.toLowerCase() === monHocCode.toLowerCase())
+	                        const newObj = {
+	                            HocSinhID: hocSinhID,
+	                            MonHocCode: monHocCode,
+	                        }
+	                        for (const cd of arrMonHoc) {
+	                            newObj[cd.MaCotDiem] = cd.KetQuaDanhGia_VI
+	                            newObj[`${cd.MaCotDiem}_IsLock`] = cd.IsLock
+	                        }
+	                        obj.DSCotDiem.push(newObj)
 	                    }
-	                    obj.DSCotDiem.push(newObj)
+	                    newData.push(obj)
 	                }
-	                newData.push(obj)
-	            }
 	
-	            const arr = []
-	            for (const hs of newData) {
-	                arr.push(hs.DSCotDiem)
+	                const arr = []
+	                for (const hs of newData) {
+	                    arr.push(hs.DSCotDiem)
+	                }
+	                this.DSHocSinh_LMS = arr.flat()
+	                this.IsCompareLMS = true
+	            } catch (error) {
+	                console.error('onLoadBangDiemLMS error:', error)
+	                this.snackbarRef.value.showSnackbar({
+	                    message: this.isEn ? 'Failed to compare LMS grades' : 'So sánh điểm LMS thất bại',
+	                    color: 'error',
+	                })
+	            } finally {
+	                this.IsLoadingCompareLMS = false
 	            }
-	            this.DSHocSinh_LMS = arr.flat()
-	            this.IsCompareLMS = true
 	        },
 	
 	        async fnKeoDiem(selectedColumns = []) {

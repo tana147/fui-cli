@@ -287,8 +287,47 @@
         Suffix_Semester: this.SemesterItem.value,
       }, { cache: false })
       if (res) {
+        // Sau khi Tổ trưởng gửi BGH thành công, đồng bộ kết quả học tập sang psmark1 (QLĐiểm)
+        await this.onSyncKetQuaHocTap()
         this.snackbarRef.value.showSnackbar({ message: 'Gửi BGH thành công', color: 'success' })
         await this.getData(true)
+      }
+    },
+    // Quy đổi mã học kì trên UI sang KyDanhGia (1..4) theo quy ước của API LMS_OutSLL_GetKetQuaHocTap & psmark1
+    getKyDanhGiaFromSemester(semesterValue) {
+      const map = {
+        GK_HK1: 1,
+        CK_HK1: 2,
+        GK_HK2: 3,
+        CK_HK2: 4,
+      }
+      return map[semesterValue] ?? null
+    },
+    // Lấy dữ liệu KQHT từ lms/LMS_OutSLL_GetKetQuaHocTap rồi đẩy sang psmark1/LMS_Sync_KetQuaHocTap khi Tổ trưởng duyệt gửi BGH
+    async onSyncKetQuaHocTap() {
+      if (!this.LopItem?.LopID || !this.SemesterItem?.value) return
+      const KyDanhGia = this.getKyDanhGiaFromSemester(this.SemesterItem.value)
+      if (!KyDanhGia) return
+      try {
+        // Bước 1: Gọi API lấy dữ liệu kết quả học tập từ LMS
+        const jsData = await fetchPromise('lms/LMS_OutSLL_GetKetQuaHocTap', {
+          LopID: this.LopItem.LopID,
+          KyDanhGia,
+          NamHoc: vueData.NienKhoa,
+        }, { cache: false })
+
+        const syncPayload = {
+          LopID: this.LopItem.LopID,
+          KyDanhGia,
+          jsData: JSON.stringify(jsData ?? []),
+        }
+
+        // Bước 2: Gọi API đồng bộ kết quả học tập sang psmark1
+        const resSync = await fetchPromise('psmark1/LMS_Sync_KetQuaHocTap', syncPayload, { cache: false })
+        console.log('[SyncKetQuaHocTap] Response psmark1:', resSync)
+      } catch (err) {
+        console.error('[SyncKetQuaHocTap] error:', err)
+        this.snackbarRef.value.showSnackbar({ message: 'Lỗi khi gọi API đồng bộ KQHT sang QLĐiểm', color: 'error' })
       }
     },
   },

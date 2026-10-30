@@ -294,9 +294,12 @@
 			const auto = typeof this.grading?.autoScore === 'number'
 				? this.grading.autoScore
 				: (this.submissionstatus === 4 ? this.calculatedScore : 0);
-			if (!this.isGrade && this.submissionstatus === 4 && typeof auto === 'number' && auto > 0 &&
-				(typeof manual !== 'number' || manual <= 0)) return auto;
-			return typeof manual === 'number' ? manual : (typeof auto === 'number' ? auto : 0);
+			const score = !this.isGrade && this.submissionstatus === 4 && auto > 0 &&
+				(typeof manual !== 'number' || manual <= 0)
+				? auto
+				: (typeof manual === 'number' ? manual : auto);
+			// Điểm cũ có thể lưu tỷ lệ 1/3 dạng 0.333333...; chỉ làm tròn khi hiển thị.
+			return Number.isFinite(score) ? Math.round(score * 100) / 100 : 0;
 		},
 		effectiveMaxPoints() { return this.question?.points ?? 0; },
 		scoreChipColor() {
@@ -326,10 +329,14 @@
 			return 'Hãy xem lại và thử lại nhé!';
 		},
 		pointsPerPair() {
-			return Math.round((this.effectiveMaxPoints / this.columnA.length) * 100) / 100;
+			if (!this.columnA.length) return 0;
+			return Math.round((Number(this.effectiveMaxPoints) / this.columnA.length) * 100) / 100;
 		},
 		calculatedScore() {
-			return Math.round((this.correctCount * this.pointsPerPair) * 100) / 100;
+			// Chỉ làm tròn tổng điểm sau khi tính theo tỷ lệ cặp đúng; làm tròn từng cặp
+			// sẽ khiến câu 1 điểm có 3 cặp đúng chỉ nhận 0.99 điểm.
+			if (!this.columnA.length) return 0;
+			return Math.round((this.correctCount / this.columnA.length) * Number(this.effectiveMaxPoints) * 100) / 100;
 		},
 		availableRightItems() {
 			if (!this.selectedLeftItem) return [];

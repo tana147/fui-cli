@@ -49,6 +49,13 @@
 
 				<v-divider />
 
+				<!-- Nút xử lý tất cả nằm ngoài v-card-text để luôn hiển thị khi danh sách thông báo cuộn. -->
+				<div v-if="activeTab === 'alerts' && unreadAlertsCount > 0" class="d-flex justify-end px-4 py-1">
+					<v-btn variant="text" size="small" color="primary" class="text-none" @click="dismissAllAlerts">
+						Đã xem tất cả
+					</v-btn>
+				</div>
+
 				<!-- Body / Nội dung từng Tab -->
 				<v-card-text class="vercel-card-body pa-4">
 					<!-- Tab 1: CẢNH BÁO (ALERTS) -->
@@ -83,12 +90,6 @@
 									</div>
 								</v-card-text>
 							</v-card>
-							<div class="d-flex justify-end mt-2" v-if="unreadAlertsCount > 0">
-								<v-btn variant="text" size="small" color="primary" class="text-none"
-									@click="dismissAllAlerts">
-									Đã xem tất cả
-								</v-btn>
-							</div>
 						</div>
 					</div>
 

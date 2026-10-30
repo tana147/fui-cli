@@ -15,6 +15,7 @@
       "HocSinhDetail": null,
       "tabBottomNavigation": "localStorage.getItem('tabBottomNavigation') ?? 0",
       "IsLanguage": "localStorage.getItem('IsLanguage') ? JSON.parse(localStorage.getItem('IsLanguage')) : false",
+      "ShowCambridgeScoreCap2": false,
       "IsLoading": true,
       "skills": [],
       "activities": [],
@@ -313,10 +314,9 @@
                                 {
                                   "el": "template",
                                   "attr": {
-                                    "v-slot:append": "item",
-                                    "v-if": "DSCotDiem.length > 0"
+                                    "v-slot:append": "item"
                                   },
-                                  "innerHTML": "<v-chip label color='primary'>{{ DSCotDiem.find(i => i.MaNhomCotDiem == MaNhomCotDiem)?.TenNhomCotDiem_VI}}</v-chip>"
+                                  "innerHTML": "<v-chip v-if=\"DSCotDiem.find(i => i.MaNhomCotDiem == MaNhomCotDiem)?.TenNhomCotDiem_VI\" label color='primary'>{{ DSCotDiem.find(i => i.MaNhomCotDiem == MaNhomCotDiem)?.TenNhomCotDiem_VI}}</v-chip>"
                                 }
                               ]
                             }
@@ -1208,6 +1208,7 @@
                                             {
                                               "el": "v-divider",
                                               "attr": {
+                                                "v-if": "HocSinhDetail?.CapID !== 2 || ShowCambridgeScoreCap2",
                                                 "class": " mb-4"
                                               }
                                             },
@@ -1222,7 +1223,7 @@
                                               "attr": {
                                                 "class": "d-flex align-center",
                                                 "color": "#378a58",
-                                                "v-if": "HocSinhDetail?.CapID == 2"
+                                                "v-if": "HocSinhDetail?.CapID == 2 && ShowCambridgeScoreCap2"
                                               },
                                               "innerHTML": [
                                                 {
@@ -1348,7 +1349,7 @@
                                               "attr": {
                                                 ":dense": true,
                                                 "class": "my-2",
-                                                "v-if": "HocSinhDetail?.CapID === 2"
+                                                "v-if": "HocSinhDetail?.CapID === 2 && ShowCambridgeScoreCap2"
                                               },
                                               "innerHTML": [
                                                 {
@@ -1441,7 +1442,7 @@
                                             {
                                               "el": "uc-chart-ky-nang",
                                               "attr": {
-                                                "v-if": "HocSinhDetail?.CapID === 2 && skills.length>0"
+                                                "v-if": "HocSinhDetail?.CapID === 2 && ShowCambridgeScoreCap2 && skills.length>0"
                                               }
                                             },
                                             {
@@ -1518,14 +1519,14 @@
                                             {
                                               "el": "v-divider",
                                               "attr": {
-                                                "v-if": "HocSinhDetail?.CapID != 3"
+                                                "v-if": "HocSinhDetail?.CapID != 3 && ShowCambridgeScoreCap2"
                                               }
                                             },
                                             {
                                               "el": "v-card",
                                               "attr": {
                                                 "class": "pt-4 pb-0 bg-light",
-                                                "v-if": "HocSinhDetail?.CapID != 3"
+                                                "v-if": "HocSinhDetail?.CapID != 3 && ShowCambridgeScoreCap2"
                                               },
                                               "innerHTML": [
                                                 {
@@ -1570,7 +1571,10 @@
                                           ]
                                         },
                                         {
-                                          "el": "v-divider"
+                                          "el": "v-divider",
+                                          "attr": {
+                                            "v-if": "HocSinhDetail?.CapID !== 2 || ShowCambridgeScoreCap2"
+                                          }
                                         },
                                         {
                                           "el": "v-card",
@@ -1598,7 +1602,7 @@
                                                   "attr": {
                                                     "class": "text-subtitle-2 font-weight-bold"
                                                   },
-                                                  "innerHTML": "{{DSLopIelts.includes(HocSinhDetail.TenLopAV) ? '4' : '3'}}. {{$t('message.ActivitiesAssessment')}}:"
+                                                  "innerHTML": "{{DSLopIelts.includes(HocSinhDetail.TenLopAV) ? '4' : (HocSinhDetail?.CapID === 2 && !ShowCambridgeScoreCap2 ? '2' : '3')}}. {{$t('message.ActivitiesAssessment')}}:"
                                                 }
                                               ]
                                             },
@@ -2047,7 +2051,7 @@
                                               "attr": {
                                                 "class": "d-flex align-center mb-3",
                                                 "color": "#378a58",
-                                                "v-if": "DataNhomLop[0]?.LoaiHocSinh == 'Cu'"
+                                                "v-if": "DataNhomLop[0]?.LoaiHocSinh == 'Cu' && (HocSinhDetail?.CapID !== 2 || ShowCambridgeScoreCap2)"
                                               },
                                               "innerHTML": [
                                                 {

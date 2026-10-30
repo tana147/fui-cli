@@ -47,7 +47,8 @@
         }
       ],
       "IsShowDialogReject": false,
-      "IsShowDialogTinhTrangDiem": false
+      "IsShowDialogTinhTrangDiem": false,
+      "loadingTestSync": false
     },
     {
       "getLop": {
@@ -85,7 +86,7 @@
       "EXE": "vueData.isDisabledButton_TuChoi = isDisabledButton_TuChoi; vueData.isDisabledButton_GuiDiem = isDisabledButton_GuiDiem;"
     },
     {
-      "EXE": "vueData.isShowReasonReject = isShowReasonReject;"
+      "EXE": "vueData.isShowReasonReject = isShowReasonReject; vueData.onTestSyncKetQuaHocTap = onTestSyncKetQuaHocTap;"
     }
   ],
   "watch": {
@@ -227,7 +228,34 @@
                         },
                         {
                           "el": "v-col",
-                          "innerHTML": "<f-button label='Làm mới' prepend-icon='mdi-refresh' :action='HocSinhBangDiem_TT_BGH_Get'  color='primary' variant='outlined'/>"
+                          "attr": {
+                            "class": "d-flex align-center ga-2 flex-wrap"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "f-button",
+                              "attr": {
+                                "label": "Làm mới",
+                                "prepend-icon": "mdi-refresh",
+                                ":action": "HocSinhBangDiem_TT_BGH_Get",
+                                "color": "primary",
+                                "variant": "outlined"
+                              }
+                            },
+                            {
+                              "el": "v-btn",
+                              "attr": {
+                                "v-if": "user?.UserID === 'NA0000022'",
+                                "variant": "outlined",
+                                "color": "warning",
+                                "prepend-icon": "mdi-cloud-sync-outline",
+                                ":loading": "loadingTestSync",
+                                ":disabled": "!LopItem?.LopID || !Semester?.value",
+                                "v-on:click": "onTestSyncKetQuaHocTap()"
+                              },
+                              "innerHTML": "Sync QlDiem"
+                            }
+                          ]
                         }
                       ]
                     }
@@ -441,7 +469,8 @@
                   },
                   "w": 12
                 }
-              ]
+              ],
+              "w": 12
             }
           ]
         }

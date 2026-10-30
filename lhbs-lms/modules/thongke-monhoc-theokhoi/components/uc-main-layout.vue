@@ -46,6 +46,29 @@
 			<v-data-table :headers="headerBangDiem" :items="itemBangDiem" :items-per-page="-1" hide-default-footer
 				no-data-text="Chưa có dữ liệu" />
 		</v-card>
+
+		<!-- Gắn bộ chọn trước cả hai bảng xuất để cột bỏ chọn không đi vào worksheet. -->
+		<v-dialog v-model="exportColumnsDialog.show" max-width="600" scrollable>
+			<v-card>
+				<v-card-title class="d-flex align-center px-3 pt-2 pb-3 subtitle-1 font-weight-bold">
+					Chọn cột xuất Excel
+					<v-spacer />
+					<v-btn icon @click="exportColumnsDialog.show = false"><v-icon>mdi-close</v-icon></v-btn>
+				</v-card-title>
+				<v-card-text class="px-3 py-1">
+					<div class="text-body-2 text-medium-emphasis mb-2">Mặc định đã chọn tất cả cột. Bỏ chọn những cột bạn không cần xuất.</div>
+					<v-checkbox v-for="column in exportColumnsDialog.columns" :key="column.value"
+						v-model="exportColumnsDialog.selectedColumns" :value="column.value" :label="column.label"
+						density="compact" hide-details />
+				</v-card-text>
+				<v-card-actions class="pa-3">
+					<v-spacer />
+					<v-btn text @click="exportColumnsDialog.show = false">Hủy</v-btn>
+					<v-btn color="primary" elevation="0" :disabled="!exportColumnsDialog.selectedColumns.length"
+						@click="confirmExportColumns">Xuất Excel</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</Global>
 </template>
 
@@ -86,7 +109,8 @@
 			headerThongKe: [],
 			itemThongKe: [],
 			headerBangDiem: [],
-			itemBangDiem: []
+			itemBangDiem: [],
+			exportColumnsDialog: { show: false, columns: [], selectedColumns: [], headers: [], items: [], sheetName: '', fileName: '' }
 		}
 	},
 	async mounted() {
@@ -177,13 +201,39 @@
 			XLSX.writeFile(wb, fileName)
 		},
 
+		// Create an independent checkbox per visible header, including headers backed by duplicate values.
+		openExportColumnsDialog(headers, items, sheetName, fileName) {
+			const columns = (headers || []).map((header, index) => ({
+				value: 'column_' + index,
+				label: header.title || header.value || ('Column ' + (index + 1))
+			}));
+			if (!columns.length) return;
+			Object.assign(this.exportColumnsDialog, {
+				columns,
+				selectedColumns: columns.map(column => column.value),
+				headers,
+				items,
+				sheetName,
+				fileName,
+				show: true
+			});
+		},
+		confirmExportColumns() {
+			const selected = new Set(this.exportColumnsDialog.selectedColumns);
+			if (!selected.size) return;
+			const headers = this.exportColumnsDialog.headers.filter((_, index) => selected.has('column_' + index));
+			if (!headers.length) return;
+			this.exportColumnsDialog.show = false;
+			this._exportToExcel(headers, this.exportColumnsDialog.items, this.exportColumnsDialog.sheetName, this.exportColumnsDialog.fileName);
+		},
+
 		// ─── Xuất bảng Thống kê ──────────────────────────────────────────
 		exportExcel() {
 			const hocKi = this.HocKiItem?.title ?? "HocKi"
 			const khoi = this.KhoiItem?.TenKhoiHoc ?? "Khoi"
 			const mon = this.MonHocItem?.MonHocName ?? "MonHoc"
-			const fileName = `ThongKe_${mon}_${khoi}_${hocKi}.xlsx`
-			this._exportToExcel(this.headerThongKe, this.itemThongKe, "Thống kê", fileName)
+			const fileName = 'ThongKe_' + mon + '_' + khoi + '_' + hocKi + '.xlsx'
+			this.openExportColumnsDialog(this.headerThongKe, this.itemThongKe, "Thống kê", fileName)
 		},
 
 		// ─── Xuất bảng Bảng điểm học sinh ───────────────────────────────
@@ -191,8 +241,8 @@
 			const hocKi = this.HocKiItem?.title ?? "HocKi"
 			const khoi = this.KhoiItem?.TenKhoiHoc ?? "Khoi"
 			const mon = this.MonHocItem?.MonHocName ?? "MonHoc"
-			const fileName = `BangDiem_${mon}_${khoi}_${hocKi}.xlsx`
-			this._exportToExcel(this.headerBangDiem, this.itemBangDiem, "Bảng điểm", fileName)
+			const fileName = 'BangDiem_' + mon + '_' + khoi + '_' + hocKi + '.xlsx'
+			this.openExportColumnsDialog(this.headerBangDiem, this.itemBangDiem, "Bảng điểm", fileName)
 		},
 
 		// ─── Các method lấy dữ liệu ──────────────────────────────────────

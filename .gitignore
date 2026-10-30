@@ -14,6 +14,11 @@ _publishState.json
 lhbs-lms/modules/dashboard-phat-trien-nang-luc*
 _history/**/dashboard-phat-trien-nang-luc*
 
+# Stored procedures containing hardcoded 3rd party API keys / OAuth tokens
+lhbs-esign/_db/esign/spAPI_TkbChatBot_Hieu.sql
+lhbs-esign/_db/esign/spAPI_TkbGoiYXepTay.sql
+lhbs-esign/_db/lms/fn_tblGetAccessToken_OAuth_Youtube.sql
+
 # ============================================
 # OS & Editor & Cache
 # ============================================

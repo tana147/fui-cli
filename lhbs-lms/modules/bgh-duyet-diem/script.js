@@ -355,3 +355,51 @@ async function onPushMessageToME_ByHocSinh(hocSinh) {
         Vue.$toast.success(`Đẩy ${hocSinh.HocSinhID} - ${hocSinh.HoTen} dữ liệu điểm sang ME`, { position: "top" })
     })
 }
+// Quy đổi mã học kì trên UI sang KyDanhGia (1..4) theo quy ước của API LMS_OutSLL_GetKetQuaHocTap & psmark1
+function getKyDanhGiaFromSemester(semesterValue) {
+    const map = {
+        GK_HK1: 1,
+        CK_HK1: 2,
+        GK_HK2: 3,
+        CK_HK2: 4,
+    }
+    return map[semesterValue] ?? null
+}
+// Hàm test (chỉ hiển thị cho user NA0000022): lấy dữ liệu KQHT từ lms/LMS_OutSLL_GetKetQuaHocTap rồi đẩy sang psmark1/LMS_Sync_KetQuaHocTap
+async function onTestSyncKetQuaHocTap() {
+    if (!vueData.LopItem?.LopID || !vueData.Semester?.value) {
+        Vue.$toast.warning('Vui lòng chọn lớp và học kì', { position: 'top' })
+        return
+    }
+    const KyDanhGia = getKyDanhGiaFromSemester(vueData.Semester.value)
+    if (!KyDanhGia) {
+        Vue.$toast.warning('Học kì không hợp lệ', { position: 'top' })
+        return
+    }
+    vueData.loadingTestSync = true
+    try {
+        // Bước 1: Gọi API lấy dữ liệu kết quả học tập từ LMS
+        const jsData = await fetchPromise('lms/LMS_OutSLL_GetKetQuaHocTap', {
+            LopID: vueData.LopItem.LopID,
+            KyDanhGia,
+            NamHoc: vueData.NienKhoa,
+        }, { cache: false })
+        const syncPayload = {
+            LopID: vueData.LopItem.LopID,
+            KyDanhGia,
+            jsData: JSON.stringify(jsData ?? []),
+        }
+        // In log dữ liệu trả về từ LMS và payload gửi sang psmark1
+        console.log('[TestSyncKetQuaHocTap] Raw data từ LMS_OutSLL_GetKetQuaHocTap:', jsData)
+        console.log('[TestSyncKetQuaHocTap] Payload gửi psmark1/LMS_Sync_KetQuaHocTap:', syncPayload)
+        // Bước 2: Gọi API đồng bộ kết quả học tập sang psmark1
+        const resSync = await fetchPromise('psmark1/LMS_Sync_KetQuaHocTap', syncPayload, { cache: false })
+        console.log('[TestSyncKetQuaHocTap] Response psmark1:', resSync)
+        Vue.$toast.success(`Đồng bộ thành công (${Array.isArray(jsData) ? jsData.length : 0} dòng KQHT)`, { position: 'top' })
+    } catch (err) {
+        console.error('[TestSyncKetQuaHocTap] error:', err)
+        Vue.$toast.error('Lỗi khi gọi API đồng bộ KQHT', { position: 'top' })
+    } finally {
+        vueData.loadingTestSync = false
+    }
+}

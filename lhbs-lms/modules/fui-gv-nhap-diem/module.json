@@ -5,6 +5,11 @@
     },
     {
       "DataExcel": [],
+      "exportColumnsDialog": {
+        "show": false,
+        "columns": [],
+        "selectedColumns": []
+      },
       "nestedHeader": [
         []
       ],
@@ -573,7 +578,7 @@
                     {
                       "el": "v-btn",
                       "attr": {
-                        "v-on:click": "exportExcel()",
+                        "v-on:click": "vueData.openExportColumnsDialog()",
                         "color": "green",
                         "variant": "outlined",
                         ":disabled": "DSHocSinh.length === 0",
@@ -698,6 +703,119 @@
                     "class": "pt-1 px-0 pb-0"
                   },
                   "innerHTML": "<uc-nhap-diem />"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "prop": "hidden-container",
+      "rows": [
+        {
+          "prop": "",
+          "cols": [
+            {
+              "el": "v-dialog",
+              "w": 12,
+              "attr": {
+                "v-model": "vueData.exportColumnsDialog.show",
+                "width": 600,
+                "scrollable": ""
+              },
+              "innerHTML": [
+                {
+                  "el": "v-card",
+                  "attr": {
+                    "class": "pa-0"
+                  },
+                  "innerHTML": [
+                    {
+                      "el": "v-toolbar",
+                      "attr": {
+                        "dense": "",
+                        "flat": ""
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-toolbar-title",
+                          "innerHTML": "Chọn cột xuất Excel"
+                        },
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "icon": "",
+                            "v-on:click": "vueData.exportColumnsDialog.show = false"
+                          },
+                          "innerHTML": [
+                            {
+                              "el": "v-icon",
+                              "innerHTML": "mdi-close"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-text",
+                      "attr": {
+                        "class": "pt-3"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "div",
+                          "attr": {
+                            "class": "text-body-2 text-medium-emphasis mb-2"
+                          },
+                          "innerHTML": "Tất cả cột được chọn sẵn. Bỏ chọn cột bạn không cần xuất."
+                        },
+                        {
+                          "el": "v-checkbox",
+                          "attr": {
+                            "v-for": "column in vueData.exportColumnsDialog.columns",
+                            ":key": "column.name",
+                            "v-model": "vueData.exportColumnsDialog.selectedColumns",
+                            ":value": "column.name",
+                            ":label": "column.title || column.name",
+                            "hide-details": "",
+                            "density": "compact"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "el": "v-card-actions",
+                      "attr": {
+                        "class": "mr-1 mb-1"
+                      },
+                      "innerHTML": [
+                        {
+                          "el": "v-spacer"
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "text": "",
+                            "label": "Hủy",
+                            "v-on:click": "vueData.exportColumnsDialog.show = false"
+                          }
+                        },
+                        {
+                          "el": "v-btn",
+                          "attr": {
+                            "color": "primary",
+                            "label": "Xuất Excel",
+                            ":disabled": "vueData.exportColumnsDialog.selectedColumns.length === 0",
+                            "v-on:click": "vueData.confirmExportColumns()"
+                          }
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }

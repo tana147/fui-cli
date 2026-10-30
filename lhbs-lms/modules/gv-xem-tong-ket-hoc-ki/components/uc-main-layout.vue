@@ -78,7 +78,7 @@
 								{{ isEn ? 'Save' : 'Lưu' }}
 							</v-btn>
 							<v-btn variant="outlined" prepend-icon="mdi-microsoft-excel" color="green"
-								:disabled="vueData.DSHocSinh.length === 0" @click="vueData.exportExcel()">
+								:disabled="vueData.DSHocSinh.length === 0" @click="openExportColumnsDialog()">
 								Export Excel
 							</v-btn>
 							<v-btn variant="outlined" prepend-icon="mdi-certificate-outline" color="orange"
@@ -164,6 +164,31 @@
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
+
+		<!-- Thay nút Excel tự tải của JExcel bằng bộ chọn cột; mặc định giữ toàn bộ cột đang xuất. -->
+		<v-dialog v-model="exportColumnsDialog.show" max-width="600" scrollable>
+			<v-card>
+				<v-card-title class="d-flex align-center px-3 pt-2 pb-3 subtitle-1 font-weight-bold">
+					{{ isEn ? 'Choose Excel columns' : 'Chọn cột xuất Excel' }}
+					<v-spacer />
+					<v-btn icon @click="exportColumnsDialog.show = false"><v-icon>mdi-close</v-icon></v-btn>
+				</v-card-title>
+				<v-card-text class="px-3 py-1">
+					<div class="text-body-2 text-medium-emphasis mb-2">
+						{{ isEn ? 'All columns start selected. Uncheck columns you do not need.' : 'Mặc định đã chọn tất cả cột. Bỏ chọn những cột bạn không cần xuất.' }}
+					</div>
+					<v-checkbox v-for="column in exportColumnsDialog.columns" :key="column.value"
+						v-model="exportColumnsDialog.selectedColumns" :value="column.value" :label="column.label"
+						density="compact" hide-details />
+				</v-card-text>
+				<v-card-actions class="pa-3">
+					<v-spacer />
+					<v-btn text @click="exportColumnsDialog.show = false">{{ isEn ? 'Cancel' : 'Hủy' }}</v-btn>
+					<v-btn color="primary" elevation="0" :disabled="!exportColumnsDialog.selectedColumns.length"
+						@click="confirmExportColumns">{{ isEn ? 'Export Excel' : 'Xuất Excel' }}</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</Global>
 </template>
 
@@ -173,7 +198,8 @@
 		data() {
 			return {
 				isEn: JSON.parse(localStorage.getItem('IsLanguage')) ?? false,
-				vueData
+				vueData,
+				exportColumnsDialog: { show: false, columns: [], selectedColumns: [] }
 			}
 		},
 		computed: {
@@ -226,6 +252,21 @@
 			window.removeEventListener('storage', this.handleStorageChange);
 		},
 		methods: {
+			openExportColumnsDialog() {
+				const columns = (this.vueData.columnHeader || [])
+					.filter(column => column?.name && column.title !== 'STT' && column.title !== 'HocSinhLopID')
+					.map(column => ({ value: column.name, label: column.title || column.name }));
+				if (!columns.length) return;
+				this.exportColumnsDialog.columns = columns;
+				// Mỗi lần xuất đều mặc định chọn đủ các cột đang được phép xuất.
+				this.exportColumnsDialog.selectedColumns = columns.map(column => column.value);
+				this.exportColumnsDialog.show = true;
+			},
+			confirmExportColumns() {
+				if (!this.exportColumnsDialog.selectedColumns.length) return;
+				this.vueData.exportExcel(this.exportColumnsDialog.selectedColumns);
+				this.exportColumnsDialog.show = false;
+			},
 			setLanguage(val) {
 				this.isEn = val;
 				this.vueData.isEn = val;

@@ -75,6 +75,14 @@
 						icon: 'mdi-history',
 						url: '/log-diem-tong-hop',
 					},
+					// Trang này đọc audit nội dung học liệu; API chi tiết trả BeforeData/AfterData từ bảng log lưu sẵn.
+					{
+						category: 'Học liệu số',
+						title: 'Lịch sử thay đổi nội dung học liệu số',
+						description: 'Tra cứu thao tác thêm, sửa, xóa nội dung học liệu số, người thực hiện và dữ liệu trước/sau.',
+						icon: 'mdi-book-open-page-variant',
+						url: '/log-hoc-lieu-so',
+					},
 					{
 						category: 'Sổ GVCN',
 						title: 'Lịch sử chỉnh sửa Sổ GVCN',

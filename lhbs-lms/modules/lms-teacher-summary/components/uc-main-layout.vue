@@ -2,22 +2,28 @@
 	<Global>
 		<template #header>
 			<v-card>
-				<v-card-title>
+				<v-card-title class="pb-1">
 					{{ TitlePage }}
 				</v-card-title>
-				<v-card-text>
-					<v-row align="center">
-						<v-col>
-							<v-select v-model="CapID" label="Chọn cấp học" :items="DSCap" item-title="title"
-								item-value="value" />
-						</v-col>
-						<v-col>
-							<uc-date-range-picker v-model="dateRange" :NienKhoa="vueData.NienKhoa" />
-							<v-btn color="success" variant="tonal" prepend-icon="mdi-microsoft-excel" @click="onExport">
-								Xuất Excel
-							</v-btn>
-						</v-col>
-					</v-row>
+				<v-card-text class="pt-1">
+					<div class="d-flex align-center flex-wrap ga-3">
+						<v-select
+							v-model="CapID"
+							label="Chọn cấp học"
+							:items="DSCap"
+							item-title="title"
+							item-value="value"
+							variant="outlined"
+							density="compact"
+							hide-details
+							style="width: 200px; max-width: 200px"
+						/>
+						<uc-date-range-picker v-model="dateRange" :NienKhoa="vueData.NienKhoa" />
+						<v-spacer />
+						<v-btn color="success" variant="tonal" prepend-icon="mdi-microsoft-excel" @click="onExport">
+							Xuất Excel
+						</v-btn>
+					</div>
 				</v-card-text>
 			</v-card>
 		</template>
@@ -114,14 +120,21 @@
 			const dataTong = lmsRef?.dataTong ?? []
 			const dataBaiHoc = lmsRef?.dataBaiHoc ?? []
 			const dataBaiTap = lmsRef?.dataBaiTap ?? []
+			// Các sheet LMS lấy đúng khoảng đang lọc trong component; phần Học liệu vẫn dùng date range chung.
+			const lmsFrom = lmsRef?.dashboardDateRange?.from || this.dateRange.from
+			const lmsTo = lmsRef?.dashboardDateRange?.to || this.dateRange.to
 
 			const capLabel = this.DSCap.find(c => c.value === this.CapID)?.title ?? ''
 			const nienKhoa = vueData.NienKhoa ?? ''
 			const hasRange = this.dateRange.from && this.dateRange.to
+			const lmsHasRange = lmsFrom && lmsTo
 
 			// Tiêu đề dùng trong sheet
 			const rangeLabel = hasRange
 				? `${this.formatDate(this.dateRange.from)} - ${this.formatDate(this.dateRange.to)}`
+				: `Năm học ${nienKhoa}`
+			const lmsRangeLabel = lmsHasRange
+				? `${this.formatDate(lmsFrom)} - ${this.formatDate(lmsTo)}`
 				: `Năm học ${nienKhoa}`
 
 			// Tên file
@@ -138,6 +151,12 @@
 				['Cấp học:', capLabel, '', 'Khoảng thời gian:', rangeLabel],
 				['Từ ngày:', hasRange ? this.formatDate(this.dateRange.from) : '(tất cả)',
 					'', 'Đến ngày:', hasRange ? this.formatDate(this.dateRange.to) : '(tất cả)'],
+				[],
+			]
+			const lmsInfoRows = [
+				['Cấp học:', capLabel, '', 'Khoảng thời gian:', lmsRangeLabel],
+				['Từ ngày:', lmsHasRange ? this.formatDate(lmsFrom) : '(tất cả)',
+					'', 'Đến ngày:', lmsHasRange ? this.formatDate(lmsTo) : '(tất cả)'],
 				[],
 			]
 			// Excel row của dòng data đầu tiên (1-based):
@@ -237,8 +256,8 @@
 			const T_DATA_END = DATA_START + dataTong.length - 1
 			const T_SUM_ROW = DATA_START + dataTong.length
 			const aoa2 = [
-				[`LMS – TỔNG QUAN THEO MÔN – ${capLabel} – ${rangeLabel}`],  // row 1
-				...infoRows,                                                   // row 2,3,4
+				[`LMS – TỔNG QUAN THEO MÔN – ${capLabel} – ${lmsRangeLabel}`],  // row 1
+				...lmsInfoRows,                                                 // row 2,3,4
 					// Thứ tự cột phải thống nhất với bảng LMS trên màn hình: tổng, chưa giao, đã giao.
 					['STT', 'Môn học', 'Tổng bài học', 'Chưa giao bài học', 'Đã giao bài học',
 						'Tổng bài tập', 'Chưa giao bài tập', 'Đã giao bài tập'],   // row 5
@@ -264,8 +283,8 @@
 			const BH_DATA_END = DATA_START + dataBaiHoc.length - 1
 			const BH_SUM_ROW = DATA_START + dataBaiHoc.length
 			const aoa3 = [
-				[`LMS – CHI TIẾT BÀI HỌC – ${capLabel} – ${rangeLabel}`],    // row 1
-				...infoRows,                                                   // row 2,3,4
+				[`LMS – CHI TIẾT BÀI HỌC – ${capLabel} – ${lmsRangeLabel}`],    // row 1
+				...lmsInfoRows,                                                 // row 2,3,4
 					// Các cột kết quả bên phải chỉ phản ánh bài học đã giao; bài chưa giao
 					// vẫn được thống kê ở nhóm cột đầu nhưng không làm tăng mẫu số tiến độ.
 					['STT', 'Môn học', 'Tổng bài học', 'Chưa giao', 'Đã giao',
@@ -304,8 +323,8 @@
 			const BT_DATA_END = DATA_START + dataBaiTap.length - 1
 			const BT_SUM_ROW = DATA_START + dataBaiTap.length
 			const aoa4 = [
-				[`LMS – CHI TIẾT BÀI TẬP – ${capLabel} – ${rangeLabel}`],    // row 1
-				...infoRows,                                                   // row 2,3,4
+				[`LMS – CHI TIẾT BÀI TẬP – ${capLabel} – ${lmsRangeLabel}`],    // row 1
+				...lmsInfoRows,                                                 // row 2,3,4
 					// Trạng thái và các tỉ lệ bên phải chỉ tính trên bài tập đã giao.
 					['STT', 'Môn học', 'Tổng bài tập', 'Chưa giao', 'Đã giao',
 						'HS được giao (bài đã giao)', 'Chưa làm', 'Đang làm', 'Đã nộp / chấm nháp', 'Đã chấm',

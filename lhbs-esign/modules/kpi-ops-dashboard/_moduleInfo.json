@@ -5,10 +5,10 @@
   "ProjectID": "lhbs-esign",
   "ModuleID": "kpi-ops-dashboard",
   "ModuleName": "Dashboard Vận Hành Hệ Thống",
-  "UpdateTime": "2026-10-27 16:19:26",
+  "UpdateTime": "2026-10-29 17:14:48",
   "UpdateUser": "DEV000068",
-  "LastLoad": null,
-  "LoadCount": 0,
+  "LastLoad": "2026-10-29",
+  "LoadCount": 280,
   "HTMLOnly": false,
   "Framework": "V3",
   "mTitle": "Dashboard Vận Hành Hệ Thống"

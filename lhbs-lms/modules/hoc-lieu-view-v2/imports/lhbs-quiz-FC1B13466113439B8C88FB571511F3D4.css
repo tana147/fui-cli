@@ -2324,3 +2324,85 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Quiz đơn là một câu hỏi độc lập: giữ nội dung ở độ rộng đọc được và chừa
+   bên trái cho nút Mục lục nổi, thay vì kéo thẻ câu hỏi cao/rộng hết canvas. */
+.lh-standalone-quiz-host .lh-single-slide {
+  display: block !important;
+  padding: 18px 20px 24px 156px !important;
+  overflow-y: auto !important;
+  background: #f8fafc !important;
+}
+
+.lh-standalone-quiz-host .lh-quiz-single {
+  width: 100% !important;
+  max-width: 960px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  flex: none !important;
+  margin: 0 auto !important;
+  padding: 20px 24px 22px !important;
+  overflow: visible !important;
+  background: #fff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.07) !important;
+}
+
+.lh-standalone-quiz-host .lh-quiz-header {
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  padding-bottom: 10px !important;
+  margin-bottom: 10px !important;
+}
+
+/* Bỏ khoảng trắng mặc định cuối lưới đáp án và giảm đệm desktop vừa phải.
+   Chiều cao vùng bấm trên mobile vẫn được giữ bởi quy tắc bên dưới. */
+.lh-standalone-quiz-host .lh-options-grid {
+  gap: 7px !important;
+  margin-bottom: 0 !important;
+}
+
+.lh-standalone-quiz-host .lh-question-prompt {
+  padding: 10px 14px !important;
+  margin-bottom: 12px !important;
+}
+
+.lh-standalone-quiz-host .lh-option-card {
+  padding: 8px 12px !important;
+}
+
+/* Nội dung từ editor có thể là <ol>/<ul>; marker nằm ngoài box của li nên
+   danh sách cần lề riêng để số/bullet không chạm viền ô câu hỏi. */
+.lh-standalone-quiz-host .lh-question-prompt ol,
+.lh-standalone-quiz-host .lh-question-prompt ul {
+  margin: 0 !important;
+  padding-inline-start: 1.5rem !important;
+}
+
+@media (max-width: 700px) {
+  /* Mục lục nổi đứng riêng hàng trên màn hình hẹp để không đè nhãn loại quiz. */
+  .lh-standalone-quiz-host .lh-single-slide {
+    padding: 72px 12px 20px !important;
+  }
+
+  .lh-standalone-quiz-host .lh-quiz-single {
+    padding: 16px 14px 18px !important;
+  }
+
+  /* Vùng bấm đủ cao cho ngón tay; không ép uc-latex-view cuộn riêng vì
+     MathJax sẽ tạo thanh cuộn và nút mũi tên ngay dưới từng công thức. */
+  .lh-standalone-quiz-host .lh-header-btn {
+    min-height: 44px !important;
+  }
+
+  .lh-standalone-quiz-host .lh-option-card {
+    min-height: 52px !important;
+  }
+
+  .lh-standalone-quiz-host .lh-option-content {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+
+}

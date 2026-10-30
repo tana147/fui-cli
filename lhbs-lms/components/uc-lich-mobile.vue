@@ -159,7 +159,8 @@
 				return `${this.formatDateShort(monday)} - ${this.formatDateShort(sunday)}`
 			},
 			currentDayData() {
-				return this.ThoiKhoaBieu.DSTKB.find(x => x.Thu === this.selectedThu) ?? null
+				// API có thể trả Thu dạng chuỗi; dùng cùng cách so sánh với tab ngày.
+				return this.ThoiKhoaBieu.DSTKB.find(x => Number(x.Thu) === Number(this.selectedThu)) ?? null
 			},
 		},
 		mounted() {
@@ -198,6 +199,8 @@
 			changeWeek(delta) {
 				this.weekOffset += delta
 				this.rebuildDays()
+				// Quay về tuần này phải chọn hôm nay; tuần khác bắt đầu từ Thứ 2.
+				this.selectedThu = this.isCurrentWeek ? this.todayThu : 2
 				if (this.HocSinh) this.getAllTKB()
 			},
 	
@@ -253,7 +256,7 @@
 
 			isDaySelected(thu) {
 				// Dữ liệu ngày có thể đi qua lớp binding dưới dạng chuỗi; so sánh số giữ active ổn định trên mobile.
-				return this.isCurrentWeek && this.selectedThu != null && Number(this.selectedThu) === Number(thu)
+				return this.selectedThu != null && Number(this.selectedThu) === Number(thu)
 			},
 
 			getMondayOfWeek(offset = 0) {
@@ -341,6 +344,11 @@
 									jsonTiet: Object.values(buoi.jsonTiet).sort((a, b) => a.Tiet - b.Tiet)
 								}))
 						}))
+					// Chỉ tuần khác mới tìm ngày có lịch; tuần này luôn giữ hôm nay dù là ngày nghỉ.
+					if (!this.isCurrentWeek && !this.ThoiKhoaBieu.DSTKB.some(day => Number(day.Thu) === Number(this.selectedThu) && day.DSBuoi.some(buoi => buoi.jsonTiet.length))) {
+						const firstDayWithLessons = this.ThoiKhoaBieu.DSTKB.find(day => day.DSBuoi.some(buoi => buoi.jsonTiet.length))
+						if (firstDayWithLessons) this.selectedThu = Number(firstDayWithLessons.Thu)
+					}
 	
 					this.$nextTick(() => this.scrollToToday())
 					// ← Gọi log sau khi có ThoiGian, dùng selectedThu hiện tại

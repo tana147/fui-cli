@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-29T08:48:07.447Z",
+  "fetchedAt": "2026-10-30T02:26:47.615Z",
   "tables": [
     "CREATE TABLE tblDebugLog (LogID int(4) NOT NULL PRIMARY KEY IDENTITY,Message nvarchar(max) NULL,CreateTime datetime(8) NULL);",
     "CREATE TABLE tblKPI_AuditDiscrepancies (DiscrepancyID int(4) NOT NULL PRIMARY KEY IDENTITY,PeriodKey varchar(20) NOT NULL,ScopeID varchar(50) NOT NULL,AuditCode varchar(50) NOT NULL,Category varchar(50) NOT NULL,Title nvarchar(250) NOT NULL,PrimarySource nvarchar(250) NOT NULL,PrimaryValue nvarchar(250) NOT NULL,SecondarySource nvarchar(250) NOT NULL,SecondaryValue nvarchar(250) NOT NULL,VarianceAnalysis nvarchar(max) NOT NULL,ActionOwner nvarchar(150) NOT NULL,VerificationStatus varchar(50) NULL,CreatedAt datetime(8) NULL);",

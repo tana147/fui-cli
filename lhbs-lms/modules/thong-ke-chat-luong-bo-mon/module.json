@@ -16,5 +16,8 @@
       ]
     }
   ],
-  "set": {}
+  "set": {
+    "menu": false,
+    "menuLeft": false
+  }
 }

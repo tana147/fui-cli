@@ -95,12 +95,14 @@
 					@click.stop="viewClassReport" :size="isMobile ? 'small' : 'default'">
 					<v-icon class="me-1" start>mdi-chart-box-outline</v-icon>{{ $t('message.ViewClassReport') }}
 				</v-btn>
-				<v-btn color="primary" variant="outlined" :disabled="!studentSubmissions.length"
+				<v-btn color="primary" variant="outlined" :disabled="!studentSubmissions.length || isGradingAll || isRemindingMultiple"
+					:loading="isGradingAll"
 					@click.stop="onChamBaiAll()" :size="isMobile ? 'small' : 'default'">
 					<v-icon class="me-1" start>mdi-clipboard-check-multiple-outline</v-icon>{{
 						$t('message.GradeAllAssignments') }}
 				</v-btn>
-				<v-btn color="amber" variant="outlined" :disabled="!DSSelectedFilter.length"
+				<v-btn color="amber" variant="outlined"
+					:disabled="!DSSelectedFilter.length || isGradingAll || isRemindingMultiple" :loading="isRemindingMultiple"
 					@click.stop="RemindMultiple()" :size="isMobile ? 'small' : 'default'">
 					<v-icon class="me-1" start>mdi-bell-ring-outline</v-icon>Nhắc nhở tất cả
 				</v-btn>
@@ -112,7 +114,7 @@
 		</v-card-title>
 		<v-data-table v-model="studentSelected" class="table-custom" :headers="headers" :items="processedSubmissions"
 			:search="search" :items-per-page="-1" :mobile="isMobile" :loading="loading" :hide-default-footer="true"
-			@update:sort-by="false" style="max-height: calc(100dvh - 197px)" density="compact"
+			style="max-height: calc(100dvh - 197px)" density="compact"
 			:show-expand="assignmentInfo?.LimitAssigned > 1 ? true : false" item-value="HocSinhID" return-object>
 
 			<template v-slot:item.data-table-expand="{ internalItem, isExpanded, toggleExpand }">
@@ -276,7 +278,8 @@
 					<v-tooltip location="top">
 						<template #activator="{ props }">
 							<v-btn v-bind="props" size="x-small" color="info" variant="text" icon
-								v-if="item.SubmissionStatus == 4" @click.stop="ChamNhapStatus(item)">
+								v-if="item.SubmissionStatus == 4" :loading="isAppealLoading(item)"
+								:disabled="isAppealLoading(item)" @click.stop="ChamNhapStatus(item)">
 								<v-icon>mdi-magnify-scan</v-icon>
 							</v-btn>
 						</template>
@@ -320,7 +323,9 @@
 					<v-tooltip location="top">
 						<template #activator="{ props }">
 							<v-btn v-bind="props" size="x-small" variant="text" color="amber" icon
-								:disabled="isDisableRemind(item)" @click="onRemind(item)">
+								:loading="isRemindLoading(item)"
+								:disabled="isDisableRemind(item) || isRemindingMultiple || isRemindLoading(item)"
+								@click="onRemind(item)">
 								<v-icon size="18">mdi-bell-alert-outline</v-icon>
 							</v-btn>
 						</template>
@@ -396,6 +401,10 @@
 			},
 			isOpen: false,
 			isMobile: mobile,
+			isGradingAll: false,
+			isRemindingMultiple: false,
+			remindLoadingIDs: [],
+			appealLoadingIDs: [],
 			_,
 			studentSubmissionsOriginal: [],
 			AssignType: null,
@@ -531,7 +540,8 @@
 				{ title: this.$t('message.StudentID'), key: 'HocSinhID', sortable: false, width: 100, align: 'center' },
 				{ title: this.$t('message.RegistrationNumber'), key: 'SoDanhBo', sortable: false, width: 130, align: 'center' },
 				{ title: this.$t('message.StudentName'), key: 'HoTen', sortable: false, width: 300 },
-				{ title: this.$t('message.SubmissionInfo'), key: 'thongtinnopbai', }
+				// Nội dung là danh sách chip theo từng lượt, nên dùng trạng thái lượt mới nhất làm giá trị sort ẩn.
+				{ title: this.$t('message.SubmissionInfo'), key: 'thongtinnopbai', value: item => this.getSubmissionStatusSortValue(item), sortable: true }
 			]
 		},
 		isDisabled(obj) {
@@ -563,19 +573,35 @@
 			// Không nhắc khi đã nộp / đang chấm / đã chấm
 			return [2, 3, 4].includes(item.SubmissionStatus)
 		},
+		// Track the pending reminder by submission ID so only its row button shows a spinner.
+		isRemindLoading(submission) {
+			return this.remindLoadingIDs.includes(submission?.SubmissionID)
+		},
+		isAppealLoading(submission) {
+			return this.appealLoadingIDs.includes(submission?.SubmissionID)
+		},
 		onRemind(submission) {
+			if (this.isRemindLoading(submission) || this.isRemindingMultiple) return
 			confirm({
 				title: "Thông báo nhắc nhở làm bài",
 				// message: "",
-				action: () => {
-					ajaxCALLPromise("lms/EL_PhuHuynh_ThongBao_Check_HetHan_BySubmissionID", {
-						SubmissionID: submission.SubmissionID
-					}).then(() => {
+				action: async () => {
+					if (this.isRemindLoading(submission) || this.isRemindingMultiple) return
+					const submissionID = submission.SubmissionID
+					this.remindLoadingIDs = [...this.remindLoadingIDs, submissionID]
+					try {
+						await ajaxCALLPromise("lms/EL_PhuHuynh_ThongBao_Check_HetHan_BySubmissionID", {
+							SubmissionID: submissionID
+						})
 						Vue.$toast.success("Thông báo nhắc nhở học sinh thành công", { position: "top" })
-					})
+					} catch (error) {
+						console.error('onRemind error:', error)
+						Vue.$toast.error("Gửi nhắc nhở thất bại. Vui lòng thử lại.", { position: "top" })
+					} finally {
+						this.remindLoadingIDs = this.remindLoadingIDs.filter(id => id !== submissionID)
+					}
 				}
 			})
-			// console.log(submission)
 		},
 		onStorageChange(event) {
 			if (event.key === 'IsShowHeader_ChamBai') {
@@ -583,47 +609,56 @@
 				// console.log("change", this.displayHeaderChamBai)
 			}
 		},
+		// Giữ trạng thái loading từ lúc xác nhận đến khi chấm xong và tải lại dữ liệu của lớp.
 		onChamBaiAll() {
 			const $this = this
+			if (this.isGradingAll || this.isRemindingMultiple) return
 			confirm({
 				title: "Xác nhận chấm tất cả bài",
-				action: () => {
-					let AsmConfigString = $this.assignmentList.find(a => a.AssignToClassID === $this.selectedAssignToClassID)?.AssignmentConfig ?? null
-					if (!AsmConfigString) return
+				action: async () => {
+					if ($this.isGradingAll || $this.isRemindingMultiple) return
+					$this.isGradingAll = true
+					try {
+						let AsmConfigString = $this.assignmentList.find(a => a.AssignToClassID === $this.selectedAssignToClassID)?.AssignmentConfig ?? null
+						if (!AsmConfigString) return
 
-					const AsmConfig = JSON.parse(AsmConfigString)
-					let isNotExistQuiz = false
-					for (var group of AsmConfig.groups) {
-						for (var question of group.questions) {
-							if (!question.type.includes('QUIZ')) isNotExistQuiz = true
+						const AsmConfig = JSON.parse(AsmConfigString)
+						let isNotExistQuiz = false
+						for (var group of AsmConfig.groups) {
+							for (var question of group.questions) {
+								if (!question.type.includes('QUIZ')) isNotExistQuiz = true
+							}
 						}
-					}
-					if (isNotExistQuiz) {
-						Vue.$toast.warning('Bài tập đang có dạng không phải trắc nghiệm. Vui lòng chấm bài từng học sinh', { position: "top" })
-						return
-					}
+						if (isNotExistQuiz) {
+							Vue.$toast.warning('Bài tập đang có dạng không phải trắc nghiệm. Vui lòng chấm bài từng học sinh', { position: "top" })
+							return
+						}
 
-					// Lấy học sinh đã nộp/chấm nháp; đồng thời gồm cả các bản ghi đã lên trạng thái 4 nhưng chưa có điểm.
-					const DSHocSinhSubmited = $this.studentSubmissionsOriginal.filter(x =>
-						x.SubmissionStatus === 2
-						|| x.SubmissionStatus === 3
-						|| (x.SubmissionStatus === 4 && (x.Score === null || x.Score === undefined))
-					)
-					const DSHocSinhGraded = []
-					for (var hocSinh of DSHocSinhSubmited) {
-						const { SubmissionContent, Score } = $this.fn_ChamBaiStudent(hocSinh, AsmConfig)
-						if (!SubmissionContent && !Score) continue
-						hocSinh.SubmissionContent = SubmissionContent
-						hocSinh.Score = Score
-						DSHocSinhGraded.push(hocSinh)
-					}
+						// Lấy học sinh đã nộp/chấm nháp; đồng thời gồm cả các bản ghi đã lên trạng thái 4 nhưng chưa có điểm.
+						const DSHocSinhSubmited = $this.studentSubmissionsOriginal.filter(x =>
+							x.SubmissionStatus === 2
+							|| x.SubmissionStatus === 3
+							|| (x.SubmissionStatus === 4 && (x.Score === null || x.Score === undefined))
+						)
+						const DSHocSinhGraded = []
+						for (var hocSinh of DSHocSinhSubmited) {
+							const { SubmissionContent, Score } = $this.fn_ChamBaiStudent(hocSinh, AsmConfig)
+							if (!SubmissionContent && !Score) continue
+							hocSinh.SubmissionContent = SubmissionContent
+							hocSinh.Score = Score
+							DSHocSinhGraded.push(hocSinh)
+						}
 
-					// console.log('DSHocSinhGraded', DSHocSinhGraded)
-					ajaxCALL("lms/EL_Teacher_PublishGrade_Multiple", {
-						Json_HocSinhSubmited: DSHocSinhGraded
-					}, res => {
-						$this.loadAllDataForAssignment(vueData.AssignToClassID_FromURL)
-					})
+						await ajaxCALLPromise("lms/EL_Teacher_PublishGrade_Multiple", {
+							Json_HocSinhSubmited: DSHocSinhGraded
+						})
+						await $this.loadAllDataForAssignment(vueData.AssignToClassID_FromURL)
+					} catch (error) {
+						console.error('onChamBaiAll error:', error)
+						Vue.$toast.error('Chấm tất cả bài thất bại. Vui lòng thử lại.', { position: "top" })
+					} finally {
+						$this.isGradingAll = false
+					}
 				}
 			})
 		},
@@ -658,7 +693,8 @@
 						arr1.forEach(opt => { if (answerData.includes(opt)) correctIndex++ })
 						if (mode === 'partial') {
 							const partialMap = { 1: 0.1, 2: 0.25, 3: 0.5, 4: 1.0 }
-							manualScore = partialMap[correctIndex] ?? 0
+							// Bảng partial là tỷ lệ; phải nhân với điểm tối đa của câu.
+							manualScore = (partialMap[correctIndex] ?? 0) * Number(question.points || 0)
 						} else {
 							manualScore = arr1.length ? Math.round((correctIndex / arr1.length) * question.points * 100) / 100 : 0
 						}
@@ -676,7 +712,8 @@
 						question.config.options.forEach(opt => { if (opt.correctAnswer === answerData[opt.id]) c++ })
 						if (mode === 'partial') {
 							const partialMap = { 1: 0.1, 2: 0.25, 3: 0.5, 4: 1.0 }
-							manualScore = partialMap[c] ?? 0
+							// Câu 4 điểm đúng cả 4 ý phải nhận 4 điểm, không phải 1 điểm.
+							manualScore = (partialMap[c] ?? 0) * Number(question.points || 0)
 						} else {
 							const total = question.config.options.length
 							manualScore = total ? Math.round((c / total) * question.points * 100) / 100 : 0
@@ -695,7 +732,7 @@
 							}
 						})
 						const pts = Number(question?.points ?? 0)
-						manualScore = (numberOfCorrect / correctPairs.length) * pts
+						manualScore = correctPairs.length ? (numberOfCorrect / correctPairs.length) * pts : 0
 						Score += manualScore
 					}
 					else if (question.type === "QUIZ_FILL_IN_BLANK") {
@@ -703,11 +740,13 @@
 						const blanks = parts.filter(p => p.type === 'blank')
 						if (blanks.length === 0) {
 							manualScore = question.points
+							Score += manualScore
 						} else {
 							let correctsAnswer = 0
 							blanks.forEach(x => {
-								const answerToLowerCase = answerData[x.id].toLowerCase().replace(/\s+/g, '').trim() ?? ''
-								if (x.acceptedAnswers.map(item => item.toLowerCase().replace(/\s+/g, '').trim()).includes(answerToLowerCase)) {
+								// Ô chưa điền được tính sai, không làm dừng chấm cả bài.
+								const answerToLowerCase = String(answerData?.[x.id] ?? '').toLowerCase().replace(/\s+/g, '').trim()
+								if ((x.acceptedAnswers || []).map(item => String(item).toLowerCase().replace(/\s+/g, '').trim()).includes(answerToLowerCase)) {
 									correctsAnswer += 1
 								}
 							})
@@ -935,8 +974,32 @@
 				onclose: () => this.loadAllDataForAssignment(vueData.AssignToClassID_FromURL)
 			})
 		},
+		getSubmissionStatusSortValue(hocsinh) {
+			const attempts = this.getAllAssigned(hocsinh)
+			const latestAttempt = attempts[attempts.length - 1]
+			// Group students by progress: not started, working/requested again, submitted, then graded.
+			const statusPriority = {
+				'NOT_SUBMITTED': 0,
+				'IN_PROGRESS': 1,
+				'RESUBMIT': 2,
+				'SUBMITTED': 3,
+				'SAVE_DRAFT': 4,
+				'GRADED': 5
+			}
+			return statusPriority[latestAttempt?.Status || hocsinh.Status || 'NOT_SUBMITTED'] ?? 99
+		},
 		getAllAssigned(hocsinh) {
-			return this.studentSubmissionsOriginal.filter(item => item.HocSinhID == hocsinh.HocSinhID)
+			// Keep the visible Lần 1…N chips in attempt order; SQL join order is not guaranteed.
+			return this.studentSubmissionsOriginal
+				.filter(item => item.HocSinhID == hocsinh.HocSinhID)
+				.sort((left, right) => {
+					const leftAttempt = Number(left?.LanNop)
+					const rightAttempt = Number(right?.LanNop)
+					if (Number.isFinite(leftAttempt) && Number.isFinite(rightAttempt) && leftAttempt !== rightAttempt) {
+						return leftAttempt - rightAttempt
+					}
+					return Number(left?.SubmissionID || 0) - Number(right?.SubmissionID || 0)
+				})
 
 		},
 		mappingValue(item) {
@@ -953,19 +1016,31 @@
 				vueData.AssignType = 'STUDENT'
 			}
 		},
+		// Nhắc nhiều học sinh bằng các request nối tiếp; giữ nút loading cho tới khi toàn bộ danh sách hoàn tất.
 		RemindMultiple() {
 			const $this = this
+			const selectedSubmissions = [...this.DSSelectedFilter]
+			if (!selectedSubmissions.length || this.isRemindingMultiple || this.isGradingAll) return
 			confirm({
-				title: "Thông báo nhắc nhở làm bài cho " + $this.DSSelectedFilter.length + ' học sinh?',
+				title: "Thông báo nhắc nhở làm bài cho " + selectedSubmissions.length + ' học sinh?',
 				// message: "",
 				action: async () => {
-					for (let hs of $this.DSSelectedFilter) {
-						await ajaxCALLPromise("lms/EL_PhuHuynh_ThongBao_Check_HetHan_BySubmissionID", {
-							SubmissionID: hs.SubmissionID
-						}).then(() => { })
+					if ($this.isRemindingMultiple || $this.isGradingAll) return
+					$this.isRemindingMultiple = true
+					try {
+						for (const hs of selectedSubmissions) {
+							await ajaxCALLPromise("lms/EL_PhuHuynh_ThongBao_Check_HetHan_BySubmissionID", {
+								SubmissionID: hs.SubmissionID
+							})
+						}
+						Vue.$toast.success('Nhắc nhở thành công!', { position: 'top' })
+						$this.studentSelected = []
+					} catch (error) {
+						console.error('RemindMultiple error:', error)
+						Vue.$toast.error('Gửi nhắc nhở thất bại. Vui lòng thử lại.', { position: 'top' })
+					} finally {
+						$this.isRemindingMultiple = false
 					}
-					Vue.$toast.success('Nhắc nhở thành công!', { position: 'top' })
-					$this.studentSelected = []
 				}
 			})
 		},
@@ -993,14 +1068,22 @@
 				Vue.$toast.error('Không thể yêu cầu nộp lại bài. Vui lòng thử lại.', { position: 'top' })
 			}).finally(() => { y.loading = false })
 		},
-		ChamNhapStatus(obj) {
-			ajaxCALLPromise("lms/EL_Teacher_AssignToClass_Upd_SubmissionStatus", {
-				SubmissionID: obj.SubmissionID,
-				SubmissionStatus: 3
-			}).then(() => {
+		async ChamNhapStatus(obj) {
+			if (this.appealLoadingIDs.includes(obj.SubmissionID)) return
+			this.appealLoadingIDs = [...this.appealLoadingIDs, obj.SubmissionID]
+			try {
+				await ajaxCALLPromise("lms/EL_Teacher_AssignToClass_Upd_SubmissionStatus", {
+					SubmissionID: obj.SubmissionID,
+					SubmissionStatus: 3
+				})
 				Vue.$toast.success('Phúc khảo thành công!', { position: 'top' })
-				this.fetchStudentSubmissions(this.selectedAssignToClassID)
-			})
+				await this.fetchStudentSubmissions(this.selectedAssignToClassID)
+			} catch (error) {
+				console.error('ChamNhapStatus error:', error)
+				Vue.$toast.error('Cập nhật phúc khảo thất bại. Vui lòng thử lại.', { position: 'top' })
+			} finally {
+				this.appealLoadingIDs = this.appealLoadingIDs.filter(id => id !== obj.SubmissionID)
+			}
 		},
 		secondsToMinuteSecond
 	},

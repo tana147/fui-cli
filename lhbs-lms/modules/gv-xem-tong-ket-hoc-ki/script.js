@@ -152,12 +152,16 @@ async function fetchTongKetByLop(lopItem, khoiIDOverride = null, silent = false)
         }
     }
 }
-function exportExcel() {
+function exportExcel(selectedColumnNames) {
     // 1. Dữ liệu mẫu (mảng object)
     const rawData = vueData.DSHocSinh
     // 2. Định nghĩa header nhóm (dòng 1) và header cột (dòng 2)
-    const headerRow1 = vueData.columnHeader.filter(item => item.title != 'STT' && item.title != 'HocSinhLopID').map(item => item.title)
-    const keys = vueData.columnHeader.filter(item => item.title != 'STT' && item.title != 'HocSinhLopID').map(item => item.name)
+    const exportableColumns = (vueData.columnHeader || []).filter(item => item.title != 'STT' && item.title != 'HocSinhLopID')
+    const selected = new Set(selectedColumnNames || exportableColumns.map(item => item.name))
+    const selectedColumns = exportableColumns.filter(item => selected.has(item.name))
+    if (!selectedColumns.length) return
+    const headerRow1 = selectedColumns.map(item => item.title)
+    const keys = selectedColumns.map(item => item.name)
     // 4. Chuyển rawData thành mảng 2 chiều
     const dataRows = rawData.map(item =>
         keys.map(k => item[k] != null ? item[k] : "")

@@ -135,8 +135,6 @@
                         @update:groups="updateGroups"
                         @update:selected-item="selectedItem = $event"
                         @open-group-import="handleGroupImport"
-                        @remove-group="handleCanvasGroupRemove"
-                        @remove-question="handleCanvasQuestionRemove"
                     />
 
                     <div v-else class="px-4 pb-4 h-100 d-flex flex-column">
@@ -185,7 +183,7 @@
                 </v-card>
                 <v-alert v-else type="info" variant="tonal" density="compact" text="Vui lòng thiết lập link bài tập để xem trước." />
             </div>
-			<uc-assignment-canvas v-else :assignment="assignment" :groups="assignment?.AssignmentConfig?.groups" :selected-item="selectedItem" :can-import-from-hoc-lieu="hasHocLieuLink" @update:groups="updateGroups" @update:selected-item="selectedItem = $event" @open-group-import="handleGroupImport" @remove-group="handleCanvasGroupRemove" @remove-question="handleCanvasQuestionRemove" />
+			<uc-assignment-canvas v-else :assignment="assignment" :groups="assignment?.AssignmentConfig?.groups" :selected-item="selectedItem" :can-import-from-hoc-lieu="hasHocLieuLink" @update:groups="updateGroups" @update:selected-item="selectedItem = $event" @open-group-import="handleGroupImport" />
         </div>
 
         <!-- Mobile: Bottom Bar -->
@@ -422,7 +420,6 @@
             isLibraryDrawerOpen: false,
             isPropertiesDrawerOpen: false,
             isSaving: false,
-            isDeletingElement: false,
             _skipNextAutoSave: false,
             autoSaveTimer: null,
             linkedHocLieu: null,
@@ -906,17 +903,6 @@
             const groups = JSON.parse(JSON.stringify(this.assignment?.AssignmentConfig?.groups || []))
             const group = groups[groupIndex]
             if (!group || !document?.source) return
-            // Chuẩn hóa dấu vết ngay tại cửa ngõ import để thao tác xóa element sau này
-            // biết đây là tài liệu dùng chung, kể cả khi API không trả sourceTracking.
-            const importedDocument = {
-                ...document,
-                sourceTracking: {
-                    ...(document.sourceTracking || {}),
-                    sourceType: document.sourceTracking?.sourceType || document.sourceType || 'CONTENT_HUB',
-                    sourceKind: document.sourceTracking?.sourceKind || 'DOCUMENT',
-                    importedAt: document.sourceTracking?.importedAt || new Date().toISOString(),
-                },
-            }
             // AssignmentConfig chưa có block tài liệu riêng; media cấp nhóm giữ được file/link mà không đổi contract DB. 
             group.media = group.media || {
                 type: 'YOUTUBE',
@@ -925,15 +911,15 @@
                 sourceFiles: { file: [], image: [] },
             }
             group.media.sourceFiles = group.media.sourceFiles || { file: [], image: [] }
-            const type = `${importedDocument.contentType || ''} ${importedDocument.name || ''} ${importedDocument.source || ''}`.toLowerCase()
+            const type = `${document.contentType || ''} ${document.name || ''} ${document.source || ''}`.toLowerCase()
             if (/image|\.png|\.jpe?g|\.gif|\.webp|\.svg/.test(type)) {
-                group.media.sourceFiles.image = [...(group.media.sourceFiles.image || []), importedDocument]
+                group.media.sourceFiles.image = [...(group.media.sourceFiles.image || []), document]
             } else if (/youtube|youtu\.be/.test(type)) {
-                group.media.sourceYT = { id: importedDocument.id || '', name: importedDocument.name, source: importedDocument.source, sourceTracking: importedDocument.sourceTracking }
+                group.media.sourceYT = { id: document.id || '', name: document.name, source: document.source, sourceTracking: document.sourceTracking }
             } else if (/audio|\.mp3|\.wav|\.aac|\.m4a|\.ogg/.test(type)) {
-                group.media.sourceRecord = { id: importedDocument.id || '', name: importedDocument.name, source: importedDocument.source, sourceTracking: importedDocument.sourceTracking }
+                group.media.sourceRecord = { id: document.id || '', name: document.name, source: document.source, sourceTracking: document.sourceTracking }
             } else {
-                group.media.sourceFiles.file = [...(group.media.sourceFiles.file || []), importedDocument]
+                group.media.sourceFiles.file = [...(group.media.sourceFiles.file || []), document]
             }
             this.updateGroups(groups)
         },
@@ -975,12 +961,26 @@
             const missingQuestions = []
             ;(groups || []).forEach(group => {
                 ;(group?.questions || []).forEach(question => {
-                    const text = String(this.getQuestionContentText(question) || '')
+                    const rawText = String(this.getQuestionContentText(question) || '')
+                    const hasMediaContent = /<(img|svg|video|audio|iframe)\b/i.test(rawText)
+                    const config = question?.config || {}
+                    const media = config?.media || question?.media || {}
+                    const hasAttachedMedia = !!(
+                        media?.sourceYT?.source ||
+                        media?.sourceRecord?.source ||
+                        media?.sourceFiles?.image?.length ||
+                        media?.sourceFiles?.file?.length ||
+                        media?.youtube ||
+                        media?.audio ||
+                        media?.files?.length
+                    )
+                    const hasPartsText = question?.type === 'QUIZ_FILL_IN_BLANK' && Array.isArray(config.parts) && config.parts.some(p => p.type === 'text' && String(p.value || '').trim())
+                    const text = rawText
                         .replace(/<[^>]*>/g, ' ')
                         .replace(/&nbsp;/gi, ' ')
                         .replace(/\s+/g, ' ')
                         .trim()
-                    if (!text) missingQuestions.push(question)
+                    if (!text && !hasMediaContent && !hasAttachedMedia && !hasPartsText) missingQuestions.push(question)
                 })
             })
             const labels = missingQuestions.map(question => question?.ordinalNumber ? `Câu ${question.ordinalNumber}` : 'Câu hỏi')
@@ -1179,155 +1179,6 @@
             this.selectedItem = { type: 'question', groupIndex: newGroups.length - 1, qIndex: newGroups[newGroups.length - 1].questions.length - 1 }
             if (this.isMobile) {
                 this.isLibraryDrawerOpen = false
-            }
-        },
-        isContentHubOrigin(source, owner) {
-            const sourceTypes = [
-                source?.sourceTracking?.sourceType,
-                owner?.sourceTracking?.sourceType,
-                source?.sourceType,
-                source?.origin,
-            ]
-            // HOC_LIEU_SO là schema cũ của luồng học liệu; cũng là nguồn dùng chung
-            // nên xóa khỏi bài chỉ được gỡ liên kết, không được xóa file gốc.
-            return sourceTypes.some(type => ['CONTENT_HUB', 'HOC_LIEU_SO'].includes(String(type || '').trim().toUpperCase()))
-        },
-        mediaSourceEntries(media, owner) {
-            if (!media) return []
-            const entries = []
-            const add = source => {
-                if (source && (source.source || source.id || source.externalId || source.dbFileId || source.resourceNodeId)) {
-                    entries.push({ source, owner })
-                }
-            }
-            add(media.sourceYT)
-            add(media.sourceRecord)
-            ;['file', 'image'].forEach(type => (media.sourceFiles?.[type] || []).forEach(add))
-            return entries
-        },
-        removedElementMediaEntries(element, kind) {
-            if (kind === 'group') {
-                return [
-                    ...this.mediaSourceEntries(element?.media, element),
-                    ...(element?.questions || []).flatMap(question => this.mediaSourceEntries(question?.config?.media, question)),
-                ]
-            }
-            return this.mediaSourceEntries(element?.config?.media, element)
-        },
-        mediaSourceKeys(source) {
-            return [
-                source?.externalId ? `external:${source.externalId}` : '',
-                source?.dbFileId ? `db:${source.dbFileId}` : '',
-                source?.resourceFileId ? `resource:${source.resourceFileId}` : '',
-                source?.id ? `id:${source.id}` : '',
-            ].filter(Boolean)
-        },
-        assignmentMediaEntries(groups) {
-            return (groups || []).flatMap(group => [
-                ...this.mediaSourceEntries(group?.media, group),
-                ...(group?.questions || []).flatMap(question => this.mediaSourceEntries(question?.config?.media, question)),
-            ])
-        },
-        deleteExternalWithManager(manager, method, fileId, accessToken) {
-            // UploadManager cũ dùng callback và có thể nuốt lỗi; bọc lại để không
-            // xóa element khỏi editor khi file bên thứ ba chưa được xác nhận xóa.
-            return new Promise((resolve, reject) => manager[method](fileId, {
-                accessToken,
-                onComplete: resolve,
-                onError: reject,
-            }))
-        },
-        async deleteAssignmentMediaSource(source) {
-            const manager = window.UploadManager
-            if (source?.resourceNodeId) {
-                await fetchPromise('lms/FP_TaiNguyen_Node_Delete', { NoiDungID: source.resourceNodeId }, { cache: false })
-            }
-
-            // Chỉ file do bài tập upload mới được xóa khỏi YouTube/Google Drive.
-            // URL nhập tay hoặc file Content Hub không đi vào nhánh này.
-            const sourceUrl = source?.externalSource || source?.source || ''
-            const isYoutubeSource = source?.mediaProvider === 'youtube'
-                || (source?.mediaSource === 'upload' && /youtube\.com|youtu\.be/i.test(sourceUrl))
-            const externalId = source?.externalId || (source?.mediaSource === 'upload' ? source.id : '')
-            const needsManager = Boolean(externalId || source?.dbFileId || source?.resourceFileId || (source?.id && source.mediaSource === 'db'))
-            if (needsManager && !manager) throw new Error('UploadManager chưa được khởi tạo')
-            if (externalId) {
-                const token = await fetchPromise('lms/FP_Youtube_Token_Get', {}, { forceRefresh: true, cache: false })
-                await this.deleteExternalWithManager(
-                    manager,
-                    isYoutubeSource ? 'deleteFromYouTube' : 'deleteFromGoogleDrive',
-                    externalId,
-                    token?.access_token,
-                )
-            }
-
-            // File upload được lưu thêm ở LMS FileData, độc lập với việc đã có
-            // resourceNodeId hay chưa; phải dọn bản này để không tạo file mồ côi.
-            const dbFileId = source?.dbFileId || (source?.mediaSource === 'db' ? source.id : '')
-            if (dbFileId) await manager.deleteLmsFileData(dbFileId)
-            if (source?.resourceFileId && source.resourceFileId !== dbFileId) {
-                // Tương thích dữ liệu cũ từng lưu bản sao bằng API LMS File.
-                await manager.deleteLmsFile(source.resourceFileId)
-            }
-        },
-        async cleanupRemovedElementMedia(entries, remainingGroups) {
-            const remainingKeys = new Set(this.assignmentMediaEntries(remainingGroups).flatMap(({ source }) => this.mediaSourceKeys(source)))
-            const cleanedKeys = new Set()
-            for (const { source, owner } of entries) {
-                // Media lấy từ Content Hub là tài sản dùng chung: chỉ xóa liên kết
-                // khỏi bài đang soạn, tuyệt đối không xóa node/file nguồn.
-                if (this.isContentHubOrigin(source, owner)) continue
-                const keys = this.mediaSourceKeys(source)
-                if (keys.some(key => remainingKeys.has(key) || cleanedKeys.has(key))) continue
-                try {
-                    await this.deleteAssignmentMediaSource(source)
-                    keys.forEach(key => cleanedKeys.add(key))
-                } catch (error) {
-                    console.error('Lỗi dọn media khi xóa element:', error)
-                    this.showSnackbar(error?.message || 'Không thể xóa media của element.', 'error')
-                    return false
-                }
-            }
-            return true
-        },
-        async handleCanvasQuestionRemove({ groupIndex, qIndex, question }) {
-            if (this.isDeletingElement) return
-            const currentGroups = JSON.parse(JSON.stringify(this.assignment?.AssignmentConfig?.groups || []))
-            const currentQuestion = currentGroups[groupIndex]?.questions?.[qIndex]
-            if (!currentQuestion) return
-            this.isDeletingElement = true
-            try {
-                const removedQuestion = question || currentQuestion
-                currentGroups[groupIndex].questions.splice(qIndex, 1)
-                const cleaned = await this.cleanupRemovedElementMedia(
-                    this.removedElementMediaEntries(removedQuestion, 'question'),
-                    currentGroups,
-                )
-                if (!cleaned) return
-                this.updateGroups(currentGroups)
-                this.selectedItem = null
-            } finally {
-                this.isDeletingElement = false
-            }
-        },
-        async handleCanvasGroupRemove({ groupIndex, group }) {
-            if (this.isDeletingElement) return
-            const currentGroups = JSON.parse(JSON.stringify(this.assignment?.AssignmentConfig?.groups || []))
-            const currentGroup = currentGroups[groupIndex]
-            if (!currentGroup) return
-            this.isDeletingElement = true
-            try {
-                const removedGroup = group || currentGroup
-                const remainingGroups = currentGroups.filter((_, index) => index !== groupIndex)
-                const cleaned = await this.cleanupRemovedElementMedia(
-                    this.removedElementMediaEntries(removedGroup, 'group'),
-                    remainingGroups,
-                )
-                if (!cleaned) return
-                this.updateGroups(remainingGroups)
-                this.selectedItem = null
-            } finally {
-                this.isDeletingElement = false
             }
         },
         updateGroups(newGroups) {

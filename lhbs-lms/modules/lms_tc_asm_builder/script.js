@@ -101,23 +101,6 @@ function isCheckAnswerQuestionNotChoose(question) {
             flag = true
         }
     }
-    if (question.type === "QUIZ_ORDERING") {
-        // `items` là nội dung các ý; `correctOrder` là danh sách ID theo thứ tự đúng.
-        // Kiểm tra cả hai để câu hỏi không được lưu khi thiếu ý hoặc trỏ tới ID không tồn tại.
-        const items = Array.isArray(config.items) ? config.items : []
-        const itemIds = items.map(item => String(item?.id ?? ''))
-        const uniqueItemIds = new Set(itemIds)
-        const correctOrder = Array.isArray(config.correctOrder) ? config.correctOrder.map(id => String(id)) : []
-        if (items.length < 2
-            || itemIds.some(id => !id)
-            || uniqueItemIds.size !== items.length
-            || items.some(item => !String(item?.text ?? '').trim())
-            || correctOrder.length !== items.length
-            || new Set(correctOrder).size !== items.length
-            || correctOrder.some(id => !uniqueItemIds.has(id))) {
-            flag = true
-        }
-    }
     return flag
 }
 function normalizeAcceptedAnswerKey(value) {
@@ -137,40 +120,9 @@ function normalizeNumberInput(value) {
 }
 vueData.normalizeNumberInput = normalizeNumberInput
 function isAutoGradable(type) {
-    // QUIZ_ORDERING có đáp án chuẩn nên thuộc nhóm quiz và được phép chấm tự động.
-    return String(type || '').startsWith('QUIZ_')
+    return type.startsWith('QUIZ_')
 }
 vueData.isAutoGradable = isAutoGradable
-// Chấm QUIZ_ORDERING theo từng vị trí: tổng điểm câu hỏi được chia đều cho số item.
-// Tính động từ question.points để khi giáo viên đổi tổng điểm, điểm mỗi item không bị stale.
-function getOrderingItemScore(question) {
-    const items = Array.isArray(question?.config?.items) ? question.config.items : []
-    const totalPoints = normalizeNumberInput(question?.points)
-    return items.length > 0 ? totalPoints / items.length : 0
-}
-function getOrderingScore(question, submittedOrder) {
-    const items = Array.isArray(question?.config?.items) ? question.config.items : []
-    const itemIds = items.map(item => String(item?.id ?? ''))
-    const expectedOrder = Array.isArray(question?.config?.correctOrder) && question.config.correctOrder.length
-        ? question.config.correctOrder.map(id => String(id))
-        : itemIds
-    const actualOrder = Array.isArray(submittedOrder) ? submittedOrder.map(id => String(id)) : []
-    const pointsPerItem = expectedOrder.length > 0 ? normalizeNumberInput(question?.points) / expectedOrder.length : 0
-    let correctCount = 0
-    for (let index = 0; index < expectedOrder.length; index += 1) {
-        if (actualOrder[index] === expectedOrder[index]) correctCount += 1
-    }
-    return {
-        correctCount,
-        totalItems: expectedOrder.length,
-        pointsPerItem,
-        score: correctCount * pointsPerItem,
-        totalPoints: expectedOrder.length * pointsPerItem,
-        isCorrect: expectedOrder.length > 0 && correctCount === expectedOrder.length,
-    }
-}
-vueData.getOrderingItemScore = getOrderingItemScore
-vueData.getOrderingScore = getOrderingScore
 const _defaultMedia = () => ({
     type: 'YOUTUBE',
     sourceYT: { id: '', name: '', source: '' },
@@ -228,18 +180,8 @@ function buildNewQuestion(componentInfo, ordinalNumber) {
             q.config.columnB = []
             q.config.correctPairs = []
             break
-        case 'QUIZ_ORDERING':
-            q.config.items = [
-                { id: crypto.randomUUID(), text: '' },
-                { id: crypto.randomUUID(), text: '' }
-            ]
-            q.config.correctOrder = q.config.items.map(item => item.id)
-            q.config.scoringMode = 'equal'
-            break
         case 'ESSAY':
         case 'SHORT_ANSWER':
-            // Câu chấm tay vẫn cần đáp án tham khảo để giáo viên đối chiếu khi chấm bài.
-            q.config.referenceAnswer = ''
         case 'FILE_UPLOAD':
         case 'AUDIO_RESPONSE':
             q.gradingType = 'manual'

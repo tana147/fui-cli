@@ -193,12 +193,28 @@
 		</div>
 		<!-- ==================== 8. SHORT_ANSWER / ESSAY ==================== -->
 		<div v-else-if="['SHORT_ANSWER', 'ESSAY'].includes(loaiNoiDung)">
-			<uc-rich-text-editor label="Câu hỏi/Yêu cầu" v-model="editableData.prompt"
-				:imageapi="vueData.v_Set.apiFile" variant="outlined" rows="2" auto-grow />
-			<!-- Key này được lưu trong content để giáo viên có đáp án tham khảo khi chấm tay; không hiển thị cho học sinh. -->
-			<uc-rich-text-editor class="mt-4" label="Đáp án tham khảo (chỉ giáo viên xem)"
-				v-model="editableData.referenceAnswer" :imageapi="vueData.v_Set.apiFile"
-				variant="outlined" rows="4" auto-grow />
+			<div class="mb-4">
+				<div class="text-subtitle-2 font-weight-bold text-primary mb-1 d-flex align-center ga-1">
+					<v-icon size="small" color="primary">mdi-help-circle-outline</v-icon>
+					<span>Câu hỏi / Yêu cầu tự luận <span class="text-error">*</span></span>
+				</div>
+				<div class="text-caption text-grey-darken-1 mb-2">Nhập nội dung câu hỏi hoặc yêu cầu bài làm tự luận cho học sinh:</div>
+				<uc-rich-text-editor v-model="editableData.prompt"
+					:imageapi="vueData.v_Set.apiFile" variant="outlined" rows="3" auto-grow />
+			</div>
+
+			<div class="mt-4">
+				<div class="text-subtitle-2 font-weight-bold text-amber-darken-3 mb-1 d-flex align-center ga-1">
+					<v-icon size="small" color="amber-darken-3">mdi-lightbulb-outline</v-icon>
+					<span>Đáp án tham khảo / Gợi ý chấm <span class="text-caption font-weight-regular text-grey">(Không bắt buộc)</span></span>
+				</div>
+				<v-alert density="compact" type="info" variant="tonal" class="mb-2 text-caption">
+					Nội dung này <strong>chỉ giáo viên nhìn thấy</strong> để làm căn cứ chấm điểm, học sinh sẽ <strong>không</strong> thấy nội dung này.
+				</v-alert>
+				<uc-rich-text-editor
+					v-model="editableData.referenceAnswer" :imageapi="vueData.v_Set.apiFile"
+					variant="outlined" rows="4" auto-grow />
+			</div>
 		</div>
 		<!-- ==================== Soạn thảo: QUIZ_COMPOSITE (Bài kiểm tra / Bài thi) ==================== -->
 		<div v-else-if="loaiNoiDung === 'QUIZ_COMPOSITE'" class="quiz-composite-wrap">
