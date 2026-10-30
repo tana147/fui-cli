@@ -100,27 +100,47 @@
     <!-- 3. PAGE 0: HỘI ĐỒNG TRƯỜNG (Executive Board Overview) -->
     <div v-if="page === 0" class="uc-kpi-ops__page">
       <!-- ═══════════════════════════════════════════════════════════════ -->
-      <!-- TẦNG 1: 6 KPI CHIẾN LƯỢC CHA (EXECUTIVE RESULTS FRAMEWORK)      -->
+      <!-- TẦNG 1: EXECUTIVE BOARD SCORECARD                               -->
       <!-- ═══════════════════════════════════════════════════════════════ -->
       <div class="uc-kpi3t__section-h">
         <div class="d-flex align-center justify-between flex-wrap gap-2 mb-2">
           <div>
             <div class="uc-kpi3t__section-title">
               <span class="uc-kpi3t__tier-badge tier-1">TẦNG 1</span>
-              <span>6 KPI CHIẾN LƯỢC CHA (BOARD SCORECARD)</span>
+              <span>EXECUTIVE BOARD SCORECARD &middot; HỘI ĐỒNG TRƯỜNG</span>
             </div>
             <div class="uc-kpi3t__section-sub">
-              Bấm vào từng KPI để lọc Tiêu chí Vận hành (Tầng 2) và xem Phân tích Chẩn đoán sâu (Tầng 3)
+              Bấm vào từng chỉ số để lọc Tiêu chí Vận hành (Tầng 2) và kích hoạt Phân tích Chẩn đoán sâu (Tầng 3)
             </div>
           </div>
           <div class="d-flex align-center gap-2">
+            <!-- Nút Toggle 6 KPI vs 4 Khối -->
+            <div class="uc-kpi3t__toggle-group">
+              <button 
+                type="button" 
+                class="uc-kpi3t__toggle-btn" 
+                :class="{ 'is-active': kpiViewMode === 'STRATEGIC' }" 
+                @click="kpiViewMode = 'STRATEGIC'"
+              >
+                6 KPI Chiến Lược Results Framework
+              </button>
+              <button 
+                type="button" 
+                class="uc-kpi3t__toggle-btn" 
+                :class="{ 'is-active': kpiViewMode === 'GROUPS' }" 
+                @click="kpiViewMode = 'GROUPS'"
+              >
+                4 Khối Vận Hành Cốt Lõi
+              </button>
+            </div>
             <span class="uc-kpi-ops__pill2 is-live">
               Đang chọn: <b>{{ activeTier1Obj ? activeTier1Obj.KpiName : 'KPI 1' }}</b>
             </span>
           </div>
         </div>
 
-        <div class="uc-kpi3t__grid-6">
+        <!-- Grid 6 KPI Chiến Lược -->
+        <div class="uc-kpi3t__grid-6" v-if="kpiViewMode === 'STRATEGIC'">
           <div 
             v-for="kpi in tier1List" 
             :key="kpi.MasterKpiCode"
@@ -167,14 +187,50 @@
                 {{ getTierStatusText(kpi.StatusBadge) }}
               </span>
             </div>
+
+            <!-- Tích hợp Điểm Rủi ro Radar ngay trên Card -->
+            <div class="uc-kpi3t__radar-strip mt-1" v-if="kpi.RadarRiskScore">
+              <span class="radar-tag" :class="kpi.CampusAlertCount > 0 ? 'is-danger' : 'is-safe'">
+                <i class="bi bi-shield-exclamation me-1"></i>
+                Radar: <b>{{ kpi.RadarRiskScore }}đ</b> ({{ kpi.CampusAlertCount > 0 ? kpi.CampusAlertCount + ' cơ sở đỏ' : 'An toàn' }})
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grid 4 Khối Vận Hành Cốt Lõi (Toggle Mode) -->
+        <div class="uc-kpi3t__grid-4" v-else>
+          <div 
+            v-for="grp in groupPillars" 
+            :key="grp.code"
+            class="uc-kpi3t__card"
+            :class="[
+              { 'is-active': activeTier1Kpi === grp.kpiCode },
+              'status-' + grp.status
+            ]"
+            @click="selectTier1Kpi(grp.kpiCode)"
+          >
+            <div class="uc-kpi3t__card-top">
+              <span class="uc-kpi3t__code">{{ grp.label }}</span>
+              <span class="uc-kpi3t__weight">{{ grp.driverCount }} Tiêu chí</span>
+            </div>
+            <div class="uc-kpi3t__card-name"><b>{{ grp.name }}</b></div>
+            <div class="uc-kpi3t__card-nums">
+              <div class="uc-kpi3t__val">{{ grp.highlightVal }}</div>
+              <div class="uc-kpi3t__target">{{ grp.highlightNote }}</div>
+            </div>
+            <div class="uc-kpi3t__card-bot mt-2">
+              <span class="uc-kpi3t__progress-txt">{{ grp.desc }}</span>
+              <span class="uc-kpi3t__badge" :class="'badge-' + grp.status">{{ getTierStatusText(grp.status) }}</span>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- ═══════════════════════════════════════════════════════════════ -->
-      <!-- TẦNG 2 & TẦNG 3: TIÊU CHÍ VẬN HÀNH THÀNH PHẦN & CTA DEEP-DIVE   -->
+      <!-- TẦNG 2: TIÊU CHÍ VẬN HÀNH THÀNH PHẦN (OPERATIONAL DRIVERS)     -->
       <!-- ═══════════════════════════════════════════════════════════════ -->
-      <div class="uc-kpi3t__section-h mt-2 mb-3">
+      <div class="uc-kpi3t__section-h mt-2 mb-2">
         <div class="d-flex align-center justify-between flex-wrap gap-2 pb-2 mb-2" style="border-bottom:1px solid #e2e8f0;">
           <div class="d-flex align-center gap-2">
             <span class="uc-kpi3t__tier-badge tier-2">TẦNG 2</span>
@@ -183,22 +239,18 @@
                 TIÊU CHÍ VẬN HÀNH ĐÓNG GÓP: <span style="color:#0284c7;">{{ activeTier1Obj ? activeTier1Obj.KpiName : '' }}</span>
               </div>
               <div class="uc-kpi3t__section-sub">
-                Gồm <b>{{ currentTier2Drivers.length }}</b> tiêu chí vận hành trực tiếp — Số liệu chốt kỳ {{ selectedPeriod }}
+                Gồm <b>{{ currentTier2Drivers.length }}</b> tiêu chí vận hành trực tiếp &middot; <span class="text-danger fw-bold" v-if="negativeDriversCount > 0">{{ negativeDriversCount }} tiêu chí cần can thiệp</span><span class="text-success" v-else>Tất cả tiêu chí đang vận hành tốt</span> &middot; Kỳ chốt {{ selectedPeriod }}
               </div>
             </div>
           </div>
 
           <div class="d-flex align-center gap-2">
-            <!-- Nút CTA sang Tầng 3 -->
-            <button 
-              type="button" 
-              class="uc-kpi-ops__simbtn is-solid" 
-              style="padding:6px 14px;font-size:12px;font-weight:700;background:#0284c7;color:#fff;border-color:#0284c7;box-shadow:0 1px 3px rgba(2,132,199,0.3);"
-              @click="jumpToTier3Page(activeTier1Kpi)"
-            >
-              <span class="uc-kpi3t__tier-badge tier-3" style="margin-right:4px;">TẦNG 3</span>
-              Mở Phân Tích Chẩn Đoán Chuyên Sâu (Deep-dive BI) ›
-            </button>
+            <span class="uc-kpi-ops__pill2 is-warn" v-if="negativeDriversCount > 0">
+              Có {{ negativeDriversCount }} tiêu chí lệch kế hoạch
+            </span>
+            <span class="uc-kpi-ops__pill2 is-good" v-else>
+              100% Tiêu chí On-track
+            </span>
           </div>
         </div>
 
@@ -209,30 +261,46 @@
               <tr>
                 <th style="width:70px;">Mã</th>
                 <th>Tên Tiêu Chí Vận Hành</th>
-                <th style="width:90px;text-align:center;">Tần suất</th>
-                <th style="width:100px;text-align:right;">Kế hoạch</th>
-                <th style="width:100px;text-align:right;">Thực hiện</th>
+                <th style="width:85px;text-align:center;">Tần suất</th>
+                <th style="width:110px;text-align:right;">Kế hoạch</th>
+                <th style="width:110px;text-align:right;">Thực hiện</th>
+                <th style="width:90px;text-align:right;">Độ lệch</th>
                 <th style="width:110px;text-align:center;">Tiến độ</th>
-                <th style="width:100px;text-align:center;">Trạng thái</th>
-                <th style="width:80px;text-align:center;">Thao tác</th>
+                <th style="width:95px;text-align:center;">Trạng thái</th>
+                <th style="width:130px;text-align:center;">Cờ Kiểm Toán</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="d in currentTier2Drivers" :key="d.KpiCode" class="is-click" @click="openDrawerForKpi(d.KpiCode)">
+              <tr 
+                v-for="d in currentTier2Drivers" 
+                :key="d.KpiCode" 
+                class="is-click" 
+                :class="{ 'uc-kpi3t__row-negative': d.IsNegativeDriver || d.StatusBadge === 'WARN' || d.StatusBadge === 'BAD' }"
+                @click="openDrawerForKpi(d.KpiCode)"
+              >
                 <td><b class="tx-code">{{ d.KpiCode }}</b></td>
                 <td>
                   <div class="d-flex align-center gap-1">
                     <b>{{ d.KpiName }}</b>
-                    <small v-if="d.DepartmentName" class="tx-muted">({{ d.DepartmentName }})</small>
+                    <span v-if="d.IsNegativeDriver" class="uc-kpi3t__negative-badge" title="Chỉ tiêu đang kéo tụt hiệu suất chung">KÉO TỤT</span>
                   </div>
                 </td>
                 <td style="text-align:center;"><small>{{ d.Frequency || 'Tháng' }}</small></td>
-                <td style="text-align:right;">{{ d.TargetDisplay || d.TargetValue || '-' }} {{ d.Unit || '' }}</td>
-                <td style="text-align:right;"><b>{{ d.ActualDisplay || d.ActualValue || '-' }}</b> {{ d.Unit || '' }}</td>
+                <td style="text-align:right;">{{ formatNumber(d.TargetValue) }} {{ d.Unit || '' }}</td>
+                <td style="text-align:right;">
+                  <b :class="(d.IsNegativeDriver || d.StatusBadge === 'WARN' || d.StatusBadge === 'BAD') ? 'text-danger' : 'text-success'">
+                    {{ formatNumber(d.ActualValue) }}
+                  </b> {{ d.Unit || '' }}
+                </td>
+                <td style="text-align:right;">
+                  <span :class="d.Variance < 0 ? 'text-danger fw-bold' : 'text-success fw-bold'">
+                    {{ d.Variance > 0 ? '+' : '' }}{{ formatNumber(d.Variance) }}
+                  </span>
+                </td>
                 <td style="text-align:center;">
                   <div class="d-flex align-center gap-1 justify-center">
                     <div class="uc-kpi3t__mini-pbar">
-                      <div class="uc-kpi3t__mini-pfill" :style="{ width: Math.min(100, Math.max(0, d.ProgressPct || 0)) + '%' }"></div>
+                      <div class="uc-kpi3t__mini-pfill" :class="'fill-' + (d.StatusBadge ? d.StatusBadge.toLowerCase() : 'good')" :style="{ width: Math.min(100, Math.max(0, d.ProgressPct || 0)) + '%' }"></div>
                     </div>
                     <small><b>{{ d.ProgressPct || 0 }}%</b></small>
                   </div>
@@ -243,18 +311,16 @@
                   </span>
                 </td>
                 <td style="text-align:center;">
-                  <button 
-                    type="button" 
-                    class="uc-kpi-ops__simbtn" 
-                    style="padding:1px 6px;font-size:10px;"
-                    @click.stop="openDrawerForKpi(d.KpiCode)"
-                  >
-                    Chi tiết ›
-                  </button>
+                  <span v-if="d.AuditIssueCount > 0" class="uc-kpi3t__audit-flag" :title="d.AuditSummary">
+                    <i class="bi bi-exclamation-octagon-fill text-danger me-1"></i>Vênh Báo Cáo
+                  </span>
+                  <span v-else class="tx-muted" style="font-size:11px;">
+                    <i class="bi bi-check2 text-success me-1"></i>Đã khớp
+                  </span>
                 </td>
               </tr>
               <tr v-if="currentTier2Drivers.length === 0">
-                <td colspan="8" style="text-align:center;padding:1.5rem;color:#64748b;">
+                <td colspan="9" style="text-align:center;padding:1.5rem;color:#64748b;">
                   Đang đồng bộ danh mục chỉ tiêu vận hành từ CSDL eSign...
                 </td>
               </tr>
@@ -262,57 +328,192 @@
           </table>
         </div>
       </div>
-      
-      <!-- ================= SUB-TAB 1: TỔNG QUAN ĐIỀU HÀNH DOANH NGHIỆP (EXECUTIVE COCKPIT) ================= -->
-      <div v-if="executiveTab === 'COMMAND'">
-        <!-- 1. EXECUTIVE ENTERPRISE SCORECARD: 4 TRỤ CỘT DOANH NGHIỆP CÂN BẰNG (HOLDING VIEW) -->
-        <div class="uc-kpi-ops__rf-stats-grid mb-3">
-          <!-- Trụ Cột 1: Tài chính & Hiệu quả Dịch vụ -->
-          <div class="uc-kpi-ops__rf-stat-card is-good">
-            <div class="rf-stat-k">1. TÀI CHÍNH &amp; HIỆU QUẢ DỊCH VỤ</div>
-            <div class="rf-stat-v" style="color:#15803d;">
-              52.4% <small style="font-size:12px;font-weight:600;color:#15803d;">LN GỘP (KPI 4)</small>
+
+      <!-- ═══════════════════════════════════════════════════════════════ -->
+      <!-- TẦNG 3: IN-CONTEXT DIAGNOSTIC & DRILL-DOWN PANEL               -->
+      <!-- ═══════════════════════════════════════════════════════════════ -->
+      <div class="uc-kpi3t__tier3-box mb-3">
+        <div class="uc-kpi3t__tier3-header">
+          <div class="d-flex align-center gap-2">
+            <span class="uc-kpi3t__tier-badge tier-3">TẦNG 3</span>
+            <div>
+              <div class="uc-kpi3t__section-title">
+                PHÂN TÍCH CHẨN ĐOÁN SÂU, HỆ LỤY NHÂN QUẢ &amp; ĐỐI SOÁT KIỂM TOÁN
+              </div>
+              <div class="uc-kpi3t__section-sub">
+                Đang chẩn đoán chuyên sâu cho: <b style="color:#0284c7;">{{ activeTier1Obj ? activeTier1Obj.KpiName : '' }}</b>
+              </div>
             </div>
-            <div class="rf-stat-d">
-              Vượt chuẩn 50% &middot; Doanh thu CLB: <b>1.25 tỷ</b> &middot; Thu đúng hạn: <b>96.8%</b>
+          </div>
+          
+          <!-- Tabs của Tầng 3 -->
+          <div class="d-flex align-center gap-2 flex-wrap">
+            <div class="uc-kpi3t__tab-pills">
+              <button 
+                type="button" 
+                class="uc-kpi3t__tab-btn" 
+                :class="{ 'is-active': tier3ActiveTab === 'CAUSAL' }" 
+                @click="tier3ActiveTab = 'CAUSAL'"
+              >
+                <i class="bi bi-diagram-3-fill me-1"></i>Chuỗi Nhân Quả &amp; Hệ Lụy Tài Chính
+              </button>
+              <button 
+                type="button" 
+                class="uc-kpi3t__tab-btn" 
+                :class="{ 'is-active': tier3ActiveTab === 'CAMPUS' }" 
+                @click="tier3ActiveTab = 'CAMPUS'"
+              >
+                <i class="bi bi-geo-alt-fill me-1"></i>Phân Rã 5 Cơ Sở &amp; Radar Rủi Ro ({{ tier3Campuses.length }})
+              </button>
+              <button 
+                type="button" 
+                class="uc-kpi3t__tab-btn" 
+                :class="{ 'is-active': tier3ActiveTab === 'AUDIT' }" 
+                @click="tier3ActiveTab = 'AUDIT'"
+              >
+                <i class="bi bi-search me-1"></i>Minh Chứng Đối Soát Kiểm Toán ({{ tier3Audits.length }})
+              </button>
+            </div>
+            <button 
+              type="button" 
+              class="uc-kpi-ops__simbtn" 
+              style="padding:4px 10px;font-size:11px;" 
+              @click="jumpToTier3Page(activeTier1Kpi)" 
+              title="Mở toàn màn hình phân hệ chi tiết dữ liệu thô"
+            >
+              Mở toàn màn hình phân hệ &rsaquo;
+            </button>
+          </div>
+        </div>
+
+        <!-- Nội dung Tab 1: Chuỗi Nhân Quả & Hệ Lụy Tài Chính (VNĐ) -->
+        <div v-if="tier3ActiveTab === 'CAUSAL'" class="uc-kpi3t__causal-container p-3">
+          <!-- 4 Stats Cards Lượng Hóa Thiệt Hại Thật -->
+          <div class="uc-kpi3t__impact-grid mb-3">
+            <div class="uc-kpi3t__impact-card is-danger">
+              <div class="uc-kpi3t__impact-label">Thiếu hụt Quy mô Học sinh</div>
+              <div class="uc-kpi3t__impact-val text-danger">
+                -{{ tier3CausalImpact ? tier3CausalImpact.HeadcountDeficit : 125 }} <small>Học sinh</small>
+              </div>
+              <div class="uc-kpi3t__impact-sub">So với chỉ tiêu tuyển sinh 2.750 HS</div>
+            </div>
+            <div class="uc-kpi3t__impact-card is-danger">
+              <div class="uc-kpi3t__impact-label">Thất thu Học phí Trực tiếp</div>
+              <div class="uc-kpi3t__impact-val text-danger">
+                -{{ formatBillion(tier3CausalImpact ? tier3CausalImpact.TuitionLossVNĐ : 8125000000) }} <small>Tỷ VNĐ</small>
+              </div>
+              <div class="uc-kpi3t__impact-sub">Theo biểu phí niêm yết 5 cơ sở CSDL eSign</div>
+            </div>
+            <div class="uc-kpi3t__impact-card is-warn">
+              <div class="uc-kpi3t__impact-label">Thất thu Doanh thu Bán trú</div>
+              <div class="uc-kpi3t__impact-val text-warn">
+                -{{ formatBillion(tier3CausalImpact ? tier3CausalImpact.BoardingLossVNĐ : 2812500000) }} <small>Tỷ VNĐ</small>
+              </div>
+              <div class="uc-kpi3t__impact-sub">Tiền ăn, xe bus và dịch vụ bán trú 2026-2027</div>
+            </div>
+            <div class="uc-kpi3t__impact-card is-critical">
+              <div class="uc-kpi3t__impact-label">Tổng Tác Động Tài Chính</div>
+              <div class="uc-kpi3t__impact-val" style="color:#b91c1c;">
+                -{{ formatBillion(tier3CausalImpact ? tier3CausalImpact.TotalFinancialLossVNĐ : 10937500000) }} <small>Tỷ VNĐ</small>
+              </div>
+              <div class="uc-kpi3t__impact-sub">Ước tính thiệt hại cả năm nếu không can thiệp</div>
             </div>
           </div>
 
-          <!-- Trụ Cột 2: Quy mô & Lấp đầy Hệ thống -->
-          <div class="uc-kpi-ops__rf-stat-card is-good">
-            <div class="rf-stat-k">2. QUY MÔ &amp; LẤP ĐẦY CÔNG SUẤT</div>
-            <div class="rf-stat-v" style="color:var(--accent2);">
-              1,324 <small style="font-size:12px;font-weight:600;color:var(--accent2);">HỌC SINH</small>
+          <!-- Truy vết Chuỗi Nhân Quả & Khuyến Nghị HĐQT -->
+          <div class="uc-kpi3t__narrative-grid">
+            <div class="uc-kpi3t__narrative-box">
+              <div class="uc-kpi3t__box-head">
+                <i class="bi bi-diagram-3-fill text-danger me-1"></i>
+                <b>Truy Vết Chuỗi Nhân Quả Nghiệp Vụ (Root-Cause Causal Propagation)</b>
+              </div>
+              <div class="uc-kpi3t__narrative-text">
+                {{ tier3CausalImpact ? tier3CausalImpact.CausalChainNarrative : 'Đang truy vết chuỗi nhân quả nghiệp vụ...' }}
+              </div>
             </div>
-            <div class="rf-stat-d">
-              Lấp đầy: <b>82.8%</b> (CS: 1.600) &middot; Rút học ròng: <b>1.56%</b> (Chuẩn &lt; 2%)
-            </div>
-          </div>
 
-          <!-- Trụ Cột 3: Chất lượng Giáo dục & NPS -->
-          <div class="uc-kpi-ops__rf-stat-card is-good">
-            <div class="rf-stat-k">3. CHẤT LƯỢNG GIÁO DỤC &amp; NPS</div>
-            <div class="rf-stat-v" style="color:#0369a1;">
-              94.2% <small style="font-size:12px;font-weight:600;color:#0369a1;">SỐ HÓA LMS</small>
-            </div>
-            <div class="rf-stat-d">
-              Nộp bài: <b>91.8%</b> &middot; Hài lòng PH: <b>91.5%</b> (Mục tiêu &gt; 90%)
-            </div>
-          </div>
-
-          <!-- Trụ Cột 4: An toàn & Vận hành Zero-Defect -->
-          <div class="uc-kpi-ops__rf-stat-card is-good">
-            <div class="rf-stat-k">4. AN TOÀN &amp; VẬN HÀNH ZERO-DEFECT</div>
-            <div class="rf-stat-v" style="color:#15803d;">
-              0 <small style="font-size:12px;font-weight:600;color:#15803d;">SỰ CỐ AN TOÀN</small>
-            </div>
-            <div class="rf-stat-d">
-              0 ngộ độc (ISO 22000) &middot; 0 tai nạn &middot; <b>48.200</b> lượt FaceID (SLA 99.8%)
+            <div class="uc-kpi3t__narrative-box is-action">
+              <div class="uc-kpi3t__box-head">
+                <i class="bi bi-lightning-charge-fill text-primary me-1"></i>
+                <b>Khuyến Nghị Hành Động Can Thiệp Cho HĐQT &amp; Ban Giám Hiệu</b>
+              </div>
+              <div class="uc-kpi3t__action-text">
+                {{ tier3CausalImpact ? tier3CausalImpact.ActionRecommendation : 'Đang tải khuyến nghị điều hành...' }}
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- 2. KPI Results Framework Measurement Health Strip (60 KPIs) -->
+        <!-- Nội dung Tab 2: Phân Rã 5 Cơ Sở & Radar Rủi Ro -->
+        <div v-if="tier3ActiveTab === 'CAMPUS'" class="uc-kpi3t__campus-container p-3">
+          <div class="uc-kpi3t__campus-grid">
+            <div 
+              v-for="c in tier3Campuses" 
+              :key="c.ScopeID" 
+              class="uc-kpi3t__campus-card"
+              :class="'risk-' + (c.CampusRiskLevel ? c.CampusRiskLevel.toLowerCase() : 'low')"
+            >
+              <div class="uc-kpi3t__campus-top">
+                <b>{{ c.CampusName }}</b>
+                <span class="uc-kpi3t__risk-pill" :class="'is-' + (c.CampusRiskLevel ? c.CampusRiskLevel.toLowerCase() : 'low')">
+                  Radar: {{ c.CampusRiskScore }}đ ({{ c.CampusRiskLevel }})
+                </span>
+              </div>
+              <div class="uc-kpi3t__campus-mid mt-2">
+                <div class="d-flex justify-between mb-1">
+                  <span class="tx-muted">Sĩ số / Công suất:</span>
+                  <b>{{ c.CurrentEnrollment }} / {{ c.PlannedCapacity }} chỗ</b>
+                </div>
+                <div class="d-flex justify-between mb-1">
+                  <span class="tx-muted">Tỷ lệ lấp đầy:</span>
+                  <b :class="c.CapacityRate < 85 ? 'text-danger' : 'text-success'">{{ c.CapacityRate }}%</b>
+                </div>
+                <div class="d-flex justify-between mb-1">
+                  <span class="tx-muted">Học phí niêm yết:</span>
+                  <span>{{ (c.BaseAnnualTuition / 1000000).toFixed(0) }} tr/năm</span>
+                </div>
+                <div class="d-flex justify-between" style="border-top:1px dashed #cbd5e1;padding-top:4px;">
+                  <span class="tx-muted">Thất thu học phí:</span>
+                  <b class="text-danger">-{{ formatBillion(c.CampusTuitionLossVNĐ) }} tỷ</b>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nội dung Tab 3: Biên Bản Đối Soát & Kiểm Toán Dữ Liệu -->
+        <div v-if="tier3ActiveTab === 'AUDIT'" class="uc-kpi3t__audit-container p-3">
+          <div v-if="tier3Audits && tier3Audits.length > 0" class="uc-kpi3t__audit-list">
+            <div v-for="a in tier3Audits" :key="a.DiscrepancyID" class="uc-kpi3t__audit-item mb-2 p-2">
+              <div class="d-flex align-center justify-between mb-1">
+                <div class="d-flex align-center gap-1">
+                  <span class="uc-kpi3t__badge-mismatch">{{ a.Category }}</span>
+                  <b>{{ a.Title }}</b>
+                </div>
+                <small class="tx-muted">Phụ trách: <b>{{ a.ActionOwner }}</b></small>
+              </div>
+              <div class="uc-kpi3t__audit-sources">
+                <div class="source-col">
+                  <span class="lbl">Hệ thống Nguồn / Báo cáo:</span>
+                  <div>{{ a.PrimarySource }}: <b>{{ a.PrimaryValue }}</b></div>
+                </div>
+                <div class="source-col">
+                  <span class="lbl">Hệ thống Tác nghiệp / Nguồn gốc:</span>
+                  <div>{{ a.SecondarySource }}: <b>{{ a.SecondaryValue }}</b></div>
+                </div>
+              </div>
+              <div class="uc-kpi3t__audit-desc mt-1">
+                <small><b>Phân tích vênh:</b> {{ a.VarianceAnalysis }}</small>
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-center p-4 tx-muted">
+            Chưa phát hiện điểm vênh kiểm toán đối với chỉ số này trong kỳ chốt {{ selectedPeriod }}. Số liệu đã được xác minh.
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. KPI Results Framework Measurement Health Strip (60 KPIs) -->
         <div class="uc-kpi-ops__health-card mb-3">
           <div class="uc-kpi-ops__health-head">
             <div>
@@ -3263,6 +3464,17 @@
   data() {
     return {
       // 3-Tier Architecture State
+      kpiViewMode: "STRATEGIC",
+      tier3ActiveTab: "CAUSAL",
+      tier3Campuses: [],
+      tier3CausalImpact: null,
+      tier3Audits: [],
+      groupPillars: [
+        { code: "GRP_1", kpiCode: "KPI_1", label: "KHỐI 1", name: "Quy mô, Tuyển sinh & Giữ chân", driverCount: 7, highlightVal: "2.625 HS", highlightNote: "Lấp đầy: 93.42%", status: "warn", desc: "Sĩ số, Tuyển mới, Rút học & Funnel Leads" },
+        { code: "GRP_2", kpiCode: "KPI_2", label: "KHỐI 2", name: "Chất lượng Giáo dục & Học thuật", driverCount: 20, highlightVal: "89.6%", highlightNote: "Khung NL: 82.4%", status: "good", desc: "Học liệu số, Bài tập LMS, Chuẩn đầu ra" },
+        { code: "GRP_3", kpiCode: "KPI_3", label: "KHỐI 3", name: "Bán trú, Y tế & An toàn Vận hành", driverCount: 24, highlightVal: "0 Vụ", highlightNote: "ISO 22000 & 0 tai nạn", status: "good", desc: "Bếp ăn, Xe bus, Y tế & CSKH" },
+        { code: "GRP_4", kpiCode: "KPI_4", label: "KHỐI 4", name: "Tài chính, Nhân sự & Vận hành CSVC", driverCount: 9, highlightVal: "48.4%", highlightNote: "CLB: 1.61 Tỷ VNĐ", status: "warn", desc: "Biên LN gộp, Doanh thu CLB, TTHC & CSVC" }
+      ],
       activeTier1Kpi: "KPI_1",
       tier1List: [
         { MasterKpiCode: "KPI_1", KpiName: "Lấp đầy 100% công suất thiết kế", TargetValue: 100, TargetUnit: "%", ComparisonOp: ">=", ActualValue: 93.42, ProgressPct: 93.4, StatusBadge: "WARN", ThemeColor: "#0284c7", WeightPct: 25 },
@@ -3457,30 +3669,12 @@
     },
     currentTier2Drivers() {
       if (this.tier2Drivers && this.tier2Drivers.length > 0) {
-        return this.tier2Drivers.filter(d => d.MasterKpiCode === this.activeTier1Kpi);
+        return this.tier2Drivers;
       }
-      const kpiPrefixMap = {
-        'KPI_1': ['TS01', 'TS02', 'TS03', 'TS06'],
-        'KPI_2': ['CM', 'KT', 'LMS'],
-        'KPI_3': ['TS04', 'TS05'],
-        'KPI_4': ['DV38', 'DV39', 'TC'],
-        'KPI_5': ['CSVC', 'YTE', 'HR', 'IT'],
-        'KPI_6': ['TS07', 'TS08', 'CRM', 'MKT']
-      };
-      const prefixes = kpiPrefixMap[this.activeTier1Kpi] || ['TS'];
-      return (this.periodSnapshots || []).filter(s => {
-        return prefixes.some(p => (s.KpiCode || '').startsWith(p) || (s.FrameworkRef || '').includes(this.activeTier1Kpi.replace('_', ' ')));
-      }).map(s => ({
-        KpiCode: s.KpiCode,
-        KpiName: s.KpiName,
-        Frequency: s.PeriodFrequency || 'Tháng',
-        TargetDisplay: s.TargetDisplay || s.TargetValue,
-        ActualDisplay: s.ActualDisplay || s.CurrentValue,
-        Unit: s.Unit || '',
-        ProgressPct: s.ProgressPct || 100,
-        StatusBadge: s.StatusBadge || 'GOOD',
-        DepartmentName: s.DepartmentName || ''
-      }));
+      return [];
+    },
+    negativeDriversCount() {
+      return (this.currentTier2Drivers || []).filter(d => d.IsNegativeDriver || d.StatusBadge === 'WARN' || d.StatusBadge === 'BAD').length;
     },
 
     dynamicWithdrawReasons() {
@@ -5712,8 +5906,11 @@
         }
         if (Array.isArray(data)) {
           if (data.length > 0 && Array.isArray(data[0])) {
-            this.tier1List = data[0];
+            this.tier1List = data[0] || [];
             this.tier2Drivers = data[1] || [];
+            this.tier3Campuses = data[2] || [];
+            this.tier3CausalImpact = (data[3] && data[3][0]) ? data[3][0] : null;
+            this.tier3Audits = data[4] || [];
           } else {
             this.tier1List = data;
           }
@@ -5739,6 +5936,17 @@
       if (typeof window !== "undefined") {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
+    },
+    formatBillion(val) {
+      if (!val || isNaN(val)) return '0';
+      const num = Number(val);
+      if (Math.abs(num) >= 1000000000) {
+        return (num / 1000000000).toFixed(2);
+      }
+      if (Math.abs(num) >= 1000000) {
+        return (num / 1000000).toFixed(1) + ' tr';
+      }
+      return num.toLocaleString('vi-VN');
     },
     getTierStatusText(badge) {
       if (badge === 'GOOD' || badge === 'good') return 'Đạt';
