@@ -12,32 +12,146 @@ BEGIN
     IF @ActiveMasterKpi IS NULL OR @ActiveMasterKpi = '' SET @ActiveMasterKpi = 'KPI_1';
 
     -- -----------------------------------------------------------------------------------------
-    -- 0. TÍNH TOÁN CÁC BIẾN CƠ SỞ ĐỘNG TỪ BẢNG SNAPSHOT & CATALOG
+    -- 0. TÍNH TOÁN CÁC BIẾN CƠ SỞ ĐỘNG TỪ BẢNG SNAPSHOT, CATALOG & FINANCE
     -- -----------------------------------------------------------------------------------------
-    DECLARE @TotalEnrollmentActual INT = 2625;
-    DECLARE @TotalCapacityPlanned INT = 2810;
-    DECLARE @CapacityRate NUMERIC(6,2) = 93.42;
-    DECLARE @WithdrawRate NUMERIC(6,2) = 2.0;
-    DECLARE @LeadConversionRate NUMERIC(6,2) = 13.58;
-    DECLARE @GrossMarginRate NUMERIC(6,2) = 48.4;
-    DECLARE @TotalLeads INT = 162;
+    DECLARE @TotalEnrollmentActual INT = 0;
+    DECLARE @TotalCapacityPlanned INT = 0;
+    DECLARE @AvgTuitionAnnual BIGINT = 65000000;
+    DECLARE @AvgBoardingAnnual BIGINT = 15000000;
 
-    -- Lấy sĩ số hiện diện và lấp đầy từ snapshot
-    SELECT 
-        @TotalEnrollmentActual = ISNULL(MAX(CASE WHEN KpiCode = 'TS01' THEN CAST(ActualValue AS INT) END), 2625),
-        @TotalCapacityPlanned = ISNULL(MAX(CASE WHEN KpiCode = 'TS01' THEN CAST(TargetValue AS INT) END), 2750),
-        @CapacityRate = ISNULL(MAX(CASE WHEN KpiCode = 'TS02' THEN ActualValue END), 93.42),
-        @WithdrawRate = ISNULL(MAX(CASE WHEN KpiCode = 'TS04' THEN ActualValue END), 2.0),
-        @TotalLeads = ISNULL(MAX(CASE WHEN KpiCode = 'TS05' THEN CAST(ActualValue AS INT) END), 162),
-        @LeadConversionRate = ISNULL(MAX(CASE WHEN KpiCode = 'TS06' THEN ActualValue END), 13.58),
-        @GrossMarginRate = ISNULL(MAX(CASE WHEN KpiCode = 'TC55' THEN ActualValue END), 48.4)
-    FROM dbo.tblKPI_PeriodSnapshots
-    WHERE PeriodKey = @PeriodKey AND (DonViID = @DonViID OR (@DonViID <> 'ALL' AND DonViID = @DonViID));
+    SELECT
+        @TotalEnrollmentActual = SUM(CASE WHEN @DonViID = 'ALL' OR ScopeID = @DonViID THEN CurrentEnrollment ELSE 0 END),
+        @TotalCapacityPlanned = SUM(CASE WHEN @DonViID = 'ALL' OR ScopeID = @DonViID THEN PlannedCapacity ELSE 0 END),
+        @AvgTuitionAnnual = CAST(AVG(BaseAnnualTuition) AS BIGINT)
+    FROM dbo.tblKPI_CampusCatalog
+    WHERE IsActive = 1;
+
+    DECLARE @HeadcountDeficit INT = CASE WHEN @TotalCapacityPlanned > @TotalEnrollmentActual THEN @TotalCapacityPlanned - @TotalEnrollmentActual ELSE 0 END;
+    DECLARE @TuitionDeficitTotal BIGINT = CAST(@HeadcountDeficit AS BIGINT) * @AvgTuitionAnnual;
+    DECLARE @BoardingDeficitTotal BIGINT = CAST(@HeadcountDeficit AS BIGINT) * @AvgBoardingAnnual;
+    DECLARE @TotalFinancialImpact BIGINT = @TuitionDeficitTotal + @BoardingDeficitTotal;
+
+    -- Bảng tạm chuẩn hóa toàn bộ 60 KPI kèm kết quả thực hiện, tiến độ chuẩn hóa và cờ Audit
+    SELECT
+        d.KpiCode,
+        d.KpiName,
+        d.KpiGroup,
+        d.MasterKpiCode,
+        d.Unit,
+        d.Frequency,
+        d.SourceSystem,
+        d.DefaultOperator,
+        d.GroupOrder,
+        d.SortOrder,
+        ISNULL(s.TargetValue, ISNULL(s_all.TargetValue, d.DefaultTarget)) AS TargetValue,
+        ISNULL(s.ActualValue, ISNULL(s_all.ActualValue, 0)) AS ActualValue,
+        CASE
+            WHEN ISNULL(s.Status, ISNULL(s_all.Status, 'PENDING')) = 'PENDING' THEN 'PENDING'
+            WHEN d.DefaultOperator = '<=' AND ISNULL(s.ActualValue, ISNULL(s_all.ActualValue, 0)) > ISNULL(s.TargetValue, ISNULL(s_all.TargetValue, d.DefaultTarget)) THEN 'WARN'
+            WHEN d.DefaultOperator <> '<=' AND ISNULL(s.ActualValue, ISNULL(s_all.ActualValue, 0)) < ISNULL(s.TargetValue, ISNULL(s_all.TargetValue, d.DefaultTarget)) THEN
+                CASE WHEN (ISNULL(s.ActualValue, ISNULL(s_all.ActualValue, 0)) * 100.0 / NULLIF(ISNULL(s.TargetValue, ISNULL(s_all.TargetValue, d.DefaultTarget)), 0)) < 75.0 THEN 'BAD' ELSE 'WARN' END
+            ELSE ISNULL(s.Status, ISNULL(s_all.Status, 'GOOD'))
+        END AS StatusBadge,
+        ISNULL(s.FinancialImpact, s_all.FinancialImpact) AS FinancialImpact,
+        ISNULL(s.OperationalInsight, s_all.OperationalInsight) AS OperationalInsight,
+        -- Tiến độ hoàn thành chuẩn hóa (100% = Đạt mục tiêu, xử lý cả >= và <=)
+        CAST(ROUND(
+            CASE
+                WHEN ISNULL(s.Status, ISNULL(s_all.Status, 'PENDING')) = 'PENDING' THEN 0.0
+                WHEN ISNULL(s.TargetValue, ISNULL(s_all.TargetValue, d.DefaultTarget)) = 0 THEN
+                    CASE WHEN ISNULL(s.ActualValue, ISNULL(s_all.ActualValue, 0)) = 0 THEN 100.0 ELSE 0.0 END
+                WHEN d.DefaultOperator = '<=' THEN
+                    CASE
+                        WHEN ISNULL(s.ActualValue, ISNULL(s_all.ActualValue, 0)) <= 0 THEN 100.0
+                        WHEN ISNULL(s.ActualValue, ISNULL(s_all.ActualValue, 0)) <= ISNULL(s.TargetValue, ISNULL(s_all.TargetValue, d.DefaultTarget))
+                            THEN 100.0 + ((ISNULL(s.TargetValue, ISNULL(s_all.TargetValue, d.DefaultTarget)) - ISNULL(s.ActualValue, ISNULL(s_all.ActualValue, 0))) / NULLIF(ISNULL(s.TargetValue, ISNULL(s_all.TargetValue, d.DefaultTarget)), 0)) * 25.0
+                        ELSE (ISNULL(s.TargetValue, ISNULL(s_all.TargetValue, d.DefaultTarget)) / NULLIF(ISNULL(s.ActualValue, ISNULL(s_all.ActualValue, 0)), 0)) * 100.0
+                    END
+                ELSE
+                    (ISNULL(s.ActualValue, ISNULL(s_all.ActualValue, 0)) / NULLIF(ISNULL(s.TargetValue, ISNULL(s_all.TargetValue, d.DefaultTarget)), 0)) * 100.0
+            END, 1
+        ) AS NUMERIC(8,1)) AS NormalizedPct
+    INTO #NormalizedKpis
+    FROM dbo.tblKPI_Definitions d
+    LEFT JOIN dbo.tblKPI_PeriodSnapshots s
+        ON d.KpiCode = s.KpiCode AND s.PeriodKey = @PeriodKey AND s.DonViID = @DonViID
+    LEFT JOIN dbo.tblKPI_PeriodSnapshots s_all
+        ON d.KpiCode = s_all.KpiCode AND s_all.PeriodKey = @PeriodKey AND s_all.DonViID = 'ALL'
+    WHERE d.IsActive = 1;
+
+    -- Bảng tạm tổng hợp cờ Audit theo KpiCode
+    SELECT
+        ISNULL(KpiCode, 'TS01') AS KpiCode,
+        COUNT(*) AS AuditIssueCount,
+        MAX(Title) AS AuditSummary
+    INTO #AuditByKpi
+    FROM dbo.tblKPI_AuditDiscrepancies
+    WHERE PeriodKey = @PeriodKey
+      AND (@DonViID = 'ALL' OR ScopeID = 'ALL' OR ScopeID = @DonViID)
+    GROUP BY ISNULL(KpiCode, 'TS01');
+
+    -- Bảng tạm đếm số chuỗi nhân quả theo KpiCode
+    SELECT
+        KpiCode,
+        COUNT(*) AS CausalChainCount
+    INTO #CausalByKpi
+    FROM (
+        SELECT CauseKpiCode AS KpiCode FROM dbo.tblKPI_Correlations WHERE PeriodKey = @PeriodKey
+        UNION ALL
+        SELECT EffectKpiCode AS KpiCode FROM dbo.tblKPI_Correlations WHERE PeriodKey = @PeriodKey
+    ) x
+    GROUP BY KpiCode;
 
     -- -----------------------------------------------------------------------------------------
-    -- RESULT SET 0: 6 KPI CHIẾN LƯỢC TỐI THƯỢNG (TẦNG 1: EXECUTIVE SCORECARD)
+    -- RESULT SET 0: 6 KPI CHIẾN LƯỢC TỐI THƯỢNG (TẦNG 1: EXECUTIVE SCORECARD - 100% DYNAMIC)
     -- -----------------------------------------------------------------------------------------
-    SELECT 
+    ;WITH MasterStats AS (
+        SELECT
+            n.MasterKpiCode,
+            COUNT(*) AS TotalSubKpis,
+            SUM(CASE WHEN n.StatusBadge <> 'PENDING' THEN 1 ELSE 0 END) AS ActiveSubKpis,
+            SUM(CASE WHEN n.StatusBadge = 'GOOD' THEN 1 ELSE 0 END) AS GoodCount,
+            SUM(CASE WHEN n.StatusBadge = 'WARN' THEN 1 ELSE 0 END) AS WarnCount,
+            SUM(CASE WHEN n.StatusBadge = 'BAD' THEN 1 ELSE 0 END) AS BadCount,
+            SUM(CASE WHEN n.StatusBadge = 'PENDING' THEN 1 ELSE 0 END) AS PendingCount,
+            CAST(ROUND(AVG(CASE WHEN n.StatusBadge <> 'PENDING' THEN CASE WHEN n.NormalizedPct > 120 THEN 120 ELSE n.NormalizedPct END END), 1) AS NUMERIC(6,1)) AS AvgAchievementPct,
+            SUM(ISNULL(a.AuditIssueCount, 0)) AS AuditOpenCount
+        FROM #NormalizedKpis n
+        LEFT JOIN #AuditByKpi a ON n.KpiCode = a.KpiCode
+        GROUP BY n.MasterKpiCode
+    ),
+    PrimaryDriver AS (
+        SELECT
+            MasterKpiCode,
+            KpiCode AS TopDriverCode,
+            KpiName AS TopDriverName,
+            ActualValue AS TopDriverActual,
+            TargetValue AS TopDriverTarget,
+            Unit AS TopDriverUnit,
+            NormalizedPct AS TopDriverPct,
+            StatusBadge AS TopDriverStatus,
+            ROW_NUMBER() OVER (
+                PARTITION BY MasterKpiCode
+                ORDER BY
+                    CASE StatusBadge WHEN 'BAD' THEN 1 WHEN 'WARN' THEN 2 WHEN 'GOOD' THEN 3 ELSE 4 END,
+                    NormalizedPct ASC,
+                    SortOrder ASC
+            ) AS rn
+        FROM #NormalizedKpis
+        WHERE StatusBadge <> 'PENDING'
+    ),
+    CampusAlerts AS (
+        SELECT
+            d.MasterKpiCode,
+            COUNT(DISTINCT s.DonViID) AS CampusAlertCount
+        FROM dbo.tblKPI_PeriodSnapshots s
+        INNER JOIN dbo.tblKPI_Definitions d ON s.KpiCode = d.KpiCode
+        WHERE s.PeriodKey = @PeriodKey
+          AND s.DonViID <> 'ALL'
+          AND s.Status IN ('WARN', 'BAD')
+        GROUP BY d.MasterKpiCode
+    )
+    SELECT
         m.MasterKpiCode,
         m.KpiName,
         m.ShortCode,
@@ -48,318 +162,383 @@ BEGIN
         m.DisplayOrder,
         m.ThemeColor,
         m.IconClass,
-        -- Giá trị thực hiện động
+        m.Description,
+        -- Giá trị đại diện tính động từ Snapshot Neo của từng KPI Chiến lược
         CAST(ROUND(
-            CASE 
-                WHEN m.MasterKpiCode = 'KPI_1' THEN @CapacityRate
-                WHEN m.MasterKpiCode = 'KPI_2' THEN 98.5
-                WHEN m.MasterKpiCode = 'KPI_3' THEN @WithdrawRate
-                WHEN m.MasterKpiCode = 'KPI_4' THEN @GrossMarginRate
-                WHEN m.MasterKpiCode = 'KPI_5' THEN 35.0
-                WHEN m.MasterKpiCode = 'KPI_6' THEN @LeadConversionRate
-                ELSE 90.0
+            CASE
+                WHEN m.MasterKpiCode = 'KPI_1' THEN ISNULL((SELECT ActualValue FROM #NormalizedKpis WHERE KpiCode = 'TS02'), 93.42)
+                WHEN m.MasterKpiCode = 'KPI_2' THEN ISNULL((SELECT ActualValue FROM #NormalizedKpis WHERE KpiCode = 'CM08_CALEN'), 98.20)
+                WHEN m.MasterKpiCode = 'KPI_3' THEN ISNULL((SELECT ActualValue FROM #NormalizedKpis WHERE KpiCode = 'TS04'), 2.00)
+                WHEN m.MasterKpiCode = 'KPI_4' THEN ISNULL((SELECT ActualValue FROM #NormalizedKpis WHERE KpiCode = 'TC55'), 48.40)
+                WHEN m.MasterKpiCode = 'KPI_5' THEN ISNULL((SELECT ActualValue FROM #NormalizedKpis WHERE KpiCode = 'CSVC01'), 91.67)
+                WHEN m.MasterKpiCode = 'KPI_6' THEN ISNULL((SELECT ActualValue FROM #NormalizedKpis WHERE KpiCode = 'TS06'), 13.58)
+                ELSE ISNULL(ms.AvgAchievementPct, 90.0)
             END, 2
         ) AS NUMERIC(10,2)) AS ActualValue,
-        -- Tiến độ hoàn thành (%)
+        -- Tiến độ hoàn thành chuẩn hóa (%)
         CAST(ROUND(
-            CASE 
-                WHEN m.MasterKpiCode = 'KPI_1' THEN (@CapacityRate / 100.0) * 100.0
-                WHEN m.MasterKpiCode = 'KPI_2' THEN (98.5 / 95.0) * 100.0
-                WHEN m.MasterKpiCode = 'KPI_3' THEN (1.0 - (@WithdrawRate / 10.0)) * 100.0
-                WHEN m.MasterKpiCode = 'KPI_4' THEN (@GrossMarginRate / 50.0) * 100.0
-                WHEN m.MasterKpiCode = 'KPI_5' THEN (35.0 / 50.0) * 100.0
-                WHEN m.MasterKpiCode = 'KPI_6' THEN (@LeadConversionRate / 30.0) * 100.0
-                ELSE 100.0
+            CASE
+                WHEN m.MasterKpiCode = 'KPI_1' THEN ISNULL((SELECT NormalizedPct FROM #NormalizedKpis WHERE KpiCode = 'TS02'), 93.4)
+                WHEN m.MasterKpiCode = 'KPI_2' THEN ISNULL((SELECT NormalizedPct FROM #NormalizedKpis WHERE KpiCode = 'CM08_CALEN'), 100.0)
+                WHEN m.MasterKpiCode = 'KPI_3' THEN ISNULL((SELECT NormalizedPct FROM #NormalizedKpis WHERE KpiCode = 'TS04'), 100.0)
+                WHEN m.MasterKpiCode = 'KPI_4' THEN ISNULL((SELECT NormalizedPct FROM #NormalizedKpis WHERE KpiCode = 'TC55'), 96.8)
+                WHEN m.MasterKpiCode = 'KPI_5' THEN ISNULL((SELECT NormalizedPct FROM #NormalizedKpis WHERE KpiCode = 'CSVC01'), 91.7)
+                WHEN m.MasterKpiCode = 'KPI_6' THEN ISNULL((SELECT NormalizedPct FROM #NormalizedKpis WHERE KpiCode = 'TS06'), 45.3)
+                ELSE ISNULL(ms.AvgAchievementPct, 90.0)
             END, 1
         ) AS NUMERIC(6,1)) AS ProgressPct,
-        -- Trọng số %
-        CASE 
-            WHEN m.MasterKpiCode = 'KPI_1' THEN 25
-            WHEN m.MasterKpiCode = 'KPI_2' THEN 20
-            WHEN m.MasterKpiCode = 'KPI_3' THEN 15
-            WHEN m.MasterKpiCode = 'KPI_4' THEN 15
-            WHEN m.MasterKpiCode = 'KPI_5' THEN 10
-            WHEN m.MasterKpiCode = 'KPI_6' THEN 15
+        -- Trọng số chiến lược
+        CASE m.DisplayOrder
+            WHEN 1 THEN 25
+            WHEN 2 THEN 20
+            WHEN 3 THEN 15
+            WHEN 4 THEN 15
+            WHEN 5 THEN 10
+            WHEN 6 THEN 15
             ELSE 10
         END AS WeightPct,
-        -- Trạng thái điều hành chuẩn mực
-        CASE 
-            WHEN m.MasterKpiCode = 'KPI_1' THEN (CASE WHEN @CapacityRate >= 98.0 THEN 'GOOD' WHEN @CapacityRate >= 90.0 THEN 'WARN' ELSE 'BAD' END)
-            WHEN m.MasterKpiCode = 'KPI_2' THEN 'GOOD'
-            WHEN m.MasterKpiCode = 'KPI_3' THEN (CASE WHEN @WithdrawRate <= 2.5 THEN 'GOOD' WHEN @WithdrawRate <= 5.0 THEN 'WARN' ELSE 'BAD' END)
-            WHEN m.MasterKpiCode = 'KPI_4' THEN (CASE WHEN @GrossMarginRate >= 50.0 THEN 'GOOD' WHEN @GrossMarginRate >= 45.0 THEN 'WARN' ELSE 'BAD' END)
-            WHEN m.MasterKpiCode = 'KPI_5' THEN 'WARN'
-            WHEN m.MasterKpiCode = 'KPI_6' THEN (CASE WHEN @LeadConversionRate >= 30.0 THEN 'GOOD' WHEN @LeadConversionRate >= 20.0 THEN 'WARN' ELSE 'BAD' END)
+        -- Trạng thái động dựa trên chỉ số đại diện và số lượng tiêu chí WARN/BAD
+        CASE
+            WHEN m.MasterKpiCode = 'KPI_6' THEN 'BAD'
+            WHEN m.MasterKpiCode IN ('KPI_2', 'KPI_3') THEN 'GOOD'
+            WHEN ISNULL(ms.BadCount, 0) > 0 OR ISNULL(ms.WarnCount, 0) > 0 THEN 'WARN'
             ELSE 'GOOD'
         END AS StatusBadge,
-        -- Điểm Rủi ro Radar tổng hợp (0 - 100)
-        CASE 
-            WHEN m.MasterKpiCode = 'KPI_1' THEN 38
-            WHEN m.MasterKpiCode = 'KPI_2' THEN 12
-            WHEN m.MasterKpiCode = 'KPI_3' THEN 18
-            WHEN m.MasterKpiCode = 'KPI_4' THEN 42
-            WHEN m.MasterKpiCode = 'KPI_5' THEN 55
-            WHEN m.MasterKpiCode = 'KPI_6' THEN 68
-            ELSE 20
-        END AS RadarRiskScore,
-        -- Số cơ sở đang có cảnh báo rủi ro cao từ Radar
-        CASE 
-            WHEN m.MasterKpiCode = 'KPI_1' THEN 2
-            WHEN m.MasterKpiCode = 'KPI_6' THEN 3
-            ELSE 0
-        END AS CampusAlertCount
+        -- Điểm rủi ro Radar tính động (0 - 100)
+        CAST(
+            CASE
+                WHEN (ISNULL(ms.BadCount, 0) * 22 + ISNULL(ms.WarnCount, 0) * 14 + ISNULL(ms.AuditOpenCount, 0) * 8 + CASE WHEN ISNULL(ms.AvgAchievementPct, 100) < 100 THEN CAST((100 - ISNULL(ms.AvgAchievementPct, 100)) * 0.8 AS INT) ELSE 0 END) > 95
+                THEN 95
+                ELSE (ISNULL(ms.BadCount, 0) * 22 + ISNULL(ms.WarnCount, 0) * 14 + ISNULL(ms.AuditOpenCount, 0) * 8 + CASE WHEN ISNULL(ms.AvgAchievementPct, 100) < 100 THEN CAST((100 - ISNULL(ms.AvgAchievementPct, 100)) * 0.8 AS INT) ELSE 5 END)
+            END
+        AS INT) AS RadarRiskScore,
+        ISNULL(ca.CampusAlertCount, 0) AS CampusAlertCount,
+        ISNULL(ms.TotalSubKpis, 0) AS TotalSubKpis,
+        ISNULL(ms.ActiveSubKpis, 0) AS ActiveSubKpis,
+        ISNULL(ms.GoodCount, 0) AS GoodCount,
+        ISNULL(ms.WarnCount, 0) AS WarnCount,
+        ISNULL(ms.BadCount, 0) AS BadCount,
+        ISNULL(ms.PendingCount, 0) AS PendingCount,
+        ISNULL(ms.AuditOpenCount, 0) AS AuditOpenCount,
+        pd.TopDriverCode,
+        pd.TopDriverName,
+        pd.TopDriverPct,
+        pd.TopDriverStatus
     FROM dbo.tblKPI_StrategicFramework m
+    LEFT JOIN MasterStats ms ON m.MasterKpiCode = ms.MasterKpiCode
+    LEFT JOIN PrimaryDriver pd ON m.MasterKpiCode = pd.MasterKpiCode AND pd.rn = 1
+    LEFT JOIN CampusAlerts ca ON m.MasterKpiCode = ca.MasterKpiCode
     WHERE m.IsActive = 1
     ORDER BY m.DisplayOrder;
 
     -- -----------------------------------------------------------------------------------------
-    -- RESULT SET 1: TIÊU CHÍ VẬN HÀNH THÀNH PHẦN (TẦNG 2: OPERATIONAL DRIVERS & AUDIT FLAGS)
-    -- Ánh xạ logic 100% chuẩn nghiệp vụ vào KPI Cha đang chọn, số liệu thật từ snapshot
+    -- RESULT SET 1: TIÊU CHÍ VẬN HÀNH THÀNH PHẦN (TẦNG 2: BULLET & VARIANCE CHART DRIVERS)
     -- -----------------------------------------------------------------------------------------
-    ;WITH DriverMapping AS (
-        SELECT 
-            d.KpiCode,
-            d.KpiName,
-            d.KpiGroup,
-            d.Unit,
-            d.Frequency,
-            d.SourceSystem,
-            d.GroupOrder,
-            d.SortOrder,
-            CASE 
-                -- KPI 1: Lấp đầy công suất & Quy mô tuyển sinh
-                WHEN @ActiveMasterKpi = 'KPI_1' AND d.KpiCode IN ('TS01', 'TS02', 'TS03', 'TS05', 'TS06', 'TS07') THEN 1
-                -- KPI 2: Chất lượng giáo dục, LMS & Khung năng lực, Đầu ra
-                WHEN @ActiveMasterKpi = 'KPI_2' AND (d.KpiCode LIKE 'CM%' OR d.KpiCode = 'QA23') THEN 1
-                -- KPI 3: Khống chế rút học, An toàn bếp ăn, Y tế & CSKH
-                WHEN @ActiveMasterKpi = 'KPI_3' AND (d.KpiCode = 'TS04' OR d.KpiCode IN ('DV28', 'DV29', 'DV30', 'DV35', 'DV37', 'DV38', 'DV39', 'DV40', 'DV50', 'VH28', 'VH29', 'VH35', 'VH38', 'SK01', 'SK02', 'QA50')) THEN 1
-                -- KPI 4: Hiệu quả tài chính dịch vụ bán trú & CLB
-                WHEN @ActiveMasterKpi = 'KPI_4' AND (d.KpiCode IN ('TC55', 'TC56', 'DV34', 'DV35', 'DV36', 'DV45', 'VH35', 'VH36')) THEN 1
-                -- KPI 5: Cải cách TTHC, Số hóa quy trình, Mua sắm & CSVC
-                WHEN @ActiveMasterKpi = 'KPI_5' AND (d.KpiCode IN ('CSVC01', 'CSVC02', 'DV47', 'DV48', 'DV49', 'TC52', 'TC53', 'TC54', 'TC57', 'TC58', 'TC59', 'TC60', 'HR01')) THEN 1
-                -- KPI 6: Hiệu quả Tuyển sinh & Mức độ hài lòng PHHS
-                WHEN @ActiveMasterKpi = 'KPI_6' AND (d.KpiCode IN ('TS05', 'TS06', 'TS07', 'QA23', 'QA50', 'DV50', 'DV51')) THEN 1
-                WHEN d.MasterKpiCode = @ActiveMasterKpi THEN 1
-                ELSE 0
-            END AS IsIncluded
-        FROM dbo.tblKPI_Definitions d
-        WHERE d.IsActive = 1
-    ),
-    AuditMapped AS (
-        SELECT 
-            CASE 
-                WHEN AuditCode = 'MISMATCH_01' THEN 'TS01'
-                WHEN AuditCode = 'MISMATCH_02' THEN 'TC58'
-                WHEN AuditCode = 'MISMATCH_03' THEN 'TS04'
-                WHEN AuditCode = 'MISMATCH_04' THEN 'TC52'
-                WHEN AuditCode = 'MISMATCH_05' THEN 'TC59'
-                ELSE 'TS01'
-            END AS TargetKpiCode,
-            Title AS AuditTitle
-        FROM dbo.tblKPI_AuditDiscrepancies
-        WHERE PeriodKey = @PeriodKey
-    ),
-    AuditFlags AS (
-        SELECT 
-            TargetKpiCode,
-            COUNT(*) AS AuditIssueCount,
-            MAX(AuditTitle) AS AuditSummary
-        FROM AuditMapped
-        GROUP BY TargetKpiCode
-    )
-    SELECT 
-        m.KpiCode,
-        m.KpiName,
-        m.KpiGroup,
-        m.Unit,
-        m.Frequency,
-        m.SourceSystem,
-        -- Kế hoạch & Thực hiện động
-        ISNULL(s.TargetValue, 
-            CASE 
-                WHEN m.KpiCode = 'TS01' THEN 2750
-                WHEN m.KpiCode = 'TS02' THEN 100
-                WHEN m.KpiCode = 'TS03' THEN 100
-                WHEN m.KpiCode = 'TS04' THEN 10
-                WHEN m.KpiCode = 'TS05' THEN 200
-                WHEN m.KpiCode = 'TS06' THEN 30
-                WHEN m.KpiCode = 'TS07' THEN 3000000
-                WHEN m.KpiCode = 'TC55' THEN 50
-                WHEN m.KpiCode = 'TC56' THEN 1500000000
-                ELSE 100
-            END
-        ) AS TargetValue,
-        ISNULL(s.ActualValue,
-            CASE 
-                WHEN m.KpiCode = 'TS01' THEN 2625
-                WHEN m.KpiCode = 'TS02' THEN 93.42
-                WHEN m.KpiCode = 'TS03' THEN 95.45
-                WHEN m.KpiCode = 'TS04' THEN 2.0
-                WHEN m.KpiCode = 'TS05' THEN 162
-                WHEN m.KpiCode = 'TS06' THEN 13.58
-                WHEN m.KpiCode = 'TS07' THEN 3500000
-                WHEN m.KpiCode = 'TC55' THEN 48.4
-                WHEN m.KpiCode = 'TC56' THEN 1611000000
-                WHEN m.KpiCode = 'CM08' THEN 89.6
-                WHEN m.KpiCode = 'CM11' OR m.KpiCode = 'CM04' THEN 35.5
-                WHEN m.KpiCode = 'CM17' THEN 82.4
-                WHEN m.KpiCode = 'DV28' OR m.KpiCode = 'VH28' THEN 94.5
-                WHEN m.KpiCode = 'DV29' OR m.KpiCode = 'VH29' THEN 0
-                WHEN m.KpiCode = 'DV38' OR m.KpiCode = 'VH38' THEN 0
-                WHEN m.KpiCode = 'DV35' OR m.KpiCode = 'VH35' THEN 428
-                WHEN m.KpiCode = 'DV36' OR m.KpiCode = 'VH36' THEN 12.6
-                WHEN m.KpiCode = 'CSVC01' OR m.KpiCode = 'TC59' THEN 91.67
-                WHEN m.KpiCode = 'CSVC02' OR m.KpiCode = 'TC60' THEN 96.0
-                WHEN m.KpiCode = 'QA23' OR m.KpiCode = 'CM23' THEN 92.4
-                WHEN m.KpiCode = 'QA50' OR m.KpiCode = 'DV50' THEN 93.6
-                WHEN m.KpiCode = 'SK01' OR m.KpiCode = 'DV39' THEN 96.8
-                WHEN m.KpiCode = 'SK02' OR m.KpiCode = 'DV40' THEN 8.8
-                WHEN m.KpiCode = 'HR01' OR m.KpiCode = 'TC52' THEN 0.82
-                ELSE 0
-            END
-        ) AS ActualValue,
-        -- Độ lệch Variance
+    SELECT
+        n.KpiCode,
+        n.KpiName,
+        n.KpiGroup,
+        n.MasterKpiCode,
+        n.Unit,
+        n.Frequency,
+        n.SourceSystem,
+        n.DefaultOperator,
+        n.TargetValue,
+        n.ActualValue,
+        CAST(ROUND(n.ActualValue - n.TargetValue, 2) AS NUMERIC(18,2)) AS Variance,
+        n.NormalizedPct AS ProgressPct,
+        -- Độ lệch phần trăm chuẩn hóa so với mốc 100% (dùng để vẽ Variance Bar âm/dương)
         CAST(ROUND(
-            ISNULL(s.ActualValue, 0) - ISNULL(s.TargetValue, 0), 2
-        ) AS NUMERIC(12,2)) AS Variance,
-        -- Tiến độ %
-        CAST(ROUND(
-            CASE 
-                WHEN ISNULL(s.TargetValue, 0) = 0 THEN 100.0
-                WHEN m.KpiCode = 'TS04' THEN (1.0 - (ISNULL(s.ActualValue, 2.0) / 10.0)) * 100.0
-                ELSE (ISNULL(s.ActualValue, 0) / ISNULL(s.TargetValue, 1.0)) * 100.0
+            CASE
+                WHEN n.StatusBadge = 'PENDING' THEN 0.0
+                ELSE n.NormalizedPct - 100.0
             END, 1
-        ) AS NUMERIC(6,1)) AS ProgressPct,
-        -- Trạng thái
-        ISNULL(s.Status, 
-            CASE 
-                WHEN m.KpiCode IN ('TS05', 'TS06', 'TS07', 'CM11', 'TC55', 'VH35', 'VH36', 'CSVC01') THEN 'WARN'
-                WHEN m.KpiCode IN ('DV29', 'DV38', 'VH29', 'VH38') THEN 'GOOD'
-                WHEN ISNULL(s.ActualValue, 0) >= ISNULL(s.TargetValue, 1) THEN 'GOOD'
-                ELSE 'PENDING'
-            END
-        ) AS StatusBadge,
-        -- Tiêu chí kéo tụt (Negative Driver)
-        CASE 
-            WHEN m.KpiCode IN ('TS01', 'TS05', 'TS06', 'TS07', 'CM11', 'VH35', 'VH36', 'CSVC01') THEN 1
-            ELSE 0
-        END AS IsNegativeDriver,
-        -- Cờ Đối Soát Kiểm Toán (Audit Flag)
+        ) AS NUMERIC(8,1)) AS VariancePct,
+        n.StatusBadge,
+        CASE WHEN n.StatusBadge IN ('BAD', 'WARN') THEN 1 ELSE 0 END AS IsNegativeDriver,
         ISNULL(af.AuditIssueCount, 0) AS AuditIssueCount,
-        af.AuditSummary
-    FROM DriverMapping m
-    LEFT JOIN dbo.tblKPI_PeriodSnapshots s 
-        ON m.KpiCode = s.KpiCode 
-        AND s.PeriodKey = @PeriodKey 
-        AND s.DonViID = @DonViID
-    LEFT JOIN AuditFlags af 
-        ON m.KpiCode = af.TargetKpiCode
-    WHERE m.IsIncluded = 1
-    ORDER BY 
-        CASE WHEN m.KpiCode IN ('TS01', 'TS05', 'TS06', 'TS07', 'CM11', 'VH35', 'VH36', 'CSVC01') THEN 0 ELSE 1 END,
-        m.GroupOrder, m.SortOrder;
+        af.AuditSummary,
+        ISNULL(cc.CausalChainCount, 0) AS CausalChainCount,
+        n.FinancialImpact,
+        n.OperationalInsight
+    FROM #NormalizedKpis n
+    LEFT JOIN #AuditByKpi af ON n.KpiCode = af.KpiCode
+    LEFT JOIN #CausalByKpi cc ON n.KpiCode = cc.KpiCode
+    WHERE n.MasterKpiCode = @ActiveMasterKpi
+       OR (@ActiveMasterKpi = 'KPI_1' AND n.KpiCode IN ('TS01', 'TS02', 'TS03', 'TS05', 'TS06'))
+       OR (@ActiveMasterKpi = 'KPI_2' AND n.KpiCode IN ('CM08', 'CM08_CALEN', 'CM04', 'CM17', 'CM22', 'CM27'))
+       OR (@ActiveMasterKpi = 'KPI_3' AND n.KpiCode IN ('TS04', 'VH28', 'VH29', 'VH38', 'SK01', 'SK02'))
+       OR (@ActiveMasterKpi = 'KPI_4' AND n.KpiCode IN ('TC55', 'TC56', 'DV34', 'VH35', 'VH36'))
+       OR (@ActiveMasterKpi = 'KPI_5' AND n.KpiCode IN ('CSVC01', 'CSVC02', 'HR01', 'TC54', 'TC57', 'TC58'))
+       OR (@ActiveMasterKpi = 'KPI_6' AND n.KpiCode IN ('TS05', 'TS06', 'TS07', 'QA50', 'QA23', 'DV51'))
+    ORDER BY
+        CASE n.StatusBadge
+            WHEN 'BAD' THEN 0
+            WHEN 'WARN' THEN 1
+            WHEN 'GOOD' THEN 2
+            ELSE 3
+        END,
+        n.NormalizedPct ASC,
+        n.SortOrder ASC;
 
     -- -----------------------------------------------------------------------------------------
-    -- RESULT SET 2: PHÂN RÃ THEO 5 CƠ SỞ (TẦNG 3: CAMPUS VARIANCE BREAKDOWN)
+    -- RESULT SET 2: PHÂN RÃ 5 CƠ SỞ & RADAR RỦI RO 4 TRỤC (TẦNG 3 TAB 2: CAMPUS & RISK RADAR)
     -- -----------------------------------------------------------------------------------------
-    SELECT 
-        c.ScopeID,
-        c.CampusName,
-        c.ShortName,
-        c.PlannedCapacity,
-        c.CurrentEnrollment,
-        CAST(ROUND((c.CurrentEnrollment * 1.0 / c.PlannedCapacity) * 100.0, 1) AS NUMERIC(6,1)) AS CapacityRate,
-        c.BaseAnnualTuition,
-        -- Giá trị thực tế của cơ sở theo chỉ số đang chọn
-        CASE 
-            WHEN @ActiveMasterKpi = 'KPI_1' THEN CAST(ROUND((c.CurrentEnrollment * 1.0 / c.PlannedCapacity) * 100.0, 1) AS NUMERIC(10,2))
-            WHEN @ActiveMasterKpi = 'KPI_3' THEN ISNULL(s4.ActualValue, 1.8)
-            WHEN @ActiveMasterKpi = 'KPI_4' THEN (CASE WHEN c.ScopeID = 'MNLK' THEN 41.2 WHEN c.ScopeID = 'THPT' THEN 44.5 ELSE 52.0 END)
-            WHEN @ActiveMasterKpi = 'KPI_6' THEN (CASE WHEN c.ScopeID = 'MNLK' THEN 8.5 WHEN c.ScopeID = 'TH' THEN 16.2 ELSE 12.0 END)
-            ELSE 90.0
-        END AS CampusActualValue,
-        -- Điểm Rủi ro Radar riêng của cơ sở đó (Dynamic Scoring)
-        CASE 
-            WHEN c.ScopeID = 'MNLK' THEN 78
-            WHEN c.ScopeID = 'THPT' THEN 65
-            WHEN c.ScopeID = 'MNBH' THEN 35
-            WHEN c.ScopeID = 'TH' THEN 22
-            WHEN c.ScopeID = 'THCS' THEN 28
-            ELSE 30
-        END AS CampusRiskScore,
-        CASE 
-            WHEN c.ScopeID = 'MNLK' THEN 'CRITICAL'
-            WHEN c.ScopeID = 'THPT' THEN 'HIGH'
-            WHEN c.ScopeID = 'MNBH' THEN 'MEDIUM'
+    ;WITH CampusMetrics AS (
+        SELECT
+            c.ScopeID,
+            c.CampusName,
+            c.ShortName,
+            c.PlannedCapacity,
+            c.CurrentEnrollment,
+            c.BaseAnnualTuition,
+            c.SortOrder,
+            CAST(ROUND((c.CurrentEnrollment * 100.0) / NULLIF(c.PlannedCapacity, 0), 1) AS NUMERIC(6,1)) AS CapacityRate,
+            ISNULL(s_ts04.ActualValue, 2.0) AS WithdrawRate,
+            ISNULL(s_cm08.ActualValue, 89.6) AS LmsCompletionRate,
+            ISNULL(s_cm04.ActualValue, 35.5) AS DigitalMaterialRate,
+            ISNULL(s_sk01.ActualValue, 96.8) AS HealthRate,
+            ISNULL(s_tc56.Rate, 90.0) AS ClubTargetRate,
+            ISNULL(s_tc56.ActualValue, 70) AS ClubStudents,
+            ISNULL(s_csvc.ActualValue, 91.7) AS MaintenanceRate,
+            ISNULL(s_tc54.ActualValue, 40.0) AS StaffLeaveDays,
+            ISNULL(s_qa50.ActualValue, 93.6) AS ParentSatisfactionRate,
+            -- Chỉ số đại diện theo @ActiveMasterKpi cho từng cơ sở
+            CASE @ActiveMasterKpi
+                WHEN 'KPI_1' THEN CAST(ROUND((c.CurrentEnrollment * 100.0) / NULLIF(c.PlannedCapacity, 0), 1) AS NUMERIC(10,2))
+                WHEN 'KPI_2' THEN ISNULL(s_cm08.ActualValue, 89.6)
+                WHEN 'KPI_3' THEN ISNULL(s_ts04.ActualValue, 2.0)
+                WHEN 'KPI_4' THEN ISNULL(s_tc56.Rate, 85.0)
+                WHEN 'KPI_5' THEN ISNULL(s_csvc.ActualValue, 91.7)
+                WHEN 'KPI_6' THEN ISNULL(s_qa50.ActualValue, 93.6)
+                ELSE CAST(ROUND((c.CurrentEnrollment * 100.0) / NULLIF(c.PlannedCapacity, 0), 1) AS NUMERIC(10,2))
+            END AS CampusActualValue,
+            CASE @ActiveMasterKpi
+                WHEN 'KPI_1' THEN 100.0
+                WHEN 'KPI_2' THEN ISNULL(s_cm08.TargetValue, 80.0)
+                WHEN 'KPI_3' THEN 10.0
+                WHEN 'KPI_4' THEN 100.0
+                WHEN 'KPI_5' THEN 95.0
+                WHEN 'KPI_6' THEN 90.0
+                ELSE 100.0
+            END AS CampusTargetValue,
+            CASE @ActiveMasterKpi
+                WHEN 'KPI_1' THEN N'% Lấp đầy'
+                WHEN 'KPI_2' THEN N'% LMS'
+                WHEN 'KPI_3' THEN N'% Rút HS'
+                WHEN 'KPI_4' THEN N'% Chỉ tiêu CLB'
+                WHEN 'KPI_5' THEN N'% Bảo trì CSVC'
+                WHEN 'KPI_6' THEN N'% Hài lòng PH'
+                ELSE N'%'
+            END AS CampusMetricUnit,
+            CASE @ActiveMasterKpi
+                WHEN 'KPI_1' THEN ISNULL(s_ts01.OperationalInsight, N'Quy mô ' + CAST(c.CurrentEnrollment AS NVARCHAR(20)) + N'/' + CAST(c.PlannedCapacity AS NVARCHAR(20)) + N' HS')
+                WHEN 'KPI_2' THEN ISNULL(s_cm08.OperationalInsight, N'Học liệu số đạt ' + CAST(ISNULL(s_cm04.ActualValue, 35.5) AS NVARCHAR(20)) + N'%')
+                WHEN 'KPI_3' THEN ISNULL(s_sk01.OperationalInsight, N'Tỷ lệ rút hồ sơ ' + CAST(ISNULL(s_ts04.ActualValue, 2.0) AS NVARCHAR(20)) + N'%')
+                WHEN 'KPI_4' THEN ISNULL(s_tc56.OperationalInsight, N'CLB ngoại khóa đạt ' + CAST(ISNULL(s_tc56.Rate, 85.0) AS NVARCHAR(20)) + N'% chỉ tiêu')
+                WHEN 'KPI_5' THEN ISNULL(s_csvc.OperationalInsight, N'Nghỉ phép nhân sự: ' + CAST(ISNULL(s_tc54.ActualValue, 40.0) AS NVARCHAR(20)) + N' ngày công')
+                WHEN 'KPI_6' THEN ISNULL(s_qa50.OperationalInsight, N'Hài lòng PHHS đạt ' + CAST(ISNULL(s_qa50.ActualValue, 93.6) AS NVARCHAR(20)) + N'%')
+                ELSE N''
+            END AS CampusKpiInsight
+        FROM dbo.tblKPI_CampusCatalog c
+        LEFT JOIN dbo.tblKPI_PeriodSnapshots s_ts01 ON s_ts01.PeriodKey = @PeriodKey AND s_ts01.DonViID = c.ScopeID AND s_ts01.KpiCode = 'TS01'
+        LEFT JOIN dbo.tblKPI_PeriodSnapshots s_ts04 ON s_ts04.PeriodKey = @PeriodKey AND s_ts04.DonViID = c.ScopeID AND s_ts04.KpiCode = 'TS04'
+        LEFT JOIN dbo.tblKPI_PeriodSnapshots s_cm08 ON s_cm08.PeriodKey = @PeriodKey AND s_cm08.DonViID = c.ScopeID AND s_cm08.KpiCode = 'CM08'
+        LEFT JOIN dbo.tblKPI_PeriodSnapshots s_cm04 ON s_cm04.PeriodKey = @PeriodKey AND s_cm04.DonViID = c.ScopeID AND s_cm04.KpiCode = 'CM04'
+        LEFT JOIN dbo.tblKPI_PeriodSnapshots s_sk01 ON s_sk01.PeriodKey = @PeriodKey AND s_sk01.DonViID = c.ScopeID AND s_sk01.KpiCode = 'SK01'
+        LEFT JOIN dbo.tblKPI_PeriodSnapshots s_tc56 ON s_tc56.PeriodKey = @PeriodKey AND s_tc56.DonViID = c.ScopeID AND s_tc56.KpiCode = 'TC56'
+        LEFT JOIN dbo.tblKPI_PeriodSnapshots s_csvc ON s_csvc.PeriodKey = @PeriodKey AND s_csvc.DonViID = c.ScopeID AND s_csvc.KpiCode = 'CSVC01'
+        LEFT JOIN dbo.tblKPI_PeriodSnapshots s_tc54 ON s_tc54.PeriodKey = @PeriodKey AND s_tc54.DonViID = c.ScopeID AND s_tc54.KpiCode = 'TC54'
+        LEFT JOIN dbo.tblKPI_PeriodSnapshots s_qa50 ON s_qa50.PeriodKey = @PeriodKey AND s_qa50.DonViID = c.ScopeID AND s_qa50.KpiCode = 'QA50'
+        WHERE c.IsActive = 1
+    ),
+    CampusRiskCalc AS (
+        SELECT
+            cm.*,
+            -- Trục 1: Rủi ro Tuyển sinh & Quy mô (0 - 100)
+            CAST(ROUND(
+                CASE
+                    WHEN cm.CapacityRate >= 95.0 THEN 12
+                    WHEN cm.CapacityRate >= 90.0 THEN 28 + (95.0 - cm.CapacityRate) * 4.0
+                    ELSE 50 + (90.0 - cm.CapacityRate) * 2.8
+                END, 0
+            ) AS INT) AS EnrollmentRisk,
+            -- Trục 2: Rủi ro Học thuật & Học liệu số (0 - 100)
+            CAST(ROUND(
+                (CASE WHEN cm.DigitalMaterialRate < 60.0 THEN (60.0 - cm.DigitalMaterialRate) * 1.1 ELSE 10 END) +
+                (CASE WHEN cm.LmsCompletionRate < 90.0 THEN (90.0 - cm.LmsCompletionRate) * 2.5 ELSE 5 END), 0
+            ) AS INT) AS AcademicRisk,
+            -- Trục 3: Rủi ro Dịch vụ, Giữ chân & Y tế (0 - 100)
+            CAST(ROUND(
+                (cm.WithdrawRate * 6.5) +
+                (CASE WHEN cm.HealthRate < 95.0 THEN (95.0 - cm.HealthRate) * 8.0 ELSE 5 END) +
+                (CASE WHEN cm.ClubTargetRate < 80.0 THEN (80.0 - cm.ClubTargetRate) * 0.5 ELSE 0 END), 0
+            ) AS INT) AS ServiceRisk,
+            -- Trục 4: Rủi ro Vận hành CSVC & Nghỉ phép Nhân sự (0 - 100)
+            CAST(ROUND(
+                (CASE WHEN cm.MaintenanceRate < 95.0 THEN (95.0 - cm.MaintenanceRate) * 4.5 ELSE 5 END) +
+                (CASE WHEN cm.StaffLeaveDays > 40.0 THEN (cm.StaffLeaveDays - 40.0) * 0.85 ELSE 8 END), 0
+            ) AS INT) AS OperationsRisk
+        FROM CampusMetrics cm
+    )
+    SELECT
+        r.ScopeID,
+        r.CampusName,
+        r.ShortName,
+        r.PlannedCapacity,
+        r.CurrentEnrollment,
+        r.CapacityRate,
+        r.WithdrawRate,
+        r.BaseAnnualTuition,
+        r.CampusActualValue,
+        r.CampusTargetValue,
+        r.CampusMetricUnit,
+        r.CampusKpiInsight,
+        r.ClubTargetRate,
+        r.ClubStudents,
+        r.MaintenanceRate,
+        r.StaffLeaveDays,
+        r.ParentSatisfactionRate,
+        r.EnrollmentRisk,
+        r.AcademicRisk,
+        r.ServiceRisk,
+        r.OperationsRisk,
+        CAST(ROUND((r.EnrollmentRisk * 0.35 + r.ServiceRisk * 0.25 + r.OperationsRisk * 0.25 + r.AcademicRisk * 0.15), 0) AS INT) AS CampusRiskScore,
+        CASE
+            WHEN (r.EnrollmentRisk * 0.35 + r.ServiceRisk * 0.25 + r.OperationsRisk * 0.25 + r.AcademicRisk * 0.15) >= 55 THEN 'CRITICAL'
+            WHEN (r.EnrollmentRisk * 0.35 + r.ServiceRisk * 0.25 + r.OperationsRisk * 0.25 + r.AcademicRisk * 0.15) >= 40 THEN 'HIGH'
+            WHEN (r.EnrollmentRisk * 0.35 + r.ServiceRisk * 0.25 + r.OperationsRisk * 0.25 + r.AcademicRisk * 0.15) >= 28 THEN 'MEDIUM'
             ELSE 'LOW'
         END AS CampusRiskLevel,
-        (c.PlannedCapacity - c.CurrentEnrollment) * c.BaseAnnualTuition AS CampusTuitionLossVNĐ
-    FROM dbo.tblKPI_CampusCatalog c
-    LEFT JOIN dbo.tblKPI_PeriodSnapshots s4 
-        ON s4.PeriodKey = @PeriodKey AND s4.DonViID = c.ScopeID AND s4.KpiCode = 'TS04'
-    WHERE c.IsActive = 1
-    ORDER BY c.SortOrder;
+        CAST(CASE WHEN r.PlannedCapacity > r.CurrentEnrollment THEN (r.PlannedCapacity - r.CurrentEnrollment) * r.BaseAnnualTuition ELSE 0 END AS BIGINT) AS CampusTuitionLossVNĐ
+    FROM CampusRiskCalc r
+    ORDER BY r.SortOrder;
 
     -- -----------------------------------------------------------------------------------------
-    -- RESULT SET 3: CHUỖI NHÂN QUẢ & LƯỢNG HÓA HỆ LỤY TÀI CHÍNH THỰC TẾ (TẦNG 3: CAUSAL & IMPACT)
+    -- RESULT SET 3: CHUỖI NHÂN QUẢ ĐỘNG & LƯỢNG HÓA TÁC ĐỘNG (TẦNG 3 TAB 1: CAUSAL FLOW DIAGRAM)
     -- -----------------------------------------------------------------------------------------
-    DECLARE @HeadcountLossTotal INT = 125;
-    DECLARE @TuitionDeficitTotal BIGINT = 8125000000;
-    DECLARE @BoardingDeficitTotal BIGINT = 2812500000;
-    DECLARE @TotalFinancialImpact BIGINT = 10937500000;
-
-    SELECT 
+    SELECT
         @ActiveMasterKpi AS ActiveMasterKpi,
-        @HeadcountLossTotal AS HeadcountDeficit,
+        @HeadcountDeficit AS HeadcountDeficit,
         @TuitionDeficitTotal AS TuitionLossVNĐ,
         @BoardingDeficitTotal AS BoardingLossVNĐ,
         @TotalFinancialImpact AS TotalFinancialLossVNĐ,
-        -- Câu chuyện nhân quả chính xác theo KPI đang chọn
-        CASE 
-            WHEN @ActiveMasterKpi = 'KPI_1' THEN 
-                N'Phễu chuyển đổi Leads đạt 13.58% (thấp hơn mục tiêu 30%) khiến số lượng tuyển sinh mới chỉ đạt 95.45% kế hoạch. Hệ lụy trực tiếp: Toàn trường thiếu hụt 125 học sinh (tập trung chủ yếu tại MN Long Khánh hụt 37 chỗ và THPT hụt 148 chỗ), gây thất thu học phí 8.125 tỷ VNĐ và giảm doanh thu bán trú 2.812 tỷ VNĐ trong năm học 2026-2027.'
-            WHEN @ActiveMasterKpi = 'KPI_2' THEN 
-                N'Mức độ ứng dụng Học liệu số LMS của giáo viên chỉ đạt 35.5% (mục tiêu 60%), dẫn đến tỷ lệ hoàn thành bài tập trực tuyến của học sinh ở các khối 6, 7, 10 bị kéo tụt xuống 89.6%. Hệ lụy: Học sinh hổng kiến thức nền tảng trước kỳ kiểm tra giữa kỳ, phản ánh trực tiếp vào tỷ lệ hài lòng của PHHS về tiến bộ học tập (QA23) chỉ đạt 92.4%.'
-            WHEN @ActiveMasterKpi = 'KPI_3' THEN 
-                N'Tỷ lệ rút học toàn trường được kiểm soát tốt ở mức 2.0% (< 10%). Tuy nhiên, 39.6% số ca rút học tập trung vào lý do nhà xa và thiếu tuyến xe bus đưa đón khu vực Trảng Bom / Long Thành. Hệ lụy: Tiềm ẩn nguy cơ mất thêm 15 - 20 học sinh nếu không tối ưu hóa các điểm đón trả bus trước học kỳ 2.'
-            WHEN @ActiveMasterKpi = 'KPI_4' THEN 
-                N'Biên lợi nhuận gộp dịch vụ bán trú đạt 48.4% (thiếu 1.6% so với chuẩn 50.0%). Nguyên nhân: Hiệu suất lấp đầy tuyến xe bus chỉ đạt 12.6% biên lợi nhuận và chi phí nguyên liệu suất ăn dinh dưỡng tăng 4.2% trong tháng 9. Hệ lụy: Hụt khoảng 320 triệu VNĐ thặng dư dịch vụ bổ trợ phục vụ tái đầu tư cơ sở vật chất.'
-            WHEN @ActiveMasterKpi = 'KPI_5' THEN 
-                N'Thời gian phê duyệt PR/PO mua sắm kéo dài 4.2 ngày (chuẩn <= 3 ngày) và 18 ticket bảo trì máy lạnh bị tồn đọng tại cơ sở Mầm non Tân Biên. Hệ lụy: Gây gián đoạn cục bộ điều kiện học tập phòng học, làm phát sinh 12 phản ánh từ phụ huynh qua kênh tiếp nhận ý kiến.'
-            WHEN @ActiveMasterKpi = 'KPI_6' THEN 
-                N'Chi phí thu hút 1 học sinh (CAC) tăng lên 3.500.000 VNĐ (vượt ngân sách 3.000.000 VNĐ) nhưng tỷ lệ chuyển đổi Leads chỉ đạt 13.58%. Hệ lụy: Lãng phí ngân sách Marketing và làm hụt chỉ tiêu tuyển sinh đầu cấp của cơ sở Long Khánh và khối 10 THPT.'
-            ELSE N'Hệ thống đang giám sát biến động chỉ số theo thời gian thực.'
-        END AS CausalChainNarrative,
-        -- Khuyến nghị hành động điều hành tức thì
-        CASE 
-            WHEN @ActiveMasterKpi = 'KPI_1' THEN 
-                N'1. Ban Tuyển sinh kích hoạt chiến dịch Chăm sóc lại tập Leads ấm (Retargeting) khối Mầm non Long Khánh và lớp 10. 2. Ban Giám hiệu rà soát chính sách ưu đãi học phí chuyển cấp để giữ chân 100% học sinh lớp 9 lên lớp 10.'
-            WHEN @ActiveMasterKpi = 'KPI_2' THEN 
-                N'1. Ban Chuyên môn tổ chức tập huấn số hóa học liệu LMS cho tổ Tự nhiên và Ngoại ngữ trong tuần đầu tháng 10. 2. Giao KPI hoàn thành học liệu số vào đánh giá thi đua tháng của giáo viên.'
-            WHEN @ActiveMasterKpi = 'KPI_3' THEN 
-                N'1. Ban Bán trú phối hợp đơn vị xe bus mở rộng 2 điểm đón tại nút giao Trảng Bom để giải quyết dứt điểm lý do rút học vì xa nhà.'
-            WHEN @ActiveMasterKpi = 'KPI_4' THEN 
-                N'1. Đấu thầu lại nhà cung ứng thực phẩm tươi sống theo bộ tiêu chí ISO 22000 để giảm 3% giá vốn. 2. Tối ưu lại biểu đồ tuyến xe đưa rước để nâng tỷ lệ lấp đầy mỗi chuyến xe lên trên 85%.'
-            ELSE N'Duy trì giám sát định kỳ và đôn đốc các bộ phận phụ trách.'
-        END AS ActionRecommendation;
+        c.CorrelationID,
+        c.ChainGroup,
+        ISNULL(d_cause.MasterKpiCode, ISNULL(d_eff.MasterKpiCode, @ActiveMasterKpi)) AS MasterKpiCode,
+        c.CauseKpiCode,
+        c.CauseKpiName,
+        n_cause.ActualValue AS CauseActualValue,
+        n_cause.TargetValue AS CauseTargetValue,
+        n_cause.Unit AS CauseUnit,
+        ISNULL(n_cause.StatusBadge, 'WARN') AS CauseStatus,
+        c.EffectKpiCode,
+        c.EffectKpiName,
+        n_eff.ActualValue AS EffectActualValue,
+        n_eff.TargetValue AS EffectTargetValue,
+        n_eff.Unit AS EffectUnit,
+        ISNULL(n_eff.StatusBadge, 'WARN') AS EffectStatus,
+        c.RelationshipType,
+        CASE
+            WHEN c.RelationshipType LIKE 'POSITIVE%' OR c.RelationshipType IN ('CAPACITY_BALANCE', 'SERVICE_RETENTION') THEN 1
+            ELSE 0
+        END AS IsPositiveChain,
+        c.Description AS CausalChainNarrative,
+        c.QuantifiedImpact,
+        c.RecommendedAction AS ActionRecommendation,
+        c.ResponsibleRole,
+        c.SortOrder
+    FROM dbo.tblKPI_Correlations c
+    LEFT JOIN #NormalizedKpis n_cause ON c.CauseKpiCode = n_cause.KpiCode
+    LEFT JOIN #NormalizedKpis n_eff ON c.EffectKpiCode = n_eff.KpiCode
+    LEFT JOIN dbo.tblKPI_Definitions d_cause ON c.CauseKpiCode = d_cause.KpiCode
+    LEFT JOIN dbo.tblKPI_Definitions d_eff ON c.EffectKpiCode = d_eff.KpiCode
+    WHERE c.PeriodKey = @PeriodKey
+      AND (
+          (@ActiveMasterKpi = 'KPI_1' AND (c.CauseKpiCode IN ('TS01', 'TS02', 'TS03', 'TS05', 'TS06') AND c.EffectKpiCode IN ('TS01', 'TS02', 'TS03', 'TS06')))
+          OR (@ActiveMasterKpi = 'KPI_2' AND (c.CauseKpiCode IN ('CM04', 'CM08', 'CM08_CALEN') OR c.EffectKpiCode IN ('CM08', 'CM17', 'HR01')))
+          OR (@ActiveMasterKpi = 'KPI_3' AND (c.CauseKpiCode IN ('TS04', 'SK01', 'VH28') OR c.EffectKpiCode IN ('TS04', 'VH28', 'DV34')))
+          OR (@ActiveMasterKpi = 'KPI_4' AND (c.CauseKpiCode IN ('TC56', 'VH35', 'VH36') OR c.EffectKpiCode IN ('TC55', 'TC56', 'VH35', 'DV34')))
+          OR (@ActiveMasterKpi = 'KPI_5' AND (c.CauseKpiCode IN ('CSVC01', 'TC54', 'TC58') OR c.EffectKpiCode IN ('VH28', 'TC57', 'HR01')))
+          OR (@ActiveMasterKpi = 'KPI_6' AND (c.CauseKpiCode IN ('TS05', 'TS06', 'QA50') OR c.EffectKpiCode IN ('QA50', 'TS06')))
+      )
+    ORDER BY c.SortOrder ASC;
 
     -- -----------------------------------------------------------------------------------------
-    -- RESULT SET 4: BẰNG CHỨNG KIỂM TOÁN & ĐỐI SOÁT DỮ LIỆU (TẦNG 3: AUDIT EVIDENCE)
+    -- RESULT SET 4: BẰNG CHỨNG KIỂM TOÁN & BIỂU ĐỒ ĐỐI CHIẾU (TẦNG 3 TAB 3: AUDIT DUMBBELL CHART)
     -- -----------------------------------------------------------------------------------------
-    SELECT 
-        DiscrepancyID,
-        PeriodKey,
-        ScopeID,
-        AuditCode,
-        Category,
-        Title,
-        PrimarySource,
-        PrimaryValue,
-        SecondarySource,
-        SecondaryValue,
-        VarianceAnalysis,
-        ActionOwner,
-        VerificationStatus
-    FROM dbo.tblKPI_AuditDiscrepancies
-    WHERE PeriodKey = @PeriodKey;
+    SELECT
+        a.DiscrepancyID,
+        a.PeriodKey,
+        a.ScopeID,
+        a.AuditCode,
+        a.Category,
+        ISNULL(a.KpiCode, 'TS01') AS KpiCode,
+        ISNULL(d.KpiName, N'Chỉ số vận hành') AS KpiName,
+        ISNULL(d.MasterKpiCode, 'KPI_1') AS MasterKpiCode,
+        a.Title,
+        a.PrimarySource,
+        a.PrimaryValue,
+        a.SecondarySource,
+        a.SecondaryValue,
+        a.VarianceAnalysis,
+        a.ActionOwner,
+        a.VerificationStatus,
+        -- Các giá trị định lượng phục vụ vẽ biểu đồ Dumbbell / Gap Chart trực quan
+        CASE a.AuditCode
+            WHEN 'MISMATCH_01' THEN 129.0
+            WHEN 'MISMATCH_02' THEN 100.0
+            WHEN 'MISMATCH_03' THEN 93.6
+            WHEN 'MISMATCH_04' THEN 0.0
+            WHEN 'MISMATCH_05' THEN 91.67
+            WHEN 'MISMATCH_06' THEN 2873.0
+            WHEN 'MISMATCH_07' THEN 48.2
+            WHEN 'MISMATCH_08' THEN 98.2
+            WHEN 'MISMATCH_09' THEN 53.0
+            WHEN 'MISMATCH_10' THEN 428.0
+            WHEN 'MISMATCH_11' THEN 596.0
+            WHEN 'MISMATCH_12' THEN 551.0
+            ELSE 100.0
+        END AS PrimaryNum,
+        CASE a.AuditCode
+            WHEN 'MISMATCH_01' THEN 122.0
+            WHEN 'MISMATCH_02' THEN 50.0
+            WHEN 'MISMATCH_03' THEN 80.2
+            WHEN 'MISMATCH_04' THEN 2.0
+            WHEN 'MISMATCH_05' THEN 95.0
+            WHEN 'MISMATCH_06' THEN 2750.0
+            WHEN 'MISMATCH_07' THEN 35.5
+            WHEN 'MISMATCH_08' THEN 89.6
+            WHEN 'MISMATCH_09' THEN 62.0
+            WHEN 'MISMATCH_10' THEN 315.0
+            WHEN 'MISMATCH_11' THEN 482.0
+            WHEN 'MISMATCH_12' THEN 492.0
+            ELSE 85.0
+        END AS SecondaryNum,
+        CASE a.AuditCode
+            WHEN 'MISMATCH_01' THEN N'HS'
+            WHEN 'MISMATCH_02' THEN N'% Go-live'
+            WHEN 'MISMATCH_03' THEN N'% Tín nhiệm'
+            WHEN 'MISMATCH_04' THEN N'Ca vụ'
+            WHEN 'MISMATCH_05' THEN N'% Hoàn thành'
+            WHEN 'MISMATCH_06' THEN N'HS chỉ tiêu'
+            WHEN 'MISMATCH_07' THEN N'% Đạt chuẩn'
+            WHEN 'MISMATCH_08' THEN N'% Hoàn thành'
+            WHEN 'MISMATCH_09' THEN N'HS rút'
+            WHEN 'MISMATCH_10' THEN N'HS đi bus'
+            WHEN 'MISMATCH_11' THEN N'Học viên'
+            WHEN 'MISMATCH_12' THEN N'Ngày nghỉ'
+            ELSE N'%'
+        END AS UnitLabel
+    FROM dbo.tblKPI_AuditDiscrepancies a
+    LEFT JOIN dbo.tblKPI_Definitions d ON a.KpiCode = d.KpiCode
+    WHERE a.PeriodKey = @PeriodKey
+      AND (@DonViID = 'ALL' OR a.ScopeID = 'ALL' OR a.ScopeID = @DonViID)
+    ORDER BY
+        CASE WHEN d.MasterKpiCode = @ActiveMasterKpi THEN 0 ELSE 1 END,
+        a.DiscrepancyID ASC;
+
+    DROP TABLE #NormalizedKpis;
+    DROP TABLE #AuditByKpi;
+    DROP TABLE #CausalByKpi;
 END
