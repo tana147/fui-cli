@@ -159,6 +159,18 @@
 		watch: {
 			IsSQDDialog(val) {
 				if (val) {
+					if (this.dsHocVien.Decision_NgayQD && String(this.dsHocVien.Decision_NgayQD).includes('.')) {
+						this.dsHocVien.Decision_NgayQD = ''
+					}
+					if (this.dsHocVien.Decision_ThangQD && String(this.dsHocVien.Decision_ThangQD).includes('.')) {
+						this.dsHocVien.Decision_ThangQD = ''
+					}
+					if (this.dsHocVien.Decision_NamQD && String(this.dsHocVien.Decision_NamQD).includes('.')) {
+						this.dsHocVien.Decision_NamQD = ''
+					}
+					if (this.dsHocVien.Decision_SoQD && String(this.dsHocVien.Decision_SoQD).trim() === '/QĐ-ĐHLH') {
+						this.dsHocVien.Decision_SoQD = ''
+					}
 					this.cloneData = JSON.parse(JSON.stringify(this.thongtinhocvien))
 					console.log('this.cloneData', this.cloneData)
 				}
@@ -219,14 +231,18 @@
 						await $this.deleteFile($this.cloneData.DecisionFile_ID)
 					}
 
+					const cleanNgay = String($this.dsHocVien.Decision_NgayQD || '').trim()
+					const cleanThang = String($this.dsHocVien.Decision_ThangQD || '').trim()
+					const cleanNam = String($this.dsHocVien.Decision_NamQD || '').trim()
+
 					ajaxCALL(
 						'/HoiDong_Upd_SoQD',
 						{
 							Decision_ID: $this.dsHocVien.Decision_ID,
 							Decision_SoQD: $this.dsHocVien.Decision_SoQD,
-							Decision_NgayQD: $this.dsHocVien.Decision_NgayQD,
-							Decision_ThangQD: $this.dsHocVien.Decision_ThangQD,
-							Decision_NamQD: $this.dsHocVien.Decision_NamQD,
+							Decision_NgayQD: cleanNgay.includes('.') ? null : (cleanNgay ? cleanNgay.padStart(2, '0') : null),
+							Decision_ThangQD: cleanThang.includes('.') ? null : (cleanThang ? cleanThang.padStart(2, '0') : null),
+							Decision_NamQD: cleanNam.includes('.') ? null : (cleanNam || null),
 							DecisionFile_ID: $this.dsHocVien.DecisionFile_ID,
 							DecisionFile_Url: $this.dsHocVien.DecisionFile_Url,
 							DecisionFile_Name: $this.dsHocVien.DecisionFile_Name,

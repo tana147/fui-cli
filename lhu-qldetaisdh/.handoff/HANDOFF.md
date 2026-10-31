@@ -1,105 +1,89 @@
 # AGENT HANDOFF: lhu-qldetaisdh
 
-- **Generated At:** 2026-10-26T10:47:00+07:00
-- **Workspace Root:** `/home/iot/CODE/fui-cli/lhu-qldetaisdh`
+- **Generated At:** 2026-10-31T15:16:30+07:00
+- **Workspace Root:** `D:\CODE\IOTSOFT\fui-cli\lhu-qldetaisdh`
 - **Status:** `done`
-- **Next Session Focus:** Thử nghiệm bấm nút "Hủy hội đồng" trên học viên Nguyễn Hữu Thịnh (`925000005`) trên giao diện, kiểm tra khôi phục nếu cần (`_db/restore_student_925000005.sql`), hoặc xử lý xóa mềm 7 hội đồng bản sao cũ.
+- **Next Session Focus:** Tiếp tục kiểm tra các module quy trình sau đại học hoặc hỗ trợ người dùng vận hành các đợt lập hội đồng bảo vệ luận văn tiếp theo.
 
 ## 1. NEXT SESSION ACTION PLAN
-1. Đăng nhập module `ths-hoi-dong`, tìm học viên `[925000005] Nguyễn Hữu Thịnh`, bấm "Xem & Cập nhật" -> bấm "Hủy hội đồng", nhập lý do hủy/hoãn để kiểm tra luồng soft-delete và reset bước 6.
-2. Bấm nút "Lịch sử HĐ" trên dòng của học viên để kiểm tra card màu đỏ hiển thị lý do hủy, thông tin QĐ và danh sách 5 thành viên cũ.
-3. Nếu muốn khôi phục lại trạng thái ban đầu của Thịnh: chạy `fui exec -f _db/restore_student_925000005.sql --confirm-write`.
-4. (Tùy chọn) Xóa mềm 7 hội đồng bản sao cũ (`HoiDongID IN (2460, 2461, 2462, 2463, 2464, 2465, 2612)`).
+1. Sẵn sàng nhận phản hồi từ người dùng thực tế sau khi họ nạp file Excel danh sách đợt bảo vệ.
+2. Nếu có học viên mới cần cấp hoặc điều chỉnh Số QĐ / Ngày QĐ, kiểm tra trực tiếp qua SP `spAPI_HoiDong_DeTai_Get`.
+3. Kiểm tra tính toàn vẹn của các quyết định tại module `ths-quan-ly-quyet-dinh` nếu người dùng yêu cầu in quyết định hàng loạt.
 
 ## 2. SUGGESTED SKILLS
-- `session-bugflow`: Tuân thủ quy trình 2 pha khi nhận bug/feature mới.
-- `clean-stage-commit-push`: Đảm bảo git hygiene khi hoàn tất phiên làm việc.
+- `session-bugflow`: Sử dụng khi bắt đầu debug hoặc nhận diện bug mới phát sinh trong quy trình hội đồng.
+- `clean-stage-commit-push`: Sử dụng khi kết thúc phiên làm việc để giữ git sạch sẽ.
 
 ## 3. GIT & COMMIT STATE
-- **Branch:** `main` (tracking `origin/main`)
+- **Branch:** `main`
 - **Relevant Recent Commits:**
-  - `4fbf573` — feat(lhu-qlnckh): nang cap thanh vien cgcn bang rieng, them stm va xoa cgcn-quan-ly
-  - `c601ec7` — feat(lhu-qlnckh): chuan hoa module cgcn va khen thuong, bo sung sp va cap nhat handoff
-  - `bf48986` — feat(lhu-qldetaisdh): bo sung input ty le trung lap trong dialog tu choi buoc 5
+  - `38fd417` — feat(lhbs-esign): upgrade kpi-ops-dashboard to True Visual Chart Cockpit (Option A) and dynamic 3-tier SP
+  - `33dd5e0` — feat: dong bo toan bo 505 module va 1491 stored procedures trong workspace
+  - `c28d9f5` — refactor(lhu-qldetaisdh): chuan hoa dat ten module kebab-case va dong bo menu
 - **Working Tree Ownership:**
   - **Current task changes:**
-    - `modules/ths-hoi-dong/script.js`: Tích hợp dialog Lịch sử HĐ ở cột table, format điểm float, lọc thành viên active, 5 trạng thái HĐ.
-    - `modules/ths-hoi-dong/style.css`: Thêm class viền màu cho card HĐ failed và inactive.
-    - `modules/ths-hoi-dong/components/dialog-update-council.vue`: Bổ sung nút Hủy hội đồng, popup xác nhận, textarea lý do hủy.
-    - `_db/qldetaisdh/spAPI_HoiDong_Cancel.sql`: SP hủy HĐ (soft-delete HoiDong & TVHD, reset Task 5 và 6).
-    - `_db/qldetaisdh/spAPI_HoiDong_History_Get.sql`: SP lấy lịch sử các lần HĐ và thành viên.
-    - `_db/qldetaisdh/spAPI_HoiDong_DeTai_Get.sql`: Tối ưu Parameter Sniffing WITH RECOMPILE, khử trùng lặp `#TMPSTU`.
-    - `_db/backup_student_925000005.json`: File snapshot backup dữ liệu học viên 925000005.
-    - `_db/restore_student_925000005.sql`: File SQL khôi phục dữ liệu học viên 925000005.
-    - `.handoff/HANDOFF.md`: Cập nhật tài liệu bàn giao.
+    - `modules/ths-hoi-dong/components/dialog-add-council-by-excel.vue`: Sửa guard chặn ghi đè Số QĐ rỗng/placeholder `/QĐ-ĐHLH`, tự động dò dòng Header và cột dữ liệu linh hoạt, loại bỏ Moment.js loose mode gây đơ browser, pre-calculate trạng thái render.
+    - `modules/ths-hoi-dong/components/dialog-give-sqd.vue`: Xóa placeholder ngày tháng có dấu chấm `' .'`, `' .'`, `' 20.'` khi mở modal và trước khi lưu lên DB.
+    - `modules/ths-hoi-dong/components/_components.json`: Đồng bộ cấu trúc component sau khi patch.
   - **Pre-existing dirty / unrelated:**
-    - `_logs/tool-errors.jsonl` (log CLI hệ thống)
-    - `_projectInfo.json`, `modules/_modules.json`, các `_moduleInfo.json` (metadata tự sinh khi đồng bộ)
+    - `../_logs/tool-errors.jsonl` (File log ở thư mục cha `fui-cli`, không stage).
 - **Quick Inspect Commands:**
-  - `git diff modules/ths-hoi-dong/`
-  - `git diff _db/qldetaisdh/spAPI_HoiDong_DeTai_Get.sql`
+  - `git diff modules/ths-hoi-dong/components/dialog-add-council-by-excel.vue`
+  - `git diff modules/ths-hoi-dong/components/dialog-give-sqd.vue`
 
 ## 4. PROBLEM & SYSTEM FLOW
-- **Objective:**
-  1. Thêm chức năng hủy riêng hội đồng của một học viên khi đã có lịch bảo vệ (lưu vết soft-delete, lưu lý do hủy, reset bước 6).
-  2. Bổ sung nút tra cứu lịch sử hội đồng tại cột Hội đồng trên bảng.
-  3. Khắc phục triệt để lỗi chạy chậm ~16.8s của API `HoiDong_DeTai_Get`.
-  4. Sửa lỗi sai số dấu phẩy động hiển thị điểm số (float precision `8.780000000000001`) và lặp thành viên trong lịch sử.
-- **Expected:**
-  - Bấm hủy hội đồng: Cập nhật `Is_Xoa = 1`, lưu `LyDoHuy`, reset bước 5 về `P` và bước 6 về `W`.
-  - Trên bảng: Nút "Lịch sử HĐ" luôn sẵn sàng dưới nút thao tác chính, mở popup xem chi tiết các lần HĐ, lý do hủy, bảng thành viên kèm điểm chi tiết.
-  - API `HoiDong_DeTai_Get` phản hồi dưới 1 giây.
-- **Actual:** Đã hoàn thành, kiểm chứng thực tế và publish toàn bộ lên FUI server.
+- **Objective:** Sửa lỗi lập hội đồng bằng file Excel bị mất Số QĐ và Ngày QĐ của học viên, sửa lỗi trình duyệt bị đơ/crash khi upload file Excel, và reset toàn bộ dữ liệu test của học viên Nguyễn Duy Hiền (922000094).
+- **Expected:** Khi nạp Excel có Số QĐ và Ngày QĐ, hệ thống cập nhật đúng vào bảng `Decision` và `HoiDong`, hiển thị tức thì không đơ trình duyệt; học viên sau khi test được trả về trạng thái sạch sẽ.
+- **Actual (Trước khi sửa):** 
+  - Số QĐ bị SP trả về placeholder `            /QĐ-ĐHLH` khiến guard logic hiểu nhầm là đã có Số QĐ và bỏ qua lệnh `onUpdateSQD`.
+  - Code cũ hardcode `jsonData.splice(0, 7)` và `jsonHeader.splice(0, 6)`, khi file ít hơn 7 dòng gây crash `Cannot read properties of undefined (reading 'length')`.
+  - Template gọi hàm `getStudentStatus` trong v-chip làm re-render loop và nghẽn luồng chính.
 - **Flow Analysis:**
-  - **Input:**
-    - Hủy HĐ: `HoiDong_ID`, `Student_ID`, `LyDoHuy`.
-    - Lấy lịch sử: `Student_ID`.
-    - Danh sách đề tài: `NganhID`, `sys_SystemRight`, `BacDaoTao`.
-  - **Process:**
-    - `spAPI_HoiDong_Cancel`: `UPDATE HoiDong SET Is_Xoa = 1, LyDoHuy = ...`, `UPDATE HoiDongThanhVien SET Is_Xoa = 1`, cập nhật `Flow_Detail` Task 5 và 6.
-    - `spAPI_HoiDong_History_Get`: `SELECT` từ `HoiDong` (kể cả `Is_Xoa = 1`) và `HoiDongThanhVien`.
-    - `spAPI_HoiDong_DeTai_Get`: `WITH RECOMPILE` triệt tiêu Parameter Sniffing, lọc `Is_Xoa = 0 OR Is_Xoa IS NULL`.
-  - **State:** `HoiDong.Is_Xoa = 1`, `HoiDong.LyDoHuy`, `Flow_Detail.Flow_Detail_Status = 'W'`.
-  - **Output:** Dữ liệu chuẩn, phản hồi < 1s, hiển thị phân loại 5 trạng thái với màu sắc trực quan.
-  - **Side Effects:** Giữ nguyên 100% schema output và API contracts.
+  - **Input:** File Excel (`.xlsx`, `.xls`) chứa danh sách hội đồng kèm cột Số QĐ và Ngày QĐ.
+  - **Process:** FileReader đọc ArrayBuffer -> `XLSX.read` -> tự động dò tìm dòng Header chứa `MSHV` / `STT` -> tự động ánh xạ cột -> pre-calculate trạng thái -> `onAddHDSQD` -> `insHoiDongApi` -> `onGetDeTai` -> `onUpdateSQD` (`/HoiDong_Upd_SoQD`).
+  - **State:** Bảng `HoiDong` (Is_Xoa = 0), `HoiDongThanhVien`, `Decision` (`Decision_SoQD`, `Decision_NgayQD`, `Decision_ThangQD`, `Decision_NamQD`).
+  - **Output:** Hội đồng được lập kèm Số QĐ và Ngày QĐ hiển thị trên bảng.
+  - **Side Effects:** Đã xóa sạch toàn bộ 2 hội đồng cũ test (2715, 2716), 10 thành viên hội đồng, và 2 quyết định (4402, 4403) của học viên 922000094 khỏi database.
 
 ## 5. RELEVANT CODE & ARTIFACT REFERENCES
 - **Code Locations:**
-  - `_db/qldetaisdh/spAPI_HoiDong_Cancel.sql` — Stored Procedure xử lý hủy và reset tiến trình.
-  - `_db/qldetaisdh/spAPI_HoiDong_History_Get.sql` — Stored Procedure lấy dữ liệu lịch sử hội đồng.
-  - `_db/qldetaisdh/spAPI_HoiDong_DeTai_Get.sql` — Stored Procedure lấy danh sách hội đồng đề tài (đã tối ưu `WITH RECOMPILE`).
-  - `modules/ths-hoi-dong/components/dialog-update-council.vue` — Dialog cập nhật kèm nút hủy HĐ và popup xác nhận.
-  - `modules/ths-hoi-dong/script.js` — Template cột Hội đồng, dialog xem lịch sử, hàm `getHoiDongStatus`, `formatScore`, `getHistoryMembers`.
-  - `modules/ths-hoi-dong/style.css` — Định dạng viền màu cho từng loại thẻ hội đồng trong lịch sử.
-  - `_db/restore_student_925000005.sql` — Script khôi phục dữ liệu học viên Nguyễn Hữu Thịnh khi cần.
+  - `modules/ths-hoi-dong/components/dialog-add-council-by-excel.vue:209-234` (`parseExcelDate`) — Regex parser ngày tháng thuần, không dùng Moment đa format.
+  - `modules/ths-hoi-dong/components/dialog-add-council-by-excel.vue:415-445` (`onAddHDSQD`) — Guard nhận diện placeholder `/QĐ-ĐHLH` và split ngày/tháng với `padStart(2, '0')`.
+  - `modules/ths-hoi-dong/components/dialog-add-council-by-excel.vue:580-685` (`loadExcelGVInfo`) — Tự động nhận diện header và map cột linh hoạt.
+  - `modules/ths-hoi-dong/components/dialog-give-sqd.vue:350-370` — Xóa placeholder dấu chấm của ngày tháng trước khi mở modal và khi lưu.
+  - `_db/qldetaisdh/spAPI_HoiDong_Get_ByHoiDongID.sql:39` — SP trả về placeholder `N'            /QĐ-ĐHLH'`.
 
 ## 6. SESSION KNOWLEDGE (FACTS vs HYPOTHESES)
 ### Verified Facts
-- [FACT] Đã chạy DDL bổ sung cột `LyDoHuy NVARCHAR(500) NULL` vào cả `HoiDong` và `HoiDong_Old` trên database `qldetaisdh`.
-- [FACT] `spAPI_HoiDong_DeTai_Get` giảm thời gian thực thi từ **16.813 ms (~16,8 giây)** xuống còn **656 ms (~0,65 giây)** sau khi thêm `WITH RECOMPILE`.
-- [FACT] Có 61 hội đồng trong DB có điểm trung bình dạng float precision dài ngoặc (`8.780000000000001`, `7.666666666666667`...), đã được giải quyết bằng `formatScore`.
-- [FACT] Có 151 hội đồng từng cập nhật thành viên tạo ra bản ghi cũ `Is_Xoa = 1`, đã được lọc sạch qua `getHistoryMembers`.
-- [FACT] Có 7 học viên bị bấm tạo 2 hội đồng trùng cách nhau 13-22s (`HoiDong_Status = 0`), hiện hiển thị nhãn xám "Chưa kích hoạt / Bản sao".
+- [FACT] `Decision_SoQD` mặc định trong SP `spAPI_HoiDong_Get_ByHoiDongID` trả về `N'            /QĐ-ĐHLH'` thay vì chuỗi rỗng.
+- [FACT] Code cũ `dialog-add-council-by-excel.vue` kiểm tra `currentDetail.Decision_SoQD.trim() !== ''` nên bị match chuỗi placeholder và bỏ qua hoàn toàn cập nhật Số QĐ.
+- [FACT] Đã deploy component mới lên server FUI thành công (ComID 11435 và ComID 11453).
+- [FACT] Người dùng đã nạp file thành công, sinh ra `HoiDongID = 2716` và `Decision_ID = 4403` có đầy đủ Số QĐ `2154/QĐ-ĐHLH` và Ngày QĐ `31/10/2026`.
+- [FACT] Toàn bộ dữ liệu hội đồng của học viên 922000094 đã được dọn sạch khỏi DB (HoiDong, HoiDongThanhVien, Decision), trả về trạng thái ban đầu.
+
+### Active Hypotheses
+- Không còn active hypothesis nào.
 
 ### Assumptions & Unknowns
-- [ASSUMPTION] 7 hội đồng bản sao cũ tạm thời giữ nguyên trong database để lưu vết lịch sử; người dùng có thể yêu cầu xóa mềm khi cần.
+- [ASSUMPTION] Người dùng thực tế sẽ sử dụng file Excel theo mẫu đợt bảo vệ của trường hoặc file tự chuẩn bị bắt đầu từ dòng 1/dòng 7; cả 2 trường hợp hiện đều được hỗ trợ tự động.
 
 ## 7. TESTS, LOGS & DIAGNOSTICS
 - **Overall Verification Status:** `PASS`
 - **Test / Benchmark Runs:**
-  - `EXEC spAPI_HoiDong_DeTai_Get 0, 9, 'THS'` → **Result:** PASS (656 ms).
-  - `EXEC spAPI_HoiDong_DeTai_Get 102, 9, 'THS'` → **Result:** PASS (839 ms).
-  - `EXEC spAPI_HoiDong_History_Get '925000005', 'test', 9` → **Result:** PASS (15 ms).
-  - `fui file status` → **Result:** `0 unpublished file(s)`.
+  - Test nạp Excel mô phỏng cả 2 trường hợp (có 6 dòng header và bắt đầu từ dòng 1): **Result:** PASS | **Proves:** Parser tự dò header hoạt động chính xác cả 2 case.
+  - Test gọi `spAPI_HoiDong_History_Get` cho học viên 922000094: **Result:** PASS (0 row) | **Proves:** Popup Lịch sử hội đồng đã sạch 100%.
+- **Critical Error / Log Resolved:**
+```text
+4ABE8.js:2258 jsonHeader Array(0)
+4ABE8.js:2521 Error loading Excel file: TypeError: Cannot read properties of undefined (reading 'length')
+    at reader.onload (4ABE8.js:2278:80)
+```
 
 ## 8. ATTEMPTS & DEAD ENDS (DO NOT REPEAT)
-- **Attempt 1:** Đặt nút "Lịch sử HĐ" bên trong `dialog-update-council.vue`.
-  - *Result:* Sau khi hủy hội đồng, học viên không còn `HoiDongID` hiệu lực nên table chỉ hiện nút "Lập Hội Đồng", mất lối vào dialog cập nhật để xem lịch sử.
-  - *Conclusion:* Chuyển nút "Lịch sử HĐ" ra trực tiếp cột Hội đồng trên table để truy cập được ở mọi trạng thái.
-- **Attempt 2:** Dùng `@LyDoHuy NVARCHAR(500) = NULL` trong stored procedure.
-  - *Result:* Bị guard của `tAPI` chặn deploy (tAPI không hỗ trợ default parameter).
-  - *Conclusion:* Bỏ `= NULL`, khai báo `@LyDoHuy NVARCHAR(500)`.
+- **Attempt 1:** Dùng SheetJS nodejs tạo file test OpenXML `.xlsx` tự động.
+  - *Result:* Microsoft Excel trên Windows báo popup "We found a problem with some content...".
+  - *Conclusion:* Không nên sinh file `.xlsx` tự động bằng SheetJS CLI nếu máy người dùng có Excel bảo mật nghiêm ngặt. Thay vào đó dùng định dạng nhị phân `.xls` hoặc để người dùng tự tạo file từ Microsoft Excel.
 
 ## 9. CONSTRAINTS & RISKS
-- **Contracts to Preserve:** Giữ nguyên toàn bộ schema trả về và input params của các API SP.
-- **Side Effects / Tradeoffs:** Thêm `WITH RECOMPILE` tốn khoảng 10-20ms biên dịch lại plan, nhưng đổi lại giảm 16 giây nghẽn execution plan.
+- **Contracts to Preserve:** Giữ nguyên contract API `/HoiDong_Upd_SoQD`, `/HoiDong_Ins`, `/HoiDong_History_Get` và các props của component `dialog-add-council-by-excel`.
+- **Side Effects / Tradeoffs:** Không có side effect tiêu cực; hiệu năng render tăng lên đáng kể do pre-calculate trạng thái học viên.

@@ -40,12 +40,12 @@
 					<template v-slot:item.KiemTraStatus="{ item }">
 						<v-chip
 							small
-							:color="getStudentStatus(item.MSHV).color"
+							:color="item.statusColor || 'grey'"
 							label
 							outlined
 							class="font-weight-medium"
 						>
-							{{ getStudentStatus(item.MSHV).text }}
+							{{ item.statusText || 'Chờ dữ liệu...' }}
 						</v-chip>
 					</template>
 				</f-table>
@@ -205,6 +205,29 @@
 						.trim()
 				)
 			},
+
+			parseExcelDate(val) {
+				if (!val) return ''
+				if (typeof val === 'number') {
+					// Excel serial date to JS Date
+					const dateObj = new Date(Math.round((val - 25569) * 86400 * 1000))
+					const d = String(dateObj.getUTCDate()).padStart(2, '0')
+					const m = String(dateObj.getUTCMonth() + 1).padStart(2, '0')
+					const y = dateObj.getUTCFullYear()
+					return `${d}/${m}/${y}`
+				}
+				const str = String(val).trim()
+				// Regex nhanh không backtracking
+				const mMatch = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/)
+				if (mMatch) {
+					return `${mMatch[1].padStart(2, '0')}/${mMatch[2].padStart(2, '0')}/${mMatch[3]}`
+				}
+				const isoMatch = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/)
+				if (isoMatch) {
+					return `${isoMatch[3].padStart(2, '0')}/${isoMatch[2].padStart(2, '0')}/${isoMatch[1]}`
+				}
+				return str
+			},
 	
 			// Nhiệm vụ của hàm này là để đảm bảo không bị bất đồng bộ khi lập hội đồng và cấp SQĐ
 			async onGetDeTai() {
@@ -333,8 +356,8 @@
 				})
 
 				// Lọc danh sách học viên hợp lệ và danh sách bỏ qua
-				const validItems = this.DanhSachInfo.filter((item) => this.getStudentStatus(item.MSHV).canProcess)
-				const skippedItems = this.DanhSachInfo.filter((item) => !this.getStudentStatus(item.MSHV).canProcess)
+				const validItems = this.DanhSachInfo.filter((item) => item.canProcess)
+				const skippedItems = this.DanhSachInfo.filter((item) => !item.canProcess)
 
 				if (validItems.length === 0) {
 					Vue.$toast.warning(`Không có học viên nào đủ điều kiện lập hội đồng mới (tất cả đã có HĐ hoặc không hợp lệ)`, { position: 'top', duration: 5000 })
@@ -392,15 +415,21 @@
 							if (hoiDongDetail && hoiDongDetail[0] && hoiDongDetail[0].length >= 1) {
 								const currentDetail = hoiDongDetail[0][0]
 
-								// GUARD TUYỆT ĐỐI: Không bao giờ ghi đè nếu hội đồng này đã có số QĐ từ trước!
-								if (currentDetail.Decision_SoQD && String(currentDetail.Decision_SoQD).trim() !== '') {
+								// GUARD TUYỆT ĐỐI: Không bao giờ ghi đè nếu hội đồng này đã có số QĐ thực tế từ trước!
+								const rawSoQD = String(currentDetail.Decision_SoQD || '').trim()
+								const hasRealSoQD = rawSoQD !== '' && rawSoQD !== '/QĐ-ĐHLH' && rawSoQD.replace('/QĐ-ĐHLH', '').trim() !== ''
+								if (hasRealSoQD) {
 									console.warn(`Hội đồng ID ${currentDetail.HoiDongID} của học viên ${item.MSHV} đã có số QĐ (${currentDetail.Decision_SoQD}), bỏ qua không ghi đè`)
 									continue
 								}
 
-								const splitNgayQD = item.NgayQD.split('/')
-								const ngayQD = splitNgayQD[0]
-								const thangQD = splitNgayQD[1]
+								const splitNgayQD = String(item.NgayQD || '').split('/')
+								if (splitNgayQD.length !== 3) {
+									console.warn(`Ngày QĐ không hợp lệ cho học viên ${item.MSHV}: ${item.NgayQD}`)
+									continue
+								}
+								const ngayQD = splitNgayQD[0].padStart(2, '0')
+								const thangQD = splitNgayQD[1].padStart(2, '0')
 								const namQD = splitNgayQD[2]
 
 								const data = {
@@ -450,8 +479,8 @@
 				})
 
 				// Lọc danh sách học viên hợp lệ và bỏ qua
-				const validItems = this.DanhSachInfo.filter((item) => this.getStudentStatus(item.MSHV).canProcess)
-				const skippedItems = this.DanhSachInfo.filter((item) => !this.getStudentStatus(item.MSHV).canProcess)
+				const validItems = this.DanhSachInfo.filter((item) => item.canProcess)
+				const skippedItems = this.DanhSachInfo.filter((item) => !item.canProcess)
 
 				if (validItems.length === 0) {
 					Vue.$toast.warning(`Không có học viên nào đủ điều kiện lập hội đồng (tất cả đã có HĐ hoặc không hợp lệ)`, { position: 'top', duration: 5000 })
@@ -549,159 +578,112 @@
 						const worksheet = workbook.Sheets[sheetName]
 						const json = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' })
 	
-						const jsonData = []
-						const jsonHeader = []
-						let headerArr = []
-						let isExcelHasGVHD2 = false
-	
-						json.forEach((row) => {
-							const rowData = row
-							jsonData.push([...rowData])
-							jsonHeader.push([...rowData])
-						})
-	
-						if (jsonData.length > 0) {
-							// Remove first 4 elements
-							jsonData.splice(0, 7)
-							jsonHeader.splice(0, 6)
-							// Remove last 7 elements
-							// jsonData.splice(-7, 7);
-							this.fileData = jsonData
-							console.log('jsonHeader', jsonHeader)
+						if (!json || json.length === 0) {
+							Vue.$toast.warning('File Excel không có dữ liệu', { position: 'top' })
+							return
 						}
-	
-						// Ensure each row has length 14 by adding empty elements
-						const maxLength = 15
-						this.fileData = this.fileData.map((row) => {
-							while (row.length < maxLength) {
-								row.push('') // Add empty string or null as needed
-							}
-							return row
-						})
-	
-						headerArr = jsonHeader.map((row) => {
-							while (row.length < maxLength) {
-								row.push('') // Add empty string or null as needed
-							}
-							return row
-						})
-						console.log('xxxxxxxxxx headerArr', headerArr, headerArr[0][headerArr[0].length - 1])
-						const hasHeader = headerArr.length > 0 && headerArr[0][0].length > 0
-						console.log("this.switchData === 2", this.switchData === 2)
-						console.log("hasHeader", hasHeader)
-						const thirdCondition = !!headerArr[0][headerArr[0].length - 3]
-						console.log('Điều kiện thứ 3:', thirdCondition)
-						console.log('Giá trị thực tế:', headerArr[0][headerArr[0].length - 3])
-	
-						if ((this.switchData === 2 && hasHeader && headerArr[0][headerArr[0].length - 3]) || (hasHeader && headerArr[0][headerArr[0].length - 1])) {
-							isExcelHasGVHD2 = true
-						}
-						console.log('isExcelHasGVHD2', isExcelHasGVHD2)
-						// this.fileData.splice(0, 1)
-						// console.log("this.fileData", this.fileData)
-	
-						// Map fileData to objects and push to DataArr
-						if (this.switchData === 2) {
-							if (isExcelHasGVHD2) {
-								this.DanhSachInfo = this.fileData
-									.map((row) => {
-										return {
-											STT: row[0] || 0,
-											MSHV: row[1] ? row[1].toString().trim() : '',
-											Lop: row[2] || '',
-											Ho: row[3] || '',
-											Ten: row[4] || '',
-											DeTai: row[5] || '',
-											GVHD1: row[6] || '',
-											GVHD2: row[7] || '',
-											ChuTich: row[8] || '',
-											PB1: row[9] || '',
-											ThuKy: row[10] || '',
-											...(this.loaiLapHoiDong === 1 && {
-												SoQD: row[11].toString() || '',
-												NgayQD: row[12] ? moment(row[12], ['D/M/YYYY', 'DD/M/YYYY', 'D/MM/YYYY'], true).format('DD/MM/YYYY') : '',
-											}),
-										}
-									})
-									.filter((item) => item.MSHV && item.MSHV !== '0')
-							} else {
-								this.DanhSachInfo = this.fileData
-									.map((row) => {
-										return {
-											STT: row[0] || 0,
-											MSHV: row[1] ? row[1].toString().trim() : '',
-											Lop: row[2] || '',
-											Ho: row[3] || '',
-											Ten: row[4] || '',
-											DeTai: row[5] || '',
-											GVHD1: row[6] || '',
-											GVHD2: '',
-											ChuTich: row[7] || '',
-											PB1: row[8] || '',
-											ThuKy: row[9] || '',
-											...(this.loaiLapHoiDong === 1 && {
-												SoQD: row[10].toString() || '',
-												NgayQD: row[11] ? moment(row[11], ['D/M/YYYY', 'DD/M/YYYY', 'D/MM/YYYY'], true).format('DD/MM/YYYY') : null,
-											}),
-										}
-									})
-									.filter((item) => item.MSHV && item.MSHV !== '0')
-							}
-						} else {
-							if (isExcelHasGVHD2) {
-								console.log('co 2 gvhd')
-								this.DanhSachInfo = this.fileData
-									.map((row) => {
-										return {
-											STT: row[0] || 0,
-											MSHV: row[1] ? row[1].toString().trim() : '',
-											Lop: row[2] || '',
-											Ho: row[3] || '',
-											Ten: row[4] || '',
-											DeTai: row[5] || '',
-											GVHD1: row[6] || '',
-											GVHD2: row[7] || '',
-											ChuTich: row[8] || '',
-											PB1: row[9] || '',
-											PB2: row[10] || '',
-											ThuKy: row[11] || '',
-											UyVien: row[12] || '',
-											...(this.loaiLapHoiDong === 1 && {
-												SoQD: row[13].toString() || '',
-												NgayQD: row[14] ? moment(row[14], ['D/M/YYYY', 'DD/M/YYYY', 'D/MM/YYYY'], true).format('DD/MM/YYYY') : null,
-											}),
-										}
-									})
-									.filter((item) => item.MSHV && item.MSHV !== '0')
-								console.log('this.DanhSachInfo xxxxx', this.DanhSachInfo)
-							} else {
-								console.log('co 1 gvhd')
-								this.DanhSachInfo = this.fileData
-									.map((row) => {
-										return {
-											STT: row[0] || 0,
-											MSHV: row[1] ? row[1].toString().trim() : '',
-											Lop: row[2] || '',
-											Ho: row[3] || '',
-											Ten: row[4] || '',
-											DeTai: row[5] || '',
-											GVHD1: row[6] || '',
-											GVHD2: '',
-											ChuTich: row[7] || '',
-											PB1: row[8] || '',
-											PB2: row[9] || '',
-											ThuKy: row[10] || '',
-											UyVien: row[11] || '',
-											...(this.loaiLapHoiDong === 1 && {
-												SoQD: row[12].toString() || '',
-												NgayQD: row[13] ? moment(row[13], ['D/M/YYYY', 'DD/M/YYYY', 'D/MM/YYYY'], true).format('DD/MM/YYYY') : null,
-											}),
-										}
-									})
-									.filter((item) => item.MSHV && item.MSHV !== '0')
+
+						// 1. Tự động định vị dòng Header (dòng có chứa MSHV hoặc STT)
+						let headerRowIndex = -1
+						for (let i = 0; i < Math.min(json.length, 25); i++) {
+							const row = json[i]
+							if (Array.isArray(row)) {
+								const hasMshv = row.some((c) => {
+									const s = String(c || '').trim().toUpperCase()
+									return s === 'MSHV' || s === 'MÃ HỌC VIÊN' || s === 'MA HOC VIEN'
+								})
+								if (hasMshv) {
+									headerRowIndex = i
+									break
+								}
 							}
 						}
-	
+
+						if (headerRowIndex === -1) {
+							for (let i = 0; i < Math.min(json.length, 25); i++) {
+								const row = json[i]
+								if (Array.isArray(row)) {
+									const hasStt = row.some((c) => String(c || '').trim().toUpperCase() === 'STT')
+									if (hasStt) {
+										headerRowIndex = i
+										break
+									}
+								}
+							}
+						}
+
+						// Fallback: nếu không tìm thấy, dùng index 6 (template chuẩn có 6 dòng đầu) hoặc index 0
+						if (headerRowIndex === -1) {
+							headerRowIndex = json.length > 7 ? 6 : 0
+						}
+
+						const rawHeader = json[headerRowIndex] || []
+						const rawData = json.slice(headerRowIndex + 1)
+
+						// 2. Helper tìm index của cột theo từ khóa tiêu đề (không phụ thuộc thứ tự cố định)
+						const findCol = (keywords, defaultIdx) => {
+							const idx = rawHeader.findIndex((c) => {
+								const s = String(c || '').trim().toUpperCase()
+								return keywords.some((kw) => s === kw || s.includes(kw))
+							})
+							return idx !== -1 ? idx : defaultIdx
+						}
+
+						const isExcelHasGVHD2 = rawHeader.some((c) => {
+							const s = String(c || '').trim().toUpperCase()
+							return s.includes('GVHD 2') || s.includes('GVHD2') || s.includes('HƯỚNG DẪN 2') || s.includes('HUONG DAN 2')
+						})
+
+						const colSTT = findCol(['STT'], 0)
+						const colMSHV = findCol(['MSHV', 'MÃ HỌC VIÊN', 'MA HOC VIEN'], 1)
+						const colLop = findCol(['LỚP', 'LOP'], 2)
+						const colHo = findCol(['HỌ', 'HO'], 3)
+						const colTen = findCol(['TÊN', 'TEN'], 4)
+						const colDeTai = findCol(['TÊN ĐỀ TÀI', 'TEN DE TAI', 'ĐỀ TÀI', 'DE TAI'], 5)
+						const colGVHD1 = findCol(['GVHD 1', 'GVHD1', 'GVHD'], 6)
+						const colGVHD2 = isExcelHasGVHD2 ? findCol(['GVHD 2', 'GVHD2'], 7) : -1
+						const colChuTich = findCol(['CHỦ TỊCH', 'CHU TICH'], isExcelHasGVHD2 ? 8 : 7)
+						const colPB1 = findCol(['PHẢN BIỆN 1', 'PHAN BIEN 1', 'PB1', 'PHẢN BIỆN', 'PHAN BIEN'], isExcelHasGVHD2 ? 9 : 8)
+						const colPB2 = this.switchData === 2 ? -1 : findCol(['PHẢN BIỆN 2', 'PHAN BIEN 2', 'PB2'], isExcelHasGVHD2 ? 10 : 9)
+						const colThuKy = findCol(['THƯ KÝ', 'THU KY'], this.switchData === 2 ? (isExcelHasGVHD2 ? 10 : 9) : (isExcelHasGVHD2 ? 11 : 10))
+						const colUyVien = this.switchData === 2 ? -1 : findCol(['ỦY VIÊN', 'UY VIEN'], isExcelHasGVHD2 ? 12 : 11)
+						const colSoQD = findCol(['SỐ QUYẾT ĐỊNH', 'SO QUYET DINH', 'SỐ QĐ', 'SO QD'], isExcelHasGVHD2 ? (this.switchData === 2 ? 11 : 13) : (this.switchData === 2 ? 10 : 12))
+						const colNgayQD = findCol(['NGÀY QUYẾT ĐỊNH', 'NGAY QUYET DINH', 'NGÀY QĐ', 'NGAY QD'], isExcelHasGVHD2 ? (this.switchData === 2 ? 12 : 14) : (this.switchData === 2 ? 11 : 13))
+
+						// 3. Map dữ liệu học viên
+						this.DanhSachInfo = rawData
+							.filter((row) => Array.isArray(row) && row.length > 0)
+							.map((row) => {
+								const mshvVal = row[colMSHV] ? String(row[colMSHV]).trim() : ''
+								const item = {
+									STT: row[colSTT] || 0,
+									MSHV: mshvVal,
+									Lop: row[colLop] || '',
+									Ho: row[colHo] || '',
+									Ten: row[colTen] || '',
+									DeTai: row[colDeTai] || '',
+									GVHD1: row[colGVHD1] || '',
+									GVHD2: colGVHD2 !== -1 ? (row[colGVHD2] || '') : '',
+									ChuTich: row[colChuTich] || '',
+									PB1: row[colPB1] || '',
+									PB2: colPB2 !== -1 ? (row[colPB2] || '') : '',
+									ThuKy: row[colThuKy] || '',
+									UyVien: colUyVien !== -1 ? (row[colUyVien] || '') : '',
+									...(this.loaiLapHoiDong === 1 && {
+										SoQD: colSoQD !== -1 && row[colSoQD] ? String(row[colSoQD]).trim() : '',
+										NgayQD: colNgayQD !== -1 && row[colNgayQD] ? this.parseExcelDate(row[colNgayQD]) : '',
+									}),
+								}
+								const st = this.getStudentStatus(mshvVal)
+								return {
+									...item,
+									statusColor: st.color,
+									statusText: st.text,
+									canProcess: st.canProcess,
+								}
+							})
+							.filter((item) => item.MSHV && item.MSHV !== '0' && item.MSHV.toUpperCase() !== 'MSHV')
+
 						this.labelTable = `Danh sách học viên đăng ký bảo vệ luận văn (${this.DanhSachInfo.length})`
 	
 						//thay đổi tableHeader khi có GVHD 2 hoặc không có
